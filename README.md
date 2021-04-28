@@ -12,7 +12,8 @@ Version 1.10
     -Added save -S option.  
     -Added list devices for option -S.  
          -Select no display devices.  
-		 
+    -Add file test in install\Recordings for replay with input SDRSharp(Baseband Files(*))  
+
 ## Use  
 Version 1.00  
 # Display  
@@ -91,11 +92,12 @@ The free selection allows to launch the plugin without changing the frequency.
 
 ## Utilisation  
 Version 1.10  
-    Ajout des graphiques Pulses data, analyse et fm.  
+    -Ajout des graphiques Pulses data, analyse et fm.  
         nota:les graphiques analyse et fm sont synchrones(même période d'échantillonnage).  
             les 3 graphiques sont synchronisés dans le temps par rapport au premier échantillon.  
-    Ajout de l'option save -S.  
-
+    -Ajout de l'option save -S.  
+    -Ajout du fichier de test dans install\Recordings for rejeu par SDRSharp(Baseband Files(*))  
+	
 Version 1.00  
 
 # Affichage  
