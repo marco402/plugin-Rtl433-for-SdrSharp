@@ -25,10 +25,10 @@ namespace SDRSharp.Rtl_433
     public unsafe class Rtl_433_Processor : IIQProcessor, IStreamProcessor, IBaseProcessor
     {
         [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern bool AllocConsole();
-        public const int nbByteForRts_433 = 50000;  //  50000 ;  // ; for lower time cycle (16 * 32 * 512) 262144 idem rtl433   I and Q  
-        public const int nbComplexForRts_433 = nbByteForRts_433 / 2;  //   /2 for real+imag
+        public const int NBBYTEFORRTS_433 = 50000;  //  50000 ;  // ; for lower time cycle (16 * 32 * 512) 262144 idem rtl433   I and Q  
+        public const int NBCOMPLEXFORRTS_433 = NBBYTEFORRTS_433 / 2;  //   /2 for real+imag
+        public const int NBBUFFERFORRTS_433 = 5;  //5 buffer for shorter cycle rtl433(only 1 buffer) but 5 buffers for record one shoot
         private UnsafeBuffer _IQBuffer;
-        private UnsafeBuffer _IQBufferDemod;
         private Complex* _IQPtr;
         private Thread _processThreadRtl433;
         private bool _terminated = true;
@@ -45,8 +45,7 @@ namespace SDRSharp.Rtl_433
         {
             _control.PropertyChanged += NotifyPropertyChangedHandler;
             _ClassInterfaceWithRtl433 = classInterfaceWithRtl433;
-            _IQBuffer = UnsafeBuffer.Create(nbComplexForRts_433, sizeof(Complex));
-            _IQBufferDemod = UnsafeBuffer.Create(nbByteForRts_433, sizeof(float));
+            _IQBuffer = UnsafeBuffer.Create(NBCOMPLEXFORRTS_433, sizeof(Complex));
             _IQPtr = (Complex*)_IQBuffer;
             _control.RegisterStreamHook(this, ProcessorType.RawIQ);     //it's ok with DemodulatorOutput but sample rate limited to 37500
             setFrequency();
@@ -140,9 +139,9 @@ namespace SDRSharp.Rtl_433
             {
                 var total = 0;
                
-                while (_control.IsPlaying && total < nbComplexForRts_433 && !_terminated)
+                while (_control.IsPlaying && total < NBCOMPLEXFORRTS_433 && !_terminated)
                 {
-                    var len = nbComplexForRts_433 - total;
+                    var len = NBCOMPLEXFORRTS_433 - total;
                     total += _floatStreamComplex.Read(_IQPtr, total, len);
                 }
                 if (_terminated)

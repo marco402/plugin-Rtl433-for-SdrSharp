@@ -71,6 +71,7 @@ namespace SDRSharp.Rtl_433
         private Color memoForeColortoolStripStatusLabelFreezeData;
         private string memoTexttoolStripSplitLabelFreezeData;
         private float memoHeightPlotterDisplayExDevices = 0;
+        private int activeColumnForData = 1;
         #endregion
 #region constructor load close form
         public FormDevices(Rtl_433_Panel classParent)
@@ -83,6 +84,7 @@ namespace SDRSharp.Rtl_433
             listLabelValue = new Dictionary<String, Label>();
             this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
             this.tableLayoutPanelDeviceData.TabIndex = 1;
+            //toolStripSplitLabelRecordOneShoot.Visible = false;
             toolStripStatusLabelPeriodeCurrent.Text = "Period: 0";
             toolStripStatusLabelPeriodeMax.Text = "Period max: 0";
             toolStripStatusLabelNbMessages.Text = "NB messages: 0";
@@ -148,6 +150,7 @@ namespace SDRSharp.Rtl_433
                 }
                 if (!listLabelKey.ContainsKey(_data.Key))
                 {
+
                     tableLayoutPanelDeviceData.RowCount += 1;
                     tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle());
                     tableLayoutPanelDeviceData.RowStyles[tableLayoutPanelDeviceData.RowCount - 1].Height = 20;
@@ -158,22 +161,28 @@ namespace SDRSharp.Rtl_433
                     theLabelKey.AutoSize = true;
                     theLabelKey.BackColor = System.Drawing.SystemColors.ControlDarkDark;
                     theLabelKey.ForeColor = System.Drawing.SystemColors.ButtonFace;
-
                     tableLayoutPanelDeviceData.Controls.Add(theLabelKey, 0, tableLayoutPanelDeviceData.RowCount-1);
                     theLabelKey.Text = _data.Key;
-                    Label theLabelValue = new Label();
-                    listLabelValue.Add(_data.Key, theLabelValue);
-                    theLabelValue.Tag = tableLayoutPanelDeviceData.RowCount;
-                    theLabelValue.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
-                    theLabelValue.AutoSize = true;
-                    theLabelValue.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-                    theLabelValue.ForeColor = System.Drawing.SystemColors.ButtonFace;
-                    tableLayoutPanelDeviceData.Controls.Add(theLabelValue, 1, tableLayoutPanelDeviceData.RowCount-1);
+                    for(int col=1; col < 5; col++)
+                    {
+                        Label theLabelValue = new Label();
+                        listLabelValue.Add(_data.Key + col.ToString(), theLabelValue);
+                        theLabelValue.Tag = tableLayoutPanelDeviceData.RowCount;
+                        theLabelValue.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
+                        theLabelValue.AutoSize = true;
+                        theLabelValue.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+                        theLabelValue.ForeColor = System.Drawing.SystemColors.ButtonFace;
+                        tableLayoutPanelDeviceData.Controls.Add(theLabelValue, col, tableLayoutPanelDeviceData.RowCount-1);
+                    }
                 }
-                listLabelValue[_data.Key].Text = _data.Value;
+                listLabelValue[_data.Key + activeColumnForData.ToString()].Text = _data.Value;
             }
             nbMessages += 1;
             toolStripStatusLabelNbMessages.Text ="NB messages: " +  nbMessages.ToString();
+            activeColumnForData += 1;
+            if (activeColumnForData == 5)
+                activeColumnForData = 1;
+
             this.ResumeLayout();
         }
         public void resetLabelRecord()
@@ -408,10 +417,12 @@ namespace SDRSharp.Rtl_433
             }
             else
             {
-                _classParent.setRecordDevice(this.Text, true);
+               if( _classParent.setRecordDevice(this.Text, true)==true)
+                {
                 toolStripSplitLabelRecordOneShoot.BackColor = Color.Green;
                 toolStripSplitLabelRecordOneShoot.ForeColor = Color.White;
                 toolStripSplitLabelRecordOneShoot.Text = "Cancel record";
+                }
             }
         }
         private void toolStripStatusLabelFreezeData_Click(object sender, EventArgs e)

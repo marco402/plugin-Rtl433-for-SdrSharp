@@ -15,7 +15,7 @@ namespace SDRSharp.Rtl_433
         }
         
         //private static int cpt = 0;
-        public static void WriteBufferToWav(string filePath, Complex* buffer,  int lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
+        public static void WriteBufferToWav(string filePath, Complex*[] buffer,  int lenBuffer,int nbBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
         {
             //Func<float, float> testlimit = value =>
             //{
@@ -32,35 +32,49 @@ namespace SDRSharp.Rtl_433
             {
                 int nbChannel = 1;
                 format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel));
+                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer));
                 maxi = 0;
-                for (var i = 0; i < lenBuffer; i++)
+                for (int i = 0; i < lenBuffer; i++)
                 {
-                     if (Math.Abs(buffer[i].Modulus()) > maxi)
-                        maxi = buffer[i].Modulus();
+                    for (int j = 0; j < nbBuffer; j++)
+                    {
+                        if (Math.Abs(buffer[j][i].Modulus()) > maxi)
+                            maxi = buffer[j][i].Modulus();
+                    }
                 }
-                for (var i = 0; i < lenBuffer; i++)
+                if (maxi > 0)
                 {
-                    data.shortArray[i] = buffer[i].Modulus()/maxi;  //from -1 to +1
+                    for (int j = nbBuffer-1; j > -1; j--)
+                    {
+                        int indice = lenBuffer * (nbBuffer-1 - j);
+                        for (int i = 0; i < lenBuffer; i++)
+                        {
+                            data.shortArray[i + indice] = buffer[j][i].Modulus() / maxi;  //from -1 to +1
+                        }
+                    }
                 }
-
             }
             else //if (recordType == recordType.STEREO)  data and format not assigned ??
             {
                 int nbChannel = 2;
                 format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel));
-                maxi = wavRecorder.getMaxi(buffer, lenBuffer);
-                if(maxi!=0)
+                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer));
+                for (int j = 0; j < nbBuffer; j++)
+                    maxi = Math.Max(maxi,wavRecorder.getMaxi(buffer[j], lenBuffer));
+                if (maxi > 0)
                 {
-                    for (var i = 0; i < lenBuffer; i++)
+                    for (int j = nbBuffer-1; j > -1; j--)
                     {
-                        data.shortArray[i*2] = buffer[i].Real/maxi;  //from -1 to +1
-                        data.shortArray[(i*2)+1] = buffer[i].Imag/maxi;  //from -1 to +1
+                        int indice = lenBuffer * (nbBuffer-1 - j) * 2 ;
+                        for (int i = 0; i < lenBuffer; i++)
+                        {
+                            data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
+                            data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
+                        }
                     }
                 }
             }
-            if (maxi != 0)
+            if (maxi > 0)
             {
                 try
                 {
@@ -110,10 +124,10 @@ namespace SDRSharp.Rtl_433
             }
             return maxi;
         }
-        public static void convertCu8ToWav(string fileName,bool mono,bool stereo)
+        public static void convertCu8ToWav(string fileName,bool mono,bool stereo,int nbBuffer)
         {
-            Complex* _dstWavPtr;
-            UnsafeBuffer _dstWavBuffer;
+            Complex*[] _dstWavPtr;
+            UnsafeBuffer[] _dstWavBuffer;
             byte[] dataCu8;
            
             if (File.Exists(fileName))
@@ -123,33 +137,36 @@ namespace SDRSharp.Rtl_433
                     dataCu8 = new byte[reader.BaseStream.Length];
                     dataCu8 = reader.ReadBytes((int)reader.BaseStream.Length);
                 }
-                _dstWavBuffer = UnsafeBuffer.Create((int)(dataCu8.Length/2), sizeof(Complex));
-                _dstWavPtr = (Complex*)_dstWavBuffer;
+                _dstWavBuffer = new UnsafeBuffer[5];
+                _dstWavBuffer[0] = UnsafeBuffer.Create((int)(dataCu8.Length/2), sizeof(Complex));
+                _dstWavPtr = new Complex*[1];
+                _dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
+                
                 int maxi = dataCu8.Max();
                 if (maxi != 0)
                 {
                     for (int i = 0; i < dataCu8.Length; i += 2)
                     {
-                        _dstWavPtr[i / 2].Real = dataCu8[i] - 127;   // 0-->-127   255->128   / maxi * 255;    // float.MaxValue;
-                        _dstWavPtr[i / 2].Imag = dataCu8[i + 1] - 127;    ///maxi*float.MaxValue;
+                        _dstWavPtr[0][i / 2].Real = dataCu8[i] - 127;   // 0-->-127   255->128   / maxi * 255;    // float.MaxValue;
+                        _dstWavPtr[0][i / 2].Imag = dataCu8[i + 1] - 127;    ///maxi*float.MaxValue;
                     }
                     Int32 sampleRate = getSampleRateFromName(fileName); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
                     string newName = "";
                     if (stereo)
                     { 
                     newName = fileName.Replace(".cu8", "_STEREO.wav");
-                    WriteBufferToWav(newName, _dstWavPtr, _dstWavBuffer.Length, sampleRate, wavRecorder.recordType.STEREO);
+                    WriteBufferToWav(newName, _dstWavPtr, _dstWavBuffer.Length, nbBuffer, sampleRate, wavRecorder.recordType.STEREO);
                     }
                     if(mono)
                     {
                     newName = fileName.Replace(".cu8", "_MONO.wav");
-                    WriteBufferToWav(newName, _dstWavPtr, _dstWavBuffer.Length, sampleRate, wavRecorder.recordType.MONO);
+                    WriteBufferToWav(newName, _dstWavPtr, _dstWavBuffer.Length, nbBuffer, sampleRate, wavRecorder.recordType.MONO);
                     }
                     MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                     MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _dstWavBuffer.Dispose();
+                _dstWavBuffer[0].Dispose();
 
             }
         }

@@ -116,7 +116,10 @@
             // 
             this.tableLayoutPanelDeviceData.AutoSize = true;
             this.tableLayoutPanelDeviceData.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            this.tableLayoutPanelDeviceData.ColumnCount = 2;
+            this.tableLayoutPanelDeviceData.ColumnCount = 5;
+            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelDeviceData.Controls.Add(this.plotterDisplayExDevices, 0, 0);
@@ -134,7 +137,7 @@
             this.plotterDisplayExDevices.BackgroundColorBot = System.Drawing.Color.White;
             this.plotterDisplayExDevices.BackgroundColorTop = System.Drawing.Color.White;
             this.plotterDisplayExDevices.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.tableLayoutPanelDeviceData.SetColumnSpan(this.plotterDisplayExDevices, 2);
+            this.tableLayoutPanelDeviceData.SetColumnSpan(this.plotterDisplayExDevices, 5);
             this.plotterDisplayExDevices.DashedGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plotterDisplayExDevices.DoubleBuffering = true;

@@ -11,7 +11,7 @@
 
 History : V1.00 2021-04-01 - First release
           V1.10 2021-20-April
-
+          V1.11 2021-20-May
  All text above must be included in any redistribution.
   **********************************************************************************/
 
@@ -35,8 +35,8 @@ namespace SDRSharp.Rtl_433
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
-        private Complex* _copyIQPtr;
-        private UnsafeBuffer _copyIQBuffer;
+        private Complex*[] _copyIQPtr;
+        private UnsafeBuffer[] _copyIQBuffer;
         private Stopwatch stopw;
         private long memoDt;
         private Dictionary<String, String> listOptionsRtl433;
@@ -48,31 +48,25 @@ namespace SDRSharp.Rtl_433
             SampleRate = "Sample rate: 0";  //no display if init to Rtl_433_panel
             setTime();
             listOptionsRtl433 = new Dictionary<String, String>();
-            dataForRs433 = new byte[Rtl_433_Processor.nbByteForRts_433];
-            _copyIQBuffer = UnsafeBuffer.Create(Rtl_433_Processor.nbComplexForRts_433, sizeof(Complex));
-            _copyIQPtr = (Complex*)_copyIQBuffer;
-            setVerbose("-v");  //for list devices details
+            dataForRs433 = new byte[Rtl_433_Processor.NBBYTEFORRTS_433];
+            _copyIQBuffer = new UnsafeBuffer[Rtl_433_Processor.NBBUFFERFORRTS_433];
+            _copyIQPtr = new Complex*[Rtl_433_Processor.NBBUFFERFORRTS_433];
+            _copyIQBuffer[0] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
+            _copyIQPtr[0] = (Complex*)_copyIQBuffer[0];
+            for (int i = 1; i < Rtl_433_Processor.NBBUFFERFORRTS_433; i++)
+            {
+                _copyIQBuffer[i] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
+                _copyIQPtr[i] = (Complex*)_copyIQBuffer[i];
+            }
+            setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
             call_main_Rtl_433();
             }
 #region options rtl_433
-        public void setVerbose(String value)
-        {
-            if (listOptionsRtl433.ContainsKey("verbose") & value == "")
-                listOptionsRtl433.Remove("verbose");
-            else if (!listOptionsRtl433.ContainsKey("verbose"))
-                listOptionsRtl433.Add("verbose", value);
-            else
-                listOptionsRtl433["verbose"] = value;
-        }
-        public void setAnalyze(String value)
-        {
-            if (listOptionsRtl433.ContainsKey("Analyze") & value == "")
-                listOptionsRtl433.Remove("Analyze");
-            else if (!listOptionsRtl433.ContainsKey("Analyze"))
-                listOptionsRtl433.Add("Analyze", value);
-            else
-                listOptionsRtl433["Analyze"] = value;
-        }
+        /// <summary>
+        /// For display Graphic
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void setanalyze(String value)
         {
             if (listOptionsRtl433.ContainsKey("analyze") & value == "")
@@ -82,23 +76,19 @@ namespace SDRSharp.Rtl_433
             else
                 listOptionsRtl433["analyze"] = value;
         }
+        /// <summary>
+        /// specific key dif metadata(MbitsOrLevel) for title and key devices windows
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void setProtocol(String value)
         {
-            if (listOptionsRtl433.ContainsKey("Protocol") & value == "")
-                listOptionsRtl433.Remove("Protocol");
-            else if (!listOptionsRtl433.ContainsKey("Protocol"))
-                listOptionsRtl433.Add("Protocol", value);
+            if (listOptionsRtl433.ContainsKey("MProtocol") & value == "")
+                listOptionsRtl433.Remove("MProtocol");
+            else if (!listOptionsRtl433.ContainsKey("MProtocol"))
+                listOptionsRtl433.Add("MProtocol", value);
             else
-                listOptionsRtl433["Protocol"] = value;
-        }
-        public void setUnknown(String value)
-        {
-            if (listOptionsRtl433.ContainsKey("SUnknown") & value == "")
-                listOptionsRtl433.Remove("SUnknown");
-            else if (!listOptionsRtl433.ContainsKey("SUnknown"))
-                listOptionsRtl433.Add("SUnknown", value);
-            else
-                listOptionsRtl433["Protocol"] = value;
+                listOptionsRtl433["MProtocol"] = value;
         }
         public void setHideDevices(List <string> listBoxHideDevices)
         {
@@ -123,32 +113,12 @@ namespace SDRSharp.Rtl_433
                 listOptionsRtl433.Add(_option.Key, _option.Value);
             }
          }
-        public void setSaveDeviceOption(String value)
+        public void setOption(String Key,String value)
         {
-            if (!listOptionsRtl433.ContainsKey("saveDevice"))
-                listOptionsRtl433.Remove("saveDevice");
-            if (!listOptionsRtl433.ContainsKey("saveDevice"))
-                listOptionsRtl433.Add("saveDevice", value);
-            else
-                listOptionsRtl433["saveDevice"] = value;
-        }
-        public void setMetadata(String value)
-        {
-            if (!listOptionsRtl433.ContainsKey("metadata") & value == "")
-                listOptionsRtl433.Remove("metadata");
-            if (!listOptionsRtl433.ContainsKey("metadata"))
-                listOptionsRtl433.Add("metadata", value);
-            else
-                listOptionsRtl433["metadata"] = value;
-        }
-        public void setPulse(String value)
-        {
-            if (!listOptionsRtl433.ContainsKey("savePulse") & value == "")
-                listOptionsRtl433.Remove("savePulse");
-            if (!listOptionsRtl433.ContainsKey("savePulse"))
-                listOptionsRtl433.Add("savePulse", value);
-            else
-                listOptionsRtl433["savePulse"] = value;
+            if (listOptionsRtl433.ContainsKey(Key))
+                listOptionsRtl433.Remove(Key);
+            if(!value.Contains("No "))
+                listOptionsRtl433.Add(Key, value);
         }
 #endregion
 #region private functions
@@ -159,18 +129,14 @@ namespace SDRSharp.Rtl_433
         private void OnCallMainTimedEvent(object source, ElapsedEventArgs e)
         {
             callMainTimer.Enabled = false;
-           // setAnalyze("-A");
-           // listOptionsRtl433.Add("-Analyze", "-A");
-            
-            //listOptionsRtl433.Add("-analyze", "-a 4");
-            //listOptionsRtl433.Add("-Mprotocol", "-Mprotocol");
-
             string[] args = new string[listOptionsRtl433.Count()+1];  //+1 for .exe
             int counter = 0;
             args[counter] = "Rtl_433.exe";
             counter++;
+            //Console.WriteLine("------------------------------------------");
             foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
             {
+                //Console.WriteLine(_option.Key + "   " + _option.Value);
                 args[counter] = _option.Value;
                 counter++;
             }
@@ -248,19 +214,26 @@ namespace SDRSharp.Rtl_433
         }
         public void recordDevice(string name)
         {
-            string directory = "./Recordings";
+            string directory = "./Recordings";   //SDRSHARP.exe to SDRSHARP
             if (!Directory.Exists(directory))
-                directory = "";
+            {
+                directory = "../Recordings";  //SDRSHARP.exe to bin
+                if (!Directory.Exists(directory))
+                {
+                    directory = "";
+                }
+            }
+
             string nameFile = directory + "/" + name.Replace(":", "_") + "_" + _frequencyLng.ToString() + "_" + _sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
             if (_RecordMONO)
             {
                 string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.nbComplexForRts_433, _sampleRate, wavRecorder.recordType.MONO);
+                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433, Rtl_433_Processor.NBBUFFERFORRTS_433, _sampleRate, wavRecorder.recordType.MONO);
             }
             if (_RecordSTEREO)
             {
                 string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.nbComplexForRts_433, _sampleRate, wavRecorder.recordType.STEREO);
+                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433, Rtl_433_Processor.NBBUFFERFORRTS_433, _sampleRate, wavRecorder.recordType.STEREO);
             }
         }
         public void setSourceName(string sourceName)
@@ -344,11 +317,14 @@ namespace SDRSharp.Rtl_433
         {
             if (ptrCtx != IntPtr.Zero && startRtl433Ok)
             {
-               float maxi = wavRecorder.getMaxi(_IQPtr, Rtl_433_Processor.nbComplexForRts_433);
-               if (maxi != 0)
+               float maxi = wavRecorder.getMaxi(_IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433);
+               if (maxi > 0)
                { 
-               Utils.Memcpy(_copyIQPtr, _IQPtr, Rtl_433_Processor.nbComplexForRts_433 * sizeof(Complex));  //memo for record
-               for (var i = 0; i < Rtl_433_Processor.nbComplexForRts_433; i++)
+
+               Utils.Memcpy(_copyIQPtr[0], _IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
+               for (int i = Rtl_433_Processor.NBBUFFERFORRTS_433-1; i > 0; i--)
+                   Utils.Memcpy(_copyIQPtr[i], _copyIQPtr[i - 1], Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
+               for (int i = 0; i < Rtl_433_Processor.NBCOMPLEXFORRTS_433; i++)
                {
                    dataForRs433[i * 2] = System.Convert.ToByte(127 + (_IQPtr[i].Real / maxi) * 127);
                    dataForRs433[i * 2 + 1] = System.Convert.ToByte(127 + (_IQPtr[i].Imag / maxi) * 127);
@@ -356,7 +332,7 @@ namespace SDRSharp.Rtl_433
                 stopw.Stop();
                 memoDt = stopw.ElapsedMilliseconds;
                 stopw.Restart();
-                NativeMethods.receive_buffer_cb(dataForRs433 ,Rtl_433_Processor.nbByteForRts_433, ptrCtx);
+                NativeMethods.receive_buffer_cb(dataForRs433 ,Rtl_433_Processor.NBBYTEFORRTS_433, ptrCtx);
                 stopw.Stop();
                 _timeCycleLng = memoDt + stopw.ElapsedMilliseconds;
                 _timeForRtl433Lng = stopw.ElapsedMilliseconds;
@@ -455,8 +431,10 @@ namespace SDRSharp.Rtl_433
                             NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
                             struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
                             int x = 0;
-                            //if (struct_demod.pulse_data.num_pulses > 0)
-                            //{
+                            if (struct_demod.pulse_data.num_pulses == 0)
+                                x = 0;
+                             if (struct_demod.pulse_data.num_pulses > 0)
+                            {
                                 for (int bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
                                 {
                                     x += struct_demod.pulse_data.pulse[bit];
@@ -466,11 +444,23 @@ namespace SDRSharp.Rtl_433
                                     points[0].Add(new PointF(x, 0));
                                     points[0].Add(new PointF(x, 1));
                                 }
-                            //}
-                            int endData = 0;
+                            }
+                            else
+                            {
+                                for (int bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
+                                {
+                                    x += struct_demod.fsk_pulse_data.pulse[bit];
+                                    points[0].Add(new PointF(x, 1));
+                                    points[0].Add(new PointF(x, 0));
+                                    x += struct_demod.fsk_pulse_data.gap[bit];
+                                    points[0].Add(new PointF(x, 0));
+                                    points[0].Add(new PointF(x, 1));
+                                }
+                            }
+                            
                             if (NumGraph > 1)
                             {
-                                endData = searchZero(struct_demod.am_buf);
+                                int endData = searchZero(struct_demod.am_buf);
                                 //if (endData> 0)
                                 //{
                                     for (int bit = 0; bit < endData; bit++)
@@ -484,7 +474,7 @@ namespace SDRSharp.Rtl_433
                             }
                             if (NumGraph > 2)
                             {
-                               endData = searchZero(struct_demod.fm);
+                               int endData = searchZero(struct_demod.fm);
                                //if (endData > 0)
                                // {
                                     for (int bit = 0; bit < endData; bit++)

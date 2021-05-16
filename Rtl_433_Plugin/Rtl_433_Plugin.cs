@@ -4,6 +4,8 @@
 using System;
 using System.Windows.Forms;
 using SDRSharp.Common;
+using SDRSharp.Radio;
+
 namespace SDRSharp.Rtl_433
 {
     public class Rtl_433_Plugin: ISharpPlugin
@@ -25,6 +27,9 @@ namespace SDRSharp.Rtl_433
             try
             {
                 _controlPanel = new Rtl_433_Panel(_Rtl_433Processor);
+                _controlPanel.statDataConvNative = Utils.GetBooleanSetting("DataConvNative");
+                _controlPanel.statDataConvSI = Utils.GetBooleanSetting("DataConvSI");
+                _controlPanel.statDataConvCustomary = Utils.GetBooleanSetting("DataConvNativeCustomary");
             }
             catch (Exception)
             {
@@ -32,6 +37,9 @@ namespace SDRSharp.Rtl_433
         }
         public void Close()    //ISharpPlugin
         {
+            Utils.SaveSetting("DataConvNative", _controlPanel.statDataConvNative);
+            Utils.SaveSetting("DataConvSI", _controlPanel.statDataConvSI);
+            Utils.SaveSetting("DataConvNativeCustomary", _controlPanel.statDataConvCustomary);
             if (_Rtl_433Processor is Rtl_433_Processor)
                 _Rtl_433Processor.Stop();
         }
