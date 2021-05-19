@@ -110,11 +110,13 @@ namespace SDRSharp.Rtl_433
             }
             else
             {
+                this.SuspendLayout();
                 foreach (string device in listeDevice)
                 {
                     listBoxHideDevices.Items.Add(device);
                 }
-             }
+                this.ResumeLayout();
+            }
         }
         //private int cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
         public void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points,string[] nameGraph)     
@@ -206,6 +208,7 @@ namespace SDRSharp.Rtl_433
                     _ClassInterfaceWithRtl433.timeForRtl433 = "Cycle time Rtl433: 0";
                     onlyOneCall = true;
                 }
+                _Rtl_433Processor.openConsole();
                 enabledDisabledControlsOnStart(false);
                 List<string> HideDevices = new List<string>();
                 foreach (string device in listBoxHideDevices.SelectedItems)
@@ -301,10 +304,10 @@ namespace SDRSharp.Rtl_433
         }
         private void buttonClearMessages_Click(object sender, EventArgs e)
         {
+            this.SuspendLayout();
             richTextBoxMessages.Clear();
-            labelTimeCycle.Text = "Cycle time: x ms. max= x ms.";
-            labelTimeRtl433.Text = "Cycle time Rtl433: x ms. max= x ms.";
-
+            _ClassInterfaceWithRtl433.CleartimeCycleMax();
+            this.ResumeLayout();
         }
         private void checkBoxMONO_CheckedChanged(object sender, EventArgs e)
         {

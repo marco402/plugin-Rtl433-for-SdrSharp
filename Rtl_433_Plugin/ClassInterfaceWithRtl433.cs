@@ -25,7 +25,6 @@ using System.Diagnostics;
 using System.Linq;
 using SDRSharp.Radio;
 using System.IO;
-using System.Text;
 using System.Drawing;
 
 namespace SDRSharp.Rtl_433
@@ -60,7 +59,7 @@ namespace SDRSharp.Rtl_433
             }
             setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
             call_main_Rtl_433();
-            }
+        }
 #region options rtl_433
         /// <summary>
         /// For display Graphic
@@ -355,6 +354,12 @@ namespace SDRSharp.Rtl_433
             startRtl433Ok = false;
             NativeMethods.stop_sdr(ptrCtx);
         }
+        public void CleartimeCycleMax()
+        {
+            _timeCycleLngMax = 0;
+            _timeForRtl433LngMax = 0;
+            setTime();
+        }
         public void startSendData() 
         {
             ptrCtx = IntPtr.Zero;
@@ -560,7 +565,7 @@ namespace SDRSharp.Rtl_433
         private IntPtr ptrCfg= IntPtr.Zero;
         public void _callBackInitCbData([In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCbData,
             [In, MarshalAs(UnmanagedType.SysInt)] Int32 _bufNumber,
-            [In, MarshalAs(UnmanagedType.SysInt)] UInt32 _bufLength,
+            [In, MarshalAs(UnmanagedType.SysUInt)] UInt32 _bufLength,
             [In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCtx,
             [In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCfg)
         {

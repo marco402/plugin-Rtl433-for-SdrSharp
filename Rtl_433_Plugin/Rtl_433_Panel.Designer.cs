@@ -89,7 +89,7 @@
             this.mainTableLayoutPanel.ColumnCount = 2;
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 1, 7);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 8);
             this.mainTableLayoutPanel.Controls.Add(this.labelTimeCycle, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.labelTimeRtl433, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 7);
@@ -104,7 +104,7 @@
             this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 10);
             this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 10);
             this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 2);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 0, 8);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 8);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 9);
             this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 1, 0);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -138,9 +138,9 @@
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvSI);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvNative);
             this.groupBoxDataConv.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxDataConv.Location = new System.Drawing.Point(113, 303);
+            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 453);
             this.groupBoxDataConv.Name = "groupBoxDataConv";
-            this.groupBoxDataConv.Size = new System.Drawing.Size(102, 144);
+            this.groupBoxDataConv.Size = new System.Drawing.Size(102, 114);
             this.groupBoxDataConv.TabIndex = 20;
             this.groupBoxDataConv.TabStop = false;
             this.groupBoxDataConv.Text = "Data Conv(-C)";
@@ -215,9 +215,9 @@
             this.groupBoxMetadata.Controls.Add(this.radioButtonMLevel);
             this.groupBoxMetadata.Controls.Add(this.radioButtonNoM);
             this.groupBoxMetadata.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxMetadata.Location = new System.Drawing.Point(3, 453);
+            this.groupBoxMetadata.Location = new System.Drawing.Point(113, 303);
             this.groupBoxMetadata.Name = "groupBoxMetadata";
-            this.groupBoxMetadata.Size = new System.Drawing.Size(99, 114);
+            this.groupBoxMetadata.Size = new System.Drawing.Size(99, 144);
             this.groupBoxMetadata.TabIndex = 10;
             this.groupBoxMetadata.TabStop = false;
             this.groupBoxMetadata.Text = "metaData(-M)";
@@ -573,15 +573,16 @@
             // 
             // groupBoxSave
             // 
+            this.groupBoxSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxSave.Controls.Add(this.radioButtonSnone);
             this.groupBoxSave.Controls.Add(this.radioButtonSunknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSall);
-            this.groupBoxSave.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxSave.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.groupBoxSave.Location = new System.Drawing.Point(113, 453);
             this.groupBoxSave.Name = "groupBoxSave";
-            this.groupBoxSave.Size = new System.Drawing.Size(135, 114);
+            this.groupBoxSave.Size = new System.Drawing.Size(99, 114);
             this.groupBoxSave.TabIndex = 9;
             this.groupBoxSave.TabStop = false;
             this.groupBoxSave.Text = "save(-S)";

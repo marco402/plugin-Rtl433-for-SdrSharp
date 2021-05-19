@@ -50,11 +50,13 @@ namespace SDRSharp.Rtl_433
             _control.RegisterStreamHook(this, ProcessorType.RawIQ);     //it's ok with DemodulatorOutput but sample rate limited to 37500
             setFrequency();
             setSourceName();
-
             //_control.AgcHang = true;  not the good function it's AGC panel and not tuner parameters
             //_control.UseAgc = true;  not the good function it's AGC panel and not tuner parameters
             _AmDetector = new AmDetector();
-            AllocConsole();
+        }
+        public void openConsole()
+        {
+            bool ret = AllocConsole();
             try
             {
                  //Console.BufferHeight = 5000;  //error if in visual studio 
@@ -78,7 +80,9 @@ namespace SDRSharp.Rtl_433
                      setSourceName();
                 }
                 else
+                {
                     Stop();
+                }
             }
         }
         private long _frequencyRtl433;

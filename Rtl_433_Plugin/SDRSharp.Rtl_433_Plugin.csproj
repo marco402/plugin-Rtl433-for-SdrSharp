@@ -39,9 +39,9 @@
     <LangVersion>7.3</LangVersion>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug_light|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'debug_1788|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\..\SDRSharp\</OutputPath>
+    <OutputPath>..\..\..\..\..\SDRSharp_1788\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>

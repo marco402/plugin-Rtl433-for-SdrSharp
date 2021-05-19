@@ -77,6 +77,7 @@ namespace SDRSharp.Rtl_433
         public FormDevices(Rtl_433_Panel classParent)
         {
             InitializeComponent();
+            this.SuspendLayout();
             NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
             nfi.NumberDecimalDigits = 3;
             _classParent = classParent;
@@ -127,6 +128,7 @@ namespace SDRSharp.Rtl_433
 #region publics functions
         public void setInfoDevice(Dictionary<String, String> listData)
         {
+            this.SuspendLayout();
             if (NumGraphs == 0)
                 tableLayoutPanelDeviceData.RowStyles[0].Height = 50;
             foreach (KeyValuePair<string, string> _data in listData)
@@ -316,27 +318,12 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-
-
-
-
-        #endregion
+#endregion
 #region privates functions
         public void refreshPoints(List<PointF> tabPoints,float MaxXAllData,int indexGraph)
         {
             if (plotterDisplayExDevices.getEndDrawGraphEvent())
             {
-
-                //float newMaxXAllData = float.MinValue;
-                //foreach (List<PointF> lpt in tabPoints)
-                //{
-                //    newMaxXAllData = Math.Max(newMaxXAllData, lpt.Max(point => point.X));
-                //}
-                //for (int indiceGraph = 0; indiceGraph < tabPoints.Length; indiceGraph++)
-                //{
-                    //int nPointsX = tabPoints[indiceGraph].Count;
-                //float miniY = tabPoints[indiceGraph].Min(point => point.Y);
-                //float maxiY = tabPoints[indiceGraph].Max(point => point.Y);
                 float miniY = 0;
                 float maxiY = 0;
                 if (tabPoints.Count > 0)
@@ -345,16 +332,14 @@ namespace SDRSharp.Rtl_433
                     maxiY = tabPoints.Max(point => point.Y);
                 }
                 plotterDisplayExDevices.DataSources[indexGraph].SetDisplayRangeY(miniY, maxiY);    //(-250, 250);
-                    plotterDisplayExDevices.DataSources[indexGraph].SetGridDistanceY((maxiY - miniY) / 5);
+                plotterDisplayExDevices.DataSources[indexGraph].SetGridDistanceY((maxiY - miniY) / 5);
 
-                    plotterDisplayExDevices.DataSources[indexGraph].Length = (int)tabPoints.Count;
-                    plotterDisplayExDevices.DataSources[indexGraph].Samples = tabPoints;
-                    if (indexGraph < NumGraphs)
-                        plotterDisplayExDevices.SetMaxXAllData(MaxXAllData, false);
-                    else
-                        plotterDisplayExDevices.SetMaxXAllData(MaxXAllData, true);  //last line for refresh
-
-                //}
+                plotterDisplayExDevices.DataSources[indexGraph].Length = (int)tabPoints.Count;
+                plotterDisplayExDevices.DataSources[indexGraph].Samples = tabPoints;
+                if (indexGraph < (NumGraphs-1))
+                    plotterDisplayExDevices.SetMaxXAllData(MaxXAllData, false);
+                else
+                    plotterDisplayExDevices.SetMaxXAllData(MaxXAllData, true);  //last line for refresh
              }
         }
         private String RenderXLabel( int value)
