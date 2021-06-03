@@ -28,7 +28,45 @@ for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs
 The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
 
 ## Versions  
-Version 1.11  May 2021
+
+Version 1.3.0.0 June 2021
+  - Developments
+      - Loading the list of devices and forcing the frequency SDRSharp at the first start of the plugin and not at loading.
+      - Added messageBox if problem with loading.
+      - Memorize Metadata option.
+      - Memorize Frequency option.
+  - Changes
+      - To limit memory consumption, the graphs are displayed on the first 5 and on demand for others (Display curves button on windows),
+          this limit is stored in SDRSharp.config or SDRSharp.exe.config depending on the versions after a first correct loading of the plugin.
+          key is RTL_433_plugin.nbDevicesWithGraph.
+      - Limiting the devices window limit to 100, this limit is stored in the SDRSharp.config file or SDRSharp.exe.config depending on the
+          version after a correct first load of the plugin. RTL_433_plugin.MaxDevicesWindows key (can be lowered if posts still have memory 
+          problems without graphics).  
+      - RTL_433 options are displayed on the plugin message window.
+  - Informations
+      - If you used a previous version of the plugin, you can erase all 3 keys in the file SDRSharp.config or SDRSharp.exe.config:
+          DataConvNative DataConvSI and DataConvNativeCustomary that I replaced with a single line RTL_433_plugin.DataConv.  
+      - If the SDRSharp source is on RTL SDR-TCP, a setting that works:
+        - Open SDRSharp
+        - Select the RTL-SDR TCP source.
+        - Configure source:
+        - Host
+        - Port
+        - Sample rate=0.25MSPS
+        - Select RTL AGC
+        - Start SDRSharp
+        - Select Tuner AGC
+        - Start the plugin.
+  - Testing  
+      - I testing on SDRSharp Github 1632 release in development.  
+      - I validate on the latest SDRSharp (1811) version on Windows 10 64bits.
+
+Version 1.11  May 2- Corrections
+- cu8 to wav. --> reminder:cu8(-S) and MONO and STEREO (cu8 to wav) files are located at the SDRSharp exe.
+The MONO and STEREO files generated from the device window are located in Recordings if it exists otherwise
+at the SDRSharp exe.
+- MONO record.021
+
   - Developments  
     - Added -C data conv option.  
     - The device window displays the last 4 messages.  
@@ -116,7 +154,7 @@ The free selection allows to launch the plugin without changing the frequency.
       - GraphLib Project: https://github.com/marco402/GraphLibSpecific  
       - Rtl_433_dll: https://github.com/marco402/Rtl_433_dll-for-plugin-SdrSharp
       - SDRSharp (tested with version 1.0.0.1788).  
-      Update the load and build paths if necessary.  
+      Update the load , build and references paths .  
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 
 ## Installation  
@@ -144,7 +182,44 @@ Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATI
 Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
 
 ## Versions  
-
+Version 1.3.0.0  Juin 2021  
+  - Evolutions  
+    - Chargement de la liste des devices et du forçage de la fréquence SDRSharp au premier start du plugin et pas au chargement.  
+    - Ajout de messageBox si problème au chargement.  
+    - Mémorisation de l'option Metadata.  
+    - Mémorisation de l'option Fréquence.  
+  - Modifications  
+        - Pour limiter la consommation de mémoire, les graphiques sont affichés sur les 5 premiers et à la demande pour les autres
+        (bouton Display curves sur les fenêtres.) cette limite est mémorisée dans le fichier SDRSharp.config ou SDRSharp.exe.config 
+        selon les versions après un premier chargement correct du plugin. Clé RTL_433_plugin.nbDevicesWithGraph.  
+        - Limitation du maximum de fenêtre devices à 100, cette limite est mémorisée dans le fichier SDRSharp.config
+        ou SDRSharp.exe.config selon les versions après un premier chargement correct du plugin. Clé RTL_433_plugin.MaxDevicesWindows
+        (cette valeur peut être baissée si des postes ont encore des problèmes de mémoire sans les graphiques).  
+        - Les options RTL_433 sont affichées sur la fenêtre message du plugin.  
+  - Corrections  
+        - cu8 to wav.  -->  rappel:les fichiers cu8(-S) et MONO et STEREO (cu8 to wav) se situent au niveau de l'exe SDRSharp.
+                            Les fichier MONO et STEREO générés à partir de la fenêtre device se situent dans Recordings s'il existe sinon 
+                            au niveau de l'exe SDRSharp.
+        - record MONO.  
+  - Informations  
+       - Si vous avez utilisés une version précédente du plugin, vous pouvez supprimer les 3 clés dans le fichier 
+            SDRSharp.config ou SDRSharp.exe.config :DataConvNative DataConvSI et DataConvNativeCustomary que j'ai remplacé par une seul ligne 
+            RTL_433_plugin.DataConv.  
+       - Si la source SDRSharp est sur RTL SDR-TCP, un paramétrage qui fonctionne:  
+            - Open SDRSharp  
+            - Sélectionner la source RTL-SDR TCP.  
+            - Configure source:  
+              - Host  
+              - Port  
+              - Sample rate=0.25MSPS  
+              - Sélectionner RTL AGC  
+             - Démarrer SDRSharp  
+               - Sélectionner Tuner AGC  
+             - Démarrer le plugin.  
+  - Tests  
+        - Je test en développement sur la version SDRSharp Github 1632 .  
+        - Je valide sur la dernière version SDRSharp (1811) sous Windows 10 64bits.  
+  
 Version 1.11  Mai 2021  
   - Evolutions  
     - Ajout de l'option -C data conv.  
@@ -153,7 +228,6 @@ Version 1.11  Mai 2021
         - afficher la pression en kilo-pascal et des degrés celcius(option SI).  
         - et pour avoir les pressions des 4 pneus.  
     - Ajout des courbes pulse data en FSK.  
-
   - Modifications  
     - Reprise de la gestion console pour cohabitation avec d'autres plugin avec console(DSDPlus...)  
   - Corrections  
@@ -238,7 +312,7 @@ La sélection free permet de lancer le plugin sans changer la fréquence.
        - Le projet GraphLib: https://github.com/marco402/GraphLibSpecific  
        - Le projet Rtl_433_dll: https://github.com/marco402/Rtl_433_dll-for-plugin-SdrSharp  
        - SDRSharp (testé avec la version 1.0.0.1788).  
-       Mettre à jour si nécessaire les chemin de chargement et de compilation.  
+       Mettre à jour si nécessaire les chemin de chargement, de compilation et des références.  
     -2. SDRSharp.sln: En plus de la version light, télécharger le projet d'origine SDRSharp sur Github: https://github.com/SDRSharpR/SDRSharp  
  
 ​

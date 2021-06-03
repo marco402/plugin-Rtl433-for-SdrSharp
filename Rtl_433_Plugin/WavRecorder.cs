@@ -13,17 +13,9 @@ namespace SDRSharp.Rtl_433
             MONO=0,    //baseBandForAudacity
             STEREO      //IQ
         }
-        
-        //private static int cpt = 0;
-        public static void WriteBufferToWav(string filePath, Complex*[] buffer,  int lenBuffer,int nbBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
+        public static void WriteBufferToWav(string filePath, Complex*[] buffer,  int lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
         {
-            //Func<float, float> testlimit = value =>
-            //{
-            //    cpt++;
-            //    float d = (float)(Math.Min(value, 1));
-            //    return (float)(Math.Max(d, -1));
-            //};
-           // cpt = 0;
+            int nbBuffer = buffer.Length;
             WaveHeader header = new WaveHeader();
             WaveFormatChunk<float> format;
             WaveDataChunk<float> data;
@@ -32,7 +24,7 @@ namespace SDRSharp.Rtl_433
             {
                 int nbChannel = 1;
                 format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer));
+                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer*2));
                 maxi = 0;
                 for (int i = 0; i < lenBuffer; i++)
                 {
@@ -46,10 +38,11 @@ namespace SDRSharp.Rtl_433
                 {
                     for (int j = nbBuffer-1; j > -1; j--)
                     {
-                        int indice = lenBuffer * (nbBuffer-1 - j);
+                        int indice = lenBuffer * (nbBuffer-1 - j) * 2;
                         for (int i = 0; i < lenBuffer; i++)
                         {
-                            data.shortArray[i + indice] = buffer[j][i].Modulus() / maxi;  //from -1 to +1
+                            data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
+                            data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
                         }
                     }
                 }
@@ -83,7 +76,6 @@ namespace SDRSharp.Rtl_433
                     writer.Write(header.sGroupID.ToCharArray());
                     writer.Write(header.dwFileLength);
                     writer.Write(header.sRiffType.ToCharArray());
-
                     writer.Write(format.sChunkID.ToCharArray());
                     writer.Write(format.dwChunkSize);
                     writer.Write(format.wFormatTag);
@@ -92,7 +84,6 @@ namespace SDRSharp.Rtl_433
                     writer.Write(format.dwAvgBytesPerSec);
                     writer.Write(format.wBlockAlign);
                     writer.Write(format.wBitsPerSample);
-
                     writer.Write(data.sChunkID.ToCharArray());
                     writer.Write(data.dwChunkSize);
                     foreach (float dataPoint in data.shortArray)
@@ -110,7 +101,6 @@ namespace SDRSharp.Rtl_433
             }
             else
                 MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
         }
         public static float getMaxi(Complex * bufferPtr,int length)
         {
@@ -129,7 +119,6 @@ namespace SDRSharp.Rtl_433
             Complex*[] _dstWavPtr;
             UnsafeBuffer[] _dstWavBuffer;
             byte[] dataCu8;
-           
             if (File.Exists(fileName))
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
@@ -137,11 +126,10 @@ namespace SDRSharp.Rtl_433
                     dataCu8 = new byte[reader.BaseStream.Length];
                     dataCu8 = reader.ReadBytes((int)reader.BaseStream.Length);
                 }
-                _dstWavBuffer = new UnsafeBuffer[5];
+                _dstWavBuffer = new UnsafeBuffer[1];
                 _dstWavBuffer[0] = UnsafeBuffer.Create((int)(dataCu8.Length/2), sizeof(Complex));
                 _dstWavPtr = new Complex*[1];
                 _dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
-                
                 int maxi = dataCu8.Max();
                 if (maxi != 0)
                 {
@@ -155,19 +143,18 @@ namespace SDRSharp.Rtl_433
                     if (stereo)
                     { 
                     newName = fileName.Replace(".cu8", "_STEREO.wav");
-                    WriteBufferToWav(newName, _dstWavPtr, _dstWavBuffer.Length, nbBuffer, sampleRate, wavRecorder.recordType.STEREO);
+                    WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length, sampleRate, wavRecorder.recordType.STEREO);
                     }
                     if(mono)
                     {
                     newName = fileName.Replace(".cu8", "_MONO.wav");
-                    WriteBufferToWav(newName, _dstWavPtr, _dstWavBuffer.Length, nbBuffer, sampleRate, wavRecorder.recordType.MONO);
+                    WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length,  sampleRate, wavRecorder.recordType.MONO);
                     }
                     MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                     MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _dstWavBuffer[0].Dispose();
-
             }
         }
 
@@ -205,11 +192,9 @@ namespace SDRSharp.Rtl_433
                 catch
                 {
                 }
-
             }
             return sampleRate;
         }
-
     }
 }
 

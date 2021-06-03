@@ -18,6 +18,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
 using SDRSharp.Common;
 using SDRSharp.Radio;
 namespace SDRSharp.Rtl_433
@@ -35,7 +36,7 @@ namespace SDRSharp.Rtl_433
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private readonly ComplexFifoStream _floatStreamComplex = new ComplexFifoStream(BlockMode.BlockingRead);
         private  ISharpControl _control;
-        private AmDetector _AmDetector;
+        //private AmDetector _AmDetector;
  #region class
         public Rtl_433_Processor(ISharpControl control)
         {
@@ -48,11 +49,18 @@ namespace SDRSharp.Rtl_433
             _IQBuffer = UnsafeBuffer.Create(NBCOMPLEXFORRTS_433, sizeof(Complex));
             _IQPtr = (Complex*)_IQBuffer;
             _control.RegisterStreamHook(this, ProcessorType.RawIQ);     //it's ok with DemodulatorOutput but sample rate limited to 37500
-            setFrequency();
+            //setFrequency();
             setSourceName();
             //_control.AgcHang = true;  not the good function it's AGC panel and not tuner parameters
             //_control.UseAgc = true;  not the good function it's AGC panel and not tuner parameters
-            _AmDetector = new AmDetector();
+            //_AmDetector = new AmDetector();
+
+            //Console.WriteLine(proc.PrivateMemorySize64);
+
+
+
+
+
         }
         public void openConsole()
         {
@@ -63,8 +71,9 @@ namespace SDRSharp.Rtl_433
                 Console.Title = "Verbose messages  from RTL_433";
                 //in this case console is exec window
             }
-            catch
+            catch (Exception e)
             {
+                MessageBox.Show(e.Message + "   " + e.Source, "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         private bool _enableRtl433;
@@ -95,7 +104,7 @@ namespace SDRSharp.Rtl_433
             set
             {
                 _frequencyRtl433 = value;
-                setFrequency();
+               // setFrequency();
             }
         }
         #endregion

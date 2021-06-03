@@ -19,12 +19,19 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing;
+//using System.Threading;
+using System.Diagnostics;
 
 namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
 #region private
+        //private struct structFormDevices
+        //{
+        //    public string key;
+        //    public bool displayGraph;
+        //}
         private OpenFileDialog openCu8;
         private Dictionary<String,FormDevices> listformDevice ; 
         private Rtl_433_Processor _Rtl_433Processor;
@@ -38,8 +45,8 @@ namespace SDRSharp.Rtl_433
         richTextBoxMessages.AppendText("RTL AGC->on(not panel AGC)\n");
         richTextBoxMessages.AppendText("Tuner AGC->on(not panel AGC)\n\n");
         }
-#endregion
-#region public functions
+        #endregion
+        #region public functions
         public Rtl_433_Panel( Rtl_433_Processor rtl_433Processor)
         {
             InitializeComponent();
@@ -53,16 +60,16 @@ namespace SDRSharp.Rtl_433
             displayParam();
             //this.buttonStartStop.TextBoxElement.TextBoxItem.TextBoxControl.Cursor = Cursors.Arrow;
             //this.buttonStartStop.RootElement.UseDefaultDisabledPaint = false;
-            radioButtonMbits.Visible = false;  //not useful
+            //radioButtonMbits.Visible = false;  //not useful
             buttonStartStop.Text = "Start";
             labelVersion.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "Version");
             labelSampleRate.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "SampleRate");
-            labelTimeRtl433.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeForRtl433");
-            labelTimeCycle.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeCycle");
+            //labelTimeRtl433.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeForRtl433");
+            //labelTimeCycle.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeCycle");
             labelFrequency.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "frequency");
             labelCenterFrequency.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "centerFrequency");
             buttonStartStop.Enabled = false;
-            listformDevice= new Dictionary<String, FormDevices>() ;
+            listformDevice = new Dictionary<string, FormDevices>() ;
             _Rtl_433Processor.SetClassInterfaceWithRtl433(_ClassInterfaceWithRtl433);
             ToolTip OptionStereo = new ToolTip();
             OptionStereo.SetToolTip(checkBoxSTEREO, "Record IQ to wav file for reload with SDRSharp");
@@ -118,6 +125,7 @@ namespace SDRSharp.Rtl_433
                 this.ResumeLayout();
             }
         }
+
         //private int cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
         public void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points,string[] nameGraph)     
         {
@@ -156,26 +164,31 @@ namespace SDRSharp.Rtl_433
                 {
                     //key += cptDevicesForTest.ToString();   //test device windows
                     //cptDevicesForTest += 1;                //test device windows
-                    if (recordDevice & key == nameToRecord)
-                    {
-                        recordDevice = false;
-                        _ClassInterfaceWithRtl433.recordDevice(key);
-                    }
-                    lock (listformDevice)
-                    {
-                        if (!listformDevice.ContainsKey(key))
-                            listformDevice.Add(key, new FormDevices(this));
-                    }
-                    listformDevice[key].Text = key;
-                    listformDevice[key].setInfoDevice(listData);
-
-                    listformDevice[key].Visible = true;
-                    listformDevice[key].Show();
-                    listformDevice[key].resetLabelRecord();  //after le load for memo...
-                    //*************************************************************************************
-                    listformDevice[key].setDataGraph( points,nameGraph);  // List<PointF>[] points,string[] nameGraph
-                    //*************************************************************************************
-                }
+                        if (recordDevice & key == nameToRecord)
+                        {
+                            recordDevice = false;
+                            _ClassInterfaceWithRtl433.recordDevice(key);
+                        }
+                        lock (listformDevice)
+                        {
+                            if (!listformDevice.ContainsKey(key))
+                            {
+                            if (listformDevice.Count > _MaxDevicesWindows)
+                                return;
+                             listformDevice.Add(key, new FormDevices(this));
+                            if(listformDevice.Count <_nbDevicesWithGraph)
+                                listformDevice[key].displayGraph = true;
+                            }
+                        }
+                        listformDevice[key].Text = key;
+                        listformDevice[key].setInfoDevice(listData);
+                        listformDevice[key].Visible = true;
+                        listformDevice[key].Show();
+                        listformDevice[key].resetLabelRecord();  //after le load for memo...
+                        //if (listformDevice.Count < _nbDevicesWithGraph)
+                        if(listformDevice[key].displayGraph)
+                            listformDevice[key].setDataGraph(points, nameGraph); 
+                 }
                 else
                 {
                     foreach (KeyValuePair<string, string> _line in listData)
@@ -184,6 +197,7 @@ namespace SDRSharp.Rtl_433
                         Console.WriteLine("  " + _line.Value);
                     }
                 }
+
             }
          }
         public void Start(bool senderRadio = false)
@@ -199,8 +213,6 @@ namespace SDRSharp.Rtl_433
                 if (!onlyOneCall)
                 {
                     listBoxHideDevices.Visible = true;
-
-                    _ClassInterfaceWithRtl433.Version = (string.Empty);
                     _ClassInterfaceWithRtl433.get_version_dll_rtl_433();
                     richTextBoxMessages.Clear();
 
@@ -277,20 +289,20 @@ namespace SDRSharp.Rtl_433
                 return true;
             }
         }
-        private bool displayCurves = false;
-        public void setDisplayCurves(string name, bool choice)
-        {
-            if (choice)
-            {
-                foreach (KeyValuePair<string, FormDevices> _form in listformDevice)
-                {
-                    if (_form.Key != name)
-                        listformDevice[_form.Key].resetDisplayCurves();
-                }
-                nameToRecord = name;
-            }
-            displayCurves = choice;
-        }
+        //private bool displayCurves = false;
+        //public void setDisplayCurves(string name, bool choice)
+        //{
+        //    if (choice)
+        //    {
+        //        foreach (KeyValuePair<string, FormDevices> _form in listformDevice)
+        //        {
+        //            if (_form.Key != name)
+        //                listformDevice[_form.Key].resetDisplayCurves();
+        //        }
+        //        nameToRecord = name;
+        //    }
+        //    displayCurves = choice;
+        //}
 #endregion
 #region event panel control
         private void buttonDisplayParam_Click(object sender, EventArgs e)
@@ -326,7 +338,7 @@ namespace SDRSharp.Rtl_433
             {
                 if (this.openCu8.ShowDialog() == DialogResult.OK)
                 {
-                     wavRecorder.convertCu8ToWav(openCu8.FileName, _ClassInterfaceWithRtl433.RecordMONO, _ClassInterfaceWithRtl433.RecordSTEREO, Rtl_433_Processor.NBBUFFERFORRTS_433);
+                     wavRecorder.convertCu8ToWav(openCu8.FileName, _ClassInterfaceWithRtl433.RecordMONO, _ClassInterfaceWithRtl433.RecordSTEREO,1);
                 }
             }
         }
@@ -339,96 +351,6 @@ namespace SDRSharp.Rtl_433
             }
             else
                 Stop();
-        }
-        private bool _statDataConvNative = true;
-        private bool _statDataConvSI = false;
-        private bool _statDataConvCustomary = false;
-        public bool statDataConvNative
-        {
-            get { return _statDataConvNative; }
-            set
-            {
-                _statDataConvNative = value;
-                radioButtonDataConvNative.Checked = value;
-            }
-        }
-        public bool statDataConvSI
-        {
-            get { return _statDataConvSI; }
-            set
-            {
-                _statDataConvSI = value;
-                radioButtonDataConvSI.Checked = value;
-            }
-        }
-        public bool statDataConvCustomary
-        {
-            get { return _statDataConvCustomary; }
-            set
-            {
-                _statDataConvCustomary = value;
-                radioButtonDataConvCustomary.Checked = value;
-            }
-        }
-        /// <summary>
-        /// Not use radioButtonOption for setting
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void radioButtonDataConvNative_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rDataConv = (RadioButton)sender;
-            if (rDataConv.Checked)
-            {
-                _statDataConvNative = true;
-                _statDataConvSI = false;
-                _statDataConvCustomary = false;
-                _ClassInterfaceWithRtl433.setOption(rDataConv.Tag.ToString(),rDataConv.Text);
-            }
-        }
-        /// <summary>
-        /// Not use radioButtonOption for setting
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void radioButtonDataConvSI_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rDataConv = (RadioButton)sender;
-            if (rDataConv.Checked)
-            {
-                _statDataConvNative = false;
-                _statDataConvSI = true;
-                _statDataConvCustomary = false;
-                _ClassInterfaceWithRtl433.setOption(rDataConv.Tag.ToString(), rDataConv.Text);
-            }
-        }
-        /// <summary>
-        /// Not use radioButtonOption for setting
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void radioButtonDataConvCustomary_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rDataConv = (RadioButton)sender;
-            if (rDataConv.Checked)
-            {
-                statDataConvNative = false;
-                statDataConvSI = false;
-                statDataConvCustomary = true;
-                _ClassInterfaceWithRtl433.setOption(rDataConv.Tag.ToString(), rDataConv.Text);
-            }
-        }
-        private void radioButtonOption_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rbOption = (RadioButton)sender;
-            if (rbOption.Checked)
-                _ClassInterfaceWithRtl433.setOption(rbOption.Tag.ToString(), rbOption.Text);       //setMbits(rbNoM.Text);
-        }
-        private void radioButtonFreq_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rbFreq = (RadioButton)sender;
-            if (rbFreq.Checked)
-                _Rtl_433Processor.FrequencyRtl433 = System.Convert.ToInt64( rbFreq.Tag);
         }
         #endregion
     }

@@ -44,6 +44,7 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabelNbMessages,
             this.toolStripStatusLabelPeriodeCurrent,
@@ -51,28 +52,28 @@
             this.toolStripSplitLabelRecordOneShoot,
             this.toolStripStatusLabelDisplayCurves,
             this.toolStripStatusLabelFreezeData});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 249);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 247);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(381, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(381, 24);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabelNbMessages
             // 
             this.toolStripStatusLabelNbMessages.Name = "toolStripStatusLabelNbMessages";
-            this.toolStripStatusLabelNbMessages.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusLabelNbMessages.Size = new System.Drawing.Size(17, 19);
             this.toolStripStatusLabelNbMessages.Text = "0";
             // 
             // toolStripStatusLabelPeriodeCurrent
             // 
             this.toolStripStatusLabelPeriodeCurrent.Name = "toolStripStatusLabelPeriodeCurrent";
-            this.toolStripStatusLabelPeriodeCurrent.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusLabelPeriodeCurrent.Size = new System.Drawing.Size(17, 19);
             this.toolStripStatusLabelPeriodeCurrent.Text = "0";
             // 
             // toolStripStatusLabelPeriodeMax
             // 
             this.toolStripStatusLabelPeriodeMax.Name = "toolStripStatusLabelPeriodeMax";
-            this.toolStripStatusLabelPeriodeMax.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusLabelPeriodeMax.Size = new System.Drawing.Size(17, 19);
             this.toolStripStatusLabelPeriodeMax.Text = "0";
             // 
             // toolStripSplitLabelRecordOneShoot
@@ -86,7 +87,7 @@
             this.toolStripSplitLabelRecordOneShoot.ImageTransparentColor = System.Drawing.Color.White;
             this.toolStripSplitLabelRecordOneShoot.LinkColor = System.Drawing.Color.White;
             this.toolStripSplitLabelRecordOneShoot.Name = "toolStripSplitLabelRecordOneShoot";
-            this.toolStripSplitLabelRecordOneShoot.Size = new System.Drawing.Size(100, 17);
+            this.toolStripSplitLabelRecordOneShoot.Size = new System.Drawing.Size(117, 19);
             this.toolStripSplitLabelRecordOneShoot.Text = "Record one shoot";
             this.toolStripSplitLabelRecordOneShoot.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.toolStripSplitLabelRecordOneShoot.VisitedLinkColor = System.Drawing.Color.White;
@@ -98,7 +99,7 @@
             this.toolStripStatusLabelDisplayCurves.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripStatusLabelDisplayCurves.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.toolStripStatusLabelDisplayCurves.Name = "toolStripStatusLabelDisplayCurves";
-            this.toolStripStatusLabelDisplayCurves.Size = new System.Drawing.Size(100, 17);
+            this.toolStripStatusLabelDisplayCurves.Size = new System.Drawing.Size(116, 19);
             this.toolStripStatusLabelDisplayCurves.Text = "No display curves";
             this.toolStripStatusLabelDisplayCurves.Click += new System.EventHandler(this.toolStripStatusLabelDisplayCurves_Click);
             // 
@@ -108,7 +109,7 @@
             this.toolStripStatusLabelFreezeData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripStatusLabelFreezeData.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.toolStripStatusLabelFreezeData.Name = "toolStripStatusLabelFreezeData";
-            this.toolStripStatusLabelFreezeData.Size = new System.Drawing.Size(105, 17);
+            this.toolStripStatusLabelFreezeData.Size = new System.Drawing.Size(125, 19);
             this.toolStripStatusLabelFreezeData.Text = "Freeze data graphs";
             this.toolStripStatusLabelFreezeData.Click += new System.EventHandler(this.toolStripStatusLabelFreezeData_Click);
             // 
@@ -128,7 +129,7 @@
             this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
             this.tableLayoutPanelDeviceData.RowCount = 1;
             this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 249F));
-            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(381, 249);
+            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(381, 247);
             this.tableLayoutPanelDeviceData.TabIndex = 1;
             // 
             // plotterDisplayExDevices
@@ -158,7 +159,6 @@
             this.Name = "FormDevices";
             this.Text = "FormDevices";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormDevices_FormClosing);
-            this.Load += new System.EventHandler(this.FormDevices_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.tableLayoutPanelDeviceData.ResumeLayout(false);

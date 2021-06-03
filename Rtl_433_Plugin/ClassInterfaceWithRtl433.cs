@@ -31,6 +31,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
+        private const string _VERSION = "1.3.0.0";
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -45,7 +46,7 @@ namespace SDRSharp.Rtl_433
             stopw = new Stopwatch();
             listData = new Dictionary<String, String>();
             SampleRate = "Sample rate: 0";  //no display if init to Rtl_433_panel
-            setTime();
+            ////setTime();
             listOptionsRtl433 = new Dictionary<String, String>();
             dataForRs433 = new byte[Rtl_433_Processor.NBBYTEFORRTS_433];
             _copyIQBuffer = new UnsafeBuffer[Rtl_433_Processor.NBBUFFERFORRTS_433];
@@ -58,9 +59,12 @@ namespace SDRSharp.Rtl_433
                 _copyIQPtr[i] = (Complex*)_copyIQBuffer[i];
             }
             setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
-            call_main_Rtl_433();
+                                                          // _owner.setMessage(Application.ProductVersion);  version sdrSharp
+                                                          //call_main_Rtl_433(false);
+            setanalyze("-a 4");
+            setProtocol("-Mprotocol");  //for title and key devices windows
         }
-#region options rtl_433
+        #region options rtl_433
         /// <summary>
         /// For display Graphic
         /// </summary>
@@ -119,8 +123,8 @@ namespace SDRSharp.Rtl_433
             if(!value.Contains("No "))
                 listOptionsRtl433.Add(Key, value);
         }
-#endregion
-#region private functions
+        #endregion
+        #region private functions
         private readonly Rtl_433_Panel _owner;
         private System.Timers.Timer callMainTimer;
         static NativeMethods.ptrFct CBmessages;
@@ -132,13 +136,14 @@ namespace SDRSharp.Rtl_433
             int counter = 0;
             args[counter] = "Rtl_433.exe";
             counter++;
-            //Console.WriteLine("------------------------------------------");
+            _owner.setMessage("-----------RTL433 OPTIONS --------------");
             foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
             {
-                //Console.WriteLine(_option.Key + "   " + _option.Value);
+                _owner.setMessage(_option.Value);
                 args[counter] = _option.Value;
                 counter++;
             }
+            _owner.setMessage("------------------------------------------");
             Int32 argc = args.Length;
             CBmessages = new NativeMethods.ptrFct(_callBackMessages);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
@@ -227,12 +232,12 @@ namespace SDRSharp.Rtl_433
             if (_RecordMONO)
             {
                 string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433, Rtl_433_Processor.NBBUFFERFORRTS_433, _sampleRate, wavRecorder.recordType.MONO);
+                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  _sampleRate, wavRecorder.recordType.MONO);
             }
             if (_RecordSTEREO)
             {
                 string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433, Rtl_433_Processor.NBBUFFERFORRTS_433, _sampleRate, wavRecorder.recordType.STEREO);
+                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  _sampleRate, wavRecorder.recordType.STEREO);
             }
         }
         public void setSourceName(string sourceName)
@@ -242,7 +247,15 @@ namespace SDRSharp.Rtl_433
         }
         public void get_version_dll_rtl_433()
         {
-            Version=(Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText()));
+            string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
+            //string filename = @".\xSDRSharp.Rtl_433.dll";
+            //Assembly assem = Assembly.ReflectionOnlyLoadFrom(filename);
+            //AssemblyName assemName = assem.GetName();
+            //Version ver = assemName.Version;
+
+           if (VersionC != _VERSION)
+                MessageBox.Show("version rtl_433.dll not égal to SDRSharp.Rtl_433.dll" + VersionC + "<->" + _VERSION, "SDRSharp.Rtl_433.dll");
+           Version = VersionC;  //
         }
         private String _version="";
         [System.ComponentModel.Bindable(true)]
@@ -251,7 +264,7 @@ namespace SDRSharp.Rtl_433
             get { return _version;}
             set
             {
-                _version = "Version: " + value;
+                _version = "Version dll_rtl_433: v"  + value;
                 OnPropertyChanged("Version");
             }
         }
@@ -339,16 +352,16 @@ namespace SDRSharp.Rtl_433
                     _timeCycleLngMax = _timeCycleLng;
                 if (_timeForRtl433Lng > _timeForRtl433LngMax)
                     _timeForRtl433LngMax = _timeForRtl433Lng;
-                setTime();
+                ////setTime();
                 stopw.Restart();
                 }
             }
         }
-        private void setTime()
-        {
-            timeCycle = "Cycle time: " + _timeCycleLng.ToString() + " ms. max= " + _timeCycleLngMax.ToString() + " ms.";
-            timeForRtl433 = "Cycle time Rtl433: " + _timeForRtl433Lng.ToString() + " ms. max= " + _timeForRtl433LngMax.ToString() + " ms.";
-        }
+        ////private void setTime()
+        ////{
+        ////    timeCycle = "Cycle time: " + _timeCycleLng.ToString() + " ms. max= " + _timeCycleLngMax.ToString() + " ms.";
+        ////    timeForRtl433 = "Cycle time Rtl433: " + _timeForRtl433Lng.ToString() + " ms. max= " + _timeForRtl433LngMax.ToString() + " ms.";
+        ////}
         public void stopSdr() 
         {
             startRtl433Ok = false;
@@ -358,7 +371,7 @@ namespace SDRSharp.Rtl_433
         {
             _timeCycleLngMax = 0;
             _timeForRtl433LngMax = 0;
-            setTime();
+            ////setTime();
         }
         public void startSendData() 
         {
@@ -378,6 +391,7 @@ namespace SDRSharp.Rtl_433
         private string[] nameGraph = { "Pulse data", "Analyse", "fm" };
         public unsafe void _callBackMessages([In, MarshalAs(UnmanagedType.LPStr)] string message)
         {
+            //string message = cloneMessage.Substring(0, cloneMessage.Length);
             if (initListDevice == false)
             {
                 if (message.Contains("start devices list"))//start
@@ -389,20 +403,21 @@ namespace SDRSharp.Rtl_433
                 {
                     initListDevice = true;
                     _owner.setListDevices(listeDevice);
-                    stopSdr();
-                    listOptionsRtl433.Clear();  //for -v 
-                    setanalyze("-a 4");
-                    setProtocol("-Mprotocol");  //for title and key devices windows
+                    //stopSdr();
+                    //listOptionsRtl433.Clear();  //for -v 
+                    //setanalyze("-a 4");
+                    //setProtocol("-Mprotocol");  //for title and key devices windows
                 }
                 else
                 {
                     if (message.Length > 21 && message.Contains("Registering"))
                         listeDevice.Add(message.Substring(22).Replace("]", "-"));
-                 }
+                }
                 if (startListDevice == false)
                     _owner.setMessage(message);
                 return;
             }
+                //return;
             if (message.Contains("**********"))//stop
             {
                 if (listData.Count > 1 && synchro == true)
@@ -416,6 +431,11 @@ namespace SDRSharp.Rtl_433
                     List<PointF>[] points = new List<PointF>[NumGraph];
                     for (int i = 0; i < NumGraph ; i++)
                         points[i] = new List<PointF>();
+                    //debug version:error outofmemory to 100 devices forms
+                    //release version error create handle to 200 devices forms
+
+
+
                     //debug mode:
                     //memory test in visual studio with replay file Model_ GT-WT03 Id_175_434037000_250000_02_03_2021 12 2 52 STEREO.wav:
                     //170M with comment _owner.addFormDevice(listDataClone, points,nameGraph); and NumGraph>100-->ok
@@ -429,12 +449,25 @@ namespace SDRSharp.Rtl_433
 
                     if (ptrCfg != IntPtr.Zero && NumGraph>0)
                     {
+ 
                         NativeMethods.r_cfg structCfg = new NativeMethods.r_cfg();
+                         try {    
                         structCfg = (NativeMethods.r_cfg)Marshal.PtrToStructure(ptrCfg, typeof(NativeMethods.r_cfg));
+                         }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message + "   " + e.Source, "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }         
                         if (structCfg.demod != IntPtr.Zero)
                         {
                             NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
+                         try {
                             struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message + "   " + e.Source, "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                             int x = 0;
                             if (struct_demod.pulse_data.num_pulses == 0)
                                 x = 0;
@@ -492,7 +525,7 @@ namespace SDRSharp.Rtl_433
                                 }
                             //}
                         }
-                        }
+                    }
                     _owner.addFormDevice(listDataClone, points,nameGraph);
                 }
                 nameData = false;

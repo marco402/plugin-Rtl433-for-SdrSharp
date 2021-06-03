@@ -95,10 +95,6 @@ namespace SDRSharp.Rtl_433
                 " You can replay Stereo file with SdrSharp\n" +
                 " or load Mono Stereo with Audacity...";
             this.Width = 540;      //left small in designer else no resize if width<540(if 540 in designer)
-            this.ResumeLayout();
-        }
-        private void FormDevices_Load(object sender, EventArgs e)
-        {
             memoBackColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.BackColor;
             memoForeColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.ForeColor;
             memoTexttoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.Text;
@@ -108,7 +104,26 @@ namespace SDRSharp.Rtl_433
             memoBackColortoolStripStatusLabelFreezeData = toolStripStatusLabelFreezeData.BackColor;
             memoForeColortoolStripStatusLabelFreezeData = toolStripStatusLabelFreezeData.ForeColor;
             memoTexttoolStripSplitLabelFreezeData = toolStripStatusLabelFreezeData.Text;
-            memoHeightPlotterDisplayExDevices = plotterDisplayExDevices.Height;
+            memoHeightPlotterDisplayExDevices =  plotterDisplayExDevices.Height;
+            hideShowAllGraphs(false);
+            displayWaitMessage();
+            this.ResumeLayout();
+        }
+        //private void FormDevices_Load(object sender, EventArgs e)
+        //{
+
+        //}
+        private Label labelWaitMessage;
+        private void displayWaitMessage()
+        {
+            labelWaitMessage = new Label();
+            labelWaitMessage.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
+            labelWaitMessage.AutoSize = true;
+            labelWaitMessage.BackColor = System.Drawing.SystemColors.HighlightText;
+            labelWaitMessage.ForeColor = System.Drawing.SystemColors.Highlight;
+            tableLayoutPanelDeviceData.Controls.Add(labelWaitMessage, 0, 0);
+            labelWaitMessage.Font = new System.Drawing.Font("Segoe UI", 12F);
+            labelWaitMessage.Text = "Wait to receive new data";
         }
         private void FormDevices_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -130,7 +145,7 @@ namespace SDRSharp.Rtl_433
         {
             this.SuspendLayout();
             if (NumGraphs == 0)
-                tableLayoutPanelDeviceData.RowStyles[0].Height = 50;
+                tableLayoutPanelDeviceData.RowStyles[0].Height = 0;   //50
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 if(_data.Key.ToUpper().Contains("TIME"))
@@ -184,7 +199,6 @@ namespace SDRSharp.Rtl_433
             activeColumnForData += 1;
             if (activeColumnForData == 5)
                 activeColumnForData = 1;
-
             this.ResumeLayout();
         }
         public void resetLabelRecord()
@@ -193,96 +207,71 @@ namespace SDRSharp.Rtl_433
             toolStripSplitLabelRecordOneShoot.ForeColor = memoForeColortoolStripSplitLabelRecordOneShoot;
             toolStripSplitLabelRecordOneShoot.Text = memoTexttoolStripSplitLabelRecordOneShoot;
         }
-        public void resetDisplayCurves()
+        //public void resetDisplayCurves()
+        //{
+        //    hideShowAllGraphs(false);
+        //}
+        public void hideShowAllGraphs(bool visible)
         {
-            hideShowAllGraphs(false);
-        }
-        public void hideShowAllGraphs(bool etat)
-        {
-            if (!etat)
+            this.SuspendLayout();
+            if (visible)
             {
-                memoHeightPlotterDisplayExDevices = tableLayoutPanelDeviceData.RowStyles[0].Height;
-                tableLayoutPanelDeviceData.RowStyles[0].Height = 0;
-                plotterDisplayExDevices.Visible = etat;
+                toolStripStatusLabelDisplayCurves.BackColor = memoBackColortoolStripStatusLabelDisplayCurves;
+                toolStripStatusLabelDisplayCurves.ForeColor = memoForeColortoolStripStatusLabelDisplayCurves;
+                toolStripStatusLabelDisplayCurves.Text = memoTexttoolStripSplitLabelDisplayCurves;
+                plotterDisplayExDevices.Visible = true;
+                tableLayoutPanelDeviceData.RowStyles[0].Height = memoHeightPlotterDisplayExDevices;
             }
             else
             {
-                plotterDisplayExDevices.Visible = etat;
-                tableLayoutPanelDeviceData.RowStyles[0].Height = memoHeightPlotterDisplayExDevices;
+                toolStripStatusLabelDisplayCurves.BackColor = Color.Green;
+                toolStripStatusLabelDisplayCurves.ForeColor = Color.White;
+                toolStripStatusLabelDisplayCurves.Text = "Display curves";
+                memoHeightPlotterDisplayExDevices = tableLayoutPanelDeviceData.RowStyles[0].Height;
+                tableLayoutPanelDeviceData.RowStyles[0].Height = 0;
+                plotterDisplayExDevices.Visible = false;
             }
-            plotterDisplayExDevices.Visible = etat;
+            _displayGraph = visible;  //no call property
+            this.ResumeLayout();
         }
         public void addGraph(List<PointF> tabPoints, String nameGraph,float MaxXAllData)
         {
-
-            //tabPoints[0].Clear();
-
-            //float MaxXAllData = float.MinValue;
-            //foreach (List<PointF> lpt in tabPoints)
-            //{
-            //    if (lpt.Count > 0)
-            //        MaxXAllData = Math.Max(MaxXAllData, lpt.Max(point => point.X));
-            //}
-            //int nbGraph=tabPoints.Length;
-            //for (int graph= NumGraphs; graph<nbGraph;graph++)
-            //{  
-                 if (NumGraphs == 0)
-                {
-                    plotterDisplayExDevices.Smoothing = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
-                    plotterDisplayExDevices.DataSources.Clear();
-                    plotterDisplayExDevices.PanelLayout = PlotterGraphPaneEx.LayoutMode.VERTICAL_ARRANGED;  //only mode with modified Graphlib
-                }
-                //if(tabPoints[graph].Count > 0)    pb index if tabPoints[graph].Count=0
-                //{
-                    plotterDisplayExDevices.DataSources.Add(new DataSource());
-                    plotterDisplayExDevices.DataSources[NumGraphs].Name = nameGraph;
-                    plotterDisplayExDevices.DataSources[NumGraphs].OnRenderXAxisLabel += RenderXLabel;
-                    plotterDisplayExDevices.DataSources[NumGraphs].Length = (int)_nbPointX;
-                    plotterDisplayExDevices.DataSources[NumGraphs].AutoScaleY = false;  //keep false with modified Graphlib
-                    float miniY = 0;
-                    float maxiY = 1;
-                    if (tabPoints.Count > 0)
-                    {
-                         miniY = tabPoints.Min(point => point.Y);
-                         maxiY = tabPoints.Max(point => point.Y);
-                    }
-                    plotterDisplayExDevices.DataSources[NumGraphs].SetDisplayRangeY(miniY, maxiY);    //to see why flip y ?
-                    plotterDisplayExDevices.DataSources[NumGraphs].SetGridDistanceY((maxiY-miniY)/5); //(maxiY- miniY)/5.0fno grid with Graphlib with OPTION
-                    plotterDisplayExDevices.DataSources[NumGraphs].Samples = tabPoints;
-                    plotterDisplayExDevices.DataSources[NumGraphs].OnRenderYAxisLabel = RenderYLabel;
-                    ApplyColorSchema(NumGraphs);  
-                    plotterDisplayExDevices.Height = 100 + ((NumGraphs + 1) * 90);
-                    tableLayoutPanelDeviceData.RowStyles[0].Height = 100 + ((NumGraphs + 1) * 90);
-                    if (NumGraphs == 0)
-                        plotterDisplayExDevices.SetDisplayRangeX(0, MaxXAllData);
-                    plotterDisplayExDevices.SetGridDistanceX(0);
-                    plotterDisplayExDevices.SetMarkerXPixels(100);
-                    ApplyColorSchema(NumGraphs);
-                    plotterDisplayExDevices.SetMaxXAllData(MaxXAllData,true); //last line for refresh
-                    //NumGraphs += 1;
-                //}
-            //}
-         }
-        //public bool getDataFrozen()
-        //{
-        //    return _dataFrozen;
-        //}
-        //public int getNumGraph()
-        //{
-        //    return NumGraphs;
-        //}
-        //public List<String> getListGraph()
-        //{
-        //    List<String> nameGraphDisplayed=new List<String>();
-        //    foreach (DataSource source in plotterDisplayExDevices.DataSources)
-        //    {
-        //        nameGraphDisplayed.Add(source.Name);
-        //    }
-        //    return nameGraphDisplayed;
-        //}
-
-
-        //*************************************************************************************
+            this.SuspendLayout();
+            if (NumGraphs == 0)
+            {
+                labelWaitMessage.Dispose();  //     Visible = false;
+                plotterDisplayExDevices.Smoothing = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                plotterDisplayExDevices.DataSources.Clear();
+                plotterDisplayExDevices.PanelLayout = PlotterGraphPaneEx.LayoutMode.VERTICAL_ARRANGED;  //only mode with modified Graphlib
+            }
+            plotterDisplayExDevices.DataSources.Add(new DataSource());
+            plotterDisplayExDevices.DataSources[NumGraphs].Name = nameGraph;
+            plotterDisplayExDevices.DataSources[NumGraphs].OnRenderXAxisLabel += RenderXLabel;
+            plotterDisplayExDevices.DataSources[NumGraphs].Length = (int)_nbPointX;
+            plotterDisplayExDevices.DataSources[NumGraphs].AutoScaleY = false;  //keep false with modified Graphlib
+            float miniY = 0;
+            float maxiY = 1;
+            if (tabPoints.Count > 0)
+            {
+                    miniY = tabPoints.Min(point => point.Y);
+                    maxiY = tabPoints.Max(point => point.Y);
+            }
+            plotterDisplayExDevices.DataSources[NumGraphs].SetDisplayRangeY(miniY, maxiY);    //to see why flip y ?
+            plotterDisplayExDevices.DataSources[NumGraphs].SetGridDistanceY((maxiY-miniY)/5); //(maxiY- miniY)/5.0fno grid with Graphlib with OPTION
+            plotterDisplayExDevices.DataSources[NumGraphs].Samples = tabPoints;
+            plotterDisplayExDevices.DataSources[NumGraphs].OnRenderYAxisLabel = RenderYLabel;
+            ApplyColorSchema(NumGraphs);  
+            plotterDisplayExDevices.Height = 100 + ((NumGraphs + 1) * 90);
+            tableLayoutPanelDeviceData.RowStyles[0].Height = 100 + ((NumGraphs + 1) * 90);
+            if (NumGraphs == 0)
+                plotterDisplayExDevices.SetDisplayRangeX(0, MaxXAllData);
+            plotterDisplayExDevices.SetGridDistanceX(0);
+            plotterDisplayExDevices.SetMarkerXPixels(100);
+            ApplyColorSchema(NumGraphs);
+            plotterDisplayExDevices.SetMaxXAllData(MaxXAllData,true); //last line for refresh
+            this.ResumeLayout();
+        }
+         //*************************************************************************************
         public void setDataGraph(List<PointF>[] points, string[] nameGraph)
         {
 
@@ -318,12 +307,22 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-#endregion
-#region privates functions
+
+        private bool _displayGraph = false;
+        public bool displayGraph
+        {
+            get { return _displayGraph; }
+            set { _displayGraph = value;
+                hideShowAllGraphs(value);
+            }
+        }
+        #endregion
+        #region privates functions
         public void refreshPoints(List<PointF> tabPoints,float MaxXAllData,int indexGraph)
         {
             if (plotterDisplayExDevices.getEndDrawGraphEvent())
             {
+                this.SuspendLayout();
                 float miniY = 0;
                 float maxiY = 0;
                 if (tabPoints.Count > 0)
@@ -340,7 +339,8 @@ namespace SDRSharp.Rtl_433
                     plotterDisplayExDevices.SetMaxXAllData(MaxXAllData, false);
                 else
                     plotterDisplayExDevices.SetMaxXAllData(MaxXAllData, true);  //last line for refresh
-             }
+                this.ResumeLayout();
+            }
         }
         private String RenderXLabel( int value)
         { 
@@ -380,21 +380,22 @@ namespace SDRSharp.Rtl_433
         {
             if (toolStripStatusLabelDisplayCurves.BackColor == memoBackColortoolStripStatusLabelDisplayCurves)
             {
-                toolStripStatusLabelDisplayCurves.BackColor = Color.Green;
-                toolStripStatusLabelDisplayCurves.ForeColor = Color.White;
-                toolStripStatusLabelDisplayCurves.Text = "Display curves";
+                //toolStripStatusLabelDisplayCurves.BackColor = Color.Green;
+                //toolStripStatusLabelDisplayCurves.ForeColor = Color.White;
+                //toolStripStatusLabelDisplayCurves.Text = "Display curves";
                 hideShowAllGraphs(false);
             }
             else
             {
-                toolStripStatusLabelDisplayCurves.BackColor = memoBackColortoolStripStatusLabelDisplayCurves;
-                toolStripStatusLabelDisplayCurves.ForeColor = memoForeColortoolStripStatusLabelDisplayCurves;
-                toolStripStatusLabelDisplayCurves.Text = memoTexttoolStripSplitLabelDisplayCurves;
+                //toolStripStatusLabelDisplayCurves.BackColor = memoBackColortoolStripStatusLabelDisplayCurves;
+                //toolStripStatusLabelDisplayCurves.ForeColor = memoForeColortoolStripStatusLabelDisplayCurves;
+                //toolStripStatusLabelDisplayCurves.Text = memoTexttoolStripSplitLabelDisplayCurves;
                 hideShowAllGraphs(true);
             }
         }
         private void toolStripSplitLabelRecordOneShoot_Click(object sender, EventArgs e)
         {
+            this.SuspendLayout();
             if (toolStripSplitLabelRecordOneShoot.BackColor != memoBackColortoolStripSplitLabelRecordOneShoot)
             {
                 _classParent.setRecordDevice(this.Text, false);
@@ -409,10 +410,12 @@ namespace SDRSharp.Rtl_433
                 toolStripSplitLabelRecordOneShoot.Text = "Cancel record";
                 }
             }
+            this.ResumeLayout();
         }
         private void toolStripStatusLabelFreezeData_Click(object sender, EventArgs e)
         {
-           if (toolStripStatusLabelFreezeData.BackColor == memoBackColortoolStripStatusLabelFreezeData)
+            this.SuspendLayout();
+            if (toolStripStatusLabelFreezeData.BackColor == memoBackColortoolStripStatusLabelFreezeData)
             {
                 toolStripStatusLabelFreezeData.BackColor = Color.Green;
                 toolStripStatusLabelFreezeData.ForeColor = Color.White;
@@ -426,6 +429,7 @@ namespace SDRSharp.Rtl_433
                 toolStripStatusLabelFreezeData.Text = memoTexttoolStripSplitLabelFreezeData;
                 _dataFrozen = false;
             }
+            this.ResumeLayout();
         }
         #endregion
     }
