@@ -41,7 +41,7 @@ namespace SDRSharp.Rtl_433
         richTextBoxMessages.Clear();
         richTextBoxMessages.AppendText("Parameters configure source\n");
         richTextBoxMessages.AppendText("sampling mode->\nquadrature sampling\n");
-        richTextBoxMessages.AppendText("Sample Rate->\n0.25 MSPS\n");
+        richTextBoxMessages.AppendText("Preferred Sample Rate->\n0.25 MSPS, imposed if record .wav\n");
         richTextBoxMessages.AppendText("RTL AGC->on(not panel AGC)\n");
         richTextBoxMessages.AppendText("Tuner AGC->on(not panel AGC)\n\n");
         }
@@ -57,17 +57,18 @@ namespace SDRSharp.Rtl_433
             _ClassInterfaceWithRtl433 = new ClassInterfaceWithRtl433(this);
             _ClassInterfaceWithRtl433.Version = string.Empty;
             _ClassInterfaceWithRtl433.get_version_dll_rtl_433();
+            labelVersion.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "Version");
+            labelSampleRate.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "SampleRateStr");
+            //labelTimeRtl433.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeForRtl433");
+            //labelTimeCycle.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeCycle");
+            labelFrequency.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "frequency");
+            labelCenterFrequency.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "centerFrequency");
             displayParam();
             //this.buttonStartStop.TextBoxElement.TextBoxItem.TextBoxControl.Cursor = Cursors.Arrow;
             //this.buttonStartStop.RootElement.UseDefaultDisabledPaint = false;
             //radioButtonMbits.Visible = false;  //not useful
             buttonStartStop.Text = "Start";
-            labelVersion.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "Version");
-            labelSampleRate.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "SampleRate");
-            //labelTimeRtl433.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeForRtl433");
-            //labelTimeCycle.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeCycle");
-            labelFrequency.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "frequency");
-            labelCenterFrequency.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "centerFrequency");
+
             buttonStartStop.Enabled = false;
             listformDevice = new Dictionary<string, FormDevices>() ;
             _Rtl_433Processor.SetClassInterfaceWithRtl433(_ClassInterfaceWithRtl433);
@@ -213,11 +214,11 @@ namespace SDRSharp.Rtl_433
                 if (!onlyOneCall)
                 {
                     listBoxHideDevices.Visible = true;
-                    _ClassInterfaceWithRtl433.get_version_dll_rtl_433();
+                    //_ClassInterfaceWithRtl433.get_version_dll_rtl_433();
                     richTextBoxMessages.Clear();
 
-                    _ClassInterfaceWithRtl433.timeCycle = "Cycle time: 0";
-                    _ClassInterfaceWithRtl433.timeForRtl433 = "Cycle time Rtl433: 0";
+                    //_ClassInterfaceWithRtl433.timeCycle = "Cycle time: 0";
+                    //_ClassInterfaceWithRtl433.timeForRtl433 = "Cycle time Rtl433: 0";
                     onlyOneCall = true;
                 }
                 _Rtl_433Processor.openConsole();
@@ -266,16 +267,15 @@ namespace SDRSharp.Rtl_433
         {
             if (choice)
             {
-                if (_ClassInterfaceWithRtl433.RecordMONO == false & _ClassInterfaceWithRtl433.RecordSTEREO == false)
+                if ((_ClassInterfaceWithRtl433.RecordMONO == false & _ClassInterfaceWithRtl433.RecordSTEREO == false) || _ClassInterfaceWithRtl433.SampleRateDbl > 250000.0)
                 {
-                    MessageBox.Show("Choice MONO/STEREO", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Choice MONO/STEREO or record only to 0.25 MSPS->use -S option", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return false;
                 }
                 else
                 {
                     foreach (KeyValuePair<string, FormDevices> _form in listformDevice)
-                    {
-                        if (_form.Key != name)
+                    {                         if (_form.Key != name)
                             listformDevice[_form.Key].resetLabelRecord();
                     }
                     nameToRecord = name;

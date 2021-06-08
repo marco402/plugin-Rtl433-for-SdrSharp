@@ -31,7 +31,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.3.0.0";
+        private const string _VERSION = "1.3.1.0";
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -45,7 +45,7 @@ namespace SDRSharp.Rtl_433
             _owner = owner;
             stopw = new Stopwatch();
             listData = new Dictionary<String, String>();
-            SampleRate = "Sample rate: 0";  //no display if init to Rtl_433_panel
+            SampleRateStr = "Sample rate: 0";  //no display if init to Rtl_433_panel
             ////setTime();
             listOptionsRtl433 = new Dictionary<String, String>();
             dataForRs433 = new byte[Rtl_433_Processor.NBBYTEFORRTS_433];
@@ -95,27 +95,42 @@ namespace SDRSharp.Rtl_433
         }
         public void setHideDevices(List <string> listBoxHideDevices)
         {
-            Dictionary<String, String> copyListOptionsRtl433=new Dictionary<String, String>();
+
+            //1-supprimer tous les hide
+ 
             foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
             {
-                if (!_option.Key.Contains("hide"))
-                    copyListOptionsRtl433.Add(_option.Key,_option.Value);
-                else
-                {
-                    if (_option.Value.Contains("-R-"))
-                        copyListOptionsRtl433.Add(_option.Key,"-" + _option.Value.Replace("-","")); //register protocol
-                }
+                if (_option.Key.Contains("hide"))
+                    listOptionsRtl433.Remove(_option.Key);
             }
-            listOptionsRtl433.Clear();
+            //2-ajouter tous les select
             foreach (string device in listBoxHideDevices)
             {
-                listOptionsRtl433.Add("hide" + device, "-R-" + device.Trim()); //unregister protocol
+                listOptionsRtl433.Add("hide" + device, "-R " + device.Trim()); //unregister protocol
             }
-            foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
-            {
-                listOptionsRtl433.Add(_option.Key, _option.Value);
-            }
-         }
+
+
+            ////Dictionary<String, String> copyListOptionsRtl433=new Dictionary<String, String>();
+            ////foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
+            ////{
+            ////    if (!_option.Key.Contains("hide"))
+            ////        copyListOptionsRtl433.Add(_option.Key,_option.Value);
+            ////    else
+            ////    {
+            ////        if (_option.Value.Contains("-R-"))
+            ////            copyListOptionsRtl433.Add(_option.Key,"-" + _option.Value.Replace("-","")); //register protocol
+            ////    }
+            ////}
+            ////listOptionsRtl433.Clear();
+            ////foreach (string device in listBoxHideDevices)
+            ////{
+            ////    listOptionsRtl433.Add("hide" + device, "-R-" + device.Trim()); //unregister protocol
+            ////}
+            ////foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
+            ////{
+            ////    listOptionsRtl433.Add(_option.Key, _option.Value);
+            ////}
+        }
         public void setOption(String Key,String value)
         {
             if (listOptionsRtl433.ContainsKey(Key))
@@ -183,7 +198,7 @@ namespace SDRSharp.Rtl_433
         }
         private String _sampleRateStr = "";
         [System.ComponentModel.Bindable(true)]
-        public String SampleRate
+        public String SampleRateStr
         {
             get { return _sampleRateStr; }
             set
@@ -211,10 +226,14 @@ namespace SDRSharp.Rtl_433
             }
         }
         private double _sampleRate = 0;
-        public void setSampleRate(double value)
+        public double SampleRateDbl
         {
+            get  { return _sampleRate; }
+            set
+            {
             _sampleRate = value;
-            SampleRate = value.ToString();
+            SampleRateStr = value.ToString();
+            }
         }
         public void recordDevice(string name)
         {
@@ -456,7 +475,7 @@ namespace SDRSharp.Rtl_433
                          }
                         catch (Exception e)
                         {
-                            MessageBox.Show(e.Message + "   " + e.Source, "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }         
                         if (structCfg.demod != IntPtr.Zero)
                         {
@@ -466,7 +485,7 @@ namespace SDRSharp.Rtl_433
                         }
                         catch (Exception e)
                         {
-                            MessageBox.Show(e.Message + "   " + e.Source, "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                             int x = 0;
                             if (struct_demod.pulse_data.num_pulses == 0)

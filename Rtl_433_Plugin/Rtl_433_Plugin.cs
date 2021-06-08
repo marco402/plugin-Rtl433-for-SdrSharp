@@ -57,7 +57,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "   " + e.Source, "Error Initialize", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(e.Message +  "   Initialize RTL_433_plugin", "Error Initialize", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         public void Close()    //ISharpPlugin

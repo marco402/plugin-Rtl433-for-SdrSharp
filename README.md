@@ -28,17 +28,24 @@ for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs
 The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
 
 ## Versions  
+Version 1.3.1.0 8 June 2021  
+  - Modifications  
+       The sample rate > 250000 is managed, 250000 is still preferable,use lowest sample rate.  
+         Recording at device windows is only allowed at 250,000.  
+         This amendment was a request to be able to use Airspy mini that does not go down to 250000.  
+  - Corrections  
+       With -vvv, a window "zombi could be displayed due to received messages.  
 
-Version 1.3.0.0 June 2021
-  - Developments
-      - Loading the list of devices and forcing the frequency SDRSharp at the first start of the plugin and not at loading.
-      - Added messageBox if problem with loading.
-      - Memorize Metadata option.
-      - Memorize Frequency option.
+Version 1.3.0.0 June 2021  
+  - Developments  
+      - Loading the list of devices and forcing the frequency SDRSharp at the first start of the plugin and not at loading.  
+      - Added messageBox if problem with loading.  
+      - Memorize Metadata option.  
+      - Memorize Frequency option.  
   - Changes
       - To limit memory consumption, the graphs are displayed on the first 5 and on demand for others (Display curves button on windows),
-          this limit is stored in SDRSharp.config or SDRSharp.exe.config depending on the versions after a first correct loading of the plugin.
-          key is RTL_433_plugin.nbDevicesWithGraph.
+          this limit is stored in SDRSharp.config or SDRSharp.exe.config depending on the versions after a first correct loading of the plugin.  
+          key is RTL_433_plugin.nbDevicesWithGraph.  
       - Limiting the devices window limit to 100, this limit is stored in the SDRSharp.config file or SDRSharp.exe.config depending on the
           version after a correct first load of the plugin. RTL_433_plugin.MaxDevicesWindows key (can be lowered if posts still have memory 
           problems without graphics).  
@@ -47,25 +54,25 @@ Version 1.3.0.0 June 2021
       - If you used a previous version of the plugin, you can erase all 3 keys in the file SDRSharp.config or SDRSharp.exe.config:
           DataConvNative DataConvSI and DataConvNativeCustomary that I replaced with a single line RTL_433_plugin.DataConv.  
       - If the SDRSharp source is on RTL SDR-TCP, a setting that works:
-        - Open SDRSharp
-        - Select the RTL-SDR TCP source.
-        - Configure source:
-        - Host
-        - Port
-        - Sample rate=0.25MSPS
-        - Select RTL AGC
-        - Start SDRSharp
-        - Select Tuner AGC
-        - Start the plugin.
+        - Open SDRSharp  
+        - Select the RTL-SDR TCP source.  
+        - Configure source:  
+        - Host  
+        - Port  
+        - Sample rate=0.25MSPS  
+        - Select RTL AGC  
+        - Start SDRSharp  
+        - Select Tuner AGC  
+        - Start the plugin.  
   - Testing  
       - I testing on SDRSharp Github 1632 release in development.  
       - I validate on the latest SDRSharp (1811) version on Windows 10 64bits.
 
 Version 1.11  May 2- Corrections
-- cu8 to wav. --> reminder:cu8(-S) and MONO and STEREO (cu8 to wav) files are located at the SDRSharp exe.
+- cu8 to wav. --> reminder:cu8(-S) and MONO and STEREO (cu8 to wav) files are located at the SDRSharp exe.  
 The MONO and STEREO files generated from the device window are located in Recordings if it exists otherwise
-at the SDRSharp exe.
-- MONO record.021
+at the SDRSharp exe.  
+- MONO record.021  
 
   - Developments  
     - Added -C data conv option.  
@@ -182,6 +189,13 @@ Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATI
 Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
 
 ## Versions  
+Version 1.3.1.0  8 Juin 2021  
+  - Modifications  Les sample rate > 250000 sont gérés, 250000 reste quand même préférable,utiliser le sample rate le plus faible.  
+        L'enregistrement au niveau des fenêtres devices n'est autorisé qu'à 250000.  
+        Cette modification était une demande pour pouvoir utiliser Airspy mini qui ne descend pas à 250000.  
+  - Corrections  
+         Avec -vvv, une fenêtre "zombi pouvait s'afficher due aux messages reçu.  
+
 Version 1.3.0.0  Juin 2021  
   - Evolutions  
     - Chargement de la liste des devices et du forçage de la fréquence SDRSharp au premier start du plugin et pas au chargement.  

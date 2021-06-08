@@ -29,6 +29,7 @@ namespace SDRSharp.Rtl_433
         public const int NBBYTEFORRTS_433 = 50000;  //  50000 ;  // ; for lower time cycle (16 * 32 * 512) 262144 idem rtl433   I and Q  
         public const int NBCOMPLEXFORRTS_433 = NBBYTEFORRTS_433 / 2;  //   /2 for real+imag
         public const int NBBUFFERFORRTS_433 = 5;  //5 buffer for shorter cycle rtl433(only 1 buffer) but 5 buffers for record one shoot
+        //5 buffer for sample rate to 250000
         private UnsafeBuffer _IQBuffer;
         private Complex* _IQPtr;
         private Thread _processThreadRtl433;
@@ -36,8 +37,7 @@ namespace SDRSharp.Rtl_433
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private readonly ComplexFifoStream _floatStreamComplex = new ComplexFifoStream(BlockMode.BlockingRead);
         private  ISharpControl _control;
-        //private AmDetector _AmDetector;
- #region class
+        #region class
         public Rtl_433_Processor(ISharpControl control)
         {
             _control = control;
@@ -49,18 +49,11 @@ namespace SDRSharp.Rtl_433
             _IQBuffer = UnsafeBuffer.Create(NBCOMPLEXFORRTS_433, sizeof(Complex));
             _IQPtr = (Complex*)_IQBuffer;
             _control.RegisterStreamHook(this, ProcessorType.RawIQ);     //it's ok with DemodulatorOutput but sample rate limited to 37500
-            //setFrequency();
             setSourceName();
             //_control.AgcHang = true;  not the good function it's AGC panel and not tuner parameters
             //_control.UseAgc = true;  not the good function it's AGC panel and not tuner parameters
             //_AmDetector = new AmDetector();
-
             //Console.WriteLine(proc.PrivateMemorySize64);
-
-
-
-
-
         }
         public void openConsole()
         {
@@ -73,7 +66,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "   " + e.Source, "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(e.Message + "  Rtl_433_Processor->openConsole", "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         private bool _enableRtl433;
@@ -150,12 +143,11 @@ namespace SDRSharp.Rtl_433
         {
              while (_control.IsPlaying && !_terminated)
             {
-                var total = 0;
-               
+                int total = 0;
                 while (_control.IsPlaying && total < NBCOMPLEXFORRTS_433 && !_terminated)
                 {
-                    var len = NBCOMPLEXFORRTS_433 - total;
-                    total += _floatStreamComplex.Read(_IQPtr, total, len);
+                        var len = NBCOMPLEXFORRTS_433 - total;
+                        total += _floatStreamComplex.Read(_IQPtr, total, len);
                 }
                 if (_terminated)
                     break;
@@ -176,7 +168,7 @@ namespace SDRSharp.Rtl_433
                 if (_sampleRate != value)
                 {
                     _sampleRate = value;
-                    _ClassInterfaceWithRtl433.setSampleRate(_sampleRate);
+                    _ClassInterfaceWithRtl433.SampleRateDbl = _sampleRate;
                 }
             }
         }
