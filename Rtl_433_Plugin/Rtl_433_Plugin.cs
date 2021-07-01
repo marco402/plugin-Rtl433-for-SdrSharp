@@ -8,9 +8,6 @@
  Attribution-NonCommercial-ShareAlike 4.0 International License
  http://creativecommons.org/licenses/by-nc-sa/4.0/
 
-//History : V1.00 2021-04-01 - First release
-//          V1.10 2021-20-April
-//          v1.3.0.0  2021-June
  All text above must be included in any redistribution.
   **********************************************************************************/
 //references:SDRSharp.exe for MainWindow,SDRSharp.Common and SDRSharp.Radio,GraphLib
@@ -57,13 +54,14 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message +  "   Initialize RTL_433_plugin", "Error Initialize", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(e.Message +  "   Initialize RTL_433_plugin", "Error Initialize", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         public void Close()    //ISharpPlugin
         {
             if(_controlPanel is Rtl_433_Panel)
             {
+                //_controlPanel.saveDevicesList();
                 Utils.SaveSetting("RTL_433_plugin.DataConv", _controlPanel.getDataConv());
                 Utils.SaveSetting("RTL_433_plugin.MetaData", _controlPanel.getMetaData());
                 Utils.SaveSetting("RTL_433_plugin.Frequency", _controlPanel.getFrequency());

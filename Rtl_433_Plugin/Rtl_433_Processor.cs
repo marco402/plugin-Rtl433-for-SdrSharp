@@ -8,9 +8,6 @@
  Attribution-NonCommercial-ShareAlike 4.0 International License
  http://creativecommons.org/licenses/by-nc-sa/4.0/
 
-//History : V1.00 2021-04-01 - First release
-//          V1.10 2021-20-April
-
  All text above must be included in any redistribution.
   **********************************************************************************/
 
@@ -66,7 +63,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "  Rtl_433_Processor->openConsole", "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(e.Message + "  Rtl_433_Processor->openConsole", "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private bool _enableRtl433;

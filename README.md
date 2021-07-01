@@ -4,6 +4,31 @@ French version after English version.
 Version Francaise après la version Anglaise.  
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
+## New Version  
+Version 1.4.0.0  July 2021  
+  - Developments  
+     - Added 2 radio buttons under start button.  
+        - Graph:opening a window per device (same as previous versions).  
+        - List devices:Display a single list containing one line per device with the last data received (request from an Internet user).  
+        - Columns are added when receiving new data labels.  
+        - When this window is closed, the data can be saved in text format that can be refilled by a spreadsheet(calc.. separator:tabulation).  
+          The file is called devices.txt, CAUTION overwriting the file without confirmation.  
+        - When selecting this type of window (List devices button), it is possible to reload the file devices.txt.  
+          This window is limited to 100 columns and 10 times the maximum number of devices set in . config * 10 (100*10 by default).  
+        It is possible to switch from one mode to another without stopping the plugin.  
+    - Add a radio button above the device list.  
+        - Hide select:no processing of selected devices (same as previous versions).  
+        - Show select:processing only selected devices.  
+  - Corrections  
+        - Crash on a second call of . cu8 to .wav.  
+        - Time correction on charts that did not take sample rate into account.  
+Version 1.3.1.0 8 June 2021  
+  - Modifications  
+       The sample rate > 250000 is managed, 250000 is still preferable,use lowest sample rate.  
+         Recording at device windows is only allowed at 250,000.  
+         This amendment was a request to be able to use Airspy mini that does not go down to 250000.  
+  - Corrections  
+       With -vvv, a window "zombi could be displayed due to received messages.  
 ## Installation  
 ​Warning:2 different SDRSharp installations.  
 
@@ -27,14 +52,7 @@ The -MLevel button just adds 4 information to the device window.
 for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs  
 The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
 
-## Versions  
-Version 1.3.1.0 8 June 2021  
-  - Modifications  
-       The sample rate > 250000 is managed, 250000 is still preferable,use lowest sample rate.  
-         Recording at device windows is only allowed at 250,000.  
-         This amendment was a request to be able to use Airspy mini that does not go down to 250000.  
-  - Corrections  
-       With -vvv, a window "zombi could be displayed due to received messages.  
+## Previous versions  
 
 Version 1.3.0.0 June 2021  
   - Developments  
@@ -163,7 +181,33 @@ The free selection allows to launch the plugin without changing the frequency.
       - SDRSharp (tested with version 1.0.0.1788).  
       Update the load , build and references paths .  
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
-
+________________________________________________________________________________________________________________________________________________  
+## Nouvelle version  
+Version 1.4.0.0  Juillet 2021  
+  - Evolutions  
+        Ajout de 2 boutons radio sous le bouton start.  
+           - Graph:ouverture d'une fenêtre par device(identique aux versions précédentes).  
+           - List devices:Affichage d'une seule liste contenant une ligne par device avec la dernière donnée reçue(demande d'un internaute).  
+                - Les colonnes sont ajoutées à la réception de nouveaux libellés de donnée.  
+                - A la fermeture de cette fenêtre, il est donné la possibilité d'enregistrer les données  
+                  au format texte rechargeable par un tableur(calc.. séparateur:tabulation).  
+                  Le fichier se nomme devices.txt, ATTENTION écrasement du fichier sans confirmation.  
+                - A la sélection de ce type de fenêtre(bouton List devices), il est possible de recharger le fichier.  
+                  Cette fenêtre est limitée à 100 colonnes et à 10 fois le nombre de device maximum paramétré dans .config * 10.  
+                  100*10 par défaut. 
+                Il est possible de passer d'un mode à l'autre sans arrêter le plugin.  
+       - Ajout d'un bouton radio au dessus de la liste des devices.  
+           - Hide select:pas de traitement des devices sélectionnés(identique aux versions précédentes).  
+           - Show select:traitement que des devices sélectionnés.  
+  - Corrections  
+        -  Plantage sur un deuxième appel de .cu8 to .wav.  
+        -  Correction des temps sur les graphiques qui ne prenaient pas en compte le sample rate.  
+Version 1.3.1.0  8 Juin 2021  
+  - Modifications  Les sample rate > 250000 sont gérés, 250000 reste quand même préférable.  
+        L'enregistrement au niveau des fenêtres devices n'est autorisé qu'à 250000.  
+        Cette modification était une demande d'un internaute pour pouvoir utiliser Airspy mini qui ne descend pas à 250000.  
+  - Corrections  
+         Avec -vvv, une fenêtre "zombi" pouvait s'afficher due aux messages reçu.  
 ## Installation  
 ​
 ATTENTION:2 installations de SDRSharp différentes.  
@@ -188,13 +232,7 @@ Le bouton -MLevel permet juste d'ajouter 4 informations dans la fenêtre device.
 Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATION.html#inputs.  
 Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
 
-## Versions  
-Version 1.3.1.0  8 Juin 2021  
-  - Modifications  Les sample rate > 250000 sont gérés, 250000 reste quand même préférable,utiliser le sample rate le plus faible.  
-        L'enregistrement au niveau des fenêtres devices n'est autorisé qu'à 250000.  
-        Cette modification était une demande pour pouvoir utiliser Airspy mini qui ne descend pas à 250000.  
-  - Corrections  
-         Avec -vvv, une fenêtre "zombi pouvait s'afficher due aux messages reçu.  
+## Versions précédentes  
 
 Version 1.3.0.0  Juin 2021  
   - Evolutions  

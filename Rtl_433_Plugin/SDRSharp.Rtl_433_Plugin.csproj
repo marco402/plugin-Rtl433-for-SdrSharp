@@ -139,6 +139,12 @@
     <Compile Include="FormDevicesListMessages.Designer.cs">
       <DependentUpon>FormDevicesListMessages.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormListDevices.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormListDevices.Designer.cs">
+      <DependentUpon>FormListDevices.cs</DependentUpon>
+    </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -168,6 +174,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormDevicesListMessages.resx">
       <DependentUpon>FormDevicesListMessages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormListDevices.resx">
+      <DependentUpon>FormListDevices.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

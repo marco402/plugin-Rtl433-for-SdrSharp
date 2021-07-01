@@ -69,8 +69,14 @@
             this.radioButtonSall = new System.Windows.Forms.RadioButton();
             this.groupBoxR = new System.Windows.Forms.GroupBox();
             this.listBoxHideDevices = new System.Windows.Forms.ListBox();
-            this.buttonStartStop = new System.Windows.Forms.Button();
             this.labelHideDevices = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.radioButtonShowSelect = new System.Windows.Forms.RadioButton();
+            this.radioButtonHideSelect = new System.Windows.Forms.RadioButton();
+            this.groupBoxSelectTypeForm = new System.Windows.Forms.GroupBox();
+            this.radioButtonListDevices = new System.Windows.Forms.RadioButton();
+            this.radioButtonGraph = new System.Windows.Forms.RadioButton();
+            this.buttonStartStop = new System.Windows.Forms.Button();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -79,6 +85,8 @@
             this.groupBoxVerbose.SuspendLayout();
             this.groupBoxSave.SuspendLayout();
             this.groupBoxR.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBoxSelectTypeForm.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -89,30 +97,33 @@
             this.mainTableLayoutPanel.ColumnCount = 2;
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 8);
-            this.mainTableLayoutPanel.Controls.Add(this.labelTimeCycle, 0, 13);
-            this.mainTableLayoutPanel.Controls.Add(this.labelTimeRtl433, 0, 13);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 7);
-            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 12);
-            this.mainTableLayoutPanel.Controls.Add(this.labelVersion, 0, 3);
-            this.mainTableLayoutPanel.Controls.Add(this.labelSampleRate, 0, 4);
-            this.mainTableLayoutPanel.Controls.Add(this.labelFrequency, 0, 5);
-            this.mainTableLayoutPanel.Controls.Add(this.labelCenterFrequency, 0, 6);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxRecord, 1, 2);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxFrequency, 0, 1);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxVerbose, 0, 7);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 11);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 11);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 2);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 8);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 10);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 1, 0);
-            this.mainTableLayoutPanel.Controls.Add(this.labelHideDevices, 0, 9);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 9);
+            this.mainTableLayoutPanel.Controls.Add(this.labelTimeCycle, 0, 15);
+            this.mainTableLayoutPanel.Controls.Add(this.labelTimeRtl433, 0, 15);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 8);
+            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 14);
+            this.mainTableLayoutPanel.Controls.Add(this.labelVersion, 0, 4);
+            this.mainTableLayoutPanel.Controls.Add(this.labelSampleRate, 0, 5);
+            this.mainTableLayoutPanel.Controls.Add(this.labelFrequency, 0, 6);
+            this.mainTableLayoutPanel.Controls.Add(this.labelCenterFrequency, 0, 7);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxRecord, 1, 3);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxFrequency, 0, 2);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxVerbose, 0, 8);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 13);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 13);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 3);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 9);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 12);
+            this.mainTableLayoutPanel.Controls.Add(this.labelHideDevices, 0, 10);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBox1, 0, 11);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 0, 0);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
-            this.mainTableLayoutPanel.RowCount = 15;
+            this.mainTableLayoutPanel.RowCount = 17;
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -122,13 +133,13 @@
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 130F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 11F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainTableLayoutPanel.Size = new System.Drawing.Size(251, 1093);
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(251, 1173);
             this.mainTableLayoutPanel.TabIndex = 1;
             // 
             // groupBoxDataConv
@@ -140,7 +151,7 @@
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvSI);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvNative);
             this.groupBoxDataConv.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 453);
+            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 493);
             this.groupBoxDataConv.Name = "groupBoxDataConv";
             this.groupBoxDataConv.Size = new System.Drawing.Size(102, 114);
             this.groupBoxDataConv.TabIndex = 20;
@@ -191,7 +202,7 @@
             this.labelTimeCycle.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeCycle, 2);
             this.labelTimeCycle.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1082);
+            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1162);
             this.labelTimeCycle.Name = "labelTimeCycle";
             this.labelTimeCycle.Size = new System.Drawing.Size(55, 11);
             this.labelTimeCycle.TabIndex = 15;
@@ -204,7 +215,7 @@
             this.labelTimeRtl433.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeRtl433, 2);
             this.labelTimeRtl433.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1061);
+            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1141);
             this.labelTimeRtl433.Name = "labelTimeRtl433";
             this.labelTimeRtl433.Size = new System.Drawing.Size(89, 13);
             this.labelTimeRtl433.TabIndex = 16;
@@ -218,7 +229,7 @@
             this.groupBoxMetadata.Controls.Add(this.radioButtonMLevel);
             this.groupBoxMetadata.Controls.Add(this.radioButtonNoM);
             this.groupBoxMetadata.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxMetadata.Location = new System.Drawing.Point(113, 303);
+            this.groupBoxMetadata.Location = new System.Drawing.Point(113, 343);
             this.groupBoxMetadata.Name = "groupBoxMetadata";
             this.groupBoxMetadata.Size = new System.Drawing.Size(99, 144);
             this.groupBoxMetadata.TabIndex = 10;
@@ -257,7 +268,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.richTextBoxMessages, 2);
-            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 762);
+            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 842);
             this.richTextBoxMessages.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.richTextBoxMessages.MaxLength = 3000;
             this.richTextBoxMessages.Name = "richTextBoxMessages";
@@ -274,7 +285,7 @@
             this.labelVersion.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelVersion, 2);
             this.labelVersion.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelVersion.Location = new System.Drawing.Point(3, 223);
+            this.labelVersion.Location = new System.Drawing.Point(3, 263);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(55, 13);
             this.labelVersion.TabIndex = 4;
@@ -286,7 +297,7 @@
             this.labelSampleRate.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelSampleRate, 2);
             this.labelSampleRate.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelSampleRate.Location = new System.Drawing.Point(3, 243);
+            this.labelSampleRate.Location = new System.Drawing.Point(3, 283);
             this.labelSampleRate.Name = "labelSampleRate";
             this.labelSampleRate.Size = new System.Drawing.Size(68, 13);
             this.labelSampleRate.TabIndex = 6;
@@ -298,7 +309,7 @@
             this.labelFrequency.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelFrequency, 2);
             this.labelFrequency.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelFrequency.Location = new System.Drawing.Point(3, 263);
+            this.labelFrequency.Location = new System.Drawing.Point(3, 303);
             this.labelFrequency.Name = "labelFrequency";
             this.labelFrequency.Size = new System.Drawing.Size(57, 13);
             this.labelFrequency.TabIndex = 6;
@@ -310,7 +321,7 @@
             this.labelCenterFrequency.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelCenterFrequency, 2);
             this.labelCenterFrequency.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelCenterFrequency.Location = new System.Drawing.Point(3, 283);
+            this.labelCenterFrequency.Location = new System.Drawing.Point(3, 323);
             this.labelCenterFrequency.Name = "labelCenterFrequency";
             this.labelCenterFrequency.Size = new System.Drawing.Size(91, 13);
             this.labelCenterFrequency.TabIndex = 6;
@@ -324,7 +335,7 @@
             this.groupBoxRecord.Controls.Add(this.checkBoxMONO);
             this.groupBoxRecord.Controls.Add(this.checkBoxSTEREO);
             this.groupBoxRecord.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxRecord.Location = new System.Drawing.Point(113, 133);
+            this.groupBoxRecord.Location = new System.Drawing.Point(113, 173);
             this.groupBoxRecord.Name = "groupBoxRecord";
             this.groupBoxRecord.Size = new System.Drawing.Size(99, 84);
             this.groupBoxRecord.TabIndex = 12;
@@ -365,7 +376,7 @@
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq315);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreqFree);
             this.groupBoxFrequency.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxFrequency.Location = new System.Drawing.Point(3, 33);
+            this.groupBoxFrequency.Location = new System.Drawing.Point(3, 73);
             this.groupBoxFrequency.Name = "groupBoxFrequency";
             this.groupBoxFrequency.Size = new System.Drawing.Size(209, 94);
             this.groupBoxFrequency.TabIndex = 13;
@@ -453,7 +464,7 @@
             this.groupBoxVerbose.Controls.Add(this.radioButtonVvvv);
             this.groupBoxVerbose.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxVerbose.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxVerbose.Location = new System.Drawing.Point(3, 303);
+            this.groupBoxVerbose.Location = new System.Drawing.Point(3, 343);
             this.groupBoxVerbose.Name = "groupBoxVerbose";
             this.groupBoxVerbose.Size = new System.Drawing.Size(104, 144);
             this.groupBoxVerbose.TabIndex = 9;
@@ -528,7 +539,7 @@
             this.buttonClearMessages.AutoSize = true;
             this.buttonClearMessages.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.buttonClearMessages.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonClearMessages.Location = new System.Drawing.Point(113, 733);
+            this.buttonClearMessages.Location = new System.Drawing.Point(113, 813);
             this.buttonClearMessages.Name = "buttonClearMessages";
             this.buttonClearMessages.Size = new System.Drawing.Size(92, 23);
             this.buttonClearMessages.TabIndex = 7;
@@ -542,7 +553,7 @@
             this.buttonDisplayParam.AutoSize = true;
             this.buttonDisplayParam.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.buttonDisplayParam.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonDisplayParam.Location = new System.Drawing.Point(3, 733);
+            this.buttonDisplayParam.Location = new System.Drawing.Point(3, 813);
             this.buttonDisplayParam.Name = "buttonDisplayParam";
             this.buttonDisplayParam.Size = new System.Drawing.Size(87, 23);
             this.buttonDisplayParam.TabIndex = 7;
@@ -554,7 +565,7 @@
             // 
             this.buttonCu8ToWav.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.buttonCu8ToWav.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonCu8ToWav.Location = new System.Drawing.Point(3, 133);
+            this.buttonCu8ToWav.Location = new System.Drawing.Point(3, 173);
             this.buttonCu8ToWav.Name = "buttonCu8ToWav";
             this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 28);
             this.buttonCu8ToWav.TabIndex = 14;
@@ -571,7 +582,7 @@
             this.groupBoxSave.Controls.Add(this.radioButtonSknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSall);
             this.groupBoxSave.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxSave.Location = new System.Drawing.Point(113, 453);
+            this.groupBoxSave.Location = new System.Drawing.Point(113, 493);
             this.groupBoxSave.Name = "groupBoxSave";
             this.groupBoxSave.Size = new System.Drawing.Size(99, 114);
             this.groupBoxSave.TabIndex = 9;
@@ -636,7 +647,7 @@
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxR, 2);
             this.groupBoxR.Controls.Add(this.listBoxHideDevices);
             this.groupBoxR.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxR.Location = new System.Drawing.Point(3, 603);
+            this.groupBoxR.Location = new System.Drawing.Point(3, 683);
             this.groupBoxR.Name = "groupBoxR";
             this.groupBoxR.Size = new System.Drawing.Size(245, 124);
             this.groupBoxR.TabIndex = 9;
@@ -657,17 +668,6 @@
             this.listBoxHideDevices.Size = new System.Drawing.Size(239, 105);
             this.listBoxHideDevices.TabIndex = 3;
             // 
-            // buttonStartStop
-            // 
-            this.buttonStartStop.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.buttonStartStop.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonStartStop.Location = new System.Drawing.Point(113, 3);
-            this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(102, 24);
-            this.buttonStartStop.TabIndex = 19;
-            this.buttonStartStop.UseVisualStyleBackColor = false;
-            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
-            // 
             // labelHideDevices
             // 
             this.labelHideDevices.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -675,12 +675,94 @@
             this.mainTableLayoutPanel.SetColumnSpan(this.labelHideDevices, 2);
             this.labelHideDevices.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelHideDevices.ForeColor = System.Drawing.Color.Blue;
-            this.labelHideDevices.Location = new System.Drawing.Point(3, 577);
+            this.labelHideDevices.Location = new System.Drawing.Point(3, 617);
             this.labelHideDevices.Name = "labelHideDevices";
             this.labelHideDevices.Size = new System.Drawing.Size(173, 15);
             this.labelHideDevices.TabIndex = 15;
             this.labelHideDevices.Text = "start once to fill  the devices list";
             this.labelHideDevices.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // groupBox1
+            // 
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBox1, 2);
+            this.groupBox1.Controls.Add(this.radioButtonShowSelect);
+            this.groupBox1.Controls.Add(this.radioButtonHideSelect);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox1.Location = new System.Drawing.Point(3, 643);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(245, 34);
+            this.groupBox1.TabIndex = 21;
+            this.groupBox1.TabStop = false;
+            // 
+            // radioButtonShowSelect
+            // 
+            this.radioButtonShowSelect.AutoSize = true;
+            this.radioButtonShowSelect.Location = new System.Drawing.Point(127, 11);
+            this.radioButtonShowSelect.Name = "radioButtonShowSelect";
+            this.radioButtonShowSelect.Size = new System.Drawing.Size(83, 17);
+            this.radioButtonShowSelect.TabIndex = 0;
+            this.radioButtonShowSelect.Text = "Show select";
+            this.radioButtonShowSelect.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonHideSelect
+            // 
+            this.radioButtonHideSelect.AutoSize = true;
+            this.radioButtonHideSelect.Checked = true;
+            this.radioButtonHideSelect.Location = new System.Drawing.Point(6, 11);
+            this.radioButtonHideSelect.Name = "radioButtonHideSelect";
+            this.radioButtonHideSelect.Size = new System.Drawing.Size(78, 17);
+            this.radioButtonHideSelect.TabIndex = 0;
+            this.radioButtonHideSelect.TabStop = true;
+            this.radioButtonHideSelect.Text = "Hide select";
+            this.radioButtonHideSelect.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxSelectTypeForm
+            // 
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxSelectTypeForm, 2);
+            this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonListDevices);
+            this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonGraph);
+            this.groupBoxSelectTypeForm.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxSelectTypeForm.Location = new System.Drawing.Point(3, 33);
+            this.groupBoxSelectTypeForm.Name = "groupBoxSelectTypeForm";
+            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(245, 34);
+            this.groupBoxSelectTypeForm.TabIndex = 22;
+            this.groupBoxSelectTypeForm.TabStop = false;
+            // 
+            // radioButtonListDevices
+            // 
+            this.radioButtonListDevices.AutoSize = true;
+            this.radioButtonListDevices.Location = new System.Drawing.Point(127, 11);
+            this.radioButtonListDevices.Name = "radioButtonListDevices";
+            this.radioButtonListDevices.Size = new System.Drawing.Size(81, 17);
+            this.radioButtonListDevices.TabIndex = 0;
+            this.radioButtonListDevices.Text = "List devices";
+            this.radioButtonListDevices.UseVisualStyleBackColor = true;
+            this.radioButtonListDevices.CheckedChanged += new System.EventHandler(this.radioButtonListDevices_CheckedChanged);
+            // 
+            // radioButtonGraph
+            // 
+            this.radioButtonGraph.AutoSize = true;
+            this.radioButtonGraph.Checked = true;
+            this.radioButtonGraph.Location = new System.Drawing.Point(7, 11);
+            this.radioButtonGraph.Name = "radioButtonGraph";
+            this.radioButtonGraph.Size = new System.Drawing.Size(54, 17);
+            this.radioButtonGraph.TabIndex = 0;
+            this.radioButtonGraph.TabStop = true;
+            this.radioButtonGraph.Text = "Graph";
+            this.radioButtonGraph.UseVisualStyleBackColor = true;
+            // 
+            // buttonStartStop
+            // 
+            this.buttonStartStop.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.mainTableLayoutPanel.SetColumnSpan(this.buttonStartStop, 2);
+            this.buttonStartStop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonStartStop.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonStartStop.Location = new System.Drawing.Point(3, 3);
+            this.buttonStartStop.Name = "buttonStartStop";
+            this.buttonStartStop.Size = new System.Drawing.Size(245, 24);
+            this.buttonStartStop.TabIndex = 19;
+            this.buttonStartStop.UseVisualStyleBackColor = false;
+            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
             // Rtl_433_Panel
             // 
@@ -688,7 +770,7 @@
             this.AutoSize = true;
             this.Controls.Add(this.mainTableLayoutPanel);
             this.Name = "Rtl_433_Panel";
-            this.Size = new System.Drawing.Size(251, 1093);
+            this.Size = new System.Drawing.Size(251, 1173);
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
             this.groupBoxDataConv.ResumeLayout(false);
@@ -704,6 +786,10 @@
             this.groupBoxSave.ResumeLayout(false);
             this.groupBoxSave.PerformLayout();
             this.groupBoxR.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBoxSelectTypeForm.ResumeLayout(false);
+            this.groupBoxSelectTypeForm.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -752,5 +838,11 @@
         private System.Windows.Forms.RadioButton radioButtonDataConvSI;
         private System.Windows.Forms.RadioButton radioButtonDataConvNative;
         private System.Windows.Forms.Label labelHideDevices;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton radioButtonHideSelect;
+        private System.Windows.Forms.RadioButton radioButtonShowSelect;
+        private System.Windows.Forms.GroupBox groupBoxSelectTypeForm;
+        private System.Windows.Forms.RadioButton radioButtonListDevices;
+        private System.Windows.Forms.RadioButton radioButtonGraph;
     }
 }

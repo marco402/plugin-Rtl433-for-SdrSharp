@@ -9,9 +9,6 @@
  Attribution-NonCommercial-ShareAlike 4.0 International License
  http://creativecommons.org/licenses/by-nc-sa/4.0/
 
-History : V1.00 2021-04-01 - First release
-          V1.10 2021-20-April
-          V1.11 2021-20-May
  All text above must be included in any redistribution.
   **********************************************************************************/
 
@@ -31,7 +28,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.3.1.0";
+        private const string _VERSION = "1.4.0.0";
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -93,23 +90,37 @@ namespace SDRSharp.Rtl_433
             else
                 listOptionsRtl433["MProtocol"] = value;
         }
-        public void setHideDevices(List <string> listBoxHideDevices)
+        public void setHideOrShowDevices(List <string> listBoxHideDevices,bool hide)
         {
 
             //1-supprimer tous les hide
  
-            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
+            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
             {
                 if (_option.Key.Contains("hide"))
                     listOptionsRtl433.Remove(_option.Key);
             }
-            //2-ajouter tous les select
-            foreach (string device in listBoxHideDevices)
+            //1-supprimer tous les show
+            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
             {
-                listOptionsRtl433.Add("hide" + device, "-R " + device.Trim()); //unregister protocol
+                if (_option.Key.Contains("show"))
+                    listOptionsRtl433.Remove(_option.Key);
             }
-
-
+            //3-ajouter tous les select
+            if(hide)
+            {
+                foreach (string device in listBoxHideDevices)
+                {
+                    listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
+                }
+            }
+            else
+            {
+                foreach (string device in listBoxHideDevices)
+                {
+                    listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
+                }
+            }
             ////Dictionary<String, String> copyListOptionsRtl433=new Dictionary<String, String>();
             ////foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
             ////{
@@ -235,19 +246,23 @@ namespace SDRSharp.Rtl_433
             SampleRateStr = value.ToString();
             }
         }
-        public void recordDevice(string name)
+        public string getDirectoryRecording()
         {
-            string directory = "./Recordings";   //SDRSHARP.exe to SDRSHARP
+            string directory = "./Recordings/";   //SDRSHARP.exe to SDRSHARP
             if (!Directory.Exists(directory))
             {
-                directory = "../Recordings";  //SDRSHARP.exe to bin
+                directory = "../Recordings/";  //SDRSHARP.exe to bin
                 if (!Directory.Exists(directory))
                 {
                     directory = "";
                 }
             }
-
-            string nameFile = directory + "/" + name.Replace(":", "_") + "_" + _frequencyLng.ToString() + "_" + _sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
+            return directory;
+        }
+        public void recordDevice(string name)
+        {
+            string directory = getDirectoryRecording();
+            string nameFile = directory  + name.Replace(":", "_") + "_" + _frequencyLng.ToString() + "_" + _sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
             if (_RecordMONO)
             {
                 string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
@@ -266,15 +281,16 @@ namespace SDRSharp.Rtl_433
         }
         public void get_version_dll_rtl_433()
         {
-            string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
+            //string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
             //string filename = @".\xSDRSharp.Rtl_433.dll";
             //Assembly assem = Assembly.ReflectionOnlyLoadFrom(filename);
             //AssemblyName assemName = assem.GetName();
             //Version ver = assemName.Version;
 
-           if (VersionC != _VERSION)
-                MessageBox.Show("version rtl_433.dll not égal to SDRSharp.Rtl_433.dll" + VersionC + "<->" + _VERSION, "SDRSharp.Rtl_433.dll");
-           Version = VersionC;  //
+            //if (VersionC != _VERSION)
+            //     MessageBox.Show("version rtl_433.dll not égal to SDRSharp.Rtl_433.dll" + VersionC + "<->" + _VERSION, "SDRSharp.Rtl_433.dll");
+            //Version = VersionC;  //
+            //Version = "Version plugin: " + _VERSION;
         }
         private String _version="";
         [System.ComponentModel.Bindable(true)]
@@ -283,7 +299,7 @@ namespace SDRSharp.Rtl_433
             get { return _version;}
             set
             {
-                _version = "Version dll_rtl_433: v"  + value;
+                _version = "Version plugin: " + _VERSION;
                 OnPropertyChanged("Version");
             }
         }
@@ -465,7 +481,7 @@ namespace SDRSharp.Rtl_433
 
                     //with data frozen ok
 
-
+                    double samples_per_us = 1000000.0 / _sampleRate;
                     if (ptrCfg != IntPtr.Zero && NumGraph>0)
                     {
  
@@ -475,7 +491,7 @@ namespace SDRSharp.Rtl_433
                          }
                         catch (Exception e)
                         {
-                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }         
                         if (structCfg.demod != IntPtr.Zero)
                         {
@@ -485,19 +501,20 @@ namespace SDRSharp.Rtl_433
                         }
                         catch (Exception e)
                         {
-                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                             int x = 0;
+                            
                             if (struct_demod.pulse_data.num_pulses == 0)
                                 x = 0;
                              if (struct_demod.pulse_data.num_pulses > 0)
                             {
                                 for (int bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
                                 {
-                                    x += struct_demod.pulse_data.pulse[bit];
+                                    x += (int) (struct_demod.pulse_data.pulse[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 1));
                                     points[0].Add(new PointF(x, 0));
-                                    x += struct_demod.pulse_data.gap[bit];
+                                    x += (int) (struct_demod.pulse_data.gap[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 0));
                                     points[0].Add(new PointF(x, 1));
                                 }
@@ -506,10 +523,10 @@ namespace SDRSharp.Rtl_433
                             {
                                 for (int bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
                                 {
-                                    x += struct_demod.fsk_pulse_data.pulse[bit];
+                                    x += (int)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 1));
                                     points[0].Add(new PointF(x, 0));
-                                    x += struct_demod.fsk_pulse_data.gap[bit];
+                                    x += (int) (struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 0));
                                     points[0].Add(new PointF(x, 1));
                                 }
@@ -524,7 +541,7 @@ namespace SDRSharp.Rtl_433
                                     {
                                         for (int b = bit; b < bit + 10; b++)
                                         {
-                                            points[1].Add(new PointF(bit, struct_demod.am_buf[bit]));
+                                            points[1].Add(new PointF(bit, (int)(struct_demod.am_buf[bit] * samples_per_us)));
                                         }
                                     }
                                 //}
@@ -538,7 +555,7 @@ namespace SDRSharp.Rtl_433
                                     {
                                         for (int b = bit; b < bit + 10; b++)
                                         {
-                                            points[2].Add(new PointF(bit, struct_demod.fm[bit]));
+                                            points[2].Add(new PointF(bit, (int)(struct_demod.fm[bit] * samples_per_us)));
                                         }
                                     }
                                 }
@@ -569,7 +586,7 @@ namespace SDRSharp.Rtl_433
             else if (synchro && nameData)
             {
                 try {                    //if key do not exist
-                listData.Add(key, message);
+                listData.Add( key.Substring(0, 1).ToUpper()+key.Substring(1), message);
                 nameData = false;
                 key = "";
                 return;

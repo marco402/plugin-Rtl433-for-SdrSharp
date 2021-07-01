@@ -18,7 +18,7 @@ namespace SDRSharp.Rtl_433
         private int _MaxDevicesWindows = 0;
         public void MaxDevicesWindows(int MaxDevicesWindows)
         {
-            _MaxDevicesWindows = MaxDevicesWindows-1;
+            _MaxDevicesWindows = MaxDevicesWindows;   //-1
         }
         private int _nbDevicesWithGraph = 0;
         public void nbDevicesWithGraph(int nbDevicesWithGraph)

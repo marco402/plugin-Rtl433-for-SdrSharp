@@ -71,7 +71,7 @@ namespace SDRSharp.Rtl_433
             {
                 try
                 {
-                    FileStream fileStream = new FileStream(filePath, FileMode.Create);
+                    FileStream fileStream = new FileStream(filePath, FileMode.Create,FileAccess.Write);
                     BinaryWriter writer = new BinaryWriter(fileStream);
                     writer.Write(header.sGroupID.ToCharArray());
                     writer.Write(header.dwFileLength);
@@ -96,7 +96,7 @@ namespace SDRSharp.Rtl_433
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
