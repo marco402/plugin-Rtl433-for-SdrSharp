@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\SDRSharp\bin\release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;MSGBOXDEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -98,7 +98,7 @@
   <ItemGroup>
     <Reference Include="GraphLib, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SDRSharp\bin\Debug\GraphLib.dll</HintPath>
+      <HintPath>..\SDRSharp\bin\Release\GraphLib.dll</HintPath>
     </Reference>
     <Reference Include="SDRSharp, Version=1.0.0.1632, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

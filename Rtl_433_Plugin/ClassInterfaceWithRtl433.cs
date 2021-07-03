@@ -281,7 +281,8 @@ namespace SDRSharp.Rtl_433
         }
         public void get_version_dll_rtl_433()
         {
-            //string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
+            string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
+            MessageBox.Show("version rtl_433.dll " + VersionC, "start plugin RTL433", MessageBoxButtons.OK, MessageBoxIcon.Information);
             //string filename = @".\xSDRSharp.Rtl_433.dll";
             //Assembly assem = Assembly.ReflectionOnlyLoadFrom(filename);
             //AssemblyName assemName = assem.GetName();

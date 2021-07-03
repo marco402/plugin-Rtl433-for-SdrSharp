@@ -19,6 +19,7 @@ using System.Drawing;
 //using System.Threading;
 using System.Diagnostics;
 using System.IO;
+using GraphLib;
 
 namespace SDRSharp.Rtl_433
 {
@@ -51,7 +52,10 @@ namespace SDRSharp.Rtl_433
             _Rtl_433Processor = rtl_433Processor;
             _ClassInterfaceWithRtl433 = new ClassInterfaceWithRtl433(this);
             _ClassInterfaceWithRtl433.Version = string.Empty;
+#if MSGBOXDEBUG
             _ClassInterfaceWithRtl433.get_version_dll_rtl_433();
+            Utilities.getVersion();
+#endif
             labelVersion.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "Version");
             labelSampleRate.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "SampleRateStr");
             //labelTimeRtl433.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "timeForRtl433");
@@ -400,6 +404,6 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-        #endregion
+#endregion
     }
 }

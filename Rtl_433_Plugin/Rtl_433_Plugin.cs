@@ -37,6 +37,9 @@ namespace SDRSharp.Rtl_433
         }
         public void Initialize(ISharpControl control)   //ISharpPlugin
         {
+#if MSGBOXDEBUG
+            MessageBox.Show( "Initialize RTL_433_plugin version 1.4.0.0" , "start plugin rtl433", MessageBoxButtons.OK, MessageBoxIcon.Information);
+#endif
             _Rtl_433Processor = new Rtl_433_Processor(control);
             try
             {
