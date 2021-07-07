@@ -33,39 +33,49 @@ namespace SDRSharp.Rtl_433
             _classParent = classParent;
             _maxDevices = maxDevices;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,null, listDevices, new object[] { true });
-            listDevices.View = View.Details;
-            listDevices.GridLines = true;
-            listDevices.FullRowSelect = true;
-            listDevices.Scrollable = true;
-            listDevices.MultiSelect = false;
-            listDevices.HideSelection = false;
-            listDevices.HeaderStyle = ColumnHeaderStyle.Clickable;
-            listDevices.BackColor = System.Drawing.SystemColors.ControlDark;
-            listDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            listDevices.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            listDevices.AllowColumnReorder = false;
-            listDevices.Visible = true;
-            this.listDevices.VirtualMode = true;
+
+            ClassFunctionsListView.initListView(listDevices, NBCOLUMN);
+
+            //listDevices.View = View.Details;
+            //listDevices.GridLines = true;
+            //listDevices.FullRowSelect = true;
+            //listDevices.Scrollable = true;
+            //listDevices.MultiSelect = false;
+            //listDevices.HideSelection = false;
+            //listDevices.HeaderStyle = ColumnHeaderStyle.Clickable;
+            //listDevices.BackColor = System.Drawing.SystemColors.ControlDark;
+            //listDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+            //listDevices.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            //listDevices.AllowColumnReorder = false;
+            //listDevices.Visible = true;
+            //listDevices.VirtualMode = true;
+            //listDevices.VirtualListSize = 0; 
+            //for (int i = 0; i < NBCOLUMN; i++)
+            //{
+            //    listDevices.Columns.Add("");
+            //}
             cacheListDevices = new ListViewItem[_maxDevices];
             cacheListColumns = new Dictionary<String, int>();
-            listDevices.VirtualListSize = 0; 
-            for (int i = 0; i < NBCOLUMN; i++)
-            {
-                listDevices.Columns.Add("");
-            }
             this.Text = "Devices received : 0";
+        }
+        protected override void OnClosed(EventArgs e)
+        {
+             _classParent.closingFormListDevice();
+             cacheListColumns=null;
+             cacheListDevices=null;
+             nbDevice = 0;
         }
 #region private functions
         private void listDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             try {
-            if (e.ItemIndex >= 0)
-            {
-                ListViewItem lvi = cacheListDevices[e.ItemIndex];
-                if (lvi != null)
-                    e.Item = lvi;
+                if (e.ItemIndex >= 0)
+                {
+                    ListViewItem lvi = cacheListDevices[e.ItemIndex];
+                    if (lvi != null)
+                        e.Item = lvi;
+                }
             }
- }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error fct(listDevices_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -85,59 +95,34 @@ namespace SDRSharp.Rtl_433
         {
             listDevices.Items[item].EnsureVisible();
         }
-    //    private void FormDevices_FormClosing(object sender, FormClosingEventArgs e)
-    //    {
-
-    //}
-        protected override void OnClosed(EventArgs e)
-        {
-             _classParent.closingFormListDevice();
-             cacheListColumns=null;
-             cacheListDevices=null;
-             nbDevice = 0;
-        }
-        private void autoResizeColumns(ListView lv, int nbColumn)
-        {
-            lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            ListView.ColumnHeaderCollection cc = lv.Columns;
-            //for (int i = 0; i < cc.Count; i++)
-            for(int col=0; col < nbColumn; col++)
-            {
-                int colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
-                if (colWidth > cc[col].Width)
-                {
-                    cc[col].Width = colWidth;
-                }
-            }
-        }
-        //private void autoResizeColumns(ListView lv, SortedDictionary<int, string>indexColForThisDevice)
+ 
+        //private void autoResizeColumns(ListView lv, int nbColumn)
         //{
         //    lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
         //    ListView.ColumnHeaderCollection cc = lv.Columns;
-        //    //for (int i = 0; i < cc.Count; i++)
-        //    foreach (KeyValuePair<int, string> indexCol in indexColForThisDevice)
+        //    for(int col=0; col < nbColumn; col++)
         //    {
-        //        int colWidth = TextRenderer.MeasureText(cc[indexCol.Key].Text, lv.Font).Width + 10;
-        //        if (colWidth > cc[indexCol.Key].Width)
+        //        int colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
+        //        if (colWidth > cc[col].Width)
         //        {
-        //            cc[indexCol.Key].Width = colWidth;
+        //            cc[col].Width = colWidth;
         //        }
         //    }
         //}
-       private void autoResizeAllColumns(ListView lv)
-        {
-            lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            ListView.ColumnHeaderCollection cc = lv.Columns;
-            for (int i = 0; i < cc.Count; i++)
-            {
-                int colWidth = TextRenderer.MeasureText(cc[i].Text, lv.Font).Width + 10;
-                if (colWidth > cc[i].Width)
-                {
-                    cc[i].Width = colWidth;
-                }
-            }
-        }
-        #endregion
+        //private void autoResizeAllColumns(ListView lv)
+        //{
+        //    lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+        //    ListView.ColumnHeaderCollection cc = lv.Columns;
+        //    for (int i = 0; i < cc.Count; i++)
+        //    {
+        //        int colWidth = TextRenderer.MeasureText(cc[i].Text, lv.Font).Width + 10;
+        //        if (colWidth > cc[i].Width)
+        //        {
+        //            cc[i].Width = colWidth;
+        //        }
+        //    }
+        //}
+#endregion
         #region publics functions
         public void refresh()
         {
@@ -147,44 +132,45 @@ namespace SDRSharp.Rtl_433
         }
         public void serializeText(string fileName)
         {
-            try {
-            using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                StreamWriter str = new StreamWriter(stream);
-                string line = string.Empty;
-                foreach (KeyValuePair<string, int> _data in cacheListColumns)
-                {
-                    if (_data.Key == string.Empty)
-                        line += "\t";
-                    else
-                        line += _data.Key;
-                    line += "\t";
-                }
-                str.WriteLine(line);
-                foreach (ListViewItem it in cacheListDevices)
-                {
-                    if (it == null)
-                        break;
-                    line = string.Empty;
-                    foreach (ListViewItem.ListViewSubItem sit in it.SubItems)
-                    {
-                        if (sit.Text == string.Empty)
-                            line += "\t";
-                        else
-                        {
-                            line += sit.Text;
-                            line += "\t";
-                        }
-                    }
-                    str.WriteLine(line);
-                }
-                str.Close();
-            }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error export devices fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            ClassFunctionsListView.serializeText(fileName,cacheListColumns,cacheListDevices);
+            //    try {
+            //    using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+            //    {
+            //        StreamWriter str = new StreamWriter(stream);
+            //        string line = string.Empty;
+            //        foreach (KeyValuePair<string, int> _data in cacheListColumns)
+            //        {
+            //            if (_data.Key == string.Empty)
+            //                line += "\t";
+            //            else
+            //                line += _data.Key;
+            //            line += "\t";
+            //        }
+            //        str.WriteLine(line);
+            //        foreach (ListViewItem it in cacheListDevices)
+            //        {
+            //            if (it == null)
+            //                break;
+            //            line = string.Empty;
+            //            foreach (ListViewItem.ListViewSubItem sit in it.SubItems)
+            //            {
+            //                if (sit.Text == string.Empty)
+            //                    line += "\t";
+            //                else
+            //                {
+            //                    line += sit.Text;
+            //                    line += "\t";
+            //                }
+            //            }
+            //            str.WriteLine(line);
+            //        }
+            //        str.Close();
+            //    }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        MessageBox.Show(e.Message, "Error export devices fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    }
         }
         public void deSerializeText(string fileName)
         {
@@ -244,7 +230,7 @@ namespace SDRSharp.Rtl_433
                     }
                     str.Close();
                 }
-                autoResizeAllColumns(listDevices);
+                ClassFunctionsListView.autoResizeAllColumns(listDevices);
                 this.Text = "Devices received : " + nbDevice.ToString() + "/" + _maxDevices.ToString() + " Column:" + col.ToString() + " / " + NBCOLUMN.ToString();
                 listDevices.EndUpdate();
             }
@@ -299,11 +285,8 @@ namespace SDRSharp.Rtl_433
             SortedDictionary<int, string> indexCol = new SortedDictionary<int, string>();
             foreach (KeyValuePair<string, string> _data in listData)
             {
-                // if (_data.Key != "device")
-                //{
-                    cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                    indexCol.Add(indexColonne,_data.Value);
-                //}
+                cacheListColumns.TryGetValue(_data.Key, out indexColonne);
+                indexCol.Add(indexColonne,_data.Value);
             }
             if (!find)
             {
@@ -342,8 +325,7 @@ namespace SDRSharp.Rtl_433
             }
             this.Text = "Devices received : " + nbDevice.ToString() + "/" + _maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() +" / " +NBCOLUMN.ToString();
             listDevices.VirtualListSize = nbDevice;
-            autoResizeColumns(listDevices, cacheListColumns.Count);
-           // autoResizeAllColumns(listDevices);
+            ClassFunctionsListView.autoResizeColumns(listDevices, cacheListColumns.Count);
             listDevices.EndUpdate();
          }
 #endregion

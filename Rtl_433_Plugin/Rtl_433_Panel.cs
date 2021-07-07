@@ -38,8 +38,8 @@ namespace SDRSharp.Rtl_433
         richTextBoxMessages.AppendText("Parameters configure source\n");
         richTextBoxMessages.AppendText("sampling mode->\nquadrature sampling\n");
         richTextBoxMessages.AppendText("Preferred Sample Rate->\n0.25 MSPS, imposed if record .wav\n");
-        richTextBoxMessages.AppendText("RTL AGC->on(not panel AGC)\n");
-        richTextBoxMessages.AppendText("Tuner AGC->on(not panel AGC)\n\n");
+        richTextBoxMessages.AppendText("Tuner AGC:on(corresponds to auto gain with rtl433) can be manually-> off.\n");
+        richTextBoxMessages.AppendText("RTL AGC:on.(not the AGC panel) can be set off if good signals.\n");
         }
         #endregion
         #region public functions

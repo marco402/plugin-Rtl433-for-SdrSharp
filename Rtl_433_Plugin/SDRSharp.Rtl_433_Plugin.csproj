@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\SDRSharp\bin\release\</OutputPath>
-    <DefineConstants>TRACE;MSGBOXDEBUG</DefineConstants>
+    <DefineConstants>TRACE;xxMSGBOXDEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -126,6 +126,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassFunctionsListView.cs" />
     <Compile Include="ClassInterfaceWithRtl433.cs" />
     <Compile Include="FormDevices.cs">
       <SubType>Form</SubType>

@@ -127,7 +127,7 @@ namespace SDRSharp.Rtl_433
                     dataCu8 = reader.ReadBytes((int)reader.BaseStream.Length);
                 }
                 _dstWavBuffer = new UnsafeBuffer[1];
-                _dstWavBuffer[0] = UnsafeBuffer.Create((int)(dataCu8.Length/2), sizeof(Complex));
+                _dstWavBuffer[0] = UnsafeBuffer.Create((int)(dataCu8.Length), sizeof(Complex)); 
                 _dstWavPtr = new Complex*[1];
                 _dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
                 int maxi = dataCu8.Max();

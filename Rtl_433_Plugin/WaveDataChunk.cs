@@ -14,7 +14,8 @@ namespace SDRSharp.Rtl_433
         public WaveDataChunk(uint capacity)
         {
             shortArray = new T[capacity];
-            dwChunkSize = (uint)(Marshal.SizeOf<T>() * capacity);
+            dwChunkSize = (uint)(Marshal.SizeOf<T>() * capacity/2);   //marc add /2 else half empty with audacity but shortArray needed capacity
+            //problem to float /complex
             sChunkID = "data";
         }
     }

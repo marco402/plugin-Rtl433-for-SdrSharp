@@ -42,15 +42,15 @@
             this.listDevices.UseCompatibleStateImageBehavior = false;
             this.listDevices.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listDevices_RetrieveVirtualItem);
             // 
-            // FormTestVirtualView
+            // FormListDevices
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.listDevices);
             this.DoubleBuffered = true;
-            this.Name = "FormTestVirtualView";
-            this.Text = "FormTestVirtual";
+            this.Name = "FormListDevices";
+            this.Text = "FormListDevices";
             this.ResumeLayout(false);
 
         }
