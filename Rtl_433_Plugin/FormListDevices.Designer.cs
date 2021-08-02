@@ -37,7 +37,7 @@
             this.listDevices.HideSelection = false;
             this.listDevices.Location = new System.Drawing.Point(0, 0);
             this.listDevices.Name = "listDevices";
-            this.listDevices.Size = new System.Drawing.Size(800, 450);
+            this.listDevices.Size = new System.Drawing.Size(1166, 142);
             this.listDevices.TabIndex = 0;
             this.listDevices.UseCompatibleStateImageBehavior = false;
             this.listDevices.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listDevices_RetrieveVirtualItem);
@@ -46,7 +46,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1166, 142);
             this.Controls.Add(this.listDevices);
             this.DoubleBuffered = true;
             this.Name = "FormListDevices";

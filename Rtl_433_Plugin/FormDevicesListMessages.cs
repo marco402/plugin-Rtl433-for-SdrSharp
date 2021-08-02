@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SDRSharp.Rtl_433
 {
     public partial class FormDevicesListMessages : Form
     {
+        private ClassInterfaceWithRtl433 classInterfaceWithRtl433;
+        private string memoName = "";
         private int maxMessages = 0;
         private Dictionary<String, int> cacheListColumns;
-        private ListViewItem[] cacheListDevices;
+        private ListViewItem[] cacheListMessages;
         private int nbMessage = 0;
         private Rtl_433_Panel classParent;
         int nbColumn = 0;
-        public FormDevicesListMessages(Rtl_433_Panel classParent, int maxDevices,int nbColumn)
+        public FormDevicesListMessages(Rtl_433_Panel classParent, int maxDevices,int nbColumn,string name, ClassInterfaceWithRtl433 classInterfaceWithRtl433)
         {
+            this.classInterfaceWithRtl433 = classInterfaceWithRtl433;
             this.nbColumn = nbColumn;
             InitializeComponent();
             this.classParent = classParent;
@@ -28,39 +27,48 @@ namespace SDRSharp.Rtl_433
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
 
             ClassFunctionsListView.initListView(listViewListMessages, nbColumn);
-            cacheListDevices = new ListViewItem[this.maxMessages];
+            cacheListMessages = new ListViewItem[this.maxMessages];
             cacheListColumns = new Dictionary<String, int>();
-            this.Text = "Messages received : 0";
-        }
-        protected override void OnClosed(EventArgs e)
-        {
-            classParent.closingFormListDevice();
-            cacheListColumns = null;
-            cacheListDevices = null;
-            nbMessage = 0;
-        }
+            listViewListMessages.Columns[0].Text = "N° Mes.";
+            cacheListColumns.Add("N° Mes.",  1);
+            memoName = name;
+            this.Text = name + " (Messages received : 0)";
+            statusStripExport.ShowItemToolTips=true;
+            toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
+                " to directory Recordings if exist else in SdrSharp.exe directory \n" +
+                " You can reload file with Calc\n" +
+                " WARNING the file is replaced if it exists\n" +
+                " name file = title window";
+         }
+        //protected override void OnClosed(EventArgs e)
+        //{
+        //    classParent.closingFormListDevice();
+        //    cacheListColumns = null;
+        //    cacheListDevices = null;
+        //    nbMessage = 0;
+        //}
         #region private functions
-        private void listDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private void listViewListMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             try
             {
                 if (e.ItemIndex >= 0)
                 {
-                    ListViewItem lvi = cacheListDevices[e.ItemIndex];
+                    ListViewItem lvi = cacheListMessages[e.ItemIndex];
                     if (lvi != null)
                         e.Item = lvi;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error fct(listDevices_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private int FindIndexIfDeviceExist(string device)
         {
             for (int row = 0; row < maxMessages; row++)
             {
-                ListViewItem lvi = cacheListDevices[row];
+                ListViewItem lvi = cacheListMessages[row];
                 if (lvi != null && lvi.Text == device)
                     return row;
             }
@@ -78,31 +86,22 @@ namespace SDRSharp.Rtl_433
                 listViewListMessages.Items[nbMessage - 1].EnsureVisible();
             this.Refresh();
         }
-        public void serializeText(string fileName)
-        {
-            ClassFunctionsListView.serializeText(fileName, cacheListColumns, cacheListDevices);
-        }
         public void setMessages(Dictionary<String, String> listData)
         {
-            string deviceName = nbMessage.ToString();  // classParent.getDeviceName(listData);
-            //if (deviceName == string.Empty)
-            //    return;
+            if (cacheListColumns == null)
+                return;
+            this.SuspendLayout();
+            string deviceName = (nbMessage+1).ToString();  // classParent.getDeviceName(listData);
             listViewListMessages.BeginUpdate();
             int indexColonne = 0;
-            //add column device if necessary
-            //cacheListColumns.TryGetValue("Device", out indexColonne);
-            //if (indexColonne == 0)
-            //{
-            //    listViewListMessages.Columns[cacheListColumns.Count].Text = "Device";
-            //    cacheListColumns.Add("Device", cacheListColumns.Count + 1);
-            //}
             //add column if necessary
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                if (cacheListColumns.Count >= nbColumn)
+                if (cacheListColumns.Count > nbColumn)
                 {
                     listViewListMessages.EndUpdate();
+                    this.ResumeLayout();
                     return;                     //message max dk
                 }
                 if (indexColonne == 0)
@@ -111,65 +110,70 @@ namespace SDRSharp.Rtl_433
                     cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
                 }
             }
-            //refresh or new device
             ListViewItem device = null;
-            //bool find = false;
-            //foreach (ListViewItem item in cacheListDevices)
-            //{
-            //    if (item == null)
-            //        break;
-            //    if (item.Text == deviceName)
-            //    {
-            //        find = true;
-            //        device = item;
-            //        break;
-            //    }
-            //}
-            SortedDictionary<int, string> indexCol = new SortedDictionary<int, string>();
+             SortedDictionary<int, string> indexCol = new SortedDictionary<int, string>();
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 cacheListColumns.TryGetValue(_data.Key, out indexColonne);
                 indexCol.Add(indexColonne, _data.Value);
             }
-            //if (!find)
-            //{
-                if (nbMessage > maxMessages - 1)
-                {
-                    listViewListMessages.EndUpdate();
-                    return;                    //message max row
-                }
-                device = new ListViewItem(deviceName);
-                int index = 0;
-                int i = 0;
-                for (i = 0; i < indexCol.ElementAt(indexCol.Count - 1).Key - 1; i++)
-                {
-                    for (i = i; i < (indexCol.ElementAt(index).Key - 2); i++)
-                    {
-                        device.SubItems.Add("");
-                    }
-                    device.SubItems.Add(indexCol.ElementAt(index).Value);
-                    index += 1;
-                }
-                for (i = i; i < nbColumn; i++)
+            if (nbMessage > maxMessages - 1)
+            {
+                listViewListMessages.EndUpdate();
+                this.ResumeLayout();
+                return;                    //message max row
+            }
+            device = new ListViewItem(deviceName);
+            int index = 0;
+            int i = 0;
+            for (i = 0; i < indexCol.ElementAt(indexCol.Count - 1).Key - 1; i++)
+            {
+                for (i = i; i < (indexCol.ElementAt(index).Key - 2); i++)
                 {
                     device.SubItems.Add("");
                 }
-                //************************************************
-                cacheListDevices[nbMessage] = device;
-                nbMessage += 1;
-            //}
-
-            //else   //refresh device
-            //{
-            //    foreach (KeyValuePair<int, string> _data in indexCol)
-            //    {
-            //        device.SubItems[_data.Key - 1].Text = _data.Value;
-            //    }
-            //}
-            this.Text = "Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() ;
+                device.SubItems.Add(indexCol.ElementAt(index).Value);
+                index += 1;
+            }
+            for (i = i; i < nbColumn; i++)
+            {
+                device.SubItems.Add("");
+            }
+            //************************************************
+            cacheListMessages[nbMessage] = device;
+            nbMessage += 1;
+            this.Text = memoName + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
+            try
+            {
             listViewListMessages.VirtualListSize = nbMessage;
+            }
+            catch {
+                Console.WriteLine(this.Text);
+            }
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
             ClassFunctionsListView.autoResizeColumns(listViewListMessages, cacheListColumns.Count);
             listViewListMessages.EndUpdate();
+            this.ResumeLayout();
+        }
+        #endregion
+        #region Events Form
+        private void FormDevicesListMessages_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            cacheListColumns = null;
+            cacheListMessages = null;
+            classParent.closingOneFormDeviceListMessages(memoName);
+        }
+        private void toolStripStatusLabelExport_Click(object sender, EventArgs e)
+        {
+            string directory = classInterfaceWithRtl433.getDirectoryRecording();
+            string fileName = ClassFunctionsListView.valideNameFile(memoName,"_");
+           if( ClassFunctionsListView.serializeText(directory + fileName + ".txt", cacheListColumns, cacheListMessages,true))
+           {
+                MessageBox.Show("Export OK", "Export messages", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
         #endregion
     }

@@ -20,15 +20,27 @@ using System.Drawing;
 using System.Diagnostics;
 using System.IO;
 using GraphLib;
-
+//#if NOTESTFORMLISTMESSAGES
+//                    addFormDevice(listData, points, nameGraph);
+//#else
+//addFormDeviceListMessages(listData);
+//#endif
 namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
         #region private
+        private const int NBCOLUMN = 100;
+        private enum TYPEFORM :Int32
+        {
+            LISTDEV,
+            GRAPH,
+            LISTMES
+        }
         private const String FILELISTEDEVICES = "devices.txt";
         private OpenFileDialog openCu8;
-        private Dictionary<String,FormDevices> listformDevice ; 
+        private Dictionary<String,FormDevices> listformDevice ;
+        private Dictionary<String, FormDevicesListMessages> listformDeviceListMessages;
         private Rtl_433_Processor _Rtl_433Processor;
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private FormListDevices formListDevice = null;
@@ -70,6 +82,7 @@ namespace SDRSharp.Rtl_433
 
             buttonStartStop.Enabled = false;
             listformDevice = new Dictionary<string, FormDevices>() ;
+            listformDeviceListMessages = new Dictionary<string, FormDevicesListMessages>() ;
             _Rtl_433Processor.SetClassInterfaceWithRtl433(_ClassInterfaceWithRtl433);
             ToolTip OptionStereo = new ToolTip();
             OptionStereo.SetToolTip(checkBoxSTEREO, "Record IQ to wav file for reload with SDRSharp");
@@ -161,7 +174,7 @@ namespace SDRSharp.Rtl_433
             return key;
         }
 
-        bool displayListDevices = false;
+        TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
 #if TESTWINDOWS
         private int cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
 #endif
@@ -182,9 +195,8 @@ namespace SDRSharp.Rtl_433
 #if TESTWINDOWS
                     cptDevicesForTest += 1;                //test device windows
 #endif
-                    if (!displayListDevices)
+                    if (displayTypeForm==TYPEFORM.GRAPH)
                     {
-
                         if (recordDevice & deviceName == nameToRecord)
                         {
                             recordDevice = false;
@@ -199,30 +211,66 @@ namespace SDRSharp.Rtl_433
                                 listformDevice.Add(deviceName, new FormDevices(this));
                                 if (listformDevice.Count < _nbDevicesWithGraph)
                                     listformDevice[deviceName].displayGraph = true;
+                                listformDevice[deviceName].Text = deviceName;
+                                listformDevice[deviceName].Visible = true;
+                                listformDevice[deviceName].Show();
+                                listformDevice[deviceName].resetLabelRecord();  //after le load for memo...
+                                                                    //if (listformDevice.Count < _nbDevicesWithGraph
                             }
                         }
-                        listformDevice[deviceName].Text = deviceName;
+                        
                         listformDevice[deviceName].setInfoDevice(listData);
-                        listformDevice[deviceName].Visible = true;
-                        listformDevice[deviceName].Show();
-                        listformDevice[deviceName].resetLabelRecord();  //after le load for memo...
-                                                                    //if (listformDevice.Count < _nbDevicesWithGraph)
+                    
                         if (listformDevice[deviceName].displayGraph)
                             listformDevice[deviceName].setDataGraph(points, nameGraph);
                     }
-                else
-                {
-                    if (formListDevice == null)
+                    else if(displayTypeForm == TYPEFORM.LISTDEV)
                     {
-                        formListDevice = new FormListDevices(this, _MaxDevicesWindows*10);
-                        formListDevice.Show();
+                        if (formListDevice == null)
+                        {
+                            formListDevice = new FormListDevices(this, _MaxDevicesWindows*10, NBCOLUMN);
+                            formListDevice.Show();
+                        }
+                        formListDevice.setInfoDevice(listData);
                     }
-                    formListDevice.setInfoDevice(listData);
+                    else  //TYPEFORM.LISTMES
+                    {
+                        //if (recordDevice & deviceName == nameToRecord)
+                        //{
+                        //    recordDevice = false;
+                        //    _ClassInterfaceWithRtl433.recordDevice(deviceName);
+                        //}
+                        //if (FormDevicesListMessages == null)
+                        //{
+                        //    FormDevicesListMessages = new FormDevicesListMessages(this, _MaxDevicesWindows * 10, NBCOLUMN);
+                        //    FormDevicesListMessages.Show();
+                        //}
+                        lock (listformDeviceListMessages)
+                        {
+                            if (!listformDeviceListMessages.ContainsKey(deviceName))
+                            {
+                                if (listformDeviceListMessages.Count > _MaxDevicesWindows - 1)
+                                    return;
+                                if (radioButtonMLevel.Checked)
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10, listData.Count + 1 , deviceName, _ClassInterfaceWithRtl433)); 
+                                else
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, listData.Count + 1 + 5, deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel
+                                listformDeviceListMessages[deviceName].Text = deviceName;
+                                listformDeviceListMessages[deviceName].Visible = true;
+                                listformDeviceListMessages[deviceName].Show();
+                             }
+                        }
+         
+                        listformDeviceListMessages[deviceName].setMessages(listData);
+
+                        //listformDeviceListMessages[deviceName].resetLabelRecord();  //after le load for memo...
+                                                                                    //if (listformDeviceListMessages.Count < _nbDevicesWithGraph)
+
+                    }
                 }
-            }
                 else
                 {
-                foreach (KeyValuePair<string, string> _line in listData)
+                    foreach (KeyValuePair<string, string> _line in listData)
                     {
                         Console.Write(_line.Key);
                         Console.WriteLine("  " + _line.Value);
@@ -301,6 +349,14 @@ namespace SDRSharp.Rtl_433
             {
                 if (listformDevice.ContainsKey(key))
                     listformDevice.Remove(key);
+            }
+        }
+        public void closingOneFormDeviceListMessages(String key)
+        {
+            lock (listformDeviceListMessages)
+            {
+                if (listformDeviceListMessages.ContainsKey(key))
+                    listformDeviceListMessages.Remove(key);
             }
         }
         public void closingFormListDevice()
@@ -385,23 +441,33 @@ namespace SDRSharp.Rtl_433
             else
                 Stop();
         }
+        
         private void radioButtonListDevices_CheckedChanged(object sender, EventArgs e)
         {
-            displayListDevices = radioButtonListDevices.Checked;
-            if (displayListDevices)
+            //displayListDevices = radioButtonListDevices.Checked;
+            if (radioButtonListDevices.Checked)
             {
+                displayTypeForm = TYPEFORM.LISTDEV;
                 string directory = _ClassInterfaceWithRtl433.getDirectoryRecording();
                 if (formListDevice == null && File.Exists(directory + FILELISTEDEVICES))
                 {
-                    formListDevice = new FormListDevices(this, _MaxDevicesWindows * 10);
+                    formListDevice = new FormListDevices(this, _MaxDevicesWindows * 10, NBCOLUMN);
                     formListDevice.Show();
-                    DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
+                    DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
-                       
+
                         formListDevice.deSerializeText(directory + FILELISTEDEVICES);
                     }
                 }
+            }
+            else if (radioButtonGraph.Checked)
+            {
+                displayTypeForm = TYPEFORM.GRAPH;
+            }
+           else  //TYPEFORM.LISTMES
+            {
+                displayTypeForm = TYPEFORM.LISTMES;
             }
         }
 #endregion

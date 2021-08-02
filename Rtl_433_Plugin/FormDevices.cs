@@ -89,7 +89,7 @@ namespace SDRSharp.Rtl_433
             toolStripStatusLabelPeriodeCurrent.Text = "Period: 0";
             toolStripStatusLabelPeriodeMax.Text = "Period max: 0";
             toolStripStatusLabelNbMessages.Text = "NB messages: 0";
-            statusStrip1.ShowItemToolTips=true;
+            statusStripDevices.ShowItemToolTips=true;
             toolStripSplitLabelRecordOneShoot.ToolTipText = "Record data buffer Mono Stereo or both(checkbox on panel) \n" +
                 " to directory Recordings if exist else in SdrSharp.exe directory \n" +
                 " You can replay Stereo file with SdrSharp\n" +
@@ -136,7 +136,6 @@ namespace SDRSharp.Rtl_433
         protected override void OnClosing(CancelEventArgs e)
         {
             plotterDisplayExDevices.Dispose();
-
             base.OnClosing(e);
         }
 #endregion
@@ -177,7 +176,7 @@ namespace SDRSharp.Rtl_433
                     theLabelKey.Anchor = System.Windows.Forms.AnchorStyles.Left|System.Windows.Forms.AnchorStyles.Top;
                     theLabelKey.AutoSize = true;
                     theLabelKey.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-                    theLabelKey.ForeColor = System.Drawing.SystemColors.ButtonFace;
+                    theLabelKey.ForeColor = System.Drawing.Color.Blue;
                     tableLayoutPanelDeviceData.Controls.Add(theLabelKey, 0, tableLayoutPanelDeviceData.RowCount-1);
                     theLabelKey.Text = _data.Key;
                     for(int col=1; col < 5; col++)
@@ -188,7 +187,7 @@ namespace SDRSharp.Rtl_433
                         theLabelValue.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
                         theLabelValue.AutoSize = true;
                         theLabelValue.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-                        theLabelValue.ForeColor = System.Drawing.SystemColors.ButtonFace;
+                        theLabelValue.ForeColor = System.Drawing.Color.Blue;
                         tableLayoutPanelDeviceData.Controls.Add(theLabelValue, col, tableLayoutPanelDeviceData.RowCount-1);
                     }
                 }

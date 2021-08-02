@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace SDRSharp.Rtl_433
             listDevices.HeaderStyle = ColumnHeaderStyle.Clickable;
             listDevices.BackColor = System.Drawing.SystemColors.ControlDark;
             listDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            listDevices.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            listDevices.ForeColor = System.Drawing.Color.Blue;
             listDevices.AllowColumnReorder = false;
             listDevices.Visible = true;
             listDevices.VirtualMode = true;
@@ -57,8 +58,9 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-        public static void serializeText(string fileName, Dictionary<String, int>  cacheListColumns, ListViewItem[] cacheListDevices)
+        public static bool serializeText(string fileName, Dictionary<String, int>  cacheListColumns, ListViewItem[] cacheListDevices,bool formatNumber)
         {
+            NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
             try
             {
                 using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -85,7 +87,12 @@ namespace SDRSharp.Rtl_433
                                 line += "\t";
                             else
                             {
-                                line += sit.Text;
+                                if(formatNumber)
+                                {
+                                    line += (valideNumberForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
+                                }
+                                else
+                                    line += sit.Text;
                                 line += "\t";
                             }
                         }
@@ -93,11 +100,57 @@ namespace SDRSharp.Rtl_433
                     }
                     str.Close();
                 }
+                return true;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error export devices fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
+        }
+        public static string valideNameFile(string name, string replaceChar)
+        {
+            List<char> badChars = new List<char>(Path.GetInvalidFileNameChars());
+            foreach (char C in badChars)
+            {
+                name = name.Replace(C.ToString(), replaceChar);
+            }
+            return name;
+        }
+        private  static string valideNumberForCalc(string value)
+        {
+            List<string> badChars = new List<string>();
+            badChars.Add(" F");
+            badChars.Add(" C");
+            badChars.Add(" mph");
+            badChars.Add(" kph");
+            badChars.Add(" mi/h");
+            badChars.Add(" km/h");
+            badChars.Add(" mi h");
+            badChars.Add(" km h");
+            badChars.Add(" inch");
+            badChars.Add(" in");
+            badChars.Add(" mm");
+
+            badChars.Add(" in h");
+            badChars.Add(" mm h");
+            badChars.Add(" in/h");
+            badChars.Add(" mm /h");
+
+            badChars.Add(" inHg");
+            badChars.Add(" hpa");
+
+            badChars.Add(" PSI");
+            badChars.Add(" kPa");
+
+            badChars.Add(" dB");
+            badChars.Add(" Mhz");
+            badChars.Add(" %");
+            foreach (string C in badChars)
+            {
+                value = value.Replace(C,"");
+            }
+            return value;
         }
     }
 }

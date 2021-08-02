@@ -5,15 +5,14 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version  
-Version 1.4.1.0  7 July 21
+Version 1.5.0.0 1 August 2021  
   - Modifications  
-      Keep the console open on stop plugin for read verbose informations(version RTL_433 1.3.2.0)  
-  - Corrections  
-      Crash call function cu8 to .wav.  
-  - Modifications configuration on TUNER AGC and RTL AGC  
-      Tuner AGC:on(corresponds to auto gain with rtl433) can be manually-> off.\n")  
-      RTL AGC:on.(not the AGC panel) can be set off if good signals.\n")  
-
+      -Add a third radio button under the start button to display a new window type:  
+         Display of one window per device that contains all messages received up to 10 times the maximum number of devices set in . config * 10.  
+          100*10 by default.  
+         The export button allows to save the data in text format which can be reloaded by a spreadsheet(calc... separator:tabulation).  
+         The name of the file is that of the window.CAUTION overwriting the file without confirmation.  
+         If the Recordings folder of SDRSharp exists, the files will be saved in it otherwise in the SDRSharp folder.  
 
 ## Installation  
 ​Warning:2 different SDRSharp installations.  
@@ -39,6 +38,14 @@ for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs
 The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
 
 ## Previous versions  
+Version 1.4.1.0  7 July 2021
+  - Modifications  
+      Keep the console open on stop plugin for read verbose informations(version RTL_433 1.3.2.0)  
+  - Corrections  
+      Crash call function cu8 to .wav.  
+  - Modifications configuration on TUNER AGC and RTL AGC  
+      Tuner AGC:on(corresponds to auto gain with rtl433) can be manually-> off.\n")  
+      RTL AGC:on.(not the AGC panel) can be set off if good signals.\n")  
 Version 1.4.0.0  July 2021  
   - Developments  
      - Added 2 radio buttons under start button.  
@@ -192,15 +199,15 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.4.1.0  7 Juillet 21
+Version 1.5.0.0  1 Août 2021
   - Modifications  
-      Garde la console ouverte sur stop plugin pour lire les informations verbose(version RTL_433 1.3.2.0).  
-  - Corrections  
-      Crash cu8 to .wav.  
-  - Modification sur le paramétrage de TUNER AGC et RTL AGC  
-      Tuner AGC:on(corresponds à gain auto with rtl433) peux être mis sur off.\n")  
-      RTL AGC:on.(pas AGC panel) peux être mis OFF pour des bons niveaux de reception .\n")  
-
+      -Ajout d'un troisième bouton radio sous le bouton start pour afficher un nouveau type de fenêtre:  
+              Affichage d'une fenêtre par device qui contient tous les messages recus dans la limite de 10 fois le nombre de device maximum paramétré dans .config * 10.  
+              100*10 par défaut.  
+              Le bouton export permet d'enregistrer les données au format texte rechargeable par un tableur(calc... séparateur:tabulation).
+              Le nom du fichier est celui de la fenêtre.ATTENTION écrasement du fichier sans confirmation.
+              Si le dossier Recordings de SDRSharp existe, les fichier seront enregistrés dedans sinon dans le dossier SDRSharp.
+			  
 ## Installation  
 ​
 ATTENTION:2 installations de SDRSharp différentes.  
@@ -225,7 +232,15 @@ Le bouton -MLevel permet juste d'ajouter 4 informations dans la fenêtre device.
 Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATION.html#inputs.  
 Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
 
-## Versions précédentes  
+## Versions précédentes
+Version 1.4.1.0  7 Juillet 2021  
+  - Modifications  
+      Garde la console ouverte sur stop plugin pour lire les informations verbose(version RTL_433 1.3.2.0).  
+  - Corrections  
+      Crash cu8 to .wav.  
+  - Modification sur le paramétrage de TUNER AGC et RTL AGC  
+      Tuner AGC:on(corresponds à gain auto with rtl433) peux être mis sur off.\n")  
+      RTL AGC:on.(pas AGC panel) peux être mis OFF pour des bons niveaux de reception .\n")    
 Version 1.4.0.0  Juillet 2021  
   - Evolutions  
         Ajout de 2 boutons radio sous le bouton start.  
@@ -237,7 +252,7 @@ Version 1.4.0.0  Juillet 2021
                   Le fichier se nomme devices.txt, ATTENTION écrasement du fichier sans confirmation.  
                 - A la sélection de ce type de fenêtre(bouton List devices), il est possible de recharger le fichier.  
                   Cette fenêtre est limitée à 100 colonnes et à 10 fois le nombre de device maximum paramétré dans .config * 10.  
-                  100*10 par défaut. 
+                  100*10 par défaut.  
                 Il est possible de passer d'un mode à l'autre sans arrêter le plugin.  
        - Ajout d'un bouton radio au dessus de la liste des devices.  
            - Hide select:pas de traitement des devices sélectionnés(identique aux versions précédentes).  
