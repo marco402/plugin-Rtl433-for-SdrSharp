@@ -91,7 +91,7 @@ namespace SDRSharp.Rtl_433
             if (cacheListColumns == null)
                 return;
             this.SuspendLayout();
-            string deviceName = (nbMessage+1).ToString();  // classParent.getDeviceName(listData);
+            string deviceName = (nbMessage+1).ToString(); 
             listViewListMessages.BeginUpdate();
             int indexColonne = 0;
             //add column if necessary
@@ -140,7 +140,16 @@ namespace SDRSharp.Rtl_433
                 device.SubItems.Add("");
             }
             //************************************************
-            cacheListMessages[nbMessage] = device;
+            //cacheListMessages[nbMessage] = device;       last message at the bottom list
+
+            //last message at the top list
+            for (int m=nbMessage;m>0;m--)
+            {
+            cacheListMessages[m] = cacheListMessages[m-1];
+            }
+            cacheListMessages[0] = device;
+            //
+
             nbMessage += 1;
             this.Text = memoName + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
             try
@@ -150,11 +159,8 @@ namespace SDRSharp.Rtl_433
             catch {
                 Console.WriteLine(this.Text);
             }
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
             ClassFunctionsListView.autoResizeColumns(listViewListMessages, cacheListColumns.Count);
+            //refresh();  // display last message when it is displayed at the bottom list
             listViewListMessages.EndUpdate();
             this.ResumeLayout();
         }
