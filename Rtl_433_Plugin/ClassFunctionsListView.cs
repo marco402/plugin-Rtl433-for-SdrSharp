@@ -58,7 +58,7 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-        public static bool serializeText(string fileName, Dictionary<String, int>  cacheListColumns, ListViewItem[] cacheListDevices,bool formatNumber)
+        public static bool serializeText(string fileName, Dictionary<String, int>  cacheListColumns, ListViewItem[] cacheListDevices,bool formatNumber,int nbMessage,bool sensDirect)
         {
             NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
             try
@@ -76,27 +76,25 @@ namespace SDRSharp.Rtl_433
                         line += "\t";
                     }
                     str.WriteLine(line);
-                    foreach (ListViewItem it in cacheListDevices)
+                    ListViewItem it;
+                    if (sensDirect)
                     {
-                        if (it == null)
-                            break;
-                        line = string.Empty;
-                        foreach (ListViewItem.ListViewSubItem sit in it.SubItems)
+                       // foreach (ListViewItem it in cacheListDevices)
+                       for(int i=0;i<nbMessage;i++)
                         {
-                            if (sit.Text == string.Empty)
-                                line += "\t";
-                            else
-                            {
-                                if(formatNumber)
-                                {
-                                    line += (valideNumberForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
-                                }
-                                else
-                                    line += sit.Text;
-                                line += "\t";
-                            }
+                            it = cacheListDevices[i];
+                            line = processLine(it, formatNumber,nfi);
+                            str.WriteLine(line);
                         }
-                        str.WriteLine(line);
+                    }
+                    else
+                    {
+                        for (int i = nbMessage-1; i > -1; i--)
+                        {
+                            it = cacheListDevices[i];
+                            line = processLine(it, formatNumber, nfi);
+                            str.WriteLine(line);
+                        }
                     }
                     str.Close();
                 }
@@ -107,6 +105,26 @@ namespace SDRSharp.Rtl_433
                 MessageBox.Show(e.Message, "Error export devices fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+        }
+        private static string processLine(ListViewItem it, bool formatNumber, NumberFormatInfo nfi)
+        {
+            string line = string.Empty;
+            foreach (ListViewItem.ListViewSubItem sit in it.SubItems)
+            {
+                if (sit.Text == string.Empty)
+                    line += "\t";
+                else
+                {
+                    if (formatNumber)
+                    {
+                        line += (valideNumberForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
+                    }
+                    else
+                        line += sit.Text;
+                    line += "\t";
+                }
+            }
+            return line;
         }
         public static string valideNameFile(string name, string replaceChar)
         {

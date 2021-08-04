@@ -28,7 +28,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.5.1.0";
+        private const string _VERSION = "1.5.2.0";
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;

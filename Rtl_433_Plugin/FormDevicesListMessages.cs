@@ -176,7 +176,7 @@ namespace SDRSharp.Rtl_433
         {
             string directory = classInterfaceWithRtl433.getDirectoryRecording();
             string fileName = ClassFunctionsListView.valideNameFile(memoName,"_");
-           if( ClassFunctionsListView.serializeText(directory + fileName + ".txt", cacheListColumns, cacheListMessages,true))
+           if( ClassFunctionsListView.serializeText(directory + fileName + ".txt", cacheListColumns, cacheListMessages,true, nbMessage,false))
            {
                 MessageBox.Show("Export OK", "Export messages", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

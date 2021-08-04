@@ -13,7 +13,10 @@ Version 1.5.0.0 1 August 2021
          The export button allows to save the data in text format which can be reloaded by a spreadsheet(calc... separator:tabulation).  
          The name of the file is that of the window.CAUTION overwriting the file without confirmation.  
          If the Recordings folder of SDRSharp exists, the files will be saved in it otherwise in the SDRSharp folder.  
-
+Version 1.5.1.0
+		Window list message display last message at the top.
+Version 1.5.2.0
+		Export First message at the first position like 1.5.0.0.
 ## Installation  
 ​Warning:2 different SDRSharp installations.  
 
@@ -207,7 +210,10 @@ Version 1.5.0.0  1 Août 2021
               Le bouton export permet d'enregistrer les données au format texte rechargeable par un tableur(calc... séparateur:tabulation).
               Le nom du fichier est celui de la fenêtre.ATTENTION écrasement du fichier sans confirmation.
               Si le dossier Recordings de SDRSharp existe, les fichier seront enregistrés dedans sinon dans le dossier SDRSharp.
-			  
+Version 1.5.1.0  
+		Fenêtre list message affichage du dernier message en premier.
+Version 1.5.2.0
+		Export du premier message en premier comme 1.5.0.0.			  
 ## Installation  
 ​
 ATTENTION:2 installations de SDRSharp différentes.  

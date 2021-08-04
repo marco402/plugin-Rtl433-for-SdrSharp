@@ -113,7 +113,7 @@ namespace SDRSharp.Rtl_433
         }
         public void serializeText(string fileName)
         {
-            ClassFunctionsListView.serializeText(fileName,cacheListColumns,cacheListDevices,false);
+            ClassFunctionsListView.serializeText(fileName,cacheListColumns,cacheListDevices,false,nbDevice,true);
         }
         public void deSerializeText(string fileName)
         {
