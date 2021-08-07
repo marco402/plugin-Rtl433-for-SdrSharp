@@ -13,10 +13,21 @@ Version 1.5.0.0 1 August 2021
          The export button allows to save the data in text format which can be reloaded by a spreadsheet(calc... separator:tabulation).  
          The name of the file is that of the window.CAUTION overwriting the file without confirmation.  
          If the Recordings folder of SDRSharp exists, the files will be saved in it otherwise in the SDRSharp folder.  
-Version 1.5.1.0
-		Window list message display last message at the top.
-Version 1.5.2.0
-		Export First message at the first position like 1.5.0.0.
+Version 1.5.1.0  
+		Window list message display last message at the top.  
+Version 1.5.2.0  
+		Export First message at the first position like 1.5.0.0.  
+Version 1.5.3.0  
+  -Modifications  
+      -Messages list window
+          Index error when signal is weak(I failed to reproduce it).  
+          Addition test on the number of columns to follow...
+          Added 2 additional columns, to see if the problem comes from a bad column header which will display it.  
+          This shouldn’t be happening, the names of the headers are in "hard" in code RTL_433?  
+		  
+      -Change of SDRsharp reference for compilation:  
+          The plugin_rtl433 with sdrsharp-x86-dotnet4(1784) or 1777 version only works with the version used as reference(1632) in visual studio.  
+          By referencing the sdrsharp-x86-dotnet4(1784) version, the plugin works on the 1784 but also on the 1777...  
 ## Installation  
 ​Warning:2 different SDRSharp installations.  
 
@@ -205,15 +216,27 @@ ________________________________________________________________________________
 Version 1.5.0.0  1 Août 2021
   - Modifications  
       -Ajout d'un troisième bouton radio sous le bouton start pour afficher un nouveau type de fenêtre:  
-              Affichage d'une fenêtre par device qui contient tous les messages recus dans la limite de 10 fois le nombre de device maximum paramétré dans .config * 10.  
-              100*10 par défaut.  
-              Le bouton export permet d'enregistrer les données au format texte rechargeable par un tableur(calc... séparateur:tabulation).
-              Le nom du fichier est celui de la fenêtre.ATTENTION écrasement du fichier sans confirmation.
-              Si le dossier Recordings de SDRSharp existe, les fichier seront enregistrés dedans sinon dans le dossier SDRSharp.
+         Affichage d'une fenêtre par device qui contient tous les messages recus dans la limite de 10 fois le nombre de device maximum paramétré dans .config * 10.  
+         100*10 par défaut.  
+         Le bouton export permet d'enregistrer les données au format texte rechargeable par un tableur(calc... séparateur:tabulation).  
+         Le nom du fichier est celui de la fenêtre.ATTENTION écrasement du fichier sans confirmation.  
+         Si le dossier Recordings de SDRSharp existe, les fichier seront enregistrés dedans sinon dans le dossier SDRSharp.  
 Version 1.5.1.0  
-		Fenêtre list message affichage du dernier message en premier.
-Version 1.5.2.0
-		Export du premier message en premier comme 1.5.0.0.			  
+      -Fenêtre list message affichage du dernier message en premier.
+Version 1.5.2.0  
+      -Export du premier message en premier comme 1.5.0.0.  
+Version 1.5.3.0  
+  -Correctif  
+         Fenêtre list messages  
+           Erreur d'index lorsque le signal est faible(Je n'ai pas réussi à la reproduire)
+           Ajout test sur le nombre de colonne a suivre...  
+           Ajout de 2 colonnes supplémentaires, pour voir si le problème vient d'une mauvaise entête de colonne ce qui permettra de l'afficher.  
+           ça ne devrait pas arriver, le nom des entêtes sont en "dur" dans le code RTL_433 ?  
+         Changement de référence SDRsharp pour la compilation:  
+           Le plugin_rtl433 avec la version sdrsharp-x86-dotnet4(1784) ou 1777 ne fonctionne qu'avec la version utilisée en référence(1632)  
+           dans visual studio.  
+           En référençant la version sdrsharp-x86-dotnet4(1784), le plugin fonctionne sur la 1784 mais aussi sur la 1777...  
+
 ## Installation  
 ​
 ATTENTION:2 installations de SDRSharp différentes.  

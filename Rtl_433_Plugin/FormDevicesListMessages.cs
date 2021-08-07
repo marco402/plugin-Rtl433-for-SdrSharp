@@ -26,7 +26,7 @@ namespace SDRSharp.Rtl_433
             this.maxMessages = maxDevices;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
 
-            ClassFunctionsListView.initListView(listViewListMessages, nbColumn);
+            ClassFunctionsListView.initListView(listViewListMessages, this.nbColumn);
             cacheListMessages = new ListViewItem[this.maxMessages];
             cacheListColumns = new Dictionary<String, int>();
             listViewListMessages.Columns[0].Text = "N° Mes.";
@@ -94,20 +94,23 @@ namespace SDRSharp.Rtl_433
             string deviceName = (nbMessage+1).ToString(); 
             listViewListMessages.BeginUpdate();
             int indexColonne = 0;
-            //add column if necessary
+            //add name column if necessary
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                if (cacheListColumns.Count > nbColumn)
+                if (cacheListColumns.Count > (nbColumn))
                 {
                     listViewListMessages.EndUpdate();
                     this.ResumeLayout();
                     return;                     //message max dk
                 }
-                if (indexColonne == 0)
-                {
-                    listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
-                    cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                else
+                {    //not add new column     protects column name errors,should not be arrive, see the problem upstream.
+                    if (indexColonne == 0)
+                    {
+                        listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
+                        cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                    }
                 }
             }
             ListViewItem device = null;
@@ -124,16 +127,11 @@ namespace SDRSharp.Rtl_433
                 return;                    //message max row
             }
             device = new ListViewItem(deviceName);
-            int index = 0;
+            //int index = 0;
             int i = 0;
-            for (i = 0; i < indexCol.ElementAt(indexCol.Count - 1).Key - 1; i++)
+            for (i = 0; i < indexCol.Count ; i++)
             {
-                for (i = i; i < (indexCol.ElementAt(index).Key - 2); i++)
-                {
-                    device.SubItems.Add("");
-                }
-                device.SubItems.Add(indexCol.ElementAt(index).Value);
-                index += 1;
+                device.SubItems.Add(indexCol.ElementAt(i).Value);
             }
             for (i = i; i < nbColumn; i++)
             {

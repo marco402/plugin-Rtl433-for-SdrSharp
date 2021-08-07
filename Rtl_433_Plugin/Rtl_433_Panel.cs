@@ -252,9 +252,9 @@ namespace SDRSharp.Rtl_433
                                 if (listformDeviceListMessages.Count > _MaxDevicesWindows - 1)
                                     return;
                                 if (radioButtonMLevel.Checked)
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10, listData.Count + 1 , deviceName, _ClassInterfaceWithRtl433)); 
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10, listData.Count + 1 +2 , deviceName, _ClassInterfaceWithRtl433)); //+2 for debug
                                 else
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, listData.Count + 1 + 5, deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, listData.Count + 1 + 5 +2 , deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel //+2 for debug
                                 listformDeviceListMessages[deviceName].Text = deviceName;
                                 listformDeviceListMessages[deviceName].Visible = true;
                                 listformDeviceListMessages[deviceName].Show();
