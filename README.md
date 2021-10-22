@@ -28,6 +28,9 @@ Version 1.5.3.0
       -Change of SDRsharp reference for compilation:  
           The plugin_rtl433 with sdrsharp-x86-dotnet4(1784) or 1777 version only works with the version used as reference(1632) in visual studio.  
           By referencing the sdrsharp-x86-dotnet4(1784) version, the plugin works on the 1784 but also on the 1777...  
+Version 1.5.3.1  
+  -Modifications  
+        -Added a checkbox in the "enabled devices disabled" frame to process disabled devices(.disabled = 1 in devices files)  
 ## Installation  
 ​Warning:2 different SDRSharp installations.  
 
@@ -236,6 +239,9 @@ Version 1.5.3.0
            Le plugin_rtl433 avec la version sdrsharp-x86-dotnet4(1784) ou 1777 ne fonctionne qu'avec la version utilisée en référence(1632)  
            dans visual studio.  
            En référençant la version sdrsharp-x86-dotnet4(1784), le plugin fonctionne sur la 1784 mais aussi sur la 1777...  
+Version 1.5.3.1  
+  -Modifications  
+        -Ajout d'une case à cocher dans le cadre "enabled devices disabled" pour traiter les appareils invalidés(.disabled = 1 dans les fichiers devices)  
 
 ## Installation  
 ​

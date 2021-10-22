@@ -28,7 +28,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.5.3.0";
+        private const string _VERSION = "1.5.3.1";
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -173,7 +173,7 @@ namespace SDRSharp.Rtl_433
             Int32 argc = args.Length;
             CBmessages = new NativeMethods.ptrFct(_callBackMessages);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
-            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData,(UInt32)(_sampleRate),sizeof(byte) , argc, args);
+            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData,(UInt32)(_sampleRate),sizeof(byte),(UInt32) _Enabled , argc, args);
          }
 #endregion
 #region public function 
@@ -414,8 +414,17 @@ namespace SDRSharp.Rtl_433
             ptrCtx = IntPtr.Zero;
             startRtl433Ok = true;
         }
-#endregion
-#region callBack for dll_rtl_433"
+        private UInt32 _Enabled = 0;
+        public UInt32 setEnabled
+        {
+            set
+            {
+                _Enabled = value;      //need reload list devices
+                initListDevice = false;
+            }
+        }
+        #endregion
+        #region callBack for dll_rtl_433"
         private bool startRtl433Ok = false;
         private bool synchro = false;
         private bool nameData = false;

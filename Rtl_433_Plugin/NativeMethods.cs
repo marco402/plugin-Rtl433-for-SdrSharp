@@ -23,7 +23,7 @@ namespace SDRSharp.Rtl_433
             IntPtr _ptrCfg);
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public static extern void rtl_433_call_main([Out] ptrFct fctMessage, [Out] ptrFctInit fctInitCbData, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] Int32 argc, String[] args);  // 
+        public static extern void rtl_433_call_main([Out] ptrFct fctMessage, [Out] ptrFctInit fctInitCbData, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args);  // 
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         public static extern void receive_buffer_cb([Out] byte[] iq_buf, [Out] UInt32 len,[Out]  IntPtr ctx);

@@ -88,6 +88,8 @@ namespace SDRSharp.Rtl_433
             OptionStereo.SetToolTip(checkBoxSTEREO, "Record IQ to wav file for reload with SDRSharp");
             ToolTip OptionMono = new ToolTip();
             OptionMono.SetToolTip(checkBoxMONO, "Record module de IQ to wav file for display with Audacity or another viewer");
+            ToolTip ttcheckBoxEnabledDevicesDisabled = new ToolTip();
+            ttcheckBoxEnabledDevicesDisabled.SetToolTip(checkBoxEnabledDevicesDisabled, "0:default,1:WARNING->enabled devices disabled in devices files");
             radioButtonFreq43392.Checked = true;
             listBoxHideDevices.Visible = true;
             richTextBoxMessages.MaxLength = 5000;
@@ -325,6 +327,8 @@ namespace SDRSharp.Rtl_433
             groupBoxRecord.Enabled = state;
             groupBoxDataConv.Enabled = state;
             listBoxHideDevices.Enabled = state;
+            checkBoxEnabledDevicesDisabled.Enabled  = state;
+
             _Rtl_433Processor.Enabled = !state;
             _Rtl_433Processor.EnableRtl433 = !state;
         }
@@ -470,6 +474,19 @@ namespace SDRSharp.Rtl_433
                 displayTypeForm = TYPEFORM.LISTMES;
             }
         }
-#endregion
+         private void checkBoxEnabledDevicesDisabled_CheckedChanged(object sender, EventArgs e)
+        {
+           if (checkBoxEnabledDevicesDisabled.Checked)
+            {
+                _ClassInterfaceWithRtl433.setEnabled = 1;
+                checkBoxEnabledDevicesDisabled.Text = "Enabled devices disabled";
+            }
+            else
+            {
+                _ClassInterfaceWithRtl433.setEnabled = 0;
+                checkBoxEnabledDevicesDisabled.Text = "Default value";
+            }
+        }
+        #endregion
     }
 }

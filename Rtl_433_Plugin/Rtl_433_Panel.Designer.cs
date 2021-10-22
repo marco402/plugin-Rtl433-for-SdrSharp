@@ -78,6 +78,8 @@
             this.radioButtonListDevices = new System.Windows.Forms.RadioButton();
             this.radioButtonGraph = new System.Windows.Forms.RadioButton();
             this.buttonStartStop = new System.Windows.Forms.Button();
+            this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -88,6 +90,7 @@
             this.groupBoxR.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBoxSelectTypeForm.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -99,10 +102,10 @@
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 9);
-            this.mainTableLayoutPanel.Controls.Add(this.labelTimeCycle, 0, 15);
-            this.mainTableLayoutPanel.Controls.Add(this.labelTimeRtl433, 0, 15);
+            this.mainTableLayoutPanel.Controls.Add(this.labelTimeCycle, 0, 16);
+            this.mainTableLayoutPanel.Controls.Add(this.labelTimeRtl433, 0, 16);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 8);
-            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 14);
+            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 15);
             this.mainTableLayoutPanel.Controls.Add(this.labelVersion, 0, 4);
             this.mainTableLayoutPanel.Controls.Add(this.labelSampleRate, 0, 5);
             this.mainTableLayoutPanel.Controls.Add(this.labelFrequency, 0, 6);
@@ -110,8 +113,8 @@
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxRecord, 1, 3);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxFrequency, 0, 2);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxVerbose, 0, 8);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 13);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 13);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 14);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 14);
             this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 3);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 9);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 12);
@@ -119,10 +122,11 @@
             this.mainTableLayoutPanel.Controls.Add(this.groupBox1, 0, 11);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
             this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 0, 0);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBox2, 0, 13);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
-            this.mainTableLayoutPanel.RowCount = 17;
+            this.mainTableLayoutPanel.RowCount = 19;
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
@@ -134,13 +138,15 @@
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 130F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 126F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 11F));
-            this.mainTableLayoutPanel.Size = new System.Drawing.Size(251, 1173);
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(251, 1213);
             this.mainTableLayoutPanel.TabIndex = 1;
             // 
             // groupBoxDataConv
@@ -203,9 +209,9 @@
             this.labelTimeCycle.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeCycle, 2);
             this.labelTimeCycle.ForeColor = System.Drawing.Color.Blue;
-            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1162);
+            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1185);
             this.labelTimeCycle.Name = "labelTimeCycle";
-            this.labelTimeCycle.Size = new System.Drawing.Size(55, 11);
+            this.labelTimeCycle.Size = new System.Drawing.Size(55, 13);
             this.labelTimeCycle.TabIndex = 15;
             this.labelTimeCycle.Text = "Cycle time";
             this.labelTimeCycle.Visible = false;
@@ -216,7 +222,7 @@
             this.labelTimeRtl433.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeRtl433, 2);
             this.labelTimeRtl433.ForeColor = System.Drawing.Color.Blue;
-            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1141);
+            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1159);
             this.labelTimeRtl433.Name = "labelTimeRtl433";
             this.labelTimeRtl433.Size = new System.Drawing.Size(89, 13);
             this.labelTimeRtl433.TabIndex = 16;
@@ -269,13 +275,13 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.richTextBoxMessages, 2);
-            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 842);
+            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 890);
             this.richTextBoxMessages.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.richTextBoxMessages.MaxLength = 3000;
             this.richTextBoxMessages.Name = "richTextBoxMessages";
             this.richTextBoxMessages.ReadOnly = true;
             this.richTextBoxMessages.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBoxMessages.Size = new System.Drawing.Size(245, 286);
+            this.richTextBoxMessages.Size = new System.Drawing.Size(245, 257);
             this.richTextBoxMessages.TabIndex = 5;
             this.richTextBoxMessages.Text = "";
             this.richTextBoxMessages.TextChanged += new System.EventHandler(this.richTextBoxMessages_TextChanged);
@@ -540,7 +546,7 @@
             this.buttonClearMessages.AutoSize = true;
             this.buttonClearMessages.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.buttonClearMessages.ForeColor = System.Drawing.Color.Cyan;
-            this.buttonClearMessages.Location = new System.Drawing.Point(113, 813);
+            this.buttonClearMessages.Location = new System.Drawing.Point(113, 860);
             this.buttonClearMessages.Name = "buttonClearMessages";
             this.buttonClearMessages.Size = new System.Drawing.Size(92, 23);
             this.buttonClearMessages.TabIndex = 7;
@@ -554,7 +560,7 @@
             this.buttonDisplayParam.AutoSize = true;
             this.buttonDisplayParam.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.buttonDisplayParam.ForeColor = System.Drawing.Color.Cyan;
-            this.buttonDisplayParam.Location = new System.Drawing.Point(3, 813);
+            this.buttonDisplayParam.Location = new System.Drawing.Point(3, 860);
             this.buttonDisplayParam.Name = "buttonDisplayParam";
             this.buttonDisplayParam.Size = new System.Drawing.Size(87, 23);
             this.buttonDisplayParam.TabIndex = 7;
@@ -648,9 +654,9 @@
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxR, 2);
             this.groupBoxR.Controls.Add(this.listBoxHideDevices);
             this.groupBoxR.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxR.Location = new System.Drawing.Point(3, 683);
+            this.groupBoxR.Location = new System.Drawing.Point(3, 686);
             this.groupBoxR.Name = "groupBoxR";
-            this.groupBoxR.Size = new System.Drawing.Size(245, 124);
+            this.groupBoxR.Size = new System.Drawing.Size(245, 120);
             this.groupBoxR.TabIndex = 9;
             this.groupBoxR.TabStop = false;
             this.groupBoxR.Text = "hide devices(-R)";
@@ -666,7 +672,7 @@
             this.listBoxHideDevices.Location = new System.Drawing.Point(3, 16);
             this.listBoxHideDevices.Name = "listBoxHideDevices";
             this.listBoxHideDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxHideDevices.Size = new System.Drawing.Size(239, 105);
+            this.listBoxHideDevices.Size = new System.Drawing.Size(239, 101);
             this.listBoxHideDevices.TabIndex = 3;
             // 
             // labelHideDevices
@@ -691,13 +697,14 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 643);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 34);
+            this.groupBox1.Size = new System.Drawing.Size(245, 37);
             this.groupBox1.TabIndex = 21;
             this.groupBox1.TabStop = false;
             // 
             // radioButtonShowSelect
             // 
             this.radioButtonShowSelect.AutoSize = true;
+            this.radioButtonShowSelect.ForeColor = System.Drawing.Color.Blue;
             this.radioButtonShowSelect.Location = new System.Drawing.Point(127, 11);
             this.radioButtonShowSelect.Name = "radioButtonShowSelect";
             this.radioButtonShowSelect.Size = new System.Drawing.Size(83, 17);
@@ -709,6 +716,7 @@
             // 
             this.radioButtonHideSelect.AutoSize = true;
             this.radioButtonHideSelect.Checked = true;
+            this.radioButtonHideSelect.ForeColor = System.Drawing.Color.Blue;
             this.radioButtonHideSelect.Location = new System.Drawing.Point(6, 11);
             this.radioButtonHideSelect.Name = "radioButtonHideSelect";
             this.radioButtonHideSelect.Size = new System.Drawing.Size(78, 17);
@@ -778,13 +786,38 @@
             this.buttonStartStop.UseVisualStyleBackColor = false;
             this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
+            // checkBoxEnabledDevicesDisabled
+            // 
+            this.checkBoxEnabledDevicesDisabled.AutoSize = true;
+            this.checkBoxEnabledDevicesDisabled.ForeColor = System.Drawing.Color.Blue;
+            this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(13, 18);
+            this.checkBoxEnabledDevicesDisabled.Name = "checkBoxEnabledDevicesDisabled";
+            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(60, 17);
+            this.checkBoxEnabledDevicesDisabled.TabIndex = 25;
+            this.checkBoxEnabledDevicesDisabled.Text = "Default";
+            this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
+            this.checkBoxEnabledDevicesDisabled.CheckedChanged += new System.EventHandler(this.checkBoxEnabledDevicesDisabled_CheckedChanged);
+            // 
+            // groupBox2
+            // 
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBox2, 2);
+            this.groupBox2.Controls.Add(this.checkBoxEnabledDevicesDisabled);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.ForeColor = System.Drawing.Color.Blue;
+            this.groupBox2.Location = new System.Drawing.Point(3, 812);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(245, 41);
+            this.groupBox2.TabIndex = 26;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Enabled devices disabled";
+            // 
             // Rtl_433_Panel
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
             this.Controls.Add(this.mainTableLayoutPanel);
             this.Name = "Rtl_433_Panel";
-            this.Size = new System.Drawing.Size(251, 1173);
+            this.Size = new System.Drawing.Size(251, 1213);
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
             this.groupBoxDataConv.ResumeLayout(false);
@@ -804,6 +837,8 @@
             this.groupBox1.PerformLayout();
             this.groupBoxSelectTypeForm.ResumeLayout(false);
             this.groupBoxSelectTypeForm.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -859,5 +894,7 @@
         private System.Windows.Forms.RadioButton radioButtonListDevices;
         private System.Windows.Forms.RadioButton radioButtonGraph;
         private System.Windows.Forms.RadioButton radioButtonListMessages;
+        private System.Windows.Forms.CheckBox checkBoxEnabledDevicesDisabled;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
