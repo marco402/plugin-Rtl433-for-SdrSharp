@@ -68,9 +68,9 @@
             this.radioButtonSknown = new System.Windows.Forms.RadioButton();
             this.radioButtonSall = new System.Windows.Forms.RadioButton();
             this.groupBoxR = new System.Windows.Forms.GroupBox();
-            this.listBoxHideDevices = new System.Windows.Forms.ListBox();
+            this.listBoxHideShowDevices = new System.Windows.Forms.ListBox();
             this.labelHideDevices = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxHideShow = new System.Windows.Forms.GroupBox();
             this.radioButtonShowSelect = new System.Windows.Forms.RadioButton();
             this.radioButtonHideSelect = new System.Windows.Forms.RadioButton();
             this.groupBoxSelectTypeForm = new System.Windows.Forms.GroupBox();
@@ -78,8 +78,8 @@
             this.radioButtonListDevices = new System.Windows.Forms.RadioButton();
             this.radioButtonGraph = new System.Windows.Forms.RadioButton();
             this.buttonStartStop = new System.Windows.Forms.Button();
-            this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -88,7 +88,7 @@
             this.groupBoxVerbose.SuspendLayout();
             this.groupBoxSave.SuspendLayout();
             this.groupBoxR.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxHideShow.SuspendLayout();
             this.groupBoxSelectTypeForm.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -119,7 +119,7 @@
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 9);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.labelHideDevices, 0, 10);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBox1, 0, 11);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxHideShow, 0, 11);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
             this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 0, 0);
             this.mainTableLayoutPanel.Controls.Add(this.groupBox2, 0, 13);
@@ -652,7 +652,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxR, 2);
-            this.groupBoxR.Controls.Add(this.listBoxHideDevices);
+            this.groupBoxR.Controls.Add(this.listBoxHideShowDevices);
             this.groupBoxR.ForeColor = System.Drawing.Color.Blue;
             this.groupBoxR.Location = new System.Drawing.Point(3, 686);
             this.groupBoxR.Name = "groupBoxR";
@@ -661,19 +661,19 @@
             this.groupBoxR.TabStop = false;
             this.groupBoxR.Text = "hide devices(-R)";
             // 
-            // listBoxHideDevices
+            // listBoxHideShowDevices
             // 
-            this.listBoxHideDevices.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            this.listBoxHideDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listBoxHideDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxHideDevices.ForeColor = System.Drawing.Color.Blue;
-            this.listBoxHideDevices.FormattingEnabled = true;
-            this.listBoxHideDevices.HorizontalScrollbar = true;
-            this.listBoxHideDevices.Location = new System.Drawing.Point(3, 16);
-            this.listBoxHideDevices.Name = "listBoxHideDevices";
-            this.listBoxHideDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxHideDevices.Size = new System.Drawing.Size(239, 101);
-            this.listBoxHideDevices.TabIndex = 3;
+            this.listBoxHideShowDevices.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.listBoxHideShowDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listBoxHideShowDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxHideShowDevices.ForeColor = System.Drawing.Color.Blue;
+            this.listBoxHideShowDevices.FormattingEnabled = true;
+            this.listBoxHideShowDevices.HorizontalScrollbar = true;
+            this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);
+            this.listBoxHideShowDevices.Name = "listBoxHideShowDevices";
+            this.listBoxHideShowDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.listBoxHideShowDevices.Size = new System.Drawing.Size(239, 101);
+            this.listBoxHideShowDevices.TabIndex = 3;
             // 
             // labelHideDevices
             // 
@@ -689,17 +689,17 @@
             this.labelHideDevices.Text = "start once to fill  the devices list";
             this.labelHideDevices.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // groupBox1
+            // groupBoxHideShow
             // 
-            this.mainTableLayoutPanel.SetColumnSpan(this.groupBox1, 2);
-            this.groupBox1.Controls.Add(this.radioButtonShowSelect);
-            this.groupBox1.Controls.Add(this.radioButtonHideSelect);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 643);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(245, 37);
-            this.groupBox1.TabIndex = 21;
-            this.groupBox1.TabStop = false;
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxHideShow, 2);
+            this.groupBoxHideShow.Controls.Add(this.radioButtonShowSelect);
+            this.groupBoxHideShow.Controls.Add(this.radioButtonHideSelect);
+            this.groupBoxHideShow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 643);
+            this.groupBoxHideShow.Name = "groupBoxHideShow";
+            this.groupBoxHideShow.Size = new System.Drawing.Size(245, 37);
+            this.groupBoxHideShow.TabIndex = 21;
+            this.groupBoxHideShow.TabStop = false;
             // 
             // radioButtonShowSelect
             // 
@@ -786,18 +786,6 @@
             this.buttonStartStop.UseVisualStyleBackColor = false;
             this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
-            // checkBoxEnabledDevicesDisabled
-            // 
-            this.checkBoxEnabledDevicesDisabled.AutoSize = true;
-            this.checkBoxEnabledDevicesDisabled.ForeColor = System.Drawing.Color.Blue;
-            this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(13, 18);
-            this.checkBoxEnabledDevicesDisabled.Name = "checkBoxEnabledDevicesDisabled";
-            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(60, 17);
-            this.checkBoxEnabledDevicesDisabled.TabIndex = 25;
-            this.checkBoxEnabledDevicesDisabled.Text = "Default";
-            this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
-            this.checkBoxEnabledDevicesDisabled.CheckedChanged += new System.EventHandler(this.checkBoxEnabledDevicesDisabled_CheckedChanged);
-            // 
             // groupBox2
             // 
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBox2, 2);
@@ -810,6 +798,18 @@
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Enabled devices disabled";
+            // 
+            // checkBoxEnabledDevicesDisabled
+            // 
+            this.checkBoxEnabledDevicesDisabled.AutoSize = true;
+            this.checkBoxEnabledDevicesDisabled.ForeColor = System.Drawing.Color.Blue;
+            this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(13, 18);
+            this.checkBoxEnabledDevicesDisabled.Name = "checkBoxEnabledDevicesDisabled";
+            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(60, 17);
+            this.checkBoxEnabledDevicesDisabled.TabIndex = 25;
+            this.checkBoxEnabledDevicesDisabled.Text = "Default";
+            this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
+            this.checkBoxEnabledDevicesDisabled.CheckedChanged += new System.EventHandler(this.checkBoxEnabledDevicesDisabled_CheckedChanged);
             // 
             // Rtl_433_Panel
             // 
@@ -833,8 +833,8 @@
             this.groupBoxSave.ResumeLayout(false);
             this.groupBoxSave.PerformLayout();
             this.groupBoxR.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxHideShow.ResumeLayout(false);
+            this.groupBoxHideShow.PerformLayout();
             this.groupBoxSelectTypeForm.ResumeLayout(false);
             this.groupBoxSelectTypeForm.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -878,7 +878,7 @@
         private System.Windows.Forms.RadioButton radioButtonSknown;
         private System.Windows.Forms.RadioButton radioButtonSall;
         private System.Windows.Forms.GroupBox groupBoxR;
-        private System.Windows.Forms.ListBox listBoxHideDevices;
+        private System.Windows.Forms.ListBox listBoxHideShowDevices;
         private System.Windows.Forms.Label labelTimeCycle;
         private System.Windows.Forms.Label labelTimeRtl433;
         private System.Windows.Forms.Button buttonStartStop;
@@ -887,7 +887,7 @@
         private System.Windows.Forms.RadioButton radioButtonDataConvSI;
         private System.Windows.Forms.RadioButton radioButtonDataConvNative;
         private System.Windows.Forms.Label labelHideDevices;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBoxHideShow;
         private System.Windows.Forms.RadioButton radioButtonHideSelect;
         private System.Windows.Forms.RadioButton radioButtonShowSelect;
         private System.Windows.Forms.GroupBox groupBoxSelectTypeForm;

@@ -25,6 +25,10 @@ namespace SDRSharp.Rtl_433
         {
             _nbDevicesWithGraph = nbDevicesWithGraph + 1;
         }
+        public int getNbDevicesWithGraph()
+        {
+            return _nbDevicesWithGraph-1;
+        }
         public void setDataConv(int statDataConv)
         {
             switch (statDataConv)

@@ -5,6 +5,35 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version  
+Version 1.5.4.0 5 January 2022  
+     -Update of version RTL_433(V21.12 of December 29,2021,the previous one was dated March 1,2021).  
+           -Added 27 devices(default/default+disabled/all)(150/174/180)-->(177/202/208).  
+     -Added a column number of messages received in the list devices window.  
+
+## Installation  
+​Warning:2 different SDRSharp installations.  
+
+Recent versions have sdrsharp.exe in a bin folder.  
+In this case, position yourself in C: SDRSharp/plugins  
+- Create a RTL_433 folder and place the 3 dll in it.  
+- Important:Delete the 3 dll if they are in bin.  
+- Delete the key if it is in plugins.xml.  
+
+SDRSharp version without bin folder:  
+- SDRSharp installation (tested with version 1.0.0.1788)  
+  - Place the files in the install folder (SDRSharp.Rtl_433.dll rtl_433.dll and GraphLib.dll) in the SDRSharp folder.  
+    - Add the line add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp . Rtl_433" /> in the plugins.xml file   
+
+## Launch
+After configuring SDRSharp (see chapter configuration, this information is initially recalled in the plugin window).  
+The play button of SDR validates the start button of the sdr_433 plugin.  
+Start button to activate the plugin.  
+Then wait for a recognized message.  
+The -MLevel button just adds 4 information to the device window.  
+for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs  
+The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
+
+## Previous versions  
 Version 1.5.0.0 1 August 2021  
   - Modifications  
       -Add a third radio button under the start button to display a new window type:  
@@ -31,30 +60,7 @@ Version 1.5.3.0
 Version 1.5.3.1  
   -Modifications  
         -Added a checkbox in the "enabled devices disabled" frame to process disabled devices(.disabled = 1 in devices files)  
-## Installation  
-​Warning:2 different SDRSharp installations.  
 
-Recent versions have sdrsharp.exe in a bin folder.  
-In this case, position yourself in C: SDRSharp/plugins  
-- Create a RTL_433 folder and place the 3 dll in it.  
-- Important:Delete the 3 dll if they are in bin.  
-- Delete the key if it is in plugins.xml.  
-
-SDRSharp version without bin folder:  
-- SDRSharp installation (tested with version 1.0.0.1788)  
-  - Place the files in the install folder (SDRSharp.Rtl_433.dll rtl_433.dll and GraphLib.dll) in the SDRSharp folder.  
-    - Add the line add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp . Rtl_433" /> in the plugins.xml file   
-
-## Launch
-After configuring SDRSharp (see chapter configuration, this information is initially recalled in the plugin window).  
-The play button of SDR validates the start button of the sdr_433 plugin.  
-Start button to activate the plugin.  
-Then wait for a recognized message.  
-The -MLevel button just adds 4 information to the device window.  
-for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs  
-The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
-
-## Previous versions  
 Version 1.4.1.0  7 July 2021
   - Modifications  
       Keep the console open on stop plugin for read verbose informations(version RTL_433 1.3.2.0)  
@@ -216,6 +222,37 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.4.0  1 Janvier 2022
+     -Mise a jour de la version RTL_433(V21.12 du 29 Décembre 2021, la précédente datait du 1 Mars 2021).  
+           -Ajout de 27 devices(defaut/defaut+disabled/tous)(150/174/180)-->(177/202/208).  
+     -Ajout d'une colonne nombre de message recus dans la fenetre list devices.  
+
+
+## Installation  
+​
+ATTENTION:2 installations de SDRSharp différentes.  
+
+Les versions récentes ont sdrsharp.exe dans un dossier bin.  
+Dans ce cas, se positionner dans C:\SDRSharp\plugins  
+    - Créer un dossier RTL_433 et y placer les 3 dll.  
+    - Important:Supprimer les 3 dll si elles sont dans bin.  
+    - Supprimer la cle si elle est dans plugins.xml.  
+
+Version SDRSharp sans le dossier bin:  
+- Installation de SDRSharp(testé avec la version 1.0.0.1788)  
+  - Placer les fichiers du dossier install (SDRSharp.Rtl_433.dll rtl_433.dll et GraphLib.dll) dans le dossier SDRSharp.  
+  - Ajouter la ligne <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> dans le fichier plugins.xml  
+
+## Lancement
+Après avoir configuré SDRSharp (voir chapitre configuration, ces informations sont rappelées au départ dans la fenêtre du plugin).  
+Le bouton play de SDR valide le bouton start du plugin sdr_433.  
+Bouton start pour activer le plugin.  
+Ensuite patienter en attendant un message reconnu.  
+Le bouton -MLevel permet juste d'ajouter 4 informations dans la fenêtre device.  
+Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATION.html#inputs.  
+Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
+
+## Versions précédentes
 Version 1.5.0.0  1 Août 2021
   - Modifications  
       -Ajout d'un troisième bouton radio sous le bouton start pour afficher un nouveau type de fenêtre:  
@@ -243,31 +280,6 @@ Version 1.5.3.1
   -Modifications  
         -Ajout d'une case à cocher dans le cadre "enabled devices disabled" pour traiter les appareils invalidés(.disabled = 1 dans les fichiers devices)  
 
-## Installation  
-​
-ATTENTION:2 installations de SDRSharp différentes.  
-
-Les versions récentes ont sdrsharp.exe dans un dossier bin.  
-Dans ce cas, se positionner dans C:\SDRSharp\plugins  
-    - Créer un dossier RTL_433 et y placer les 3 dll.  
-    - Important:Supprimer les 3 dll si elles sont dans bin.  
-    - Supprimer la cle si elle est dans plugins.xml.  
-
-Version SDRSharp sans le dossier bin:  
-- Installation de SDRSharp(testé avec la version 1.0.0.1788)  
-  - Placer les fichiers du dossier install (SDRSharp.Rtl_433.dll rtl_433.dll et GraphLib.dll) dans le dossier SDRSharp.  
-  - Ajouter la ligne <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> dans le fichier plugins.xml  
-
-## Lancement
-Après avoir configuré SDRSharp (voir chapitre configuration, ces informations sont rappelées au départ dans la fenêtre du plugin).  
-Le bouton play de SDR valide le bouton start du plugin sdr_433.  
-Bouton start pour activer le plugin.  
-Ensuite patienter en attendant un message reconnu.  
-Le bouton -MLevel permet juste d'ajouter 4 informations dans la fenêtre device.  
-Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATION.html#inputs.  
-Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
-
-## Versions précédentes
 Version 1.4.1.0  7 Juillet 2021  
   - Modifications  
       Garde la console ouverte sur stop plugin pour lire les informations verbose(version RTL_433 1.3.2.0).  

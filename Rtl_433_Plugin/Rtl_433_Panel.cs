@@ -91,7 +91,7 @@ namespace SDRSharp.Rtl_433
             ToolTip ttcheckBoxEnabledDevicesDisabled = new ToolTip();
             ttcheckBoxEnabledDevicesDisabled.SetToolTip(checkBoxEnabledDevicesDisabled, "0:default,1:WARNING->enabled devices disabled in devices files");
             radioButtonFreq43392.Checked = true;
-            listBoxHideDevices.Visible = true;
+            listBoxHideShowDevices.Visible = true;
             richTextBoxMessages.MaxLength = 5000;
 #if TESTWINDOWS
             MessageBox.Show("Version de test");
@@ -140,7 +140,7 @@ namespace SDRSharp.Rtl_433
                 this.SuspendLayout();
                 foreach (string device in listeDevice)
                 {
-                    listBoxHideDevices.Items.Add(device);
+                    listBoxHideShowDevices.Items.Add(device);
                 }
                 this.ResumeLayout();
             }
@@ -203,6 +203,7 @@ namespace SDRSharp.Rtl_433
                         {
                             recordDevice = false;
                             _ClassInterfaceWithRtl433.recordDevice(deviceName);
+                            listformDevice[deviceName].resetLabelRecord(); 
                         }
                         lock (listformDevice)
                         {
@@ -292,7 +293,7 @@ namespace SDRSharp.Rtl_433
                 buttonStartStop.Text = "Stop";
                 if (!onlyOneCall)
                 {
-                    listBoxHideDevices.Visible = true;
+                    listBoxHideShowDevices.Visible = true;
                     //_ClassInterfaceWithRtl433.get_version_dll_rtl_433();
                     richTextBoxMessages.Clear();
 
@@ -303,7 +304,7 @@ namespace SDRSharp.Rtl_433
                 _Rtl_433Processor.openConsole();
                 enabledDisabledControlsOnStart(false);
                 List<string> ListDevicesSH = new List<string>();
-                foreach (string device in listBoxHideDevices.SelectedItems)
+                foreach (string device in listBoxHideShowDevices.SelectedItems)
                 {
                     string[] part = device.Split(new char[] { '-' });
                     ListDevicesSH.Add(part[0]);
@@ -322,11 +323,14 @@ namespace SDRSharp.Rtl_433
         }
         private void enabledDisabledControlsOnStart(bool state)
         {
+            groupBoxFrequency.Enabled = state;
             groupBoxVerbose.Enabled = state;
             groupBoxMetadata.Enabled = state;
-            groupBoxRecord.Enabled = state;
+            //groupBoxRecord.Enabled = state;  keep enabled for record device window
+            groupBoxSave.Enabled = state;
+            groupBoxHideShow.Enabled = state;
             groupBoxDataConv.Enabled = state;
-            listBoxHideDevices.Enabled = state;
+            listBoxHideShowDevices.Enabled = state;
             checkBoxEnabledDevicesDisabled.Enabled  = state;
 
             _Rtl_433Processor.Enabled = !state;
@@ -426,7 +430,7 @@ namespace SDRSharp.Rtl_433
         private void buttonCu8ToWav_Click(object sender, EventArgs e)
         {
             if (_ClassInterfaceWithRtl433.RecordMONO == false & _ClassInterfaceWithRtl433.RecordSTEREO == false)
-                MessageBox.Show("Choice MONO / STEREO", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Choice MONO / STEREO (stop before)", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
                 if (this.openCu8.ShowDialog() == DialogResult.OK)
@@ -460,7 +464,6 @@ namespace SDRSharp.Rtl_433
                     DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (dialogResult == DialogResult.Yes)
                     {
-
                         formListDevice.deSerializeText(directory + FILELISTEDEVICES);
                     }
                 }
@@ -469,7 +472,7 @@ namespace SDRSharp.Rtl_433
             {
                 displayTypeForm = TYPEFORM.GRAPH;
             }
-           else  //TYPEFORM.LISTMES
+            else  //TYPEFORM.LISTMES
             {
                 displayTypeForm = TYPEFORM.LISTMES;
             }

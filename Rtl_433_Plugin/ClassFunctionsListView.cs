@@ -83,7 +83,7 @@ namespace SDRSharp.Rtl_433
                        for(int i=0;i<nbMessage;i++)
                         {
                             it = cacheListDevices[i];
-                            line = processLine(it, formatNumber,nfi);
+                            line = processLine(it, formatNumber,nfi, cacheListColumns.Count);
                             str.WriteLine(line);
                         }
                     }
@@ -92,7 +92,7 @@ namespace SDRSharp.Rtl_433
                         for (int i = nbMessage-1; i > -1; i--)
                         {
                             it = cacheListDevices[i];
-                            line = processLine(it, formatNumber, nfi);
+                            line = processLine(it, formatNumber, nfi, cacheListColumns.Count);
                             str.WriteLine(line);
                         }
                     }
@@ -106,9 +106,10 @@ namespace SDRSharp.Rtl_433
                 return false;
             }
         }
-        private static string processLine(ListViewItem it, bool formatNumber, NumberFormatInfo nfi)
+        private static string processLine(ListViewItem it, bool formatNumber, NumberFormatInfo nfi,Int32 nbColumn)
         {
             string line = string.Empty;
+            Int32 nColumn = 0;
             foreach (ListViewItem.ListViewSubItem sit in it.SubItems)
             {
                 if (sit.Text == string.Empty)
@@ -123,6 +124,9 @@ namespace SDRSharp.Rtl_433
                         line += sit.Text;
                     line += "\t";
                 }
+                nbColumn += 1;
+                if (nColumn==nbColumn)
+                    return line;   
             }
             return line;
         }

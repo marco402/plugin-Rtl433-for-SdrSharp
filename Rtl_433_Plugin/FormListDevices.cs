@@ -119,6 +119,7 @@ namespace SDRSharp.Rtl_433
         {
             int dev = 0;
             int col = 0;
+            Boolean oldVersion = false;
             try
             {
                 using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
@@ -127,16 +128,44 @@ namespace SDRSharp.Rtl_433
                     string line = string.Empty;
                     {
                         listDevices.BeginUpdate();
-                        line =str.ReadLine();
-                        string[] words = line.Split('\t');
-                        col = 0;
-                        foreach (string word in words)
+                        line = str.ReadLine();
+                        if (line == null)
                         {
-                            listDevices.Columns[col].Text = word;
+                            MessageBox.Show("File devices.txt empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            listDevices.EndUpdate();
+                            return;
+                        }
+                        col = 0;
+                        string[] words = line.Split('\t');
+                        string[] wordsWithNbMes = new string[words.Length - 1];
+                        if (words[1] != "N mes.")  //old version
+                        {
+                            oldVersion = true;
+                            wordsWithNbMes[0] = words[0];
+                            wordsWithNbMes[1] = "N mes.";
+                            for (int i = 2; i < words.Length - 1; i++)
+                                wordsWithNbMes[i] = words[i - 1];
+                        }
+                        else
+                            wordsWithNbMes = words;
+           
+                            foreach (string word in wordsWithNbMes)
+                        {
+                             listDevices.Columns[col].Text = word;
                             if (word.Trim() == string.Empty)
                                 break;
                             cacheListColumns.Add(word, col + 1);
                             col += 1;
+                            
+                            //if (word.Contains("device"))
+                            //{
+                            //    if (wordsWithNbMes[1] != "N mes.")  //old version
+                            //    {
+                            //        listDevices.Columns[col].Text = "N mes.";
+                            //        cacheListColumns.Add("N mes.", col + 1);
+                            //        col += 1;
+                            //    }
+                            //}
                             if (col >maxColumns)
                             {
                                 MessageBox.Show("Maximum of column reached("+ maxColumns.ToString()+")", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -148,8 +177,20 @@ namespace SDRSharp.Rtl_433
                         {
                             line = str.ReadLine();
                             words = line.Split('\t');
+                            
+                            string[] wordsWithNbMes1 = new string[words.Length - 1];
+                            if (oldVersion == true)  //old version
+                            {
+                                wordsWithNbMes1[0] = words[0];
+                                wordsWithNbMes1[1] = "0";
+                                for (int i = 2; i < words.Length - 1; i++)
+                                    wordsWithNbMes1[i] = words[i - 1];
+                            }
+                            else
+                                wordsWithNbMes1 = words;
                             bool initDevice = false;
-                            foreach (string word in words)
+
+                            foreach (string word in wordsWithNbMes1)
                             {
                                 if(initDevice == false)
                                 {
@@ -169,8 +210,7 @@ namespace SDRSharp.Rtl_433
                         }
                         listDevices.VirtualListSize = dev;
                         nbDevice = dev;
-                        //listDevices.EndUpdate();
-                    }
+                        }
                     str.Close();
                 }
                 ClassFunctionsListView.autoResizeAllColumns(listDevices);
@@ -180,19 +220,19 @@ namespace SDRSharp.Rtl_433
             catch (Exception e)
             {
                 MessageBox.Show(e.Message + " col:" + col.ToString() + " dev:" + dev.ToString(), "Error import devices fct(deSerializeText).File:"+ fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                listDevices.EndUpdate();
             }
         }
         public void setInfoDevice(Dictionary<String, String> listData)
         {
             if (cacheListColumns == null)
                 return;
-            this.SuspendLayout();
             string deviceName = classParent.getDeviceName(listData);
             if (deviceName == string.Empty)
             {
-                this.ResumeLayout();
                 return;
             }
+            this.SuspendLayout();
             listDevices.BeginUpdate();
             int indexColonne=0;
             //add column device if necessary
@@ -202,7 +242,16 @@ namespace SDRSharp.Rtl_433
                 listDevices.Columns[cacheListColumns.Count].Text = "Device";
                 cacheListColumns.Add("Device", cacheListColumns.Count+1);
             }
+            //add column nb mes if necessary
+            cacheListColumns.TryGetValue("N mes.", out indexColonne);
+            if (indexColonne == 0)
+            {
+                listDevices.Columns[cacheListColumns.Count].Text = "N mes.";
+                cacheListColumns.Add("N mes.", cacheListColumns.Count + 1);
+            }
             //add column if necessary
+            //testColumn(new KeyValuePair<string, string>("N mes.", "20"));
+            //add other column if necessary
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 cacheListColumns.TryGetValue(_data.Key, out indexColonne);
@@ -215,7 +264,7 @@ namespace SDRSharp.Rtl_433
                 if (indexColonne == 0)
                 {
                     listDevices.Columns[cacheListColumns.Count].Text = _data.Key;
-                    cacheListColumns.Add(_data.Key, cacheListColumns.Count+1);
+                    cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
                 }
             }
             //refresh or new device
@@ -232,7 +281,12 @@ namespace SDRSharp.Rtl_433
                     break;
                 }
             }
+            //device.SubItems.Add(indexCol.ElementAt(index).Value);
+            Int32 countMessage = 1;
             SortedDictionary<int, string> indexCol = new SortedDictionary<int, string>();
+
+            indexCol.Add(2, countMessage.ToString());
+
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 cacheListColumns.TryGetValue(_data.Key, out indexColonne);
@@ -262,7 +316,7 @@ namespace SDRSharp.Rtl_433
                 {
                     device.SubItems.Add("");
                 }
-                //************************************************
+                 //************************************************
                 cacheListDevices[nbDevice] = device;
                 nbDevice += 1;
             }
@@ -271,7 +325,15 @@ namespace SDRSharp.Rtl_433
             {
                 foreach (KeyValuePair<int, string> _data in indexCol)
                 {
-                    device.SubItems[_data.Key-1].Text = _data.Value;
+
+                    if(_data.Key!=2)
+                        device.SubItems[_data.Key-1].Text = _data.Value;
+                    else
+                    {
+                        countMessage = Int32.Parse(device.SubItems[_data.Key - 1].Text);
+                        countMessage += 1;
+                        device.SubItems[1].Text = countMessage.ToString();
+                    }
                 }
             }
             this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() +" / " +maxColumns.ToString();
@@ -280,7 +342,7 @@ namespace SDRSharp.Rtl_433
             listDevices.EndUpdate();
             this.ResumeLayout();
         }
-#endregion
+ #endregion
     }
 }
 

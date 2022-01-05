@@ -146,7 +146,7 @@ namespace SDRSharp.Rtl_433
             public UInt32  buffer_size;   //size_t
 
             public Int32 sample_size;
-
+            Int32 sample_signed;
             public Int32 apply_rate;
             public Int32 apply_freq;
             public Int32 apply_corr;
@@ -238,7 +238,11 @@ public struct demodfm_state
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
         public struct dm_state
         {
+            float auto_level;
+            float squelch_offset;
             public Single level_limit;
+            float noise_level;
+            float min_level_auto;
             public Single min_level;
             public Single min_snr;
             public Single low_pass;
@@ -258,7 +262,7 @@ public struct demodfm_state
             public Byte[] u8_buf; // format conversion buffer
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIMAL_BUF_LENGTH)]
             public Single[] f32_buf; // format conversion buffer
-            public Int32 sample_size; // CU8: 1, CS16: 2 
+            public Int32 sample_size; // CU8: 1, CS16: 2--->*2 in rtl_433
             public IntPtr  pulse_detect;        //pulse_detect_t*
             public filter_state lowpass_filter_state;
             public Int32 bidon;         //-----------------------------<why?
@@ -291,118 +295,122 @@ public struct demodfm_state
             public String dev_query;
             [FieldOffset(4)]
             public String dev_info;
-            [FieldOffset(8)]
+            [FieldOffset(4+4)]
             public String gain_str;
-            [FieldOffset(12)]
+            [FieldOffset(8+4)]
             public String settings_str;
-            [FieldOffset(16)]
+            [FieldOffset(12+4)]
             public Int32 ppm_error;
-            [FieldOffset(20)]
+            [FieldOffset(16+4)]
             public UInt32 out_block_size;
-            [FieldOffset(24)]
+            [FieldOffset(20+4)]
             public String test_data;
-            [FieldOffset(28)]
+            [FieldOffset(24+4)]
             public list in_files;
-            [FieldOffset(40)]
+            [FieldOffset(28+12)]
             public String in_filename;
-            [FieldOffset(44)]
+            [FieldOffset(40+4)]
+            public Int32 replay;
+            [FieldOffset(44+4)]
             public Int32 hop_now;
-            [FieldOffset(48)]
+            [FieldOffset(48+4)]
             public Int32 exit_async;
-            [FieldOffset(52)]
+            [FieldOffset(52+4)]
             public Int32 exit_code; ///< 0=no err, 1=params or cmd line err, 2=sdr device read error, 3=usb init error, 5=USB error (reset), other=other error
-            [FieldOffset(56)]
+            [FieldOffset(56+4)]
             public Int32 frequencies;
-            [FieldOffset(60)]
+            [FieldOffset(60+4)]
             public Int32 frequency_index;
-            [FieldOffset(64)]
+            [FieldOffset(64+4)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public UInt32[] frequency;
-            [FieldOffset(192)]
+            [FieldOffset(68+32*4)]
             public UInt32 center_frequency;
-            [FieldOffset(196)]
+            [FieldOffset(196+4)]
             public Int32 fsk_pulse_detect_mode;
-            [FieldOffset(200)]
+            [FieldOffset(200+4)]
             public Int32 hop_times;
-            [FieldOffset(204)]
+            [FieldOffset(204+4)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public Int32[] hop_time;
-            [FieldOffset(332+4)]    //-----------------------------------<why?
+            [FieldOffset(208+32*4+4)]    //-----------------------------------<why +4?
             public Int64 hop_start_time;   //time_t
-            [FieldOffset(344)]
+            [FieldOffset(340+8)]
             public Int32 duration;
-            [FieldOffset(352)]
+            [FieldOffset(348+4)]
             public Int64 stop_time;   //time_t
-            [FieldOffset(360)]
+            [FieldOffset(352+8)]
             public Int32 after_successful_events_flag;
-            [FieldOffset(364)]
+            [FieldOffset(360+4)]
             public UInt32 samp_rate;
-            [FieldOffset(368)]
+            [FieldOffset(364+4)]
             public UInt64 input_pos;
-            [FieldOffset(376)]
+            [FieldOffset(368+8)]
             public UInt32 bytes_to_read;
-            [FieldOffset(380)]
+            [FieldOffset(376+4)]
             public IntPtr dev;   //  struct sdr_dev *dev;
-            [FieldOffset(384)]
+            [FieldOffset(380+4)]
             public Int32 grab_mode; ///< Signal grabber mode: 0=off, 1=all, 2=unknown, 3=known
-            [FieldOffset(388)]
+            [FieldOffset(384+4)]
             public Int32 raw_mode; ///< Raw pulses printing mode: 0=off, 1=all, 2=unknown, 3=known
-            [FieldOffset(392)]
+            [FieldOffset(388+4)]
             public Int32 verbosity; ///< 0=normal, 1=verbose, 2=verbose decoders, 3=debug decoders, 4=trace decoding.
-            [FieldOffset(396)]
+            [FieldOffset(392+4)]
             public Int32 verbose_bits;
-            [FieldOffset(400)]
+            [FieldOffset(396+4)]
             public conversion_mode_t conversion_mode;
-            [FieldOffset(404)]
+            [FieldOffset(400+4)]
             public Int32 report_meta;
-            [FieldOffset(408)]
+            [FieldOffset(404+4)]
+            public Int32 report_noise;
+            [FieldOffset(408+4)]
             public Int32 report_protocol;
-            [FieldOffset(412)]
+            [FieldOffset(412+4)]
             public time_mode_t report_time;
-            [FieldOffset(416)]
+            [FieldOffset(416+4)]
             public Int32 report_time_hires;
-            [FieldOffset(420)]
+            [FieldOffset(420+4)]
             public Int32 report_time_tz;
-            [FieldOffset(424)]
-            public Int32 report_time_utc;
-            [FieldOffset(428)]
+            [FieldOffset(424+4)]
+            public Int32 report_time_utc;  //commencer la
+            [FieldOffset(428+4)]
             public Int32 report_description;
-            [FieldOffset(432)]
+            [FieldOffset(432+4)]
             public Int32 report_stats;
-            [FieldOffset(436)]
+            [FieldOffset(436+4)]
             public Int32 stats_interval;
-            [FieldOffset(440)]
+            [FieldOffset(440+4)]
             public Int32 stats_now;
-            [FieldOffset(444+4)]    //-----------------------------------<why?
-            public Int64 stats_time;   //time_t
-            [FieldOffset(456)] 
+            [FieldOffset(444+4)]       //-----------------------------------<why +4?
+            public Int64 stats_time;     //time_t
+            [FieldOffset(448+8)] 
             public Int32 no_default_devices;
-            [FieldOffset(460)]
+            [FieldOffset(456+4)]
             public IntPtr devices;       //public struct r_device *devices;
-            [FieldOffset(464)]
+            [FieldOffset(460+4)]
             public UInt16 num_r_devices;
-            [FieldOffset(468)]
+            [FieldOffset(464+4)]        //not 2 ?
             public list data_tags;
-            [FieldOffset(480)]
+            [FieldOffset(468+12)]
             public list output_handler;
-            [FieldOffset(492)]
+            [FieldOffset(480+12)]
             public IntPtr demod;     //public struct dm_state *demod;
-            [FieldOffset(496)]
+            [FieldOffset(492+4)]
             public String sr_filename;
-            [FieldOffset(500)]
+            [FieldOffset(496+4)]
             public Int32 sr_execopen;
-            [FieldOffset(504)]
-            public Int32 old_model_keys;
-            [FieldOffset(508+4)]    //-----------------------------------<why?
+            [FieldOffset(500+4)]
+            //public Int32 old_model_keys;
+            //[FieldOffset(508+4)]    //-----------------------------------<why?
             /* stats*/
             public Int64 frames_since;    //time_t
-            [FieldOffset(520)]
+            [FieldOffset(504+8)]
             public UInt32 frames_count; ///< stats counter for interval
-            [FieldOffset(524)]
+            [FieldOffset(512+4)]
             public UInt32 frames_fsk; ///< stats counter for interval
-            [FieldOffset(528)]
+            [FieldOffset(516+4)]
             public UInt32 frames_events; ///< stats counter for interval
-            [FieldOffset(532)]
+            [FieldOffset(520+4)]
             public IntPtr mgr;    //public struct mg_mgr *mgr;
         }
     }

@@ -16,6 +16,7 @@ namespace SDRSharp.Rtl_433
         private ListViewItem[] cacheListMessages;
         private int nbMessage = 0;
         private Rtl_433_Panel classParent;
+		private bool firstToTop = false;
         int nbColumn = 0;
         public FormDevicesListMessages(Rtl_433_Panel classParent, int maxDevices,int nbColumn,string name, ClassInterfaceWithRtl433 classInterfaceWithRtl433)
         {
@@ -140,12 +141,20 @@ namespace SDRSharp.Rtl_433
             //************************************************
             //cacheListMessages[nbMessage] = device;       last message at the bottom list
 
-            //last message at the top list
-            for (int m=nbMessage;m>0;m--)
-            {
-            cacheListMessages[m] = cacheListMessages[m-1];
-            }
-            cacheListMessages[0] = device;
+
+			if (firstToTop)
+			{
+				cacheListMessages[nbMessage] = device;
+			}
+			else{
+				//last message at the top list
+	            for (int m=nbMessage;m>0;m--)
+				{
+					cacheListMessages[m] = cacheListMessages[m-1];
+				}
+				cacheListMessages[0] = device;			
+			}
+
             //
 
             nbMessage += 1;

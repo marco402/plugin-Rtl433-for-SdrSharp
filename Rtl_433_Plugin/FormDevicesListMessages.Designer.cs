@@ -71,8 +71,8 @@
             // 
             this.toolStripStatusLabelDevices.ForeColor = System.Drawing.Color.Red;
             this.toolStripStatusLabelDevices.Name = "toolStripStatusLabelDevices";
-            this.toolStripStatusLabelDevices.Size = new System.Drawing.Size(205, 17);
-            this.toolStripStatusLabelDevices.Text = " (WARNING replace the file if it exists)";
+            this.toolStripStatusLabelDevices.Size = new System.Drawing.Size(210, 17);
+            this.toolStripStatusLabelDevices.Text = " (WARNING replaces the file if it exists)";
             // 
             // FormDevicesListMessages
             // 

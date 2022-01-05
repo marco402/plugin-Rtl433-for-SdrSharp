@@ -28,7 +28,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.5.3.1";
+        private const string _VERSION = "1.5.4.0";  //update also project property
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -90,37 +90,74 @@ namespace SDRSharp.Rtl_433
             else
                 listOptionsRtl433["MProtocol"] = value;
         }
-        public void setHideOrShowDevices(List <string> listBoxHideDevices,bool hide)
+        public void setHideOrShowDevices(List<string> listBoxSelectedDevices, bool hide)
         {
+            Dictionary<String, String> copyListOptionsRtl433 = new Dictionary<String, String>();
+            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
+            {
+                if (!(_option.Key.Contains("hide") || _option.Key.Contains("show")))
+                    //keep all key not egal hide or show
+                    copyListOptionsRtl433.Add(_option.Key, _option.Value);    //keep all key not egal hide or show
+                //else
+                //{
+                //    if (_option.Value.Contains("-R-"))
+                //        copyListOptionsRtl433.Add(_option.Key, "-" + _option.Value.Replace("-", "")); //register protocol
+                //}
+            }
+            //-R device<protocol> show protocol
+            //-R device<-1> hide protocol
+            //without -R show all protocol
+            listOptionsRtl433.Clear();
 
-            //1-supprimer tous les hide
- 
-            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
+            foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
             {
-                if (_option.Key.Contains("hide"))
-                    listOptionsRtl433.Remove(_option.Key);
+                listOptionsRtl433.Add(_option.Key, _option.Value);
             }
-            //1-supprimer tous les show
-            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
-            {
-                if (_option.Key.Contains("show"))
-                    listOptionsRtl433.Remove(_option.Key);
-            }
-            //3-ajouter tous les select
-            if(hide)
-            {
-                foreach (string device in listBoxHideDevices)
+            copyListOptionsRtl433.Clear();
+            foreach (string device in listBoxSelectedDevices)
+            { 
+                if (hide)
                 {
-                    listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
+                   listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
+                }
+                else
+                {
+                   listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
                 }
             }
-            else
+            foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
             {
-                foreach (string device in listBoxHideDevices)
-                {
-                    listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
-                }
+                listOptionsRtl433.Add(_option.Key, _option.Value);
             }
+
+
+            ////1-remove all hide
+            //foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
+            //{
+            //    if (_option.Key.Contains("hide"))
+            //        listOptionsRtl433.Remove(_option.Key);
+            //}
+            ////1-remove all show
+            //foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
+            //{
+            //    if (_option.Key.Contains("show"))
+            //        listOptionsRtl433.Remove(_option.Key);
+            //}
+            ////3-ajouter tous les select
+            //if(hide)
+            //{
+            //    foreach (string device in listBoxSelectedDevices)
+            //    {
+            //        listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (string device in listBoxSelectedDevices)
+            //    {
+            //        listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
+            //    }
+            //}
             ////Dictionary<String, String> copyListOptionsRtl433=new Dictionary<String, String>();
             ////foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
             ////{
@@ -514,34 +551,35 @@ namespace SDRSharp.Rtl_433
                             MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                             int x = 0;
-                            
-                            if (struct_demod.pulse_data.num_pulses == 0)
-                                x = 0;
-                             if (struct_demod.pulse_data.num_pulses > 0)
+
+                            //if (struct_demod.pulse_data.num_pulses == 0)
+                            //    x = 0;
+                            if (struct_demod.pulse_data.num_pulses > 0)
                             {
                                 for (int bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
                                 {
-                                    x += (int) (struct_demod.pulse_data.pulse[bit] * samples_per_us);
+                                    x += (int)(struct_demod.pulse_data.pulse[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 1));
                                     points[0].Add(new PointF(x, 0));
-                                    x += (int) (struct_demod.pulse_data.gap[bit] * samples_per_us);
+                                    x += (int)(struct_demod.pulse_data.gap[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 0));
                                     points[0].Add(new PointF(x, 1));
                                 }
                             }
-                            else
+                            else if (struct_demod.fsk_pulse_data.num_pulses > 0)
                             {
                                 for (int bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
                                 {
                                     x += (int)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 1));
                                     points[0].Add(new PointF(x, 0));
-                                    x += (int) (struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
+                                    x += (int)(struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
                                     points[0].Add(new PointF(x, 0));
                                     points[0].Add(new PointF(x, 1));
                                 }
                             }
-                            
+                            else
+                                x = x;
                             if (NumGraph > 1)
                             {
                                 int endData = searchZero(struct_demod.am_buf);
