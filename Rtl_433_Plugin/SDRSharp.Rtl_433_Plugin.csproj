@@ -178,9 +178,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SDRSharp\bin\Release\GraphLib.dll</HintPath>
     </Reference>
-    <Reference Include="SDRSharp, Version=1.0.0.1777, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.exe</HintPath>
+    <Reference Include="SDRSharp, Version=1.0.0.1632, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.exe</HintPath>
     </Reference>
     <Reference Include="SDRSharp.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
