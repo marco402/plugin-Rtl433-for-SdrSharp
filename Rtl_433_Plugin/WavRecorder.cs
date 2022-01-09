@@ -150,7 +150,7 @@ namespace SDRSharp.Rtl_433
                     newName = fileName.Replace(".cu8", "_MONO.wav");
                     WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length,  sampleRate, wavRecorder.recordType.MONO);
                     }
-                    MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                     MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);

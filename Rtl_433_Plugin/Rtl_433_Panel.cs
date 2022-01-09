@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.IO;
 using GraphLib;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 //#if NOTESTFORMLISTMESSAGES
 //                    addFormDevice(listData, points, nameGraph);
 //#else
@@ -44,6 +45,7 @@ namespace SDRSharp.Rtl_433
         private Rtl_433_Processor _Rtl_433Processor;
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private FormListDevices formListDevice = null;
+        //private Int32 cpt = 0;
         private void displayParam()
         {
         richTextBoxMessages.Clear();
@@ -93,6 +95,7 @@ namespace SDRSharp.Rtl_433
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
             richTextBoxMessages.MaxLength = 5000;
+            groupBoxOptionY.Visible = false;
 #if TESTWINDOWS
             MessageBox.Show("Version de test");
 #endif
@@ -255,20 +258,24 @@ namespace SDRSharp.Rtl_433
                                 if (listformDeviceListMessages.Count > _MaxDevicesWindows - 1)
                                     return;
                                 if (radioButtonMLevel.Checked)
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10, listData.Count + 1 +2 , deviceName, _ClassInterfaceWithRtl433)); //+2 for debug
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10, listData.Count + 1 +10 , deviceName, _ClassInterfaceWithRtl433)); //+2 for debug
                                 else
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, listData.Count + 1 + 5 +2 , deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel //+2 for debug
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, listData.Count + 1 + 5 +10 , deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel //+2 for debug
                                 listformDeviceListMessages[deviceName].Text = deviceName;
                                 listformDeviceListMessages[deviceName].Visible = true;
                                 listformDeviceListMessages[deviceName].Show();
                              }
                         }
-         
+                        //if (cpt>5)
+                        //{
+                        //listData.Add("ggg", "1");
+                        //listData.Add("hhh", "2");
+                        //listData.Add("iii", "3");
+                        //}
+                        //cpt += 1;
                         listformDeviceListMessages[deviceName].setMessages(listData);
-
                         //listformDeviceListMessages[deviceName].resetLabelRecord();  //after le load for memo...
                                                                                     //if (listformDeviceListMessages.Count < _nbDevicesWithGraph)
-
                     }
                 }
                 else
@@ -330,6 +337,7 @@ namespace SDRSharp.Rtl_433
             groupBoxSave.Enabled = state;
             groupBoxHideShow.Enabled = state;
             groupBoxDataConv.Enabled = state;
+            groupBoxOptionY.Enabled = state;
             listBoxHideShowDevices.Enabled = state;
             checkBoxEnabledDevicesDisabled.Enabled  = state;
 
@@ -425,7 +433,6 @@ namespace SDRSharp.Rtl_433
         private void checkBoxSTEREO_CheckedChanged(object sender, EventArgs e)
         {
             _ClassInterfaceWithRtl433.RecordSTEREO=checkBoxSTEREO.Checked;
-
         }
         private void buttonCu8ToWav_Click(object sender, EventArgs e)
         {
@@ -433,9 +440,14 @@ namespace SDRSharp.Rtl_433
                 MessageBox.Show("Choice MONO / STEREO (stop before)", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
+                openCu8.Multiselect = true;
                 if (this.openCu8.ShowDialog() == DialogResult.OK)
                 {
-                     wavRecorder.convertCu8ToWav(openCu8.FileName, _ClassInterfaceWithRtl433.RecordMONO, _ClassInterfaceWithRtl433.RecordSTEREO,1);
+                    foreach (String file in openCu8.FileNames)
+                    {
+                        wavRecorder.convertCu8ToWav(file, _ClassInterfaceWithRtl433.RecordMONO, _ClassInterfaceWithRtl433.RecordSTEREO, 1);
+                    }
+                    MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -490,6 +502,83 @@ namespace SDRSharp.Rtl_433
                 checkBoxEnabledDevicesDisabled.Text = "Default value";
             }
         }
+        private void checkBoxY_CheckedChanged(object sender, EventArgs e)
+        {
+            System.Windows.Forms.CheckBox chck = (System.Windows.Forms.CheckBox)sender;
+            String option = (String)chck.Tag;
+            Boolean check = chck.Checked;
+            if ((String)chck.Tag == "ampest or magest")
+                if (chck.Checked)
+                {
+                    _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", true);
+                    _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", false);
+                    chck.Text = "-Yampest";
+                }
+                else
+                {
+                    _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", true);
+                    _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", false);
+                    chck.Text = "-Ymagest";
+                }
+            else if ((String) chck.Tag == "-Ylevel" | (String)chck.Tag == "-Yminlevel" | (String)chck.Tag == "-Yminsnr")
+                processWithParameter((String)chck.Tag);
+            else
+                _ClassInterfaceWithRtl433.setOptionUniqueKey( option, check);
+        }
+       private void radioButtonYFSK_CheckedChanged(object sender, EventArgs e)
+        {
+            System.Windows.Forms.RadioButton chck = (System.Windows.Forms.RadioButton)sender;
+            if (chck.Checked)
+                 _ClassInterfaceWithRtl433.setOption("YFSK", (String)chck.Tag);
+        }
+
+        private void numericUpDownFSK_ValueChanged(object sender, EventArgs e)
+        {
+            System.Windows.Forms.NumericUpDown chck = (System.Windows.Forms.NumericUpDown)sender;
+            processWithParameter((String)chck.Tag);
+            //if ((String)chck.Tag== "-Ylevel" & checkBoxYPulsesDetectionLevel.Checked)
+            //{
+            //    _ClassInterfaceWithRtl433.setOption((string)chck.Tag, string.Concat(chck.Tag, '=',  chck.Value));
+            //}
+
+            //else if ((String)chck.Tag == "-Yminlevel" & checkBoxYMinimumDetectionLevelPulses.Checked)
+            //{
+            //    _ClassInterfaceWithRtl433.setOption((string)chck.Tag, string.Concat(chck.Tag,'=', chck.Value));
+            //}
+            //else if ((String)chck.Tag == "-Yminsnr" & checkBoxYMinimumSNRPulses.Checked)
+            //{
+            //    _ClassInterfaceWithRtl433.setOption((string)chck.Tag, string.Concat(chck.Tag, '=',  chck.Value));
+            //}
+        }
+        private void processWithParameter(String tag)
+        {
+            if (tag == "-Ylevel" )
+            {
+                if (checkBoxYPulsesDetectionLevel.Checked)
+                    _ClassInterfaceWithRtl433.setOption(tag, string.Concat(tag, '=', numericUpDownPulseDetectionLevel.Value));
+                else
+                    _ClassInterfaceWithRtl433.setOption(tag, "No ");
+            }
+
+            else if (tag == "-Yminlevel")
+            {
+                if( checkBoxYMinimumDetectionLevelPulses.Checked)
+                     _ClassInterfaceWithRtl433.setOption(tag, string.Concat(tag, '=', numericUpDownMinimumDetectionLevel.Value));
+                else
+                    _ClassInterfaceWithRtl433.setOption(tag, "No ");
+            }
+            else if (tag == "-Yminsnr" )
+            {
+                if(checkBoxYMinimumSNRPulses.Checked)
+                     _ClassInterfaceWithRtl433.setOption(tag, string.Concat(tag, '=', numericUpDownMinimumSNRPulses.Value));
+                else
+                    _ClassInterfaceWithRtl433.setOption(tag, "No ");
+            }
+
+
+        }
         #endregion
+
+
     }
 }

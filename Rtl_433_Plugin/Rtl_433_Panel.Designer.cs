@@ -80,6 +80,19 @@
             this.buttonStartStop = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
+            this.groupBoxOptionY = new System.Windows.Forms.GroupBox();
+            this.radioButtonYMinmax = new System.Windows.Forms.RadioButton();
+            this.radioButtonYClassic = new System.Windows.Forms.RadioButton();
+            this.radioButtonYAuto = new System.Windows.Forms.RadioButton();
+            this.numericUpDownMinimumSNRPulses = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMinimumDetectionLevel = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownPulseDetectionLevel = new System.Windows.Forms.NumericUpDown();
+            this.checkBoxYAmpest = new System.Windows.Forms.CheckBox();
+            this.checkBoxYSquelch = new System.Windows.Forms.CheckBox();
+            this.checkBoxYAutoLevel = new System.Windows.Forms.CheckBox();
+            this.checkBoxYMinimumSNRPulses = new System.Windows.Forms.CheckBox();
+            this.checkBoxYMinimumDetectionLevelPulses = new System.Windows.Forms.CheckBox();
+            this.checkBoxYPulsesDetectionLevel = new System.Windows.Forms.CheckBox();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -91,6 +104,10 @@
             this.groupBoxHideShow.SuspendLayout();
             this.groupBoxSelectTypeForm.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBoxOptionY.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPulseDetectionLevel)).BeginInit();
             this.SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -123,6 +140,7 @@
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
             this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 0, 0);
             this.mainTableLayoutPanel.Controls.Add(this.groupBox2, 0, 13);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxOptionY, 0, 18);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
@@ -146,7 +164,7 @@
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.mainTableLayoutPanel.Size = new System.Drawing.Size(251, 1213);
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(254, 1443);
             this.mainTableLayoutPanel.TabIndex = 1;
             // 
             // groupBoxDataConv
@@ -209,7 +227,7 @@
             this.labelTimeCycle.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeCycle, 2);
             this.labelTimeCycle.ForeColor = System.Drawing.Color.Blue;
-            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1185);
+            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1159);
             this.labelTimeCycle.Name = "labelTimeCycle";
             this.labelTimeCycle.Size = new System.Drawing.Size(55, 13);
             this.labelTimeCycle.TabIndex = 15;
@@ -222,7 +240,7 @@
             this.labelTimeRtl433.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeRtl433, 2);
             this.labelTimeRtl433.ForeColor = System.Drawing.Color.Blue;
-            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1159);
+            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1185);
             this.labelTimeRtl433.Name = "labelTimeRtl433";
             this.labelTimeRtl433.Size = new System.Drawing.Size(89, 13);
             this.labelTimeRtl433.TabIndex = 16;
@@ -281,7 +299,7 @@
             this.richTextBoxMessages.Name = "richTextBoxMessages";
             this.richTextBoxMessages.ReadOnly = true;
             this.richTextBoxMessages.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBoxMessages.Size = new System.Drawing.Size(245, 257);
+            this.richTextBoxMessages.Size = new System.Drawing.Size(248, 257);
             this.richTextBoxMessages.TabIndex = 5;
             this.richTextBoxMessages.Text = "";
             this.richTextBoxMessages.TextChanged += new System.EventHandler(this.richTextBoxMessages_TextChanged);
@@ -656,7 +674,7 @@
             this.groupBoxR.ForeColor = System.Drawing.Color.Blue;
             this.groupBoxR.Location = new System.Drawing.Point(3, 686);
             this.groupBoxR.Name = "groupBoxR";
-            this.groupBoxR.Size = new System.Drawing.Size(245, 120);
+            this.groupBoxR.Size = new System.Drawing.Size(248, 120);
             this.groupBoxR.TabIndex = 9;
             this.groupBoxR.TabStop = false;
             this.groupBoxR.Text = "hide devices(-R)";
@@ -672,7 +690,7 @@
             this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);
             this.listBoxHideShowDevices.Name = "listBoxHideShowDevices";
             this.listBoxHideShowDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxHideShowDevices.Size = new System.Drawing.Size(239, 101);
+            this.listBoxHideShowDevices.Size = new System.Drawing.Size(242, 101);
             this.listBoxHideShowDevices.TabIndex = 3;
             // 
             // labelHideDevices
@@ -697,7 +715,7 @@
             this.groupBoxHideShow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxHideShow.Location = new System.Drawing.Point(3, 643);
             this.groupBoxHideShow.Name = "groupBoxHideShow";
-            this.groupBoxHideShow.Size = new System.Drawing.Size(245, 37);
+            this.groupBoxHideShow.Size = new System.Drawing.Size(248, 37);
             this.groupBoxHideShow.TabIndex = 21;
             this.groupBoxHideShow.TabStop = false;
             // 
@@ -734,7 +752,7 @@
             this.groupBoxSelectTypeForm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxSelectTypeForm.Location = new System.Drawing.Point(3, 33);
             this.groupBoxSelectTypeForm.Name = "groupBoxSelectTypeForm";
-            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(245, 34);
+            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(248, 34);
             this.groupBoxSelectTypeForm.TabIndex = 22;
             this.groupBoxSelectTypeForm.TabStop = false;
             // 
@@ -781,7 +799,7 @@
             this.buttonStartStop.ForeColor = System.Drawing.Color.Cyan;
             this.buttonStartStop.Location = new System.Drawing.Point(3, 3);
             this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(245, 24);
+            this.buttonStartStop.Size = new System.Drawing.Size(248, 24);
             this.buttonStartStop.TabIndex = 19;
             this.buttonStartStop.UseVisualStyleBackColor = false;
             this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
@@ -794,7 +812,7 @@
             this.groupBox2.ForeColor = System.Drawing.Color.Blue;
             this.groupBox2.Location = new System.Drawing.Point(3, 812);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(245, 41);
+            this.groupBox2.Size = new System.Drawing.Size(248, 41);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Enabled devices disabled";
@@ -811,13 +829,219 @@
             this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
             this.checkBoxEnabledDevicesDisabled.CheckedChanged += new System.EventHandler(this.checkBoxEnabledDevicesDisabled_CheckedChanged);
             // 
+            // groupBoxOptionY
+            // 
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxOptionY, 2);
+            this.groupBoxOptionY.Controls.Add(this.radioButtonYMinmax);
+            this.groupBoxOptionY.Controls.Add(this.radioButtonYClassic);
+            this.groupBoxOptionY.Controls.Add(this.radioButtonYAuto);
+            this.groupBoxOptionY.Controls.Add(this.numericUpDownMinimumSNRPulses);
+            this.groupBoxOptionY.Controls.Add(this.numericUpDownMinimumDetectionLevel);
+            this.groupBoxOptionY.Controls.Add(this.numericUpDownPulseDetectionLevel);
+            this.groupBoxOptionY.Controls.Add(this.checkBoxYAmpest);
+            this.groupBoxOptionY.Controls.Add(this.checkBoxYSquelch);
+            this.groupBoxOptionY.Controls.Add(this.checkBoxYAutoLevel);
+            this.groupBoxOptionY.Controls.Add(this.checkBoxYMinimumSNRPulses);
+            this.groupBoxOptionY.Controls.Add(this.checkBoxYMinimumDetectionLevelPulses);
+            this.groupBoxOptionY.Controls.Add(this.checkBoxYPulsesDetectionLevel);
+            this.groupBoxOptionY.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxOptionY.Location = new System.Drawing.Point(3, 1208);
+            this.groupBoxOptionY.Name = "groupBoxOptionY";
+            this.groupBoxOptionY.Size = new System.Drawing.Size(248, 232);
+            this.groupBoxOptionY.TabIndex = 27;
+            this.groupBoxOptionY.TabStop = false;
+            this.groupBoxOptionY.Text = "options -Y";
+            // 
+            // radioButtonYMinmax
+            // 
+            this.radioButtonYMinmax.AutoSize = true;
+            this.radioButtonYMinmax.Location = new System.Drawing.Point(13, 59);
+            this.radioButtonYMinmax.Name = "radioButtonYMinmax";
+            this.radioButtonYMinmax.Size = new System.Drawing.Size(153, 17);
+            this.radioButtonYMinmax.TabIndex = 2;
+            this.radioButtonYMinmax.TabStop = true;
+            this.radioButtonYMinmax.Tag = "-Yminmax";
+            this.radioButtonYMinmax.Text = "FSK pulse detector minmax";
+            this.radioButtonYMinmax.UseVisualStyleBackColor = true;
+            this.radioButtonYMinmax.CheckedChanged += new System.EventHandler(this.radioButtonYFSK_CheckedChanged);
+            // 
+            // radioButtonYClassic
+            // 
+            this.radioButtonYClassic.AutoSize = true;
+            this.radioButtonYClassic.Location = new System.Drawing.Point(13, 39);
+            this.radioButtonYClassic.Name = "radioButtonYClassic";
+            this.radioButtonYClassic.Size = new System.Drawing.Size(150, 17);
+            this.radioButtonYClassic.TabIndex = 2;
+            this.radioButtonYClassic.TabStop = true;
+            this.radioButtonYClassic.Tag = "-Yclassic";
+            this.radioButtonYClassic.Text = "FSK pulse detector classic";
+            this.radioButtonYClassic.UseVisualStyleBackColor = true;
+            this.radioButtonYClassic.CheckedChanged += new System.EventHandler(this.radioButtonYFSK_CheckedChanged);
+            // 
+            // radioButtonYAuto
+            // 
+            this.radioButtonYAuto.AutoSize = true;
+            this.radioButtonYAuto.Location = new System.Drawing.Point(13, 19);
+            this.radioButtonYAuto.Name = "radioButtonYAuto";
+            this.radioButtonYAuto.Size = new System.Drawing.Size(139, 17);
+            this.radioButtonYAuto.TabIndex = 2;
+            this.radioButtonYAuto.TabStop = true;
+            this.radioButtonYAuto.Tag = "-Yauto";
+            this.radioButtonYAuto.Text = "FSK pulse detector auto";
+            this.radioButtonYAuto.UseVisualStyleBackColor = true;
+            this.radioButtonYAuto.CheckedChanged += new System.EventHandler(this.radioButtonYFSK_CheckedChanged);
+            // 
+            // numericUpDownMinimumSNRPulses
+            // 
+            this.numericUpDownMinimumSNRPulses.Location = new System.Drawing.Point(148, 116);
+            this.numericUpDownMinimumSNRPulses.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+            this.numericUpDownMinimumSNRPulses.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownMinimumSNRPulses.Name = "numericUpDownMinimumSNRPulses";
+            this.numericUpDownMinimumSNRPulses.Size = new System.Drawing.Size(64, 20);
+            this.numericUpDownMinimumSNRPulses.TabIndex = 1;
+            this.numericUpDownMinimumSNRPulses.Tag = "-Yminsnr";
+            this.numericUpDownMinimumSNRPulses.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.numericUpDownMinimumSNRPulses.ValueChanged += new System.EventHandler(this.numericUpDownFSK_ValueChanged);
+            // 
+            // numericUpDownMinimumDetectionLevel
+            // 
+            this.numericUpDownMinimumDetectionLevel.Location = new System.Drawing.Point(148, 96);
+            this.numericUpDownMinimumDetectionLevel.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownMinimumDetectionLevel.Minimum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownMinimumDetectionLevel.Name = "numericUpDownMinimumDetectionLevel";
+            this.numericUpDownMinimumDetectionLevel.Size = new System.Drawing.Size(64, 20);
+            this.numericUpDownMinimumDetectionLevel.TabIndex = 1;
+            this.numericUpDownMinimumDetectionLevel.Tag = "-Yminlevel";
+            this.numericUpDownMinimumDetectionLevel.Value = new decimal(new int[] {
+            12,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownMinimumDetectionLevel.ValueChanged += new System.EventHandler(this.numericUpDownFSK_ValueChanged);
+            // 
+            // numericUpDownPulseDetectionLevel
+            // 
+            this.numericUpDownPulseDetectionLevel.Location = new System.Drawing.Point(148, 76);
+            this.numericUpDownPulseDetectionLevel.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownPulseDetectionLevel.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownPulseDetectionLevel.Name = "numericUpDownPulseDetectionLevel";
+            this.numericUpDownPulseDetectionLevel.Size = new System.Drawing.Size(64, 20);
+            this.numericUpDownPulseDetectionLevel.TabIndex = 1;
+            this.numericUpDownPulseDetectionLevel.Tag = "-Ylevel";
+            this.numericUpDownPulseDetectionLevel.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownPulseDetectionLevel.ValueChanged += new System.EventHandler(this.numericUpDownFSK_ValueChanged);
+            // 
+            // checkBoxYAmpest
+            // 
+            this.checkBoxYAmpest.AutoSize = true;
+            this.checkBoxYAmpest.Location = new System.Drawing.Point(13, 179);
+            this.checkBoxYAmpest.Name = "checkBoxYAmpest";
+            this.checkBoxYAmpest.Size = new System.Drawing.Size(61, 17);
+            this.checkBoxYAmpest.TabIndex = 0;
+            this.checkBoxYAmpest.Tag = "ampest or magest";
+            this.checkBoxYAmpest.Text = "Ampest";
+            this.checkBoxYAmpest.UseVisualStyleBackColor = true;
+            this.checkBoxYAmpest.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
+            // 
+            // checkBoxYSquelch
+            // 
+            this.checkBoxYSquelch.AutoSize = true;
+            this.checkBoxYSquelch.Location = new System.Drawing.Point(13, 159);
+            this.checkBoxYSquelch.Name = "checkBoxYSquelch";
+            this.checkBoxYSquelch.Size = new System.Drawing.Size(65, 17);
+            this.checkBoxYSquelch.TabIndex = 0;
+            this.checkBoxYSquelch.Tag = "-Ysquelch";
+            this.checkBoxYSquelch.Text = "Squelch";
+            this.checkBoxYSquelch.UseVisualStyleBackColor = true;
+            this.checkBoxYSquelch.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
+            // 
+            // checkBoxYAutoLevel
+            // 
+            this.checkBoxYAutoLevel.AutoSize = true;
+            this.checkBoxYAutoLevel.Location = new System.Drawing.Point(13, 139);
+            this.checkBoxYAutoLevel.Name = "checkBoxYAutoLevel";
+            this.checkBoxYAutoLevel.Size = new System.Drawing.Size(73, 17);
+            this.checkBoxYAutoLevel.TabIndex = 0;
+            this.checkBoxYAutoLevel.Tag = "-Yautolevel";
+            this.checkBoxYAutoLevel.Text = "Auto level";
+            this.checkBoxYAutoLevel.UseVisualStyleBackColor = true;
+            this.checkBoxYAutoLevel.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
+            // 
+            // checkBoxYMinimumSNRPulses
+            // 
+            this.checkBoxYMinimumSNRPulses.AutoSize = true;
+            this.checkBoxYMinimumSNRPulses.Location = new System.Drawing.Point(13, 119);
+            this.checkBoxYMinimumSNRPulses.Name = "checkBoxYMinimumSNRPulses";
+            this.checkBoxYMinimumSNRPulses.Size = new System.Drawing.Size(129, 17);
+            this.checkBoxYMinimumSNRPulses.TabIndex = 0;
+            this.checkBoxYMinimumSNRPulses.Tag = "-Yminsnr";
+            this.checkBoxYMinimumSNRPulses.Text = "Minimum SNR  pulses";
+            this.checkBoxYMinimumSNRPulses.UseVisualStyleBackColor = true;
+            this.checkBoxYMinimumSNRPulses.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
+            // 
+            // checkBoxYMinimumDetectionLevelPulses
+            // 
+            this.checkBoxYMinimumDetectionLevelPulses.AutoSize = true;
+            this.checkBoxYMinimumDetectionLevelPulses.Location = new System.Drawing.Point(13, 99);
+            this.checkBoxYMinimumDetectionLevelPulses.Name = "checkBoxYMinimumDetectionLevelPulses";
+            this.checkBoxYMinimumDetectionLevelPulses.Size = new System.Drawing.Size(134, 17);
+            this.checkBoxYMinimumDetectionLevelPulses.TabIndex = 0;
+            this.checkBoxYMinimumDetectionLevelPulses.Tag = "-Yminlevel";
+            this.checkBoxYMinimumDetectionLevelPulses.Text = "Min detect level pulses";
+            this.checkBoxYMinimumDetectionLevelPulses.UseVisualStyleBackColor = true;
+            this.checkBoxYMinimumDetectionLevelPulses.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
+            // 
+            // checkBoxYPulsesDetectionLevel
+            // 
+            this.checkBoxYPulsesDetectionLevel.AutoSize = true;
+            this.checkBoxYPulsesDetectionLevel.Location = new System.Drawing.Point(13, 79);
+            this.checkBoxYPulsesDetectionLevel.Name = "checkBoxYPulsesDetectionLevel";
+            this.checkBoxYPulsesDetectionLevel.Size = new System.Drawing.Size(129, 17);
+            this.checkBoxYPulsesDetectionLevel.TabIndex = 0;
+            this.checkBoxYPulsesDetectionLevel.Tag = "-Ylevel";
+            this.checkBoxYPulsesDetectionLevel.Text = "Pulses detection level";
+            this.checkBoxYPulsesDetectionLevel.UseVisualStyleBackColor = true;
+            this.checkBoxYPulsesDetectionLevel.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
+            // 
             // Rtl_433_Panel
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
             this.Controls.Add(this.mainTableLayoutPanel);
             this.Name = "Rtl_433_Panel";
-            this.Size = new System.Drawing.Size(251, 1213);
+            this.Size = new System.Drawing.Size(254, 1443);
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
             this.groupBoxDataConv.ResumeLayout(false);
@@ -839,6 +1063,11 @@
             this.groupBoxSelectTypeForm.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBoxOptionY.ResumeLayout(false);
+            this.groupBoxOptionY.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPulseDetectionLevel)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -896,5 +1125,18 @@
         private System.Windows.Forms.RadioButton radioButtonListMessages;
         private System.Windows.Forms.CheckBox checkBoxEnabledDevicesDisabled;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBoxOptionY;
+        private System.Windows.Forms.NumericUpDown numericUpDownPulseDetectionLevel;
+        private System.Windows.Forms.CheckBox checkBoxYAmpest;
+        private System.Windows.Forms.CheckBox checkBoxYSquelch;
+        private System.Windows.Forms.CheckBox checkBoxYAutoLevel;
+        private System.Windows.Forms.CheckBox checkBoxYMinimumSNRPulses;
+        private System.Windows.Forms.CheckBox checkBoxYMinimumDetectionLevelPulses;
+        private System.Windows.Forms.CheckBox checkBoxYPulsesDetectionLevel;
+        private System.Windows.Forms.NumericUpDown numericUpDownMinimumSNRPulses;
+        private System.Windows.Forms.NumericUpDown numericUpDownMinimumDetectionLevel;
+        private System.Windows.Forms.RadioButton radioButtonYMinmax;
+        private System.Windows.Forms.RadioButton radioButtonYClassic;
+        private System.Windows.Forms.RadioButton radioButtonYAuto;
     }
 }

@@ -99,19 +99,38 @@ namespace SDRSharp.Rtl_433
             foreach (KeyValuePair<string, string> _data in listData)
             {
                 cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                if (cacheListColumns.Count > (nbColumn))
+                //if (cacheListColumns.Count > (nbColumn-1))
+                //{
+                //    listViewListMessages.EndUpdate();
+                //    this.ResumeLayout();
+                //    return;                     //message max dk
+                //}
+                //else
+                //{    //not add new column     protects column name errors,should not be arrive, see the problem upstream.
+                //    if (indexColonne == 0)
+                //    {
+                //       // if(cacheListColumns.Count)
+                //        listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
+                //        cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                //    }
+                //}
+                //if (cacheListColumns.Count > (nbColumn - 1))
+                //{
+                //    listViewListMessages.EndUpdate();
+                //    this.ResumeLayout();
+                //    return;                     //message max dk
+                //}
+                //else
+                //{    //not add new column     protects column name errors,should not be arrive, see the problem upstream.
+                if (indexColonne == 0)
                 {
-                    listViewListMessages.EndUpdate();
-                    this.ResumeLayout();
-                    return;                     //message max dk
-                }
-                else
-                {    //not add new column     protects column name errors,should not be arrive, see the problem upstream.
-                    if (indexColonne == 0)
+                    if (cacheListColumns.Count < (nbColumn ))
                     {
+                            // if(cacheListColumns.Count)
                         listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
                         cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
                     }
+                    //}
                 }
             }
             ListViewItem device = null;

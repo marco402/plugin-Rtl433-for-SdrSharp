@@ -28,7 +28,7 @@ namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.5.4.0";  //update also project property
+        private const string _VERSION = "1.5.4.1";  //update also project property
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -58,8 +58,8 @@ namespace SDRSharp.Rtl_433
             setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
                                                           // _owner.setMessage(Application.ProductVersion);  version sdrSharp
                                                           //call_main_Rtl_433(false);
-            setanalyze("-a 4");
-            setProtocol("-Mprotocol");  //for title and key devices windows
+            setOptionUniqueKey("-a 4",true);
+            setOptionUniqueKey("-MProtocol",true);  //for title and key devices windows
         }
         #region options rtl_433
         /// <summary>
@@ -67,28 +67,51 @@ namespace SDRSharp.Rtl_433
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void setanalyze(String value)
-        {
-            if (listOptionsRtl433.ContainsKey("analyze") & value == "")
-                listOptionsRtl433.Remove("analyze");
-            else if (!listOptionsRtl433.ContainsKey("analyze"))
-                listOptionsRtl433.Add("analyze", value);
-            else
-                listOptionsRtl433["analyze"] = value;
-        }
+        //public void setanalyze(String value)
+        //{
+        //    if (listOptionsRtl433.ContainsKey("analyze"))
+        //        listOptionsRtl433.Remove("analyze");
+        //    else if (value != String.Empty)
+        //        listOptionsRtl433.Add("analyze", value);
+
+            //if (listOptionsRtl433.ContainsKey("analyze") & value == "")
+            //    listOptionsRtl433.Remove("analyze");
+            //else if (!listOptionsRtl433.ContainsKey("analyze"))
+            //    listOptionsRtl433.Add("analyze", value);
+            //else
+            //    listOptionsRtl433["analyze"] = value;
+        //}
         /// <summary>
         /// specific key dif metadata(MbitsOrLevel) for title and key devices windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void setProtocol(String value)
+        //public void setProtocol(String value)
+        //{
+        //    if (listOptionsRtl433.ContainsKey("MProtocol"))
+        //        listOptionsRtl433.Remove("MProtocol");
+        //    if (value!=String.Empty)
+        //        listOptionsRtl433.Add("MProtocol", value);
+
+        //    //if (listOptionsRtl433.ContainsKey("MProtocol") & value == "")
+        //    //    listOptionsRtl433.Remove("MProtocol");
+        //    //else if (!listOptionsRtl433.ContainsKey("MProtocol"))
+        //    //    listOptionsRtl433.Add("MProtocol", value);
+        //    //else
+        //    //    listOptionsRtl433["MProtocol"] = value;
+        //}
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="key">one for each Y option="-Y option"  option=auto or classic...</param>
+        ///// <param name="state">checkBox.value </param>
+
+        public void setOptionUniqueKey(String key,Boolean state)
         {
-            if (listOptionsRtl433.ContainsKey("MProtocol") & value == "")
-                listOptionsRtl433.Remove("MProtocol");
-            else if (!listOptionsRtl433.ContainsKey("MProtocol"))
-                listOptionsRtl433.Add("MProtocol", value);
-            else
-                listOptionsRtl433["MProtocol"] = value;
+            if (listOptionsRtl433.ContainsKey(key))
+                listOptionsRtl433.Remove(key);
+            if (state)
+                listOptionsRtl433.Add(key, key);
         }
         public void setHideOrShowDevices(List<string> listBoxSelectedDevices, bool hide)
         {
@@ -186,6 +209,90 @@ namespace SDRSharp.Rtl_433
             if(!value.Contains("No "))
                 listOptionsRtl433.Add(Key, value);
         }
+        //String _Yauto = String.Empty;
+        //public String Yauto
+        //{
+        //    get { return _Yauto; }
+        //    set
+        //    {
+        //        _Yauto = value;
+        //    }
+        //}
+        //String _Yclassic = String.Empty;
+        //public String Yclassic
+        //{
+        //    get { return _Yclassic; }
+        //    set
+        //    {
+        //        _Yclassic = value;
+        //    }
+        //}
+        //String _Yminmax = String.Empty;
+        //public String Yminmax
+        //{
+        //    get { return _Yminmax; }
+        //    set
+        //    {
+        //        _Yminmax = value;
+        //    }
+        //}
+        //String _Ylevel = String.Empty;
+        //Int32 _YlevelValue = 0;
+        //public void Ylevel(String option, Int32 value)
+        //{
+        //    _Ylevel = option;
+        //    _YlevelValue = value;
+        //}
+        //String _Yminlevel = String.Empty;
+        //Int32 _YminlevelValue = 0;
+        //public void Yminlevel(String option, Int32 value)
+        //{
+        //    _Yminlevel = option;
+        //    _YminlevelValue = value;
+        //}
+        //String _Yminsnr = String.Empty;
+        //Int32 _YminsnrValue = 0;
+        //public void Yminsnr(String option, Int32 value)
+        //{
+        //    _Yminsnr = option;
+        //    _YminsnrValue = value;
+        //}
+        //String _Yautolevel = String.Empty;
+        //public String Yautolevel
+        //{
+        //    get { return _Yautolevel; }
+        //    set
+        //    {
+        //        _Yautolevel = value;
+        //    }
+        //}
+        //String _Ysquelch = String.Empty;
+        //public String Ysquelch
+        //{
+        //    get { return _Ysquelch; }
+        //    set
+        //    {
+        //        _Ysquelch = value;
+        //    }
+        //}
+        //String _Yampest = String.Empty;
+        //public String Yampest
+        //{
+        //    get { return _Yampest; }
+        //    set
+        //    {
+        //        _Yampest = value;
+        //    }
+        //}
+        //String _Ymagest = String.Empty;
+        //public String Ymagest
+        //{
+        //    get { return _Ymagest; }
+        //    set
+        //    {
+        //        _Ymagest = value;
+        //    }
+        //}
         #endregion
         #region private functions
         private readonly Rtl_433_Panel _owner;
@@ -460,6 +567,11 @@ namespace SDRSharp.Rtl_433
                 initListDevice = false;
             }
         }
+        //private  String[] =new String _Yoption[10] ;
+        //public void setYoption(String option)
+        //{
+        //    _Yoption = option;      //need reload list devices
+        //}
         #endregion
         #region callBack for dll_rtl_433"
         private bool startRtl433Ok = false;

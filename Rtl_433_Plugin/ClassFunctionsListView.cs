@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace SDRSharp.Rtl_433
             listDevices.VirtualListSize = 0;
             for (int i = 0; i < nbCol; i++)
             {
-                listDevices.Columns.Add("");
+                listDevices.Columns.Add("");   //,0 for width no effect
             }
         }
         public static void autoResizeColumns(ListView lv, int nbColumn)
@@ -38,10 +39,14 @@ namespace SDRSharp.Rtl_433
             ListView.ColumnHeaderCollection cc = lv.Columns;
             for (int col = 0; col < nbColumn; col++)
             {
-                int colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
-                if (colWidth > cc[col].Width)
+                //Debug.WriteLine(col.ToString()+'\t'+cc[col].Text);
+                if(cc[col].Text!="")
                 {
-                    cc[col].Width = colWidth;
+                    int colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
+                    if (colWidth > cc[col].Width)
+                    {
+                        cc[col].Width = colWidth;
+                    }
                 }
             }
         }
