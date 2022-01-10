@@ -32,6 +32,7 @@ namespace SDRSharp.Rtl_433
             cacheListColumns = new Dictionary<String, int>();
             listViewListMessages.Columns[0].Text = "N° Mes.";
             cacheListColumns.Add("N° Mes.",  1);
+            listViewListMessages.Columns.Add("");
             memoName = name;
             this.Text = name + " (Messages received : 0)";
             statusStripExport.ShowItemToolTips=true;
@@ -91,75 +92,42 @@ namespace SDRSharp.Rtl_433
         {
             if (cacheListColumns == null)
                 return;
+            
+            string deviceName = (nbMessage+1).ToString();
+            if (nbMessage > maxMessages - 1)
+                return;                    //message max row
+ 
             this.SuspendLayout();
-            string deviceName = (nbMessage+1).ToString(); 
             listViewListMessages.BeginUpdate();
             int indexColonne = 0;
-            //add name column if necessary
+            Boolean ret = false;
+            //*********add name column if necessary****************
             foreach (KeyValuePair<string, string> _data in listData)
             {
-                cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                //if (cacheListColumns.Count > (nbColumn-1))
-                //{
-                //    listViewListMessages.EndUpdate();
-                //    this.ResumeLayout();
-                //    return;                     //message max dk
-                //}
-                //else
-                //{    //not add new column     protects column name errors,should not be arrive, see the problem upstream.
-                //    if (indexColonne == 0)
-                //    {
-                //       // if(cacheListColumns.Count)
-                //        listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
-                //        cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
-                //    }
-                //}
-                //if (cacheListColumns.Count > (nbColumn - 1))
-                //{
-                //    listViewListMessages.EndUpdate();
-                //    this.ResumeLayout();
-                //    return;                     //message max dk
-                //}
-                //else
-                //{    //not add new column     protects column name errors,should not be arrive, see the problem upstream.
-                if (indexColonne == 0)
+                ret=cacheListColumns.TryGetValue(_data.Key, out indexColonne);
+                if (!ret)
                 {
                     if (cacheListColumns.Count < (nbColumn ))
                     {
-                            // if(cacheListColumns.Count)
-                        listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
-                        cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                         listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
+                         cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                         //listViewListMessages.Columns.Add("");
                     }
-                    //}
-                }
+                 }
             }
-            ListViewItem device = null;
-             SortedDictionary<int, string> indexCol = new SortedDictionary<int, string>();
-            foreach (KeyValuePair<string, string> _data in listData)
+            ListViewItem device = new ListViewItem(deviceName);
+            for (int i = 0; i < nbColumn; i++)
             {
-                cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                indexCol.Add(indexColonne, _data.Value);
+                device.SubItems.Add("-");
             }
-            if (nbMessage > maxMessages - 1)
+             foreach (KeyValuePair<string, string> _data in listData)
             {
-                listViewListMessages.EndUpdate();
-                this.ResumeLayout();
-                return;                    //message max row
-            }
-            device = new ListViewItem(deviceName);
-            //int index = 0;
-            int i = 0;
-            for (i = 0; i < indexCol.Count ; i++)
-            {
-                device.SubItems.Add(indexCol.ElementAt(i).Value);
-            }
-            for (i = i; i < nbColumn; i++)
-            {
-                device.SubItems.Add("");
+                ret=cacheListColumns.TryGetValue(_data.Key,out indexColonne);
+                if(ret)
+                    device.SubItems[indexColonne - 1].Text = _data.Value;
             }
             //************************************************
             //cacheListMessages[nbMessage] = device;       last message at the bottom list
-
 
 			if (firstToTop)
 			{

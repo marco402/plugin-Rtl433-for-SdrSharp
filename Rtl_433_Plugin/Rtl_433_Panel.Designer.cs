@@ -471,6 +471,7 @@
             // radioButtonFreqFree
             // 
             this.radioButtonFreqFree.AutoSize = true;
+            this.radioButtonFreqFree.ForeColor = System.Drawing.Color.Blue;
             this.radioButtonFreqFree.Location = new System.Drawing.Point(9, 19);
             this.radioButtonFreqFree.Name = "radioButtonFreqFree";
             this.radioButtonFreqFree.Size = new System.Drawing.Size(46, 17);

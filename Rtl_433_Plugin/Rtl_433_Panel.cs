@@ -45,7 +45,7 @@ namespace SDRSharp.Rtl_433
         private Rtl_433_Processor _Rtl_433Processor;
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private FormListDevices formListDevice = null;
-        //private Int32 cpt = 0;
+        private Int32 cpt = 0;
         private void displayParam()
         {
         richTextBoxMessages.Clear();
@@ -266,13 +266,13 @@ namespace SDRSharp.Rtl_433
                                 listformDeviceListMessages[deviceName].Show();
                              }
                         }
-                        //if (cpt>5)
-                        //{
-                        //listData.Add("ggg", "1");
-                        //listData.Add("hhh", "2");
-                        //listData.Add("iii", "3");
-                        //}
-                        //cpt += 1;
+                        if (cpt > 5)
+                        {
+                            for (int i=1;i<20; i++)
+                                listData.Add(i.ToString(), i.ToString());
+
+                        }
+                        cpt += 1;
                         listformDeviceListMessages[deviceName].setMessages(listData);
                         //listformDeviceListMessages[deviceName].resetLabelRecord();  //after le load for memo...
                                                                                     //if (listformDeviceListMessages.Count < _nbDevicesWithGraph)
