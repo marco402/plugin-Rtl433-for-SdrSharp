@@ -35,6 +35,10 @@ namespace SDRSharp.Rtl_433
             this.maxColumns = maxColumns;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,null, listDevices, new object[] { true });
             ClassFunctionsListView.initListView(listDevices, this.maxColumns);
+            for (int i = 0; i < this.maxColumns; i++)
+            {
+                listDevices.Columns.Add("");   //,0 for width no effect
+            }
             cacheListDevices = new ListViewItem[this.maxDevices];
             cacheListColumns = new Dictionary<String, int>();
             this.Text = "Devices received : 0";

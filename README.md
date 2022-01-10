@@ -5,6 +5,8 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version  
+Version 1.5.4.2 10 January 2022  
+     -Fix listMessage window on receiving message of different length.  
 Version 1.5.4.1 9 January 2022  
      -Fix listMessage window on receiving message of different length. Added 10 columns instead of 2 if -MLevel.  
      -To see to add columns being received.  
@@ -227,6 +229,8 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.4.2  10 Janvier 2022
+     -Correctif fenêtre listMessage sur réception de message de longueur différente.  
 Version 1.5.4.1  9 Janvier 2022
      -Correctif fenêtre listMessage sur réception de message de longueur différente. ajout de 10 colonnes au lieu de 2 si -MLevel.  
      -A voir pour ajouter des colonnes en cours de réception.  

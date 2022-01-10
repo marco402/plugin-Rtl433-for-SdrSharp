@@ -28,11 +28,70 @@ namespace SDRSharp.Rtl_433
             listDevices.Visible = true;
             listDevices.VirtualMode = true;
             listDevices.VirtualListSize = 0;
-            for (int i = 0; i < nbCol; i++)
+        }
+
+        public static void addDeviceToCache(ListViewItem[] cacheListMessages,Boolean firstToTop,int nbMessage, ListViewItem device)
+        {
+            if (firstToTop)
             {
-                listDevices.Columns.Add("");   //,0 for width no effect
+                cacheListMessages[nbMessage] = device;
+            }
+            else
+            {
+                //last message at the top list
+                for (int m = nbMessage; m > 0; m--)
+                {
+                    cacheListMessages[m] = cacheListMessages[m - 1];
+                }
+                cacheListMessages[0] = device;
             }
         }
+        public static void completeList(ListViewItem[] cacheListMessages,int maxColCurrent)
+        {
+            foreach (ListViewItem lvi in cacheListMessages)
+            {
+                if (lvi != null)
+                {
+                    int nbToAdd = maxColCurrent - lvi.SubItems.Count;
+                    for (int i = 0; i < nbToAdd; i++)
+                        lvi.SubItems.Add("");
+                }
+            }
+        }
+
+        public static void addNewLine(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListViewItem device)
+        {
+            int indexColonne = 0;
+            foreach (KeyValuePair<string, string> _data in listData)
+            {
+                if (cacheListColumns.TryGetValue(_data.Key, out indexColonne))          //get index column for _data.key found _data.Key
+                {
+                    //add subitems before item at indexColonne
+                    for (int i = device.SubItems.Count; i < indexColonne; i++)
+                        device.SubItems.Add("-");
+                    device.SubItems[indexColonne - 1].Text = _data.Value;
+                }
+            }
+        }
+
+        public static int addColumn(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListView listViewListMessages,int  maxColCurrent)
+        {
+            foreach (KeyValuePair<string, string> _data in listData)
+            {
+                if (!cacheListColumns.ContainsKey(_data.Key)) //new col
+                {
+                    cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                    listViewListMessages.Columns.Add("");
+                    if (listViewListMessages.Columns.Count > maxColCurrent)
+                    {
+                        maxColCurrent = listViewListMessages.Columns.Count;
+                    }
+                    listViewListMessages.Columns[cacheListColumns.Count - 1].Text = _data.Key;
+                }
+            }
+            return maxColCurrent;
+        }
+
         public static void autoResizeColumns(ListView lv, int nbColumn)
         {
             lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);

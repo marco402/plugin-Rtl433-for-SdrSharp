@@ -45,7 +45,7 @@ namespace SDRSharp.Rtl_433
         private Rtl_433_Processor _Rtl_433Processor;
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private FormListDevices formListDevice = null;
-        private Int32 cpt = 0;
+        //private Int32 cpt = 0;
         private void displayParam()
         {
         richTextBoxMessages.Clear();
@@ -258,21 +258,29 @@ namespace SDRSharp.Rtl_433
                                 if (listformDeviceListMessages.Count > _MaxDevicesWindows - 1)
                                     return;
                                 if (radioButtonMLevel.Checked)
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10, listData.Count + 1 +10 , deviceName, _ClassInterfaceWithRtl433)); //+2 for debug
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows*10,  deviceName, _ClassInterfaceWithRtl433)); //+2 for debug
                                 else
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, listData.Count + 1 + 5 +10 , deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel //+2 for debug
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, _MaxDevicesWindows * 10, deviceName, _ClassInterfaceWithRtl433));  //5 for -mMevel //+2 for debug
                                 listformDeviceListMessages[deviceName].Text = deviceName;
                                 listformDeviceListMessages[deviceName].Visible = true;
                                 listformDeviceListMessages[deviceName].Show();
                              }
                         }
-                        if (cpt > 5)
-                        {
-                            for (int i=1;i<20; i++)
-                                listData.Add(i.ToString(), i.ToString());
+                        //if ((cpt % 3)==0)
+                        //    for (int i=1;i<20; i++)
+                        //        listData.Add(i.ToString(), i.ToString());
+                        //if ((cpt > 5 & cpt<10) |(cpt > 13 & cpt<15))
+                        //{
+                        //    for (int i=1;i<20; i++)
+                        //        listData.Add(i.ToString(), i.ToString());
 
-                        }
-                        cpt += 1;
+                        //}
+                        //if (cpt == 10)
+                        //    for (int i = 1; i < 100; i++)
+                        //        listData.Add(i.ToString(), i.ToString());
+
+                        //    cpt = cpt;
+                        //cpt += 1;
                         listformDeviceListMessages[deviceName].setMessages(listData);
                         //listformDeviceListMessages[deviceName].resetLabelRecord();  //after le load for memo...
                                                                                     //if (listformDeviceListMessages.Count < _nbDevicesWithGraph)

@@ -17,22 +17,20 @@ namespace SDRSharp.Rtl_433
         private int nbMessage = 0;
         private Rtl_433_Panel classParent;
 		private bool firstToTop = false;
-        int nbColumn = 0;
-        public FormDevicesListMessages(Rtl_433_Panel classParent, int maxDevices,int nbColumn,string name, ClassInterfaceWithRtl433 classInterfaceWithRtl433)
+        public FormDevicesListMessages(Rtl_433_Panel classParent, int maxDevices,string name, ClassInterfaceWithRtl433 classInterfaceWithRtl433)
         {
             this.classInterfaceWithRtl433 = classInterfaceWithRtl433;
-            this.nbColumn = nbColumn;
             InitializeComponent();
             this.classParent = classParent;
             this.maxMessages = maxDevices;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
 
-            ClassFunctionsListView.initListView(listViewListMessages, this.nbColumn);
-            cacheListMessages = new ListViewItem[this.maxMessages];
+            ClassFunctionsListView.initListView(listViewListMessages, 0);
+            cacheListMessages = new ListViewItem[this.maxMessages]; 
             cacheListColumns = new Dictionary<String, int>();
-            listViewListMessages.Columns[0].Text = "N° Mes.";
             cacheListColumns.Add("N° Mes.",  1);
             listViewListMessages.Columns.Add("");
+            listViewListMessages.Columns[0].Text = "N° Mes.";
             memoName = name;
             this.Text = name + " (Messages received : 0)";
             statusStripExport.ShowItemToolTips=true;
@@ -88,6 +86,8 @@ namespace SDRSharp.Rtl_433
                 listViewListMessages.Items[nbMessage - 1].EnsureVisible();
             this.Refresh();
         }
+
+        private int maxColCurrent = 0;
         public void setMessages(Dictionary<String, String> listData)
         {
             if (cacheListColumns == null)
@@ -96,55 +96,20 @@ namespace SDRSharp.Rtl_433
             string deviceName = (nbMessage+1).ToString();
             if (nbMessage > maxMessages - 1)
                 return;                    //message max row
- 
             this.SuspendLayout();
             listViewListMessages.BeginUpdate();
-            int indexColonne = 0;
-            Boolean ret = false;
-            //*********add name column if necessary****************
-            foreach (KeyValuePair<string, string> _data in listData)
-            {
-                ret=cacheListColumns.TryGetValue(_data.Key, out indexColonne);
-                if (!ret)
-                {
-                    if (cacheListColumns.Count < (nbColumn ))
-                    {
-                         listViewListMessages.Columns[cacheListColumns.Count].Text = _data.Key;
-                         cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
-                         //listViewListMessages.Columns.Add("");
-                    }
-                 }
-            }
+            //*********add name column if necessary in listViewListMessages and in cacheListColumns****************
+            //*********memorize maxColCurrent***************
+            maxColCurrent = ClassFunctionsListView.addColumn(listData, cacheListColumns, listViewListMessages, maxColCurrent);
+             //*************************Add new line*********************************
             ListViewItem device = new ListViewItem(deviceName);
-            for (int i = 0; i < nbColumn; i++)
-            {
-                device.SubItems.Add("-");
-            }
-             foreach (KeyValuePair<string, string> _data in listData)
-            {
-                ret=cacheListColumns.TryGetValue(_data.Key,out indexColonne);
-                if(ret)
-                    device.SubItems[indexColonne - 1].Text = _data.Value;
-            }
+            ClassFunctionsListView.addNewLine(listData, cacheListColumns, device);
+            //**************add new line/device in cacheListMessages
+            ClassFunctionsListView.addDeviceToCache(cacheListMessages, firstToTop, nbMessage, device);
+            //**************complete subItems for all line in cacheListMessages**********************
+            ClassFunctionsListView.completeList(cacheListMessages, maxColCurrent);
             //************************************************
-            //cacheListMessages[nbMessage] = device;       last message at the bottom list
-
-			if (firstToTop)
-			{
-				cacheListMessages[nbMessage] = device;
-			}
-			else{
-				//last message at the top list
-	            for (int m=nbMessage;m>0;m--)
-				{
-					cacheListMessages[m] = cacheListMessages[m-1];
-				}
-				cacheListMessages[0] = device;			
-			}
-
-            //
-
-            nbMessage += 1;
+             nbMessage += 1;
             this.Text = memoName + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
             try
             {
