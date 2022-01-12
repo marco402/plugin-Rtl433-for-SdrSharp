@@ -154,28 +154,28 @@ namespace SDRSharp.Rtl_433
                             wordsWithNbMes = words;
            
                             foreach (string word in wordsWithNbMes)
-                        {
-                             listDevices.Columns[col].Text = word;
-                            if (word.Trim() == string.Empty)
-                                break;
-                            cacheListColumns.Add(word, col + 1);
-                            col += 1;
-                            
-                            //if (word.Contains("device"))
-                            //{
-                            //    if (wordsWithNbMes[1] != "N mes.")  //old version
-                            //    {
-                            //        listDevices.Columns[col].Text = "N mes.";
-                            //        cacheListColumns.Add("N mes.", col + 1);
-                            //        col += 1;
-                            //    }
-                            //}
-                            if (col >maxColumns)
                             {
-                                MessageBox.Show("Maximum of column reached("+ maxColumns.ToString()+")", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                break;
+                                 listDevices.Columns[col].Text = word;
+                                if (word.Trim() == string.Empty)
+                                    break;
+                                cacheListColumns.Add(word, col + 1);
+                                col += 1;
+                            
+                                //if (word.Contains("device"))
+                                //{
+                                //    if (wordsWithNbMes[1] != "N mes.")  //old version
+                                //    {
+                                //        listDevices.Columns[col].Text = "N mes.";
+                                //        cacheListColumns.Add("N mes.", col + 1);
+                                //        col += 1;
+                                //    }
+                                //}
+                                if (col >maxColumns)
+                                {
+                                    MessageBox.Show("Maximum of column reached("+ maxColumns.ToString()+")", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    break;
+                                }
                             }
-                        }
                         ListViewItem device = null;
                         while (str.Peek() >= 0)
                         {

@@ -5,6 +5,8 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version  
+Version 1.5.4.3  12 Janvier 2022  
+     - Added ID for identify devices.  
 Version 1.5.4.2 10 January 2022  
      -Fix listMessage window on receiving message of different length.  
 Version 1.5.4.1 9 January 2022  
@@ -229,6 +231,8 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.4.3  12 Janvier 2022
+     - Ajout de l'ID pour identifier les devices.
 Version 1.5.4.2  10 Janvier 2022
      -Correctif fenêtre listMessage sur réception de message de longueur différente.  
 Version 1.5.4.1  9 Janvier 2022

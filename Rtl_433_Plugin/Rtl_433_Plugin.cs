@@ -16,6 +16,8 @@
 //the executable is SDRSharp.exe but they changed an identity property: SDRSharpMerged instead of SDRSharp.
 //check the csproj on change of reference, it's not clear, I had to leave visual studio to have the right one in the csproj
 //version sdrsharp-->https://www.iz3mez.it/software/SDRSharp/
+//test file .cu8-->https://github.com/merbanan/rtl_433_tests/tree/master/tests
+//help rtl_433-->https://triq.org/
 //J'ai transféré une version spécifique pour les versions 1777 et 1784 avec pour référence SDRSharp 1777.
 //Pour info, ces 2 versions cherchent SDRSharpMerged et pas SDRSharp.
 // l'executable est bien SDRSharp.exe mais ils ont modifiés une propriétée identity : SDRSharpMerged à la place de SDRSharp.

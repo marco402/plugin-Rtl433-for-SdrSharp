@@ -154,6 +154,7 @@ namespace SDRSharp.Rtl_433
             string model = "";
             string protocol = "";
             string channel = "";
+            string idDEvice = "";
             foreach (KeyValuePair<string, string> _line in listData)
             {
                 if (_line.Key.ToUpper().Contains("CHANNEL") & channel == "" & _line.Value != "")
@@ -170,6 +171,11 @@ namespace SDRSharp.Rtl_433
                 {
                     model = _line.Value;
                     key += " Model: " + model;
+                }
+                else if (_line.Key.ToUpper().Contains("ID") & idDEvice == "" & _line.Value != "")
+                {
+                    idDEvice = _line.Value;
+                    key += " Id: " + idDEvice;
                 }
             }
 #if TESTWINDOWS
