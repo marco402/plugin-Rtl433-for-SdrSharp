@@ -133,5 +133,10 @@ namespace SDRSharp.Rtl_433
             if (rDataConv.Checked)
                 _ClassInterfaceWithRtl433.setOption(rDataConv.Tag.ToString(), rDataConv.Text);
         }
+        public void setOptionVerboseInit()
+        {
+            if (radioButtonNoV.Checked)
+                _ClassInterfaceWithRtl433.setOption(radioButtonNoV.Tag.ToString(), radioButtonNoV.Text);
+        }
     }
 }

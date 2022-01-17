@@ -84,6 +84,7 @@
             this.Name = "FormDevicesListMessages";
             this.Text = "FormDevicesListMessages";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormDevicesListMessages_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormDevicesListMessages_FormClosed);
             this.statusStripExport.ResumeLayout(false);
             this.statusStripExport.PerformLayout();
             this.ResumeLayout(false);

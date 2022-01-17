@@ -95,7 +95,9 @@ namespace SDRSharp.Rtl_433
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
             richTextBoxMessages.MaxLength = 5000;
-            groupBoxOptionY.Visible = false;
+            groupBoxOptionY.Visible = false;  //if true complete enabledDisabledControlsOnStart
+            ToolTip OptionVerbose = new ToolTip();
+            OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv too much information !");
 #if TESTWINDOWS
             MessageBox.Show("Version de test");
 #endif
@@ -345,13 +347,38 @@ namespace SDRSharp.Rtl_433
         private void enabledDisabledControlsOnStart(bool state)
         {
             groupBoxFrequency.Enabled = state;
+            //radioButtonFreqFree.Enabled = state;  try for version from 1830 text disabled  black(no visible)
+            //radioButtonFreq315.Enabled = state;
+            //radioButtonFreq345.Enabled = state;
+            //radioButtonFreq43392.Enabled = state;
+            //radioButtonFreq868.Enabled = state;
+            //radioButtonFreq915.Enabled = state;
+
             groupBoxVerbose.Enabled = state;
+            //radioButtonNoV.Enabled = state;
+            //radioButtonV.Enabled = state;
+            //radioButtonVV.Enabled = state;
+            //radioButtonVVV.Enabled = state;
+            //radioButtonVvvv.Enabled = state;
             groupBoxMetadata.Enabled = state;
+            //radioButtonNoM.Enabled = state;
+            //radioButtonMLevel.Enabled = state;
             //groupBoxRecord.Enabled = state;  keep enabled for record device window
             groupBoxSave.Enabled = state;
+            //radioButtonSnone.Enabled = state;
+            //radioButtonSknown.Enabled = state;
+            //radioButtonSunknown.Enabled = state;
+            //radioButtonSall.Enabled = state;
             groupBoxHideShow.Enabled = state;
+            //radioButtonHideSelect.Enabled = state;
+            //radioButtonShowSelect.Enabled = state;
             groupBoxDataConv.Enabled = state;
+            //radioButtonDataConvCustomary.Enabled = state;
+            //radioButtonDataConvNative.Enabled = state;
+            //radioButtonDataConvSI.Enabled = state;
             groupBoxOptionY.Enabled = state;
+
+
             listBoxHideShowDevices.Enabled = state;
             checkBoxEnabledDevicesDisabled.Enabled  = state;
 
@@ -493,14 +520,17 @@ namespace SDRSharp.Rtl_433
                         formListDevice.deSerializeText(directory + FILELISTEDEVICES);
                     }
                 }
+                _ClassInterfaceWithRtl433.setTypeWindowGraph(false);
             }
             else if (radioButtonGraph.Checked)
             {
                 displayTypeForm = TYPEFORM.GRAPH;
+                _ClassInterfaceWithRtl433.setTypeWindowGraph(true);
             }
             else  //TYPEFORM.LISTMES
             {
                 displayTypeForm = TYPEFORM.LISTMES;
+                _ClassInterfaceWithRtl433.setTypeWindowGraph(false);
             }
         }
          private void checkBoxEnabledDevicesDisabled_CheckedChanged(object sender, EventArgs e)

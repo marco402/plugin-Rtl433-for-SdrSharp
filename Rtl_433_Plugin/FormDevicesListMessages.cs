@@ -50,19 +50,22 @@ namespace SDRSharp.Rtl_433
         #region private functions
         private void listViewListMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            try
-            {
-                if (e.ItemIndex >= 0)
+            //if (cacheListMessages != null)  not enough
+            //{
+                try
                 {
-                    ListViewItem lvi = cacheListMessages[e.ItemIndex];
-                    if (lvi != null)
-                        e.Item = lvi;
+                    if (e.ItemIndex >= 0)
+                    {
+                        ListViewItem lvi = cacheListMessages[e.ItemIndex];
+                        if (lvi != null)
+                            e.Item = lvi;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            //}
         }
         private int FindIndexIfDeviceExist(string device)
         {
@@ -127,9 +130,7 @@ namespace SDRSharp.Rtl_433
         #region Events Form
         private void FormDevicesListMessages_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cacheListColumns = null;
-            cacheListMessages = null;
-            classParent.closingOneFormDeviceListMessages(memoName);
+ 
         }
         private void toolStripStatusLabelExport_Click(object sender, EventArgs e)
         {
@@ -141,5 +142,13 @@ namespace SDRSharp.Rtl_433
             }
         }
         #endregion
+
+        private void FormDevicesListMessages_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //cacheListColumns = null;  pb with sdrsharp framework 6.0
+            //cacheListMessages = null;
+            classParent.closingOneFormDeviceListMessages(memoName);
+            GC.Collect();
+        }
     }
 }

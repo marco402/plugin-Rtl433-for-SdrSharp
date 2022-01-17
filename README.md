@@ -5,6 +5,12 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version  
+Version 1.5.4.4  17 Janvier 2022  
+     - Minor changes for Honeywell_cm921.  
+          -boiler_modulation_level.  
+          -ticker command.  
+     - Correction crash when closed window listDevices if SDRSharp framework 6.0 since version SDRSharp 1830.  
+     - 100ms timeout in replay mode (source iq file(.wav)).  
 Version 1.5.4.3  12 Janvier 2022  
      - Added ID for identify devices.  
 Version 1.5.4.2 10 January 2022  
@@ -20,18 +26,22 @@ Version 1.5.4.0 5 January 2022
      -Added a column number of messages received in the list devices window.  
 
 ## Installation  
-​Warning:2 different SDRSharp installations.  
+For all versions, the location of the plugins is indicated in the SDRSharp.config or SDRSharp file.exe.config,
+under the key core.pluginsDirectory.Il is thus possible to have 1 single plugin folder for several SDRSharp versions.  
 
-Recent versions have sdrsharp.exe in a bin folder.  
-In this case, position yourself in C: SDRSharp/plugins  
-- Create a RTL_433 folder and place the 3 dll in it.  
-- Important:Delete the 3 dll if they are in bin.  
-- Delete the key if it is in plugins.xml.  
+​Warning:3 differents SDRSharp installations.  
+Since version 1830, there is no longer a bin folder, just put the 3 dll either in the plugins folder
+either in plugins/DLL_433 no need for key.
+For versions that have sdrsharp.exe in a bin folder.  
+In this case, position yourself in C:SDRSharp/plugins  
+    - Create a folder RTL_433 and place the 3 dlls there.  
+    - Important:Delete the 3 dlls if they are in bin.  
+    - Delete the key if it is in plugins.xml.  
 
-SDRSharp version without bin folder:  
-- SDRSharp installation (tested with version 1.0.0.1788)  
-  - Place the files in the install folder (SDRSharp.Rtl_433.dll rtl_433.dll and GraphLib.dll) in the SDRSharp folder.  
-    - Add the line add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp . Rtl_433" /> in the plugins.xml file   
+For older SDRSharp versions:  
+- Installation of SDRSharp (tested with version 1.0.0.1788)  
+  - Place the files from the install folder (SDRSharp.Rtl_433.dll rtl_433.dll and GraphLib.dll) in the SDRSharp folder.  
+  - Add the line <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> in the plugins file.xml  
 
 ## Launch
 After configuring SDRSharp (see chapter configuration, this information is initially recalled in the plugin window).  
@@ -231,11 +241,17 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.5.4.3  12 Janvier 2022
-     - Ajout de l'ID pour identifier les devices.
-Version 1.5.4.2  10 Janvier 2022
+Version 1.5.4.4  17 Janvier 2022  
+     - Modifications mineurs pour Honeywell_cm921.  
+          -boiler_modulation_level.  
+          -commande ticker.  
+     - Correction crash à la fermeture des fenêtres listDevices si SDRSharp framework 6.0 à partir de la version SDRSharp 1830.  
+     - Temporisation de 100ms en mode rejeu (source iq file(.wav)).  
+Version 1.5.4.3  12 Janvier 2022  
+     - Ajout de l'ID pour identifier les devices.  
+Version 1.5.4.2  10 Janvier 2022  
      -Correctif fenêtre listMessage sur réception de message de longueur différente.  
-Version 1.5.4.1  9 Janvier 2022
+Version 1.5.4.1  9 Janvier 2022  
      -Correctif fenêtre listMessage sur réception de message de longueur différente. ajout de 10 colonnes au lieu de 2 si -MLevel.  
      -A voir pour ajouter des colonnes en cours de réception.  
 Version 1.5.4.0  6 January 2022  
@@ -247,16 +263,18 @@ Version 1.5.4.0  1 Janvier 2022
 
 
 ## Installation  
-​
-ATTENTION:2 installations de SDRSharp différentes.  
-
-Les versions récentes ont sdrsharp.exe dans un dossier bin.  
+​Pour toutes les version, l'emplacement des plugins est indiqué dans le fichier SDRSharp.config ou SDRSharp.exe.config,
+sous la cle core.pluginsDirectory.Il est ainsi possible d'avoir 1 seul dossier plugin pour plusieurs version SDRSharp.
+ATTENTION:3 installations de SDRSharp différentes.  
+Depuis la version 1830, il n'y a plus de dossier bin, il suffit de mettre les 3 dll soit dans le dossier plugins
+soit dans plugins/DLL_433 pas besoin de cle.
+Pour les versions qui ont sdrsharp.exe dans un dossier bin.  
 Dans ce cas, se positionner dans C:\SDRSharp\plugins  
     - Créer un dossier RTL_433 et y placer les 3 dll.  
     - Important:Supprimer les 3 dll si elles sont dans bin.  
     - Supprimer la cle si elle est dans plugins.xml.  
 
-Version SDRSharp sans le dossier bin:  
+Pour les version SDRSharp plus anciennes:  
 - Installation de SDRSharp(testé avec la version 1.0.0.1788)  
   - Placer les fichiers du dossier install (SDRSharp.Rtl_433.dll rtl_433.dll et GraphLib.dll) dans le dossier SDRSharp.  
   - Ajouter la ligne <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> dans le fichier plugins.xml  

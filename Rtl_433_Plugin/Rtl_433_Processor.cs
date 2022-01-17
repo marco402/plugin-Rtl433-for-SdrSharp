@@ -203,13 +203,17 @@ namespace SDRSharp.Rtl_433
                         _ClassInterfaceWithRtl433.setfrequency( _frequency) ;
                         break;
                     //case "SourceName":
-                    //    _SourceName = (sender as MainForm).SourceName;
-                    //    Console.WriteLine(_SourceName);
-                    //    break;
-                    //object t = _control.Source;
-                    // if (_control.SourceIsWaveFile)
-                    // long sizeFile = wavRecorder.getSizeDataFile();
-
+                    //    //_SourceName = (sender as MainForm).SourceName;
+                    //    //Console.WriteLine(_SourceName);
+                    //    object t = _control.Source;
+                    //    if (_control.SourceIsWaveFile)
+                    //    { 
+                    //        _ClassInterfaceWithRtl433.setTypeInputFile(true);
+                    //        _ClassInterfaceWithRtl433.setSourceName(_control.SourceName);
+                    //    }
+                    //    else
+                    //        _ClassInterfaceWithRtl433.setTypeInputFile(false);
+                       
                     //    break;
                     // case "TuningStyle":
                     //     _SourceName = (sender as MainForm).SourceName;

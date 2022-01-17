@@ -23,12 +23,13 @@ using System.Linq;
 using SDRSharp.Radio;
 using System.IO;
 using System.Drawing;
+using System.Threading;
 
 namespace SDRSharp.Rtl_433
 {
    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
     {
-        private const string _VERSION = "1.5.4.3";  //update also project property
+        private const string _VERSION = "1.5.4.4";  //update also project property version and file version
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
@@ -58,7 +59,7 @@ namespace SDRSharp.Rtl_433
             setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
                                                           // _owner.setMessage(Application.ProductVersion);  version sdrSharp
                                                           //call_main_Rtl_433(false);
-            setOptionUniqueKey("-a 4",true);
+            setOptionUniqueKey("-a 4",true);         //for graph
             setOptionUniqueKey("-MProtocol",true);  //for title and key devices windows
         }
         #region options rtl_433
@@ -418,11 +419,27 @@ namespace SDRSharp.Rtl_433
                 wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  _sampleRate, wavRecorder.recordType.STEREO);
             }
         }
+        private Boolean typeSourceFile = false;
+        public void setTypeInputFile(Boolean typeSourceFile)
+        {
+            this.typeSourceFile = typeSourceFile;
+        }
+        private Boolean typeWindowGraph = false;
+        public void setTypeWindowGraph(Boolean typeWindowGraph)
+        {
+            this.typeWindowGraph = typeWindowGraph;
+        }
         public void setSourceName(string sourceName)
         {
+            typeSourceFile = false;
+            if (sourceName.ToUpper().Contains(".WAV"))
+                typeSourceFile = true;
             sourceName = sourceName.Replace("%20", " ");
             _owner.setMessage(sourceName);
         }
+
+
+
         public void get_version_dll_rtl_433()
         {
             string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
@@ -535,6 +552,8 @@ namespace SDRSharp.Rtl_433
                 ////setTime();
                 stopw.Restart();
                 }
+                if(typeSourceFile)
+                    Thread.Sleep(100);  //for stop if read file
             }
         }
         ////private void setTime()
@@ -595,6 +614,8 @@ namespace SDRSharp.Rtl_433
 
                 else if (message.Contains("end devices list") && startListDevice)  //stop
                 {
+                    if (!initListDevice)
+                        _owner.setOptionVerboseInit();
                     initListDevice = true;
                     _owner.setListDevices(listeDevice);
                     //stopSdr();
@@ -621,108 +642,116 @@ namespace SDRSharp.Rtl_433
                     {
                      listDataClone = listData.ToDictionary(elem => elem.Key, elem => elem.Value);
                     }
-                    int NumGraph = 3;
-                    List<PointF>[] points = new List<PointF>[NumGraph];
-                    for (int i = 0; i < NumGraph ; i++)
-                        points[i] = new List<PointF>();
-                    //debug version:error outofmemory to 100 devices forms
-                    //release version error create handle to 200 devices forms
+                    //*************************GRAPH***********************************************
 
-
-
-                    //debug mode:
-                    //memory test in visual studio with replay file Model_ GT-WT03 Id_175_434037000_250000_02_03_2021 12 2 52 STEREO.wav:
-                    //170M with comment _owner.addFormDevice(listDataClone, points,nameGraph); and NumGraph>100-->ok
-
-                    //with only NumGraph>100 108M avant start plugin--->147M after 80 mn.
-                    //add only structCfg ok
-                    // without _owner.addFormDevice ok
-
-                    //with data frozen ok
-
-                    double samples_per_us = 1000000.0 / _sampleRate;
-                    if (ptrCfg != IntPtr.Zero && NumGraph>0)
+                    if(typeWindowGraph)
                     {
- 
-                        NativeMethods.r_cfg structCfg = new NativeMethods.r_cfg();
-                         try {    
-                        structCfg = (NativeMethods.r_cfg)Marshal.PtrToStructure(ptrCfg, typeof(NativeMethods.r_cfg));
-                         }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }         
-                        if (structCfg.demod != IntPtr.Zero)
-                        {
-                            NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
-                         try {
-                            struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                            int x = 0;
+                        int NumGraph = 3;
+                        List<PointF>[] points = new List<PointF>[NumGraph];
+                        for (int i = 0; i < NumGraph ; i++)
+                            points[i] = new List<PointF>();
+                        //debug version:error outofmemory to 100 devices forms
+                        //release version error create handle to 200 devices forms
+                        //debug mode:
+                        //memory test in visual studio with replay file Model_ GT-WT03 Id_175_434037000_250000_02_03_2021 12 2 52 STEREO.wav:
+                        //170M with comment _owner.addFormDevice(listDataClone, points,nameGraph); and NumGraph>100-->ok
 
-                            //if (struct_demod.pulse_data.num_pulses == 0)
-                            //    x = 0;
-                            if (struct_demod.pulse_data.num_pulses > 0)
+                        //with only NumGraph>100 108M avant start plugin--->147M after 80 mn.
+                        //add only structCfg ok
+                        // without _owner.addFormDevice ok
+
+                        //with data frozen ok
+
+                        double samples_per_us = 1000000.0 / _sampleRate;
+                        if (ptrCfg != IntPtr.Zero && NumGraph>0)
+                        {
+ 
+                            NativeMethods.r_cfg structCfg = new NativeMethods.r_cfg();
+                             try {    
+                            structCfg = (NativeMethods.r_cfg)Marshal.PtrToStructure(ptrCfg, typeof(NativeMethods.r_cfg));
+                             }
+                            catch (Exception e)
                             {
-                                for (int bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
-                                {
-                                    x += (int)(struct_demod.pulse_data.pulse[bit] * samples_per_us);
-                                    points[0].Add(new PointF(x, 1));
-                                    points[0].Add(new PointF(x, 0));
-                                    x += (int)(struct_demod.pulse_data.gap[bit] * samples_per_us);
-                                    points[0].Add(new PointF(x, 0));
-                                    points[0].Add(new PointF(x, 1));
-                                }
+                                MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }         
+                            if (structCfg.demod != IntPtr.Zero)
+                            {
+                                NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
+                             try {
+                                struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
                             }
-                            else if (struct_demod.fsk_pulse_data.num_pulses > 0)
+                            catch (Exception e)
                             {
-                                for (int bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
-                                {
-                                    x += (int)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
-                                    points[0].Add(new PointF(x, 1));
-                                    points[0].Add(new PointF(x, 0));
-                                    x += (int)(struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
-                                    points[0].Add(new PointF(x, 0));
-                                    points[0].Add(new PointF(x, 1));
-                                }
+                                MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
-                            else
-                                x = x;
-                            if (NumGraph > 1)
-                            {
-                                int endData = searchZero(struct_demod.am_buf);
-                                //if (endData> 0)
-                                //{
-                                    for (int bit = 0; bit < endData; bit++)
+                                int x = 0;
+
+                                //if (struct_demod.pulse_data.num_pulses == 0)
+                                //    x = 0;
+                                if (struct_demod.pulse_data.num_pulses > 0)
+                                {
+                                    for (int bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
                                     {
-                                        for (int b = bit; b < bit + 10; b++)
+                                        x += (int)(struct_demod.pulse_data.pulse[bit] * samples_per_us);
+                                        points[0].Add(new PointF(x, 1));
+                                        points[0].Add(new PointF(x, 0));
+                                        x += (int)(struct_demod.pulse_data.gap[bit] * samples_per_us);
+                                        points[0].Add(new PointF(x, 0));
+                                        points[0].Add(new PointF(x, 1));
+                                    }
+                                }
+                                else if (struct_demod.fsk_pulse_data.num_pulses > 0)
+                                {
+                                    for (int bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
+                                    {
+                                        x += (int)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
+                                        points[0].Add(new PointF(x, 1));
+                                        points[0].Add(new PointF(x, 0));
+                                        x += (int)(struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
+                                        points[0].Add(new PointF(x, 0));
+                                        points[0].Add(new PointF(x, 1));
+                                    }
+                                }
+                                else
+                                    x = x;
+                                if (NumGraph > 1)
+                                {
+                                    int endData = searchZero(struct_demod.am_buf);
+                                    //if (endData> 0)
+                                    //{
+                                        for (int bit = 0; bit < endData; bit++)
                                         {
-                                            points[1].Add(new PointF(bit, (int)(struct_demod.am_buf[bit] * samples_per_us)));
+                                            for (int b = bit; b < bit + 10; b++)
+                                            {
+                                                points[1].Add(new PointF(bit, (int)(struct_demod.am_buf[bit] * samples_per_us)));  //out of memory
+                                            }
+                                        }
+                                    //}
+                                }
+                                if (NumGraph > 2)
+                                {
+                                   int endData = searchZero(struct_demod.fm);
+                                   //if (endData > 0)
+                                   // {
+                                        for (int bit = 0; bit < endData; bit++)
+                                        {
+                                            for (int b = bit; b < bit + 10; b++)
+                                            {
+                                                points[2].Add(new PointF(bit, (int)(struct_demod.fm[bit] * samples_per_us)));
+                                            }
                                         }
                                     }
                                 //}
                             }
-                            if (NumGraph > 2)
-                            {
-                               int endData = searchZero(struct_demod.fm);
-                               //if (endData > 0)
-                               // {
-                                    for (int bit = 0; bit < endData; bit++)
-                                    {
-                                        for (int b = bit; b < bit + 10; b++)
-                                        {
-                                            points[2].Add(new PointF(bit, (int)(struct_demod.fm[bit] * samples_per_us)));
-                                        }
-                                    }
-                                }
-                            //}
                         }
+                        _owner.addFormDevice(listDataClone, points,nameGraph);
                     }
-                    _owner.addFormDevice(listDataClone, points,nameGraph);
+                    else
+                    {
+                        _owner.addFormDevice(listDataClone, null, nameGraph);
+                    }
+                    //*************************END GRAPH***********************************************
+                   
                 }
                 nameData = false;
                 synchro = false;

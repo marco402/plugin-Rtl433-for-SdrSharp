@@ -18,10 +18,11 @@
 //version sdrsharp-->https://www.iz3mez.it/software/SDRSharp/
 //test file .cu8-->https://github.com/merbanan/rtl_433_tests/tree/master/tests
 //help rtl_433-->https://triq.org/
-//J'ai transféré une version spécifique pour les versions 1777 et 1784 avec pour référence SDRSharp 1777.
-//Pour info, ces 2 versions cherchent SDRSharpMerged et pas SDRSharp.
-// l'executable est bien SDRSharp.exe mais ils ont modifiés une propriétée identity : SDRSharpMerged à la place de SDRSharp.
-//verifier le csproj  sur changement de référence,c'est pas clair, j'ai du quitter visual studio pour avoir la bonne dans le csproj
+
+//dotnet versions 
+//   last 4.0-->1784
+//   last 5.0-->1831
+//   >    6.0
 using System;
 using System.Windows.Forms;
 using SDRSharp.Common;

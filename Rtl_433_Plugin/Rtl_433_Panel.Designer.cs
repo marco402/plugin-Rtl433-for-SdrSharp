@@ -78,7 +78,7 @@
             this.radioButtonListDevices = new System.Windows.Forms.RadioButton();
             this.radioButtonGraph = new System.Windows.Forms.RadioButton();
             this.buttonStartStop = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBoxEnabledDisabledDevices = new System.Windows.Forms.GroupBox();
             this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
             this.groupBoxOptionY = new System.Windows.Forms.GroupBox();
             this.radioButtonYMinmax = new System.Windows.Forms.RadioButton();
@@ -103,7 +103,7 @@
             this.groupBoxR.SuspendLayout();
             this.groupBoxHideShow.SuspendLayout();
             this.groupBoxSelectTypeForm.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.groupBoxEnabledDisabledDevices.SuspendLayout();
             this.groupBoxOptionY.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).BeginInit();
@@ -139,7 +139,7 @@
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxHideShow, 0, 11);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
             this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 0, 0);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBox2, 0, 13);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxEnabledDisabledDevices, 0, 13);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxOptionY, 0, 18);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
@@ -514,6 +514,7 @@
             // radioButtonVVV
             // 
             this.radioButtonVVV.AutoSize = true;
+            this.radioButtonVVV.ForeColor = System.Drawing.Color.Blue;
             this.radioButtonVVV.Location = new System.Drawing.Point(9, 89);
             this.radioButtonVVV.Name = "radioButtonVVV";
             this.radioButtonVVV.Size = new System.Drawing.Size(46, 17);
@@ -685,7 +686,7 @@
             this.listBoxHideShowDevices.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.listBoxHideShowDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listBoxHideShowDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxHideShowDevices.ForeColor = System.Drawing.Color.Blue;
+            this.listBoxHideShowDevices.ForeColor = System.Drawing.SystemColors.WindowText;
             this.listBoxHideShowDevices.FormattingEnabled = true;
             this.listBoxHideShowDevices.HorizontalScrollbar = true;
             this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);
@@ -773,7 +774,7 @@
             // radioButtonListDevices
             // 
             this.radioButtonListDevices.AutoSize = true;
-            this.radioButtonListDevices.Location = new System.Drawing.Point(167, 11);
+            this.radioButtonListDevices.Location = new System.Drawing.Point(161, 11);
             this.radioButtonListDevices.Name = "radioButtonListDevices";
             this.radioButtonListDevices.Size = new System.Drawing.Size(81, 17);
             this.radioButtonListDevices.TabIndex = 0;
@@ -784,7 +785,7 @@
             // radioButtonGraph
             // 
             this.radioButtonGraph.AutoSize = true;
-            this.radioButtonGraph.Location = new System.Drawing.Point(107, 11);
+            this.radioButtonGraph.Location = new System.Drawing.Point(98, 11);
             this.radioButtonGraph.Name = "radioButtonGraph";
             this.radioButtonGraph.Size = new System.Drawing.Size(54, 17);
             this.radioButtonGraph.TabIndex = 0;
@@ -805,18 +806,18 @@
             this.buttonStartStop.UseVisualStyleBackColor = false;
             this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
-            // groupBox2
+            // groupBoxEnabledDisabledDevices
             // 
-            this.mainTableLayoutPanel.SetColumnSpan(this.groupBox2, 2);
-            this.groupBox2.Controls.Add(this.checkBoxEnabledDevicesDisabled);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.ForeColor = System.Drawing.Color.Blue;
-            this.groupBox2.Location = new System.Drawing.Point(3, 812);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(248, 41);
-            this.groupBox2.TabIndex = 26;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Enabled devices disabled";
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxEnabledDisabledDevices, 2);
+            this.groupBoxEnabledDisabledDevices.Controls.Add(this.checkBoxEnabledDevicesDisabled);
+            this.groupBoxEnabledDisabledDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxEnabledDisabledDevices.ForeColor = System.Drawing.Color.Blue;
+            this.groupBoxEnabledDisabledDevices.Location = new System.Drawing.Point(3, 812);
+            this.groupBoxEnabledDisabledDevices.Name = "groupBoxEnabledDisabledDevices";
+            this.groupBoxEnabledDisabledDevices.Size = new System.Drawing.Size(248, 41);
+            this.groupBoxEnabledDisabledDevices.TabIndex = 26;
+            this.groupBoxEnabledDisabledDevices.TabStop = false;
+            this.groupBoxEnabledDisabledDevices.Text = "Enabled devices disabled";
             // 
             // checkBoxEnabledDevicesDisabled
             // 
@@ -1062,8 +1063,8 @@
             this.groupBoxHideShow.PerformLayout();
             this.groupBoxSelectTypeForm.ResumeLayout(false);
             this.groupBoxSelectTypeForm.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.groupBoxEnabledDisabledDevices.ResumeLayout(false);
+            this.groupBoxEnabledDisabledDevices.PerformLayout();
             this.groupBoxOptionY.ResumeLayout(false);
             this.groupBoxOptionY.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).EndInit();
@@ -1125,7 +1126,7 @@
         private System.Windows.Forms.RadioButton radioButtonGraph;
         private System.Windows.Forms.RadioButton radioButtonListMessages;
         private System.Windows.Forms.CheckBox checkBoxEnabledDevicesDisabled;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBoxEnabledDisabledDevices;
         private System.Windows.Forms.GroupBox groupBoxOptionY;
         private System.Windows.Forms.NumericUpDown numericUpDownPulseDetectionLevel;
         private System.Windows.Forms.CheckBox checkBoxYAmpest;
