@@ -10,7 +10,6 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
-
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -20,12 +19,12 @@ using SDRSharp.Common;
 using SDRSharp.Radio;
 namespace SDRSharp.Rtl_433
 {
-    public unsafe class Rtl_433_Processor : IIQProcessor, IStreamProcessor, IBaseProcessor
+    public unsafe class Rtl_433_Processor : IIQProcessor, IStreamProcessor, IBaseProcessor, IDisposable
     {
-        [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern bool AllocConsole();
-        public const int NBBYTEFORRTS_433 = 50000;  //  50000 ;  // ; for lower time cycle (16 * 32 * 512) 262144 idem rtl433   I and Q  
-        public const int NBCOMPLEXFORRTS_433 = NBBYTEFORRTS_433 / 2;  //   /2 for real+imag
-        public const int NBBUFFERFORRTS_433 = 5;  //5 buffer for shorter cycle rtl433(only 1 buffer) but 5 buffers for record one shoot
+        //[DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern bool AllocConsole();
+        internal const int NBBYTEFORRTS_433 = 50000;  //  50000 ;  // ; for lower time cycle (16 * 32 * 512) 262144 idem rtl433   I and Q  
+        internal const int NBCOMPLEXFORRTS_433 = NBBYTEFORRTS_433 / 2;  //   /2 for real+imag
+        internal const int NBBUFFERFORRTS_433 = 5;  //5 buffer for shorter cycle rtl433(only 1 buffer) but 5 buffers for record one shoot
         //5 buffer for sample rate to 250000
         private UnsafeBuffer _IQBuffer;
         private Complex* _IQPtr;
@@ -33,13 +32,13 @@ namespace SDRSharp.Rtl_433
         private bool _terminated = true;
         private ClassInterfaceWithRtl433 _ClassInterfaceWithRtl433;
         private readonly ComplexFifoStream _floatStreamComplex = new ComplexFifoStream(BlockMode.BlockingRead);
-        private  ISharpControl _control;
+        private ISharpControl _control;
         #region class
-        public Rtl_433_Processor(ISharpControl control)
+        internal Rtl_433_Processor(ISharpControl control)
         {
             _control = control;
         }
-        public void SetClassInterfaceWithRtl433(ClassInterfaceWithRtl433 classInterfaceWithRtl433)
+        internal void SetClassInterfaceWithRtl433(ClassInterfaceWithRtl433 classInterfaceWithRtl433)
         {
             _control.PropertyChanged += NotifyPropertyChangedHandler;
             _ClassInterfaceWithRtl433 = classInterfaceWithRtl433;
@@ -52,12 +51,12 @@ namespace SDRSharp.Rtl_433
             //_AmDetector = new AmDetector();
             //Console.WriteLine(proc.PrivateMemorySize64);
         }
-        public void openConsole()
+        internal void openConsole()
         {
-            bool ret = AllocConsole();
+            bool ret = NativeMethods.AllocConsole();
             try
             {
-                 //Console.BufferHeight = 5000;  //error if in visual studio 
+                //Console.BufferHeight = 5000;  //error if in visual studio 
                 Console.Title = "Verbose messages  from RTL_433";
                 //in this case console is exec window
             }
@@ -67,16 +66,19 @@ namespace SDRSharp.Rtl_433
             }
         }
         private bool _enableRtl433;
-        public bool EnableRtl433
+        internal bool EnableRtl433
         {
             get { return _enableRtl433; }
             set
             {
                 _enableRtl433 = value;
-                if (value && _control.IsPlaying) 
+                if (value && _control.IsPlaying)
                 {
-                     Start();
-                     setSourceName();
+                    //if(productVersion>9999999)  //  || productVersion==1001632    wait version with open(sleep) and replace 9999999 by precedente version
+                    //    NewStart();
+                    //else
+                    Start();
+                    setSourceName();
                 }
                 else
                 {
@@ -85,7 +87,7 @@ namespace SDRSharp.Rtl_433
             }
         }
         private long _frequencyRtl433;
-        public long FrequencyRtl433
+        internal long FrequencyRtl433
         {
             get
             {
@@ -94,7 +96,7 @@ namespace SDRSharp.Rtl_433
             set
             {
                 _frequencyRtl433 = value;
-               // setFrequency();
+                // setFrequency();
             }
         }
         #endregion
@@ -110,9 +112,28 @@ namespace SDRSharp.Rtl_433
                 _processThreadRtl433.Name = "RTL_433";
                 _processThreadRtl433.Start();
             }
-
-            //_SourceName = "";
         }
+
+        //I asked airspy to add a sleep in _floatStreamComplex.Open(sleep), here is their answer:
+        //Fix your code using proper multi-threading and data sequencing.
+        //We will not add a sleep call in a memory management class.
+        //I'm patient, I hope they change their minds
+        
+        //private void NewStart()
+        //{
+        //    _terminated = false;
+        //    if (_processThreadRtl433 == null)
+        //    {
+        //        setFrequency();
+        //        if (_control.SourceName.ToUpper().Contains(".WAV"))
+        //            _floatStreamComplex.Open(200);
+        //        else
+        //            _floatStreamComplex.Open();
+        //        _processThreadRtl433 = new Thread(ProcessRtl433);
+        //        _processThreadRtl433.Name = "RTL_433";
+        //        _processThreadRtl433.Start();
+        //    }
+        //}
         private void setFrequency()
         {
             if (_frequencyRtl433 > 0)
@@ -121,12 +142,13 @@ namespace SDRSharp.Rtl_433
                 _control.SetFrequency(_frequencyRtl433, true);
             }
         }
+        //delete all setSourceName if SDRSharp implemente ComplexFifoStream.open(int _sleep) 
         private void setSourceName()
         {
             if (!_control.SourceName.Contains("PublicKeyToken=null"))
                 _ClassInterfaceWithRtl433.setSourceName(_control.SourceName);
         }
-        public void Stop()
+        internal void Stop()
         {
             _terminated = true;
             if (_processThreadRtl433 != null)
@@ -134,32 +156,31 @@ namespace SDRSharp.Rtl_433
                 _floatStreamComplex.Close();
                 _processThreadRtl433.Join();
                 _processThreadRtl433 = null;
-             }
+            }
         }
         private void ProcessRtl433(object parameter)
         {
-             while (_control.IsPlaying && !_terminated)
+            while (_control.IsPlaying && !_terminated)
             {
                 int total = 0;
                 while (_control.IsPlaying && total < NBCOMPLEXFORRTS_433 && !_terminated)
                 {
-                        var len = NBCOMPLEXFORRTS_433 - total;
-                        total += _floatStreamComplex.Read(_IQPtr, total, len);
+                    var len = NBCOMPLEXFORRTS_433 - total;
+                    total += _floatStreamComplex.Read(_IQPtr, total, len);
                 }
                 if (_terminated)
                     break;
-                //if (_control.SourceName != "")
-                //    Thread.Sleep(1000);
-                _ClassInterfaceWithRtl433.send_data(_IQPtr);
+                 _ClassInterfaceWithRtl433.send_data(_IQPtr);
             }   //while
             _floatStreamComplex.Flush();
+           
         }  //ProcessRtl433
         #endregion
         #region interfaces
         private double _sampleRate;
         public double SampleRate         //IStreamProcessor
         {
-            get {return _sampleRate;}
+            get { return _sampleRate; }
             set
             {
                 if (_sampleRate != value)
@@ -174,13 +195,15 @@ namespace SDRSharp.Rtl_433
         {
             if (_control.IsPlaying && !_terminated)
             {
-                 _floatStreamComplex.Write(buffer, length);
+                _floatStreamComplex.Write(buffer, length);
             }
             else
                 return;
         }
-        private long _frequency=0;
-        private long _centerFrequency=0;
+        private long _frequency = 0;
+        private long _centerFrequency = 0;
+        private int productVersion = 0;
+
         //private string _SourceName = "";
         private void NotifyPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
         {
@@ -192,7 +215,7 @@ namespace SDRSharp.Rtl_433
                         _ClassInterfaceWithRtl433.Start(true);
                         break;
                     case "StopRadio":
-                         _ClassInterfaceWithRtl433.Stop(true);
+                        _ClassInterfaceWithRtl433.Stop(true);
                         break;
                     case "CenterFrequency":
                         _centerFrequency = (sender as MainForm).CenterFrequency;
@@ -200,7 +223,7 @@ namespace SDRSharp.Rtl_433
                         break;
                     case "Frequency":
                         _frequency = (sender as MainForm).Frequency;
-                        _ClassInterfaceWithRtl433.setfrequency( _frequency) ;
+                        _ClassInterfaceWithRtl433.setfrequency(_frequency);
                         break;
                     //case "SourceName":
                     //    //_SourceName = (sender as MainForm).SourceName;
@@ -213,7 +236,7 @@ namespace SDRSharp.Rtl_433
                     //    }
                     //    else
                     //        _ClassInterfaceWithRtl433.setTypeInputFile(false);
-                       
+
                     //    break;
                     // case "TuningStyle":
                     //     _SourceName = (sender as MainForm).SourceName;
@@ -241,11 +264,38 @@ namespace SDRSharp.Rtl_433
                     //     break;
                     default:
                         break;
-                    }
+                }
+                //MainForm parent = (MainForm)sender;
+                //string productVersionStr = parent.ProductVersion.Replace(".", "");
+                //if(! Int32.TryParse(productVersionStr, out productVersion))
+                //{
+                //    MessageBox.Show("  Problem reading version,force to 1.0.0.1854", "Error reading version", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //    productVersion = 1001854;
+                //}
+
             }
         }
+        public void flushFloatStreamComplex()
+        {
+            _floatStreamComplex.Flush();
+        }
+        public void Dispose()
+        {
+        Dispose(true);
+        }
+        internal void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ((IDisposable)_ClassInterfaceWithRtl433).Dispose();
+                ((IDisposable)_IQBuffer).Dispose();
+                ((IDisposable)_floatStreamComplex).Dispose();
+                GC.SuppressFinalize(this);
+            }
+        }
+
         #endregion
     }
 }
-
+ 
 

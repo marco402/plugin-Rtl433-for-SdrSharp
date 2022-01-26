@@ -273,7 +273,8 @@ namespace SDRSharp.Rtl_433
          //*************************************************************************************
         public void setDataGraph(List<PointF>[] points, string[] nameGraph)
         {
-
+            if (points == null)  //for change typeForm
+                return;
             float MaxXAllData = float.MinValue;
             foreach (List<PointF> lpt in points)
             {

@@ -27,10 +27,9 @@ using System;
 using System.Windows.Forms;
 using SDRSharp.Common;
 using SDRSharp.Radio;
-
 namespace SDRSharp.Rtl_433
 {
-    public class Rtl_433_Plugin: ISharpPlugin
+    public class Rtl_433_Plugin: ISharpPlugin, IDisposable
     {
         private long frequency = 433920000;
         private int MaxDevicesWindows = 100;
@@ -49,7 +48,7 @@ namespace SDRSharp.Rtl_433
         public void Initialize(ISharpControl control)   //ISharpPlugin
         {
 #if MSGBOXDEBUG
-            MessageBox.Show( "Initialize RTL_433_plugin version 1.4.0.0" , "start plugin rtl433", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show( "Initialize RTL_433_plugin version 1.4.0.0" , "start plugin rtl433", MessageBoxButtons.OK, MessageBoxIcon.Information);
 #endif
             _Rtl_433Processor = new Rtl_433_Processor(control);
             try
@@ -85,5 +84,43 @@ namespace SDRSharp.Rtl_433
             if (_Rtl_433Processor is Rtl_433_Processor)
                 _Rtl_433Processor.Stop();
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Pour détecter les appels redondants
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _Rtl_433Processor.Dispose();
+                    _Rtl_433Processor = null;
+                    _controlPanel.Dispose();
+                    // TODO: supprimer l'état managé (objets managés).
+                }
+
+                // TODO: libérer les ressources non managées (objets non managés) et remplacer un finaliseur ci-dessous.
+                // TODO: définir les champs de grande taille avec la valeur Null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: remplacer un finaliseur seulement si la fonction Dispose(bool disposing) ci-dessus a du code pour libérer les ressources non managées.
+        // ~Rtl_433_Plugin() {
+        //   // Ne modifiez pas ce code. Placez le code de nettoyage dans Dispose(bool disposing) ci-dessus.
+        //   Dispose(false);
+        // }
+
+        // Ce code est ajouté pour implémenter correctement le modèle supprimable.
+        public void Dispose()
+        {
+            // Ne modifiez pas ce code. Placez le code de nettoyage dans Dispose(bool disposing) ci-dessus.
+            Dispose(true);
+            // TODO: supprimer les marques de commentaire pour la ligne suivante si le finaliseur est remplacé ci-dessus.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

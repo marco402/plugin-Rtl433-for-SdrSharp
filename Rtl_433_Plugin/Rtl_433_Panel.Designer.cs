@@ -15,6 +15,8 @@
         {
             if (disposing && (components != null))
             {
+                _ClassInterfaceWithRtl433.Dispose();
+                _ClassInterfaceWithRtl433 = null;
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -679,7 +681,7 @@
             this.groupBoxR.Size = new System.Drawing.Size(248, 120);
             this.groupBoxR.TabIndex = 9;
             this.groupBoxR.TabStop = false;
-            this.groupBoxR.Text = "hide devices(-R)";
+            this.groupBoxR.Text = "hide show devices(-R)";
             // 
             // listBoxHideShowDevices
             // 

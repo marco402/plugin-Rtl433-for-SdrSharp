@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SDRSharp.Radio;
-
 namespace SDRSharp.Rtl_433
 {
    unsafe public static class wavRecorder
@@ -69,35 +68,41 @@ namespace SDRSharp.Rtl_433
             }
             if (maxi > 0)
             {
+ 
+               FileStream fileStream = new FileStream(filePath, FileMode.Create,FileAccess.Write);
                 try
                 {
-                    FileStream fileStream = new FileStream(filePath, FileMode.Create,FileAccess.Write);
-                    BinaryWriter writer = new BinaryWriter(fileStream);
-                    writer.Write(header.sGroupID.ToCharArray());
-                    writer.Write(header.dwFileLength);
-                    writer.Write(header.sRiffType.ToCharArray());
-                    writer.Write(format.sChunkID.ToCharArray());
-                    writer.Write(format.dwChunkSize);
-                    writer.Write(format.wFormatTag);
-                    writer.Write(format.wChannels);
-                    writer.Write(format.dwSamplesPerSec);
-                    writer.Write(format.dwAvgBytesPerSec);
-                    writer.Write(format.wBlockAlign);
-                    writer.Write(format.wBitsPerSample);
-                    writer.Write(data.sChunkID.ToCharArray());
-                    writer.Write(data.dwChunkSize);
-                    foreach (float dataPoint in data.shortArray)
-                        writer.Write(dataPoint);
-                    writer.Seek(4, SeekOrigin.Begin);
-                    uint filesize = (uint)writer.BaseStream.Length;
-                    writer.Write(filesize - 8);
-                    writer.Close();
-                    fileStream.Close();
+                    using (BinaryWriter writer = new BinaryWriter(fileStream))
+                    {
+                        writer.Write(header.sGroupID.ToCharArray());
+                        writer.Write(header.dwFileLength);
+                        writer.Write(header.sRiffType.ToCharArray());
+                        writer.Write(format.sChunkID.ToCharArray());
+                        writer.Write(format.dwChunkSize);
+                        writer.Write(format.wFormatTag);
+                        writer.Write(format.wChannels);
+                        writer.Write(format.dwSamplesPerSec);
+                        writer.Write(format.dwAvgBytesPerSec);
+                        writer.Write(format.wBlockAlign);
+                        writer.Write(format.wBitsPerSample);
+                        writer.Write(data.sChunkID.ToCharArray());
+                        writer.Write(data.dwChunkSize);
+                        foreach (float dataPoint in data.shortArray)
+                            writer.Write(dataPoint);
+                        writer.Seek(4, SeekOrigin.Begin);
+                        uint filesize = (uint)writer.BaseStream.Length;
+                        writer.Write(filesize - 8);
+                        writer.Close();
+                    }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                //finally
+                //{
+                fileStream.Close();
+                //}
             }
             else
                 MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -157,7 +162,6 @@ namespace SDRSharp.Rtl_433
                 _dstWavBuffer[0].Dispose();
             }
         }
-
         private static Int32 getSampleRateFromName(string fileName)
         {
             Int32 sampleRate = 250000;

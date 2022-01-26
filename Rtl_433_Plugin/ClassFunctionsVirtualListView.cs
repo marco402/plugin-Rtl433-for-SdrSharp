@@ -1,18 +1,25 @@
-﻿using System;
+﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+                                FormDevices.cs 
+                            project Rtl_433_Plugin
+						         Plugin for SdrSharp
+ **************************************************************************************
+ Creative Commons Attrib Share-Alike License
+ You are free to use/extend this library but please abide with the CC-BY-SA license:
+ Attribution-NonCommercial-ShareAlike 4.0 International License
+ http://creativecommons.org/licenses/by-nc-sa/4.0/
+
+ All text above must be included in any redistribution.
+ **********************************************************************************/
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
 namespace SDRSharp.Rtl_433
 {
-    class ClassFunctionsListView
+    class ClassFunctionsVirtualListView
     {
-        public static void initListView(ListView listDevices,int nbCol)
+        public static void initListView(ListView listDevices)
         {
             listDevices.View = View.Details;
             listDevices.GridLines = true;
@@ -29,7 +36,13 @@ namespace SDRSharp.Rtl_433
             listDevices.VirtualMode = true;
             listDevices.VirtualListSize = 0;
         }
-
+        /// <summary>
+        /// add one device to cache for virtual mode
+        /// </summary>
+        /// <param name="cacheListMessages"></param>
+        /// <param name="firstToTop">order place at the top or at the bottom</param>
+        /// <param name="nbMessage"></param>
+        /// <param name="device"></param>
         public static void addDeviceToCache(ListViewItem[] cacheListMessages,Boolean firstToTop,int nbMessage, ListViewItem device)
         {
             if (firstToTop)
@@ -46,6 +59,11 @@ namespace SDRSharp.Rtl_433
                 cacheListMessages[0] = device;
             }
         }
+        /// <summary>
+        /// virtual mode nb subitem(cacheListMessages)=nb subitem(listView)
+        /// </summary>
+        /// <param name="cacheListMessages"></param>
+        /// <param name="maxColCurrent"></param>
         public static void completeList(ListViewItem[] cacheListMessages,int maxColCurrent)
         {
             foreach (ListViewItem lvi in cacheListMessages)
@@ -58,7 +76,12 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-
+        /// <summary>
+        /// Add line item=device,add subItems as necessary
+        /// </summary>
+        /// <param name="listData">data in for one line</param>
+        /// <param name="cacheListColumns">list colomn for virtual mode</param>
+        /// <param name="device">current device</param>
         public static void addNewLine(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListViewItem device)
         {
             int indexColonne = 0;
@@ -68,30 +91,60 @@ namespace SDRSharp.Rtl_433
                 {
                     //add subitems before item at indexColonne
                     for (int i = device.SubItems.Count; i < indexColonne; i++)
-                        device.SubItems.Add("-");
+                        device.SubItems.Add("");
                     device.SubItems[indexColonne - 1].Text = _data.Value;
                 }
             }
         }
+        /// <summary>
+        /// ~10ms en debug pour 23 colonnes 
+        /// </summary>
+        /// <param name="listData"></param>
+        /// <param name="cacheListColumns"></param>
+        /// <param name="device"></param>
+        /// <param name="maxColCurrent"></param>
+        public static void refreshLine(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListViewItem device,int maxColCurrent)
+        {
+            for (int i = device.SubItems.Count; i < maxColCurrent; i++)
+                device.SubItems.Add("");
+            int indexColonne = 0;
+            foreach (KeyValuePair<string, string> _data in listData)
+            {
+                if (cacheListColumns.TryGetValue(_data.Key, out indexColonne))
+                    device.SubItems[indexColonne-1].Text = _data.Value;
+            }
 
+        }
+        /// <summary>
+        /// For each element in listData Add column to listViewListMessages if no exist.
+        /// </summary>
+        /// <param name="listData">data in</param>
+        /// <param name="cacheListColumns">in no exist add element to cacheListColumns for virtual mode</param>
+        /// <param name="listViewListMessages">listView</param>
+        /// <param name="maxColCurrent"> update maxColCurrent</param>
+        /// <returns>return maxColCurrent</returns>
         public static int addColumn(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListView listViewListMessages,int  maxColCurrent)
         {
             foreach (KeyValuePair<string, string> _data in listData)
             {
-                if (!cacheListColumns.ContainsKey(_data.Key)) //new col
+                maxColCurrent = addOneColumn(_data.Key, cacheListColumns, listViewListMessages, maxColCurrent);
+            }
+            return maxColCurrent;
+        }
+        public static int addOneColumn(String _data, Dictionary<String, int> cacheListColumns, ListView listViewListMessages, int maxColCurrent)
+        {
+                if (!cacheListColumns.ContainsKey(_data)) //new col
                 {
-                    cacheListColumns.Add(_data.Key, cacheListColumns.Count + 1);
+                    cacheListColumns.Add(_data, cacheListColumns.Count + 1);
                     listViewListMessages.Columns.Add("");
                     if (listViewListMessages.Columns.Count > maxColCurrent)
                     {
                         maxColCurrent = listViewListMessages.Columns.Count;
                     }
-                    listViewListMessages.Columns[cacheListColumns.Count - 1].Text = _data.Key;
+                    listViewListMessages.Columns[cacheListColumns.Count - 1].Text = _data;
                 }
-            }
-            return maxColCurrent;
+                return maxColCurrent;
         }
-
         public static void autoResizeColumns(ListView lv, int nbColumn)
         {
             lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -143,13 +196,12 @@ namespace SDRSharp.Rtl_433
                     ListViewItem it;
                     if (sensDirect)
                     {
-                       // foreach (ListViewItem it in cacheListDevices)
                        for(int i=0;i<nbMessage;i++)
-                        {
+                       {
                             it = cacheListDevices[i];
                             line = processLine(it, formatNumber,nfi, cacheListColumns.Count);
                             str.WriteLine(line);
-                        }
+                       }
                     }
                     else
                     {
@@ -162,13 +214,16 @@ namespace SDRSharp.Rtl_433
                     }
                     str.Close();
                 }
+                nfi = null;
                 return true;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error export devices fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                nfi = null;
                 return false;
             }
+
         }
         private static string processLine(ListViewItem it, bool formatNumber, NumberFormatInfo nfi,Int32 nbColumn)
         {
@@ -182,7 +237,7 @@ namespace SDRSharp.Rtl_433
                 {
                     if (formatNumber)
                     {
-                        line += (valideNumberForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
+                        line += (deleteUnitForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
                     }
                     else
                         line += sit.Text;
@@ -201,9 +256,10 @@ namespace SDRSharp.Rtl_433
             {
                 name = name.Replace(C.ToString(), replaceChar);
             }
+            badChars = null;
             return name;
         }
-        private  static string valideNumberForCalc(string value)
+        private  static string deleteUnitForCalc(string value)
         {
             List<string> badChars = new List<string>();
             badChars.Add(" F");
@@ -236,7 +292,21 @@ namespace SDRSharp.Rtl_433
             {
                 value = value.Replace(C,"");
             }
+            badChars = null;
             return value;
+        }
+        public static ListViewItem getDevice(String deviceName, ListViewItem[] cacheListDevices)
+        {
+            foreach (ListViewItem item in cacheListDevices)
+            {
+                if (item == null)
+                    break;
+                if (item.Text == deviceName)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
     }
 }

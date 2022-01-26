@@ -1,5 +1,4 @@
-﻿
-/* Written by Marc Prieur (marco40_github@sfr.fr)
+﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 ClassInterfaceWithRtl433.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -11,37 +10,35 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
-
 using System;
 using System.Collections.Generic;
 using System.Timers;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.Diagnostics;
+//using System.Diagnostics;
 using System.Linq;
 using SDRSharp.Radio;
 using System.IO;
 using System.Drawing;
 using System.Threading;
-
 namespace SDRSharp.Rtl_433
 {
-   public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged
+   public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged,IDisposable
     {
-        private const string _VERSION = "1.5.4.4";  //update also project property version and file version
+        private const string _VERSION = "1.5.5.0";  //update also project property version and file version
         public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
         private byte[] dataForRs433;
         private Complex*[] _copyIQPtr;
         private UnsafeBuffer[] _copyIQBuffer;
-        private Stopwatch stopw;
-        private long memoDt;
+        //private Stopwatch stopw;
+       // private long memoDt;
         private Dictionary<String, String> listOptionsRtl433;
         public ClassInterfaceWithRtl433(Rtl_433_Panel owner)
         {
             _owner = owner;
-            stopw = new Stopwatch();
+            //stopw = new Stopwatch();
             listData = new Dictionary<String, String>();
             SampleRateStr = "Sample rate: 0";  //no display if init to Rtl_433_panel
             ////setTime();
@@ -131,6 +128,7 @@ namespace SDRSharp.Rtl_433
             //-R device<protocol> show protocol
             //-R device<-1> hide protocol
             //without -R show all protocol
+
             listOptionsRtl433.Clear();
 
             foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
@@ -154,7 +152,8 @@ namespace SDRSharp.Rtl_433
                 listOptionsRtl433.Add(_option.Key, _option.Value);
             }
 
-
+            copyListOptionsRtl433.Clear();
+            copyListOptionsRtl433 = null;
             ////1-remove all hide
             //foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
             //{
@@ -319,7 +318,12 @@ namespace SDRSharp.Rtl_433
             CBmessages = new NativeMethods.ptrFct(_callBackMessages);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
             NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData,(UInt32)(_sampleRate),sizeof(byte),(UInt32) _Enabled , argc, args);
-         }
+
+            //args = null;
+            //CBmessages = null;
+            //CBinitCbData = null;
+            //callMainTimer = null;
+        }
 #endregion
 #region public function 
         private String _timeCycle = "";
@@ -420,10 +424,10 @@ namespace SDRSharp.Rtl_433
             }
         }
         private Boolean typeSourceFile = false;
-        public void setTypeInputFile(Boolean typeSourceFile)
-        {
-            this.typeSourceFile = typeSourceFile;
-        }
+        //public void setTypeInputFile(Boolean typeSourceFile)
+        //{
+        //    this.typeSourceFile = typeSourceFile;
+        //}
         private Boolean typeWindowGraph = false;
         public void setTypeWindowGraph(Boolean typeWindowGraph)
         {
@@ -436,10 +440,9 @@ namespace SDRSharp.Rtl_433
                 typeSourceFile = true;
             sourceName = sourceName.Replace("%20", " ");
             _owner.setMessage(sourceName);
+            _owner.setTypeSourceFile(typeSourceFile);
         }
-
-
-
+#if MSGBOXDEBUG
         public void get_version_dll_rtl_433()
         {
             string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
@@ -454,11 +457,12 @@ namespace SDRSharp.Rtl_433
             //Version = VersionC;  //
             //Version = "Version plugin: " + _VERSION;
         }
-        private String _version="";
+#endif
+        private String _version = "";
         [System.ComponentModel.Bindable(true)]
         public String Version
         {
-            get { return _version;}
+            get { return _version; }
             set
             {
                 _version = "Version plugin: " + _VERSION;
@@ -508,52 +512,53 @@ namespace SDRSharp.Rtl_433
         }
         public void call_main_Rtl_433()
         {
-            _timeCycleLng = 0;
-            _timeForRtl433Lng = 0;
-            _timeCycleLngMax = 0;
-            _timeForRtl433LngMax = 0;
+            //_timeCycleLng = 0;
+            //_timeForRtl433Lng = 0;
+            //_timeCycleLngMax = 0;
+            //_timeForRtl433LngMax = 0;
             callMainTimer = new System.Timers.Timer();
             callMainTimer.Elapsed += new ElapsedEventHandler(OnCallMainTimedEvent);
             callMainTimer.Interval = 1000;
             callMainTimer.Enabled = true;
-            stopw.Restart();
+            //callMainTimer = null;
+            //stopw.Restart();
         }
-        private long _timeCycleLng = 0;
-        private long _timeForRtl433Lng = 0;
-        private long _timeCycleLngMax = 0;
-        private long _timeForRtl433LngMax = 0;
+        //private long _timeCycleLng = 0;
+        //private long _timeForRtl433Lng = 0;
+        //private long _timeCycleLngMax = 0;
+        //private long _timeForRtl433LngMax = 0;
         public unsafe void send_data(Complex * _IQPtr)
         {
             if (ptrCtx != IntPtr.Zero && startRtl433Ok)
             {
-               float maxi = wavRecorder.getMaxi(_IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433);
-               if (maxi > 0)
-               { 
+                float maxi = wavRecorder.getMaxi(_IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433);
+                if (maxi > 0)
+                {
 
-               Utils.Memcpy(_copyIQPtr[0], _IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
-               for (int i = Rtl_433_Processor.NBBUFFERFORRTS_433-1; i > 0; i--)
-                   Utils.Memcpy(_copyIQPtr[i], _copyIQPtr[i - 1], Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
-               for (int i = 0; i < Rtl_433_Processor.NBCOMPLEXFORRTS_433; i++)
-               {
-                   dataForRs433[i * 2] = System.Convert.ToByte(127 + (_IQPtr[i].Real / maxi) * 127);
-                   dataForRs433[i * 2 + 1] = System.Convert.ToByte(127 + (_IQPtr[i].Imag / maxi) * 127);
-               }
-                stopw.Stop();
-                memoDt = stopw.ElapsedMilliseconds;
-                stopw.Restart();
-                NativeMethods.receive_buffer_cb(dataForRs433 ,Rtl_433_Processor.NBBYTEFORRTS_433, ptrCtx);
-                stopw.Stop();
-                _timeCycleLng = memoDt + stopw.ElapsedMilliseconds;
-                _timeForRtl433Lng = stopw.ElapsedMilliseconds;
-                if (_timeCycleLng > _timeCycleLngMax)
-                    _timeCycleLngMax = _timeCycleLng;
-                if (_timeForRtl433Lng > _timeForRtl433LngMax)
-                    _timeForRtl433LngMax = _timeForRtl433Lng;
-                ////setTime();
-                stopw.Restart();
+                    Utils.Memcpy(_copyIQPtr[0], _IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
+                    for (int i = Rtl_433_Processor.NBBUFFERFORRTS_433 - 1; i > 0; i--)
+                        Utils.Memcpy(_copyIQPtr[i], _copyIQPtr[i - 1], Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
+                    for (int i = 0; i < Rtl_433_Processor.NBCOMPLEXFORRTS_433; i++)
+                    {
+                        dataForRs433[i * 2] = System.Convert.ToByte(127 + (_IQPtr[i].Real / maxi) * 127);
+                        dataForRs433[i * 2 + 1] = System.Convert.ToByte(127 + (_IQPtr[i].Imag / maxi) * 127);
+                    }
+                    //stopw.Stop();
+                    //memoDt = stopw.ElapsedMilliseconds;
+                    //stopw.Restart();
+                    NativeMethods.receive_buffer_cb(dataForRs433, Rtl_433_Processor.NBBYTEFORRTS_433, ptrCtx);   //take time->pb memory
+                    //stopw.Stop();
+                    //_timeCycleLng = memoDt + stopw.ElapsedMilliseconds;
+                    //_timeForRtl433Lng = stopw.ElapsedMilliseconds;
+                    //if (_timeCycleLng > _timeCycleLngMax)
+                    //    _timeCycleLngMax = _timeCycleLng;
+                    //if (_timeForRtl433Lng > _timeForRtl433LngMax)
+                    //    _timeForRtl433LngMax = _timeForRtl433Lng;
+                    ////setTime();
+                    //stopw.Restart();
                 }
-                if(typeSourceFile)
-                    Thread.Sleep(100);  //for stop if read file
+                if (typeSourceFile)
+                    Thread.Sleep(100);  //for stop if read file     //take time->pb memory
             }
         }
         ////private void setTime()
@@ -568,8 +573,8 @@ namespace SDRSharp.Rtl_433
         }
         public void CleartimeCycleMax()
         {
-            _timeCycleLngMax = 0;
-            _timeForRtl433LngMax = 0;
+            //_timeCycleLngMax = 0;
+            //_timeForRtl433LngMax = 0;
             ////setTime();
         }
         public void startSendData() 
@@ -584,6 +589,7 @@ namespace SDRSharp.Rtl_433
             {
                 _Enabled = value;      //need reload list devices
                 initListDevice = false;
+                _owner.setOptionVerboseInit();
             }
         }
         //private  String[] =new String _Yoption[10] ;
@@ -591,8 +597,8 @@ namespace SDRSharp.Rtl_433
         //{
         //    _Yoption = option;      //need reload list devices
         //}
-        #endregion
-        #region callBack for dll_rtl_433"
+#endregion
+#region callBack for dll_rtl_433"
         private bool startRtl433Ok = false;
         private bool synchro = false;
         private bool nameData = false;
@@ -614,8 +620,10 @@ namespace SDRSharp.Rtl_433
 
                 else if (message.Contains("end devices list") && startListDevice)  //stop
                 {
-                    if (!initListDevice)
+                    if (initListDevice)
                         _owner.setOptionVerboseInit();
+                    //if (!initListDevice)
+                    //    _owner.setOptionVerboseInit();
                     initListDevice = true;
                     _owner.setListDevices(listeDevice);
                     //stopSdr();
@@ -637,7 +645,7 @@ namespace SDRSharp.Rtl_433
             {
                 if (listData.Count > 1 && synchro == true)
                 {
-                    Dictionary<String, String> listDataClone;
+                    Dictionary<String, String> listDataClone= new Dictionary<String, String>();
                     lock(listData)
                     {
                      listDataClone = listData.ToDictionary(elem => elem.Key, elem => elem.Value);
@@ -712,8 +720,8 @@ namespace SDRSharp.Rtl_433
                                         points[0].Add(new PointF(x, 1));
                                     }
                                 }
-                                else
-                                    x = x;
+                                //else
+                                //    x = x;
                                 if (NumGraph > 1)
                                 {
                                     int endData = searchZero(struct_demod.am_buf);
@@ -745,13 +753,18 @@ namespace SDRSharp.Rtl_433
                             }
                         }
                         _owner.addFormDevice(listDataClone, points,nameGraph);
+                        
+                        //points = null;
                     }
                     else
                     {
                         _owner.addFormDevice(listDataClone, null, nameGraph);
                     }
+                    
+                    //listDataClone.Clear();
+                    //listDataClone = null;
                     //*************************END GRAPH***********************************************
-                   
+
                 }
                 nameData = false;
                 synchro = false;
@@ -846,6 +859,37 @@ namespace SDRSharp.Rtl_433
                 }
             }
             formsToClose.ForEach(f => f.Close());
+        }
+
+        public void Dispose()
+        {
+            //((IDisposable)callMainTimer).Dispose(true);
+            //_owner.Dispose();
+            Dispose(true);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                if (callMainTimer != null)
+                {
+                    callMainTimer.Dispose();
+                    callMainTimer = null;
+                }
+                if (_owner != null)
+                {
+                    _owner.Dispose();
+                    //_owner = null;
+                }
+                GC.SuppressFinalize(this);
+            }
+            //// free native resources if there are any.
+            //if (nativeResource != IntPtr.Zero)
+            //{
+            //    Marshal.FreeHGlobal(nativeResource);
+            //    nativeResource = IntPtr.Zero;
+            //}
         }
 #endregion
     }

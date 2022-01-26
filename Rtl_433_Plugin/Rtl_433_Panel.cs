@@ -16,11 +16,7 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing;
-//using System.Threading;
-using System.Diagnostics;
 using System.IO;
-using GraphLib;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 //#if NOTESTFORMLISTMESSAGES
 //                    addFormDevice(listData, points, nameGraph);
 //#else
@@ -30,7 +26,7 @@ namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
-        #region private
+#region private
         private const int NBCOLUMN = 100;
         private enum TYPEFORM :Int32
         {
@@ -55,8 +51,8 @@ namespace SDRSharp.Rtl_433
         richTextBoxMessages.AppendText("Tuner AGC:on(corresponds to auto gain with rtl433) can be manually-> off.\n");
         richTextBoxMessages.AppendText("RTL AGC:on.(not the AGC panel) can be set off if good signals.\n");
         }
-        #endregion
-        #region public functions
+#endregion
+#region public functions
         public Rtl_433_Panel( Rtl_433_Processor rtl_433Processor)
         {
             InitializeComponent();
@@ -68,7 +64,7 @@ namespace SDRSharp.Rtl_433
             _ClassInterfaceWithRtl433.Version = string.Empty;
 #if MSGBOXDEBUG
             _ClassInterfaceWithRtl433.get_version_dll_rtl_433();
-            Utilities.getVersion();
+            //Utilities.getVersion();
 #endif
             labelVersion.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "Version");
             labelSampleRate.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "SampleRateStr");
@@ -97,7 +93,7 @@ namespace SDRSharp.Rtl_433
             richTextBoxMessages.MaxLength = 5000;
             groupBoxOptionY.Visible = false;  //if true complete enabledDisabledControlsOnStart
             ToolTip OptionVerbose = new ToolTip();
-            OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv too much information !");
+            OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv too much informations !");
 #if TESTWINDOWS
             MessageBox.Show("Version de test");
 #endif
@@ -116,6 +112,7 @@ namespace SDRSharp.Rtl_433
                 labelSampleRate.Text = "Sample rate: " + SampleRate.ToString();
             }
         }
+
         public void setMessage(String message)
         {
             if (base.InvokeRequired)
@@ -186,12 +183,16 @@ namespace SDRSharp.Rtl_433
 #endif
             return key;
         }
-
         TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
 #if TESTWINDOWS
         private int cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
 #endif
-        public void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points, string[] nameGraph)
+        Boolean typeSourceFile = false;
+        public void setTypeSourceFile(Boolean typeSourceFile)
+        {
+            this.typeSourceFile = typeSourceFile;
+        }
+            public void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points, string[] nameGraph)
         {
             if (base.InvokeRequired)
             {
@@ -202,6 +203,8 @@ namespace SDRSharp.Rtl_433
             }
             else
             {
+                if (typeSourceFile)
+                     _Rtl_433Processor.flushFloatStreamComplex();
                 string deviceName = getDeviceName(listData);
                 if (deviceName.Trim() != "")
                 {
@@ -346,36 +349,37 @@ namespace SDRSharp.Rtl_433
         }
         private void enabledDisabledControlsOnStart(bool state)
         {
-            groupBoxFrequency.Enabled = state;
-            //radioButtonFreqFree.Enabled = state;  try for version from 1830 text disabled  black(no visible)
-            //radioButtonFreq315.Enabled = state;
-            //radioButtonFreq345.Enabled = state;
-            //radioButtonFreq43392.Enabled = state;
-            //radioButtonFreq868.Enabled = state;
-            //radioButtonFreq915.Enabled = state;
+           // groupBoxFrequency.Enabled = state;
+            radioButtonFreqFree.Enabled = state; //try for version from 1830 text disabled  black(no visible)
 
-            groupBoxVerbose.Enabled = state;
-            //radioButtonNoV.Enabled = state;
-            //radioButtonV.Enabled = state;
-            //radioButtonVV.Enabled = state;
-            //radioButtonVVV.Enabled = state;
-            //radioButtonVvvv.Enabled = state;
-            groupBoxMetadata.Enabled = state;
-            //radioButtonNoM.Enabled = state;
-            //radioButtonMLevel.Enabled = state;
-            //groupBoxRecord.Enabled = state;  keep enabled for record device window
-            groupBoxSave.Enabled = state;
-            //radioButtonSnone.Enabled = state;
-            //radioButtonSknown.Enabled = state;
-            //radioButtonSunknown.Enabled = state;
-            //radioButtonSall.Enabled = state;
-            groupBoxHideShow.Enabled = state;
-            //radioButtonHideSelect.Enabled = state;
-            //radioButtonShowSelect.Enabled = state;
-            groupBoxDataConv.Enabled = state;
-            //radioButtonDataConvCustomary.Enabled = state;
-            //radioButtonDataConvNative.Enabled = state;
-            //radioButtonDataConvSI.Enabled = state;
+            radioButtonFreq315.Enabled = state;
+            radioButtonFreq345.Enabled = state;
+            radioButtonFreq43392.Enabled = state;
+            radioButtonFreq868.Enabled = state;
+            radioButtonFreq915.Enabled = state;
+
+            //groupBoxVerbose.Enabled = state;
+            radioButtonNoV.Enabled = state;
+            radioButtonV.Enabled = state;
+            radioButtonVV.Enabled = state;
+            radioButtonVVV.Enabled = state;
+            radioButtonVvvv.Enabled = state;
+            //groupBoxMetadata.Enabled = state;
+            radioButtonNoM.Enabled = state;
+            radioButtonMLevel.Enabled = state;
+            //groupBoxRecord.Enabled = state; keep enabled for record device window
+            //groupBoxSave.Enabled = state;
+            radioButtonSnone.Enabled = state;
+            radioButtonSknown.Enabled = state;
+            radioButtonSunknown.Enabled = state;
+            radioButtonSall.Enabled = state;
+            //groupBoxHideShow.Enabled = state;
+            radioButtonHideSelect.Enabled = state;
+            radioButtonShowSelect.Enabled = state;
+            //groupBoxDataConv.Enabled = state;
+            radioButtonDataConvCustomary.Enabled = state;
+            radioButtonDataConvNative.Enabled = state;
+            radioButtonDataConvSI.Enabled = state;
             groupBoxOptionY.Enabled = state;
 
 
@@ -502,7 +506,6 @@ namespace SDRSharp.Rtl_433
             else
                 Stop();
         }
-        
         private void radioButtonListDevices_CheckedChanged(object sender, EventArgs e)
         {
             //displayListDevices = radioButtonListDevices.Checked;
@@ -533,7 +536,7 @@ namespace SDRSharp.Rtl_433
                 _ClassInterfaceWithRtl433.setTypeWindowGraph(false);
             }
         }
-         private void checkBoxEnabledDevicesDisabled_CheckedChanged(object sender, EventArgs e)
+        private void checkBoxEnabledDevicesDisabled_CheckedChanged(object sender, EventArgs e)
         {
            if (checkBoxEnabledDevicesDisabled.Checked)
             {
@@ -569,13 +572,12 @@ namespace SDRSharp.Rtl_433
             else
                 _ClassInterfaceWithRtl433.setOptionUniqueKey( option, check);
         }
-       private void radioButtonYFSK_CheckedChanged(object sender, EventArgs e)
+        private void radioButtonYFSK_CheckedChanged(object sender, EventArgs e)
         {
             System.Windows.Forms.RadioButton chck = (System.Windows.Forms.RadioButton)sender;
             if (chck.Checked)
                  _ClassInterfaceWithRtl433.setOption("YFSK", (String)chck.Tag);
         }
-
         private void numericUpDownFSK_ValueChanged(object sender, EventArgs e)
         {
             System.Windows.Forms.NumericUpDown chck = (System.Windows.Forms.NumericUpDown)sender;
@@ -621,7 +623,7 @@ namespace SDRSharp.Rtl_433
 
 
         }
-        #endregion
+#endregion
 
 
     }

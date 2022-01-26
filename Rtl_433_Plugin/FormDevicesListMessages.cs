@@ -1,10 +1,19 @@
-﻿using System;
+﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+                                FormDevices.cs 
+                            project Rtl_433_Plugin
+						         Plugin for SdrSharp
+ **************************************************************************************
+ Creative Commons Attrib Share-Alike License
+ You are free to use/extend this library but please abide with the CC-BY-SA license:
+ Attribution-NonCommercial-ShareAlike 4.0 International License
+ http://creativecommons.org/licenses/by-nc-sa/4.0/
+
+ All text above must be included in any redistribution.
+ **********************************************************************************/
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-
 namespace SDRSharp.Rtl_433
 {
     public partial class FormDevicesListMessages : Form
@@ -25,7 +34,7 @@ namespace SDRSharp.Rtl_433
             this.maxMessages = maxDevices;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
 
-            ClassFunctionsListView.initListView(listViewListMessages, 0);
+            ClassFunctionsVirtualListView.initListView(listViewListMessages);
             cacheListMessages = new ListViewItem[this.maxMessages]; 
             cacheListColumns = new Dictionary<String, int>();
             cacheListColumns.Add("N° Mes.",  1);
@@ -40,6 +49,7 @@ namespace SDRSharp.Rtl_433
                 " WARNING the file is replaced if it exists\n" +
                 " name file = title window";
          }
+        //protected override void OnClosed(EventArgs e)
         //protected override void OnClosed(EventArgs e)
         //{
         //    classParent.closingFormListDevice();
@@ -67,16 +77,16 @@ namespace SDRSharp.Rtl_433
                 }
             //}
         }
-        private int FindIndexIfDeviceExist(string device)
-        {
-            for (int row = 0; row < maxMessages; row++)
-            {
-                ListViewItem lvi = cacheListMessages[row];
-                if (lvi != null && lvi.Text == device)
-                    return row;
-            }
-            return -1;
-        }
+        //private int FindIndexIfDeviceExist(string device)
+        //{
+        //    for (int row = 0; row < maxMessages; row++)
+        //    {
+        //        ListViewItem lvi = cacheListMessages[row];
+        //        if (lvi != null && lvi.Text == device)
+        //            return row;
+        //    }
+        //    return -1;
+        //}
         private void EnsureVisible(int item)
         {
             listViewListMessages.Items[item].EnsureVisible();
@@ -103,14 +113,14 @@ namespace SDRSharp.Rtl_433
             listViewListMessages.BeginUpdate();
             //*********add name column if necessary in listViewListMessages and in cacheListColumns****************
             //*********memorize maxColCurrent***************
-            maxColCurrent = ClassFunctionsListView.addColumn(listData, cacheListColumns, listViewListMessages, maxColCurrent);
+            maxColCurrent = ClassFunctionsVirtualListView.addColumn(listData, cacheListColumns, listViewListMessages, maxColCurrent);
              //*************************Add new line*********************************
             ListViewItem device = new ListViewItem(deviceName);
-            ClassFunctionsListView.addNewLine(listData, cacheListColumns, device);
+            ClassFunctionsVirtualListView.addNewLine(listData, cacheListColumns, device);
             //**************add new line/device in cacheListMessages
-            ClassFunctionsListView.addDeviceToCache(cacheListMessages, firstToTop, nbMessage, device);
+            ClassFunctionsVirtualListView.addDeviceToCache(cacheListMessages, firstToTop, nbMessage, device);
             //**************complete subItems for all line in cacheListMessages**********************
-            ClassFunctionsListView.completeList(cacheListMessages, maxColCurrent);
+            ClassFunctionsVirtualListView.completeList(cacheListMessages, maxColCurrent);
             //************************************************
              nbMessage += 1;
             this.Text = memoName + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
@@ -121,34 +131,31 @@ namespace SDRSharp.Rtl_433
             catch {
                 Console.WriteLine(this.Text);
             }
-            ClassFunctionsListView.autoResizeColumns(listViewListMessages, cacheListColumns.Count);
+            ClassFunctionsVirtualListView.autoResizeColumns(listViewListMessages, cacheListColumns.Count);
             //refresh();  // display last message when it is displayed at the bottom list
             listViewListMessages.EndUpdate();
             this.ResumeLayout();
         }
         #endregion
         #region Events Form
-        private void FormDevicesListMessages_FormClosing(object sender, FormClosingEventArgs e)
-        {
- 
-        }
         private void toolStripStatusLabelExport_Click(object sender, EventArgs e)
         {
             string directory = classInterfaceWithRtl433.getDirectoryRecording();
-            string fileName = ClassFunctionsListView.valideNameFile(memoName,"_");
-           if( ClassFunctionsListView.serializeText(directory + fileName + ".txt", cacheListColumns, cacheListMessages,true, nbMessage,false))
+            string fileName = ClassFunctionsVirtualListView.valideNameFile(memoName,"_");
+           if( ClassFunctionsVirtualListView.serializeText(directory + fileName + ".txt", cacheListColumns, cacheListMessages,true, nbMessage,false))
            {
                 MessageBox.Show("Export OK", "Export messages", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-        #endregion
-
         private void FormDevicesListMessages_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //cacheListColumns = null;  pb with sdrsharp framework 6.0
-            //cacheListMessages = null;
+            //cacheListColumns = null;  pb with sdrsharp framework 6.0 listViewListMessages_RetrieveVirtualItem
+            //cacheListMessages = null;    pb close window since framework 6 listViewListMessages_RetrieveVirtualItem
             classParent.closingOneFormDeviceListMessages(memoName);
-            GC.Collect();
+            //GC.Collect();
         }
+        #endregion
+
+
     }
 }

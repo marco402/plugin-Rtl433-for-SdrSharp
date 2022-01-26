@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-
 namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
@@ -60,19 +59,17 @@ namespace SDRSharp.Rtl_433
             else
                 return 2;
         }
-       public int getMetaData()
+        public int getMetaData()
         {
             if (radioButtonMLevel.Checked)
                 return 1;
             else
                 return 0;
         }
-
         public long getFrequency()
         {
             return frequency;
         }
-
         public void setMetaData(int statMetaData)
         {
             switch (statMetaData)
@@ -91,7 +88,6 @@ namespace SDRSharp.Rtl_433
                     break;
             }
         }
-
         public void setFrequency(long Frequency)
         {
             switch (Frequency)
@@ -135,8 +131,12 @@ namespace SDRSharp.Rtl_433
         }
         public void setOptionVerboseInit()
         {
-            if (radioButtonNoV.Checked)
-                _ClassInterfaceWithRtl433.setOption(radioButtonNoV.Tag.ToString(), radioButtonNoV.Text);
+            if (!radioButtonV.Checked)
+            {
+                radioButtonV.Checked=true;
+            //if (radioButtonNoV.Checked)
+               // _ClassInterfaceWithRtl433.setOption(radioButtonV.Tag.ToString(), radioButtonV.Text);
+            }
         }
     }
 }
