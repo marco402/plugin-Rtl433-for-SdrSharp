@@ -3,18 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp", "SDRSharp\SDRSharp.csproj", "{4331A8D2-EF97-40C6-AE40-F1D8066B466C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.Radio", "SDRSharp.Radio\SDRSharp.Radio.csproj", "{A24DD927-34EF-4301-BDF3-42C872BC944E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.PanView", "SDRSharp.PanView\SDRSharp.PanView.csproj", "{040E3622-194B-4FA6-9CBB-1A22BD52A13D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.FrequencyEdit", "SDRSharp.FrequencyEdit\SDRSharp.FrequencyEdit.csproj", "{A50690CF-7A7A-4B31-9A03-B3A2AF0AF0E0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.Common", "SDRSharp.Common\SDRSharp.Common.csproj", "{E8BB1EAC-ED6B-4D5E-AA88-6A6CD961F37E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.CollapsiblePanel", "SDRSharp.CollapsiblePanel\SDRSharp.CollapsiblePanel.csproj", "{A5EFB9F9-6F99-4EBD-B5C9-3F68EFEFC823}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.Rtl_433_Plugin", "Rtl_433_Plugin\SDRSharp.Rtl_433_Plugin.csproj", "{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0C0A1F4D-1363-4544-A7C5-196C76D26CCA} = {0C0A1F4D-1363-4544-A7C5-196C76D26CCA}
@@ -24,10 +12,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rtl_433", "rtl_433_dll\vs17_dll_plugin\rtl_433.vcxproj", "{7EB4B17A-2185-47A5-8170-ACDC7EA30515}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphLib", "GraphDisplay\GraphLib\GraphLib.csproj", "{0C0A1F4D-1363-4544-A7C5-196C76D26CCA}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rtl_sdr", "..\..\..\Z\rtl-sdr\src\rtl_sdr.vcxproj", "{A2052CCF-0E0C-3C61-8D83-A1DEAAC473A8}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rtlsdr", "..\..\..\Z\rtl-sdr\src\rtlsdr.vcxproj", "{0DC292EB-D6DB-377C-A24A-19715715B174}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,25 +1,24 @@
-﻿namespace SDRSharp.Rtl_433
+﻿using System;
+using System.Collections.Generic;
+
+namespace SDRSharp.Rtl_433
 {
     partial class Rtl_433_Panel
     {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        /// <param name="disposing"></param>
+        protected override void Dispose(Boolean disposing)
         {
-            if (disposing && (components != null))
-            {
-                _ClassInterfaceWithRtl433.Dispose();
-                _ClassInterfaceWithRtl433 = null;
-                components.Dispose();
-            }
-            base.Dispose(disposing);
+            //first plugin.close call by  SDRSharp.MainForm
+             DisposePanel(disposing);
+             GC.SuppressFinalize(this);
+             base.Dispose(disposing);
         }
 
         #region Component Designer generated code
@@ -35,16 +34,10 @@
             this.radioButtonDataConvCustomary = new System.Windows.Forms.RadioButton();
             this.radioButtonDataConvSI = new System.Windows.Forms.RadioButton();
             this.radioButtonDataConvNative = new System.Windows.Forms.RadioButton();
-            this.labelTimeCycle = new System.Windows.Forms.Label();
-            this.labelTimeRtl433 = new System.Windows.Forms.Label();
             this.groupBoxMetadata = new System.Windows.Forms.GroupBox();
             this.radioButtonMLevel = new System.Windows.Forms.RadioButton();
             this.radioButtonNoM = new System.Windows.Forms.RadioButton();
             this.richTextBoxMessages = new System.Windows.Forms.RichTextBox();
-            this.labelVersion = new System.Windows.Forms.Label();
-            this.labelSampleRate = new System.Windows.Forms.Label();
-            this.labelFrequency = new System.Windows.Forms.Label();
-            this.labelCenterFrequency = new System.Windows.Forms.Label();
             this.groupBoxRecord = new System.Windows.Forms.GroupBox();
             this.checkBoxMONO = new System.Windows.Forms.CheckBox();
             this.checkBoxSTEREO = new System.Windows.Forms.CheckBox();
@@ -60,10 +53,9 @@
             this.radioButtonVVV = new System.Windows.Forms.RadioButton();
             this.radioButtonVV = new System.Windows.Forms.RadioButton();
             this.radioButtonV = new System.Windows.Forms.RadioButton();
-            this.radioButtonVvvv = new System.Windows.Forms.RadioButton();
+            this.radioButtonVVVV = new System.Windows.Forms.RadioButton();
             this.buttonClearMessages = new System.Windows.Forms.Button();
             this.buttonDisplayParam = new System.Windows.Forms.Button();
-            this.buttonCu8ToWav = new System.Windows.Forms.Button();
             this.groupBoxSave = new System.Windows.Forms.GroupBox();
             this.radioButtonSnone = new System.Windows.Forms.RadioButton();
             this.radioButtonSunknown = new System.Windows.Forms.RadioButton();
@@ -79,7 +71,6 @@
             this.radioButtonListMessages = new System.Windows.Forms.RadioButton();
             this.radioButtonListDevices = new System.Windows.Forms.RadioButton();
             this.radioButtonGraph = new System.Windows.Forms.RadioButton();
-            this.buttonStartStop = new System.Windows.Forms.Button();
             this.groupBoxEnabledDisabledDevices = new System.Windows.Forms.GroupBox();
             this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
             this.groupBoxOptionY = new System.Windows.Forms.GroupBox();
@@ -95,6 +86,20 @@
             this.checkBoxYMinimumSNRPulses = new System.Windows.Forms.CheckBox();
             this.checkBoxYMinimumDetectionLevelPulses = new System.Windows.Forms.CheckBox();
             this.checkBoxYPulsesDetectionLevel = new System.Windows.Forms.CheckBox();
+            this.checkBoxEnabledPlugin = new System.Windows.Forms.CheckBox();
+            this.groupBoxInfos = new System.Windows.Forms.GroupBox();
+            this.labelSampleRateTxt = new System.Windows.Forms.Label();
+            this.labelTimeCycle = new System.Windows.Forms.Label();
+            this.labelFrequencyTxt = new System.Windows.Forms.Label();
+            this.labelVersionTxt = new System.Windows.Forms.Label();
+            this.labelSampleRate = new System.Windows.Forms.Label();
+            this.labelFrequency = new System.Windows.Forms.Label();
+            this.labelCycleTime = new System.Windows.Forms.Label();
+            this.labelTime433 = new System.Windows.Forms.Label();
+            this.labelTimeRtl433 = new System.Windows.Forms.Label();
+            this.labelVersion = new System.Windows.Forms.Label();
+            this.buttonStartStop = new System.Windows.Forms.Button();
+            this.buttonCu8ToWav = new System.Windows.Forms.Button();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -110,51 +115,47 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPulseDetectionLevel)).BeginInit();
+            this.groupBoxInfos.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainTableLayoutPanel
             // 
             this.mainTableLayoutPanel.AutoScroll = true;
             this.mainTableLayoutPanel.AutoSize = true;
-            this.mainTableLayoutPanel.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.mainTableLayoutPanel.BackColor = System.Drawing.SystemColors.Desktop;
+            this.mainTableLayoutPanel.CausesValidation = false;
             this.mainTableLayoutPanel.ColumnCount = 2;
-            this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
+            this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 9);
-            this.mainTableLayoutPanel.Controls.Add(this.labelTimeCycle, 0, 16);
-            this.mainTableLayoutPanel.Controls.Add(this.labelTimeRtl433, 0, 16);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 8);
-            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 15);
-            this.mainTableLayoutPanel.Controls.Add(this.labelVersion, 0, 4);
-            this.mainTableLayoutPanel.Controls.Add(this.labelSampleRate, 0, 5);
-            this.mainTableLayoutPanel.Controls.Add(this.labelFrequency, 0, 6);
-            this.mainTableLayoutPanel.Controls.Add(this.labelCenterFrequency, 0, 7);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 6);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 5);
+            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxRecord, 1, 3);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxFrequency, 0, 2);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxVerbose, 0, 8);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 14);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 14);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 3);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 9);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 12);
-            this.mainTableLayoutPanel.Controls.Add(this.labelHideDevices, 0, 10);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxHideShow, 0, 11);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxVerbose, 0, 5);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 11);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 11);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 6);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 9);
+            this.mainTableLayoutPanel.Controls.Add(this.labelHideDevices, 0, 7);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxHideShow, 0, 8);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 0, 0);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxEnabledDisabledDevices, 0, 13);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxOptionY, 0, 18);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxEnabledDisabledDevices, 0, 10);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxOptionY, 0, 13);
+            this.mainTableLayoutPanel.Controls.Add(this.checkBoxEnabledPlugin, 0, 0);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxInfos, 0, 4);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 1, 0);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 3);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainTableLayoutPanel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
-            this.mainTableLayoutPanel.RowCount = 19;
+            this.mainTableLayoutPanel.RowCount = 14;
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 149F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -163,31 +164,31 @@
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.mainTableLayoutPanel.Size = new System.Drawing.Size(254, 1443);
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(266, 1443);
             this.mainTableLayoutPanel.TabIndex = 1;
+            this.mainTableLayoutPanel.CellPaint += new System.Windows.Forms.TableLayoutCellPaintEventHandler(this.mainTableLayoutPanel_CellPaint);
             // 
             // groupBoxDataConv
             // 
-            this.groupBoxDataConv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBoxDataConv.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.groupBoxDataConv.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxDataConv.BackColor = System.Drawing.SystemColors.Desktop;
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvCustomary);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvSI);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvNative);
-            this.groupBoxDataConv.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 493);
+            this.groupBoxDataConv.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 562);
             this.groupBoxDataConv.Name = "groupBoxDataConv";
-            this.groupBoxDataConv.Size = new System.Drawing.Size(102, 114);
+            this.groupBoxDataConv.Size = new System.Drawing.Size(114, 114);
             this.groupBoxDataConv.TabIndex = 20;
             this.groupBoxDataConv.TabStop = false;
             this.groupBoxDataConv.Text = "Data Conv(-C)";
             // 
             // radioButtonDataConvCustomary
             // 
-            this.radioButtonDataConvCustomary.AutoSize = true;
+            this.radioButtonDataConvCustomary.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.radioButtonDataConvCustomary.Location = new System.Drawing.Point(9, 65);
             this.radioButtonDataConvCustomary.Name = "radioButtonDataConvCustomary";
             this.radioButtonDataConvCustomary.Size = new System.Drawing.Size(83, 17);
@@ -195,11 +196,11 @@
             this.radioButtonDataConvCustomary.Tag = "dataconv";
             this.radioButtonDataConvCustomary.Text = "-Ccustomary";
             this.radioButtonDataConvCustomary.UseVisualStyleBackColor = true;
-            this.radioButtonDataConvCustomary.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonDataConvCustomary.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonDataConvSI
             // 
-            this.radioButtonDataConvSI.AutoSize = true;
+            this.radioButtonDataConvSI.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.radioButtonDataConvSI.Location = new System.Drawing.Point(9, 42);
             this.radioButtonDataConvSI.Name = "radioButtonDataConvSI";
             this.radioButtonDataConvSI.Size = new System.Drawing.Size(42, 17);
@@ -207,12 +208,12 @@
             this.radioButtonDataConvSI.Tag = "dataconv";
             this.radioButtonDataConvSI.Text = "-Csi";
             this.radioButtonDataConvSI.UseVisualStyleBackColor = true;
-            this.radioButtonDataConvSI.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonDataConvSI.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonDataConvNative
             // 
-            this.radioButtonDataConvNative.AutoSize = true;
             this.radioButtonDataConvNative.Checked = true;
+            this.radioButtonDataConvNative.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.radioButtonDataConvNative.Location = new System.Drawing.Point(9, 19);
             this.radioButtonDataConvNative.Name = "radioButtonDataConvNative";
             this.radioButtonDataConvNative.Size = new System.Drawing.Size(64, 17);
@@ -221,175 +222,100 @@
             this.radioButtonDataConvNative.Tag = "dataconv";
             this.radioButtonDataConvNative.Text = "-Cnative";
             this.radioButtonDataConvNative.UseVisualStyleBackColor = true;
-            this.radioButtonDataConvNative.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
-            // 
-            // labelTimeCycle
-            // 
-            this.labelTimeCycle.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelTimeCycle.AutoSize = true;
-            this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeCycle, 2);
-            this.labelTimeCycle.ForeColor = System.Drawing.Color.Blue;
-            this.labelTimeCycle.Location = new System.Drawing.Point(3, 1159);
-            this.labelTimeCycle.Name = "labelTimeCycle";
-            this.labelTimeCycle.Size = new System.Drawing.Size(55, 13);
-            this.labelTimeCycle.TabIndex = 15;
-            this.labelTimeCycle.Text = "Cycle time";
-            this.labelTimeCycle.Visible = false;
-            // 
-            // labelTimeRtl433
-            // 
-            this.labelTimeRtl433.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelTimeRtl433.AutoSize = true;
-            this.mainTableLayoutPanel.SetColumnSpan(this.labelTimeRtl433, 2);
-            this.labelTimeRtl433.ForeColor = System.Drawing.Color.Blue;
-            this.labelTimeRtl433.Location = new System.Drawing.Point(3, 1185);
-            this.labelTimeRtl433.Name = "labelTimeRtl433";
-            this.labelTimeRtl433.Size = new System.Drawing.Size(89, 13);
-            this.labelTimeRtl433.TabIndex = 16;
-            this.labelTimeRtl433.Text = "Cycle time Rtl433";
-            this.labelTimeRtl433.Visible = false;
+            this.radioButtonDataConvNative.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // groupBoxMetadata
             // 
-            this.groupBoxMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBoxMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxMetadata.Controls.Add(this.radioButtonMLevel);
             this.groupBoxMetadata.Controls.Add(this.radioButtonNoM);
-            this.groupBoxMetadata.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxMetadata.Location = new System.Drawing.Point(113, 343);
+            this.groupBoxMetadata.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxMetadata.Location = new System.Drawing.Point(123, 412);
             this.groupBoxMetadata.Name = "groupBoxMetadata";
-            this.groupBoxMetadata.Size = new System.Drawing.Size(99, 144);
+            this.groupBoxMetadata.Size = new System.Drawing.Size(140, 144);
             this.groupBoxMetadata.TabIndex = 10;
             this.groupBoxMetadata.TabStop = false;
             this.groupBoxMetadata.Text = "metaData(-M)";
             // 
             // radioButtonMLevel
             // 
-            this.radioButtonMLevel.AutoSize = true;
-            this.radioButtonMLevel.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonMLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.radioButtonMLevel.Location = new System.Drawing.Point(11, 42);
             this.radioButtonMLevel.Name = "radioButtonMLevel";
             this.radioButtonMLevel.Size = new System.Drawing.Size(59, 17);
             this.radioButtonMLevel.TabIndex = 8;
             this.radioButtonMLevel.Tag = "MbitsOrLevel";
             this.radioButtonMLevel.Text = "-Mlevel";
-            this.radioButtonMLevel.UseVisualStyleBackColor = true;
-            this.radioButtonMLevel.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonMLevel.UseVisualStyleBackColor = false;
+            this.radioButtonMLevel.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonNoM
             // 
-            this.radioButtonNoM.AutoSize = true;
             this.radioButtonNoM.Checked = true;
-            this.radioButtonNoM.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonNoM.Location = new System.Drawing.Point(11, 19);
             this.radioButtonNoM.Name = "radioButtonNoM";
             this.radioButtonNoM.Size = new System.Drawing.Size(54, 17);
             this.radioButtonNoM.TabIndex = 8;
             this.radioButtonNoM.TabStop = true;
             this.radioButtonNoM.Tag = "MbitsOrLevel";
             this.radioButtonNoM.Text = "No -M";
-            this.radioButtonNoM.UseVisualStyleBackColor = true;
-            this.radioButtonNoM.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonNoM.UseVisualStyleBackColor = false;
+            this.radioButtonNoM.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // richTextBoxMessages
             // 
             this.richTextBoxMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxMessages.BackColor = System.Drawing.SystemColors.Desktop;
             this.mainTableLayoutPanel.SetColumnSpan(this.richTextBoxMessages, 2);
-            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 890);
+            this.richTextBoxMessages.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 959);
             this.richTextBoxMessages.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.richTextBoxMessages.MaxLength = 3000;
             this.richTextBoxMessages.Name = "richTextBoxMessages";
             this.richTextBoxMessages.ReadOnly = true;
             this.richTextBoxMessages.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBoxMessages.Size = new System.Drawing.Size(248, 257);
+            this.richTextBoxMessages.Size = new System.Drawing.Size(260, 257);
             this.richTextBoxMessages.TabIndex = 5;
             this.richTextBoxMessages.Text = "";
-            this.richTextBoxMessages.TextChanged += new System.EventHandler(this.richTextBoxMessages_TextChanged);
-            // 
-            // labelVersion
-            // 
-            this.labelVersion.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelVersion.AutoSize = true;
-            this.mainTableLayoutPanel.SetColumnSpan(this.labelVersion, 2);
-            this.labelVersion.ForeColor = System.Drawing.Color.Blue;
-            this.labelVersion.Location = new System.Drawing.Point(3, 263);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(55, 13);
-            this.labelVersion.TabIndex = 4;
-            this.labelVersion.Text = "Version dll";
-            // 
-            // labelSampleRate
-            // 
-            this.labelSampleRate.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelSampleRate.AutoSize = true;
-            this.mainTableLayoutPanel.SetColumnSpan(this.labelSampleRate, 2);
-            this.labelSampleRate.ForeColor = System.Drawing.Color.Blue;
-            this.labelSampleRate.Location = new System.Drawing.Point(3, 283);
-            this.labelSampleRate.Name = "labelSampleRate";
-            this.labelSampleRate.Size = new System.Drawing.Size(68, 13);
-            this.labelSampleRate.TabIndex = 6;
-            this.labelSampleRate.Text = "Sample Rate";
-            // 
-            // labelFrequency
-            // 
-            this.labelFrequency.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelFrequency.AutoSize = true;
-            this.mainTableLayoutPanel.SetColumnSpan(this.labelFrequency, 2);
-            this.labelFrequency.ForeColor = System.Drawing.Color.Blue;
-            this.labelFrequency.Location = new System.Drawing.Point(3, 303);
-            this.labelFrequency.Name = "labelFrequency";
-            this.labelFrequency.Size = new System.Drawing.Size(57, 13);
-            this.labelFrequency.TabIndex = 6;
-            this.labelFrequency.Text = "Frequency";
-            // 
-            // labelCenterFrequency
-            // 
-            this.labelCenterFrequency.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelCenterFrequency.AutoSize = true;
-            this.mainTableLayoutPanel.SetColumnSpan(this.labelCenterFrequency, 2);
-            this.labelCenterFrequency.ForeColor = System.Drawing.Color.Blue;
-            this.labelCenterFrequency.Location = new System.Drawing.Point(3, 323);
-            this.labelCenterFrequency.Name = "labelCenterFrequency";
-            this.labelCenterFrequency.Size = new System.Drawing.Size(91, 13);
-            this.labelCenterFrequency.TabIndex = 6;
-            this.labelCenterFrequency.Text = "Center Frequency";
             // 
             // groupBoxRecord
             // 
             this.groupBoxRecord.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBoxRecord.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.groupBoxRecord.BackColor = System.Drawing.SystemColors.Desktop;
             this.groupBoxRecord.Controls.Add(this.checkBoxMONO);
             this.groupBoxRecord.Controls.Add(this.checkBoxSTEREO);
-            this.groupBoxRecord.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxRecord.Location = new System.Drawing.Point(113, 173);
+            this.groupBoxRecord.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxRecord.Location = new System.Drawing.Point(123, 173);
             this.groupBoxRecord.Name = "groupBoxRecord";
-            this.groupBoxRecord.Size = new System.Drawing.Size(99, 84);
+            this.groupBoxRecord.Size = new System.Drawing.Size(140, 84);
             this.groupBoxRecord.TabIndex = 12;
             this.groupBoxRecord.TabStop = false;
             this.groupBoxRecord.Text = "Record";
             // 
             // checkBoxMONO
             // 
-            this.checkBoxMONO.AutoSize = true;
+            this.checkBoxMONO.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.checkBoxMONO.Location = new System.Drawing.Point(6, 51);
             this.checkBoxMONO.Name = "checkBoxMONO";
             this.checkBoxMONO.Size = new System.Drawing.Size(59, 17);
             this.checkBoxMONO.TabIndex = 0;
             this.checkBoxMONO.Text = "MONO";
             this.checkBoxMONO.UseVisualStyleBackColor = true;
-            this.checkBoxMONO.CheckedChanged += new System.EventHandler(this.checkBoxMONO_CheckedChanged);
             // 
             // checkBoxSTEREO
             // 
-            this.checkBoxSTEREO.AutoSize = true;
+            this.checkBoxSTEREO.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.checkBoxSTEREO.Location = new System.Drawing.Point(6, 20);
             this.checkBoxSTEREO.Name = "checkBoxSTEREO";
             this.checkBoxSTEREO.Size = new System.Drawing.Size(70, 17);
             this.checkBoxSTEREO.TabIndex = 0;
             this.checkBoxSTEREO.Text = "STEREO";
             this.checkBoxSTEREO.UseVisualStyleBackColor = true;
-            this.checkBoxSTEREO.CheckedChanged += new System.EventHandler(this.checkBoxSTEREO_CheckedChanged);
             // 
             // groupBoxFrequency
             // 
@@ -402,17 +328,16 @@
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq345);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq315);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreqFree);
-            this.groupBoxFrequency.ForeColor = System.Drawing.Color.Blue;
+            this.groupBoxFrequency.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.groupBoxFrequency.Location = new System.Drawing.Point(3, 73);
             this.groupBoxFrequency.Name = "groupBoxFrequency";
-            this.groupBoxFrequency.Size = new System.Drawing.Size(209, 94);
+            this.groupBoxFrequency.Size = new System.Drawing.Size(260, 94);
             this.groupBoxFrequency.TabIndex = 13;
             this.groupBoxFrequency.TabStop = false;
             this.groupBoxFrequency.Text = "Frequency";
             // 
             // radioButtonFreq915
             // 
-            this.radioButtonFreq915.AutoSize = true;
             this.radioButtonFreq915.Location = new System.Drawing.Point(101, 65);
             this.radioButtonFreq915.Name = "radioButtonFreq915";
             this.radioButtonFreq915.Size = new System.Drawing.Size(66, 17);
@@ -420,11 +345,10 @@
             this.radioButtonFreq915.Tag = "915000000";
             this.radioButtonFreq915.Text = "915 Mhz";
             this.radioButtonFreq915.UseVisualStyleBackColor = true;
-            this.radioButtonFreq915.CheckedChanged += new System.EventHandler(this.radioButtonFreq_CheckedChanged);
+            this.radioButtonFreq915.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonFreq868
             // 
-            this.radioButtonFreq868.AutoSize = true;
             this.radioButtonFreq868.Location = new System.Drawing.Point(101, 42);
             this.radioButtonFreq868.Name = "radioButtonFreq868";
             this.radioButtonFreq868.Size = new System.Drawing.Size(66, 17);
@@ -432,11 +356,10 @@
             this.radioButtonFreq868.Tag = "868000000";
             this.radioButtonFreq868.Text = "868 Mhz";
             this.radioButtonFreq868.UseVisualStyleBackColor = true;
-            this.radioButtonFreq868.CheckedChanged += new System.EventHandler(this.radioButtonFreq_CheckedChanged);
+            this.radioButtonFreq868.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonFreq43392
             // 
-            this.radioButtonFreq43392.AutoSize = true;
             this.radioButtonFreq43392.Location = new System.Drawing.Point(101, 19);
             this.radioButtonFreq43392.Name = "radioButtonFreq43392";
             this.radioButtonFreq43392.Size = new System.Drawing.Size(81, 17);
@@ -444,11 +367,10 @@
             this.radioButtonFreq43392.Tag = "433920000";
             this.radioButtonFreq43392.Text = "433.92 Mhz";
             this.radioButtonFreq43392.UseVisualStyleBackColor = true;
-            this.radioButtonFreq43392.CheckedChanged += new System.EventHandler(this.radioButtonFreq_CheckedChanged);
+            this.radioButtonFreq43392.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonFreq345
             // 
-            this.radioButtonFreq345.AutoSize = true;
             this.radioButtonFreq345.Location = new System.Drawing.Point(9, 65);
             this.radioButtonFreq345.Name = "radioButtonFreq345";
             this.radioButtonFreq345.Size = new System.Drawing.Size(66, 17);
@@ -456,11 +378,10 @@
             this.radioButtonFreq345.Tag = "345000000";
             this.radioButtonFreq345.Text = "345 Mhz";
             this.radioButtonFreq345.UseVisualStyleBackColor = true;
-            this.radioButtonFreq345.CheckedChanged += new System.EventHandler(this.radioButtonFreq_CheckedChanged);
+            this.radioButtonFreq345.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonFreq315
             // 
-            this.radioButtonFreq315.AutoSize = true;
             this.radioButtonFreq315.Location = new System.Drawing.Point(9, 42);
             this.radioButtonFreq315.Name = "radioButtonFreq315";
             this.radioButtonFreq315.Size = new System.Drawing.Size(66, 17);
@@ -468,12 +389,11 @@
             this.radioButtonFreq315.Tag = "315000000";
             this.radioButtonFreq315.Text = "315 Mhz";
             this.radioButtonFreq315.UseVisualStyleBackColor = true;
-            this.radioButtonFreq315.CheckedChanged += new System.EventHandler(this.radioButtonFreq_CheckedChanged);
+            this.radioButtonFreq315.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonFreqFree
             // 
-            this.radioButtonFreqFree.AutoSize = true;
-            this.radioButtonFreqFree.ForeColor = System.Drawing.Color.Blue;
+            this.radioButtonFreqFree.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.radioButtonFreqFree.Location = new System.Drawing.Point(9, 19);
             this.radioButtonFreqFree.Name = "radioButtonFreqFree";
             this.radioButtonFreqFree.Size = new System.Drawing.Size(46, 17);
@@ -481,27 +401,28 @@
             this.radioButtonFreqFree.Tag = "0";
             this.radioButtonFreqFree.Text = "Free";
             this.radioButtonFreqFree.UseVisualStyleBackColor = true;
-            this.radioButtonFreqFree.CheckedChanged += new System.EventHandler(this.radioButtonFreq_CheckedChanged);
+            this.radioButtonFreqFree.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // groupBoxVerbose
             // 
+            this.groupBoxVerbose.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxVerbose.Controls.Add(this.radioButtonNoV);
             this.groupBoxVerbose.Controls.Add(this.radioButtonVVV);
             this.groupBoxVerbose.Controls.Add(this.radioButtonVV);
             this.groupBoxVerbose.Controls.Add(this.radioButtonV);
-            this.groupBoxVerbose.Controls.Add(this.radioButtonVvvv);
-            this.groupBoxVerbose.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxVerbose.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxVerbose.Location = new System.Drawing.Point(3, 343);
+            this.groupBoxVerbose.Controls.Add(this.radioButtonVVVV);
+            this.groupBoxVerbose.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxVerbose.Location = new System.Drawing.Point(3, 412);
             this.groupBoxVerbose.Name = "groupBoxVerbose";
-            this.groupBoxVerbose.Size = new System.Drawing.Size(104, 144);
+            this.groupBoxVerbose.Size = new System.Drawing.Size(114, 144);
             this.groupBoxVerbose.TabIndex = 9;
             this.groupBoxVerbose.TabStop = false;
             this.groupBoxVerbose.Text = "verbose(-v)";
             // 
             // radioButtonNoV
             // 
-            this.radioButtonNoV.AutoSize = true;
             this.radioButtonNoV.Checked = true;
             this.radioButtonNoV.Location = new System.Drawing.Point(9, 19);
             this.radioButtonNoV.Name = "radioButtonNoV";
@@ -511,12 +432,11 @@
             this.radioButtonNoV.Tag = "verbose";
             this.radioButtonNoV.Text = "No -v";
             this.radioButtonNoV.UseVisualStyleBackColor = true;
-            this.radioButtonNoV.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonNoV.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonVVV
             // 
-            this.radioButtonVVV.AutoSize = true;
-            this.radioButtonVVV.ForeColor = System.Drawing.Color.Blue;
+            this.radioButtonVVV.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.radioButtonVVV.Location = new System.Drawing.Point(9, 89);
             this.radioButtonVVV.Name = "radioButtonVVV";
             this.radioButtonVVV.Size = new System.Drawing.Size(46, 17);
@@ -524,11 +444,10 @@
             this.radioButtonVVV.Tag = "verbose";
             this.radioButtonVVV.Text = "-vvv";
             this.radioButtonVVV.UseVisualStyleBackColor = true;
-            this.radioButtonVVV.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonVVV.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonVV
             // 
-            this.radioButtonVV.AutoSize = true;
             this.radioButtonVV.Location = new System.Drawing.Point(9, 68);
             this.radioButtonVV.Name = "radioButtonVV";
             this.radioButtonVV.Size = new System.Drawing.Size(40, 17);
@@ -536,11 +455,10 @@
             this.radioButtonVV.Tag = "verbose";
             this.radioButtonVV.Text = "-vv";
             this.radioButtonVV.UseVisualStyleBackColor = true;
-            this.radioButtonVV.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonVV.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonV
             // 
-            this.radioButtonV.AutoSize = true;
             this.radioButtonV.Location = new System.Drawing.Point(9, 42);
             this.radioButtonV.Name = "radioButtonV";
             this.radioButtonV.Size = new System.Drawing.Size(34, 17);
@@ -548,29 +466,28 @@
             this.radioButtonV.Tag = "verbose";
             this.radioButtonV.Text = "-v";
             this.radioButtonV.UseVisualStyleBackColor = true;
-            this.radioButtonV.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonV.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
-            // radioButtonVvvv
+            // radioButtonVVVV
             // 
-            this.radioButtonVvvv.AutoSize = true;
-            this.radioButtonVvvv.Location = new System.Drawing.Point(9, 112);
-            this.radioButtonVvvv.Name = "radioButtonVvvv";
-            this.radioButtonVvvv.Size = new System.Drawing.Size(52, 17);
-            this.radioButtonVvvv.TabIndex = 8;
-            this.radioButtonVvvv.Tag = "verbose";
-            this.radioButtonVvvv.Text = "-vvvv";
-            this.radioButtonVvvv.UseVisualStyleBackColor = true;
-            this.radioButtonVvvv.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonVVVV.Location = new System.Drawing.Point(9, 112);
+            this.radioButtonVVVV.Name = "radioButtonVVVV";
+            this.radioButtonVVVV.Size = new System.Drawing.Size(52, 17);
+            this.radioButtonVVVV.TabIndex = 8;
+            this.radioButtonVVVV.Tag = "verbose";
+            this.radioButtonVVVV.Text = "-vvvv";
+            this.radioButtonVVVV.UseVisualStyleBackColor = true;
+            this.radioButtonVVVV.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // buttonClearMessages
             // 
-            this.buttonClearMessages.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.buttonClearMessages.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.buttonClearMessages.AutoSize = true;
-            this.buttonClearMessages.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.buttonClearMessages.ForeColor = System.Drawing.Color.Cyan;
-            this.buttonClearMessages.Location = new System.Drawing.Point(113, 860);
+            this.buttonClearMessages.BackColor = System.Drawing.SystemColors.Desktop;
+            this.buttonClearMessages.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.buttonClearMessages.Location = new System.Drawing.Point(135, 929);
             this.buttonClearMessages.Name = "buttonClearMessages";
-            this.buttonClearMessages.Size = new System.Drawing.Size(92, 23);
+            this.buttonClearMessages.Size = new System.Drawing.Size(115, 23);
             this.buttonClearMessages.TabIndex = 7;
             this.buttonClearMessages.Text = "Clear Messages";
             this.buttonClearMessages.UseVisualStyleBackColor = false;
@@ -578,11 +495,11 @@
             // 
             // buttonDisplayParam
             // 
-            this.buttonDisplayParam.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.buttonDisplayParam.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.buttonDisplayParam.AutoSize = true;
-            this.buttonDisplayParam.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.buttonDisplayParam.ForeColor = System.Drawing.Color.Cyan;
-            this.buttonDisplayParam.Location = new System.Drawing.Point(3, 860);
+            this.buttonDisplayParam.BackColor = System.Drawing.SystemColors.Desktop;
+            this.buttonDisplayParam.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.buttonDisplayParam.Location = new System.Drawing.Point(16, 929);
             this.buttonDisplayParam.Name = "buttonDisplayParam";
             this.buttonDisplayParam.Size = new System.Drawing.Size(87, 23);
             this.buttonDisplayParam.TabIndex = 7;
@@ -590,37 +507,25 @@
             this.buttonDisplayParam.UseVisualStyleBackColor = false;
             this.buttonDisplayParam.Click += new System.EventHandler(this.buttonDisplayParam_Click);
             // 
-            // buttonCu8ToWav
-            // 
-            this.buttonCu8ToWav.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.buttonCu8ToWav.ForeColor = System.Drawing.Color.Cyan;
-            this.buttonCu8ToWav.Location = new System.Drawing.Point(3, 173);
-            this.buttonCu8ToWav.Name = "buttonCu8ToWav";
-            this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 28);
-            this.buttonCu8ToWav.TabIndex = 14;
-            this.buttonCu8ToWav.Text = ".cu8 to .wav";
-            this.buttonCu8ToWav.UseVisualStyleBackColor = false;
-            this.buttonCu8ToWav.Click += new System.EventHandler(this.buttonCu8ToWav_Click);
-            // 
             // groupBoxSave
             // 
-            this.groupBoxSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBoxSave.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxSave.Controls.Add(this.radioButtonSnone);
             this.groupBoxSave.Controls.Add(this.radioButtonSunknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSall);
-            this.groupBoxSave.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxSave.Location = new System.Drawing.Point(113, 493);
+            this.groupBoxSave.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxSave.Location = new System.Drawing.Point(123, 562);
             this.groupBoxSave.Name = "groupBoxSave";
-            this.groupBoxSave.Size = new System.Drawing.Size(99, 114);
+            this.groupBoxSave.Size = new System.Drawing.Size(140, 114);
             this.groupBoxSave.TabIndex = 9;
             this.groupBoxSave.TabStop = false;
             this.groupBoxSave.Text = "save(-S)";
             // 
             // radioButtonSnone
             // 
-            this.radioButtonSnone.AutoSize = true;
             this.radioButtonSnone.Checked = true;
             this.radioButtonSnone.Location = new System.Drawing.Point(9, 19);
             this.radioButtonSnone.Name = "radioButtonSnone";
@@ -629,44 +534,42 @@
             this.radioButtonSnone.TabStop = true;
             this.radioButtonSnone.Tag = "saveDevice";
             this.radioButtonSnone.Text = "No -S";
-            this.radioButtonSnone.UseVisualStyleBackColor = true;
-            this.radioButtonSnone.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonSnone.UseVisualStyleBackColor = false;
+            this.radioButtonSnone.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonSunknown
             // 
-            this.radioButtonSunknown.AutoSize = true;
+            this.radioButtonSunknown.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.radioButtonSunknown.Location = new System.Drawing.Point(9, 89);
             this.radioButtonSunknown.Name = "radioButtonSunknown";
-            this.radioButtonSunknown.Size = new System.Drawing.Size(79, 17);
+            this.radioButtonSunknown.Size = new System.Drawing.Size(100, 17);
             this.radioButtonSunknown.TabIndex = 8;
             this.radioButtonSunknown.Tag = "saveDevice";
             this.radioButtonSunknown.Text = "-Sunknown";
-            this.radioButtonSunknown.UseVisualStyleBackColor = true;
-            this.radioButtonSunknown.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonSunknown.UseVisualStyleBackColor = false;
+            this.radioButtonSunknown.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonSknown
             // 
-            this.radioButtonSknown.AutoSize = true;
             this.radioButtonSknown.Location = new System.Drawing.Point(9, 68);
             this.radioButtonSknown.Name = "radioButtonSknown";
             this.radioButtonSknown.Size = new System.Drawing.Size(67, 17);
             this.radioButtonSknown.TabIndex = 8;
             this.radioButtonSknown.Tag = "saveDevice";
             this.radioButtonSknown.Text = "-Sknown";
-            this.radioButtonSknown.UseVisualStyleBackColor = true;
-            this.radioButtonSknown.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonSknown.UseVisualStyleBackColor = false;
+            this.radioButtonSknown.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonSall
             // 
-            this.radioButtonSall.AutoSize = true;
             this.radioButtonSall.Location = new System.Drawing.Point(9, 42);
             this.radioButtonSall.Name = "radioButtonSall";
-            this.radioButtonSall.Size = new System.Drawing.Size(45, 17);
+            this.radioButtonSall.Size = new System.Drawing.Size(100, 17);
             this.radioButtonSall.TabIndex = 8;
             this.radioButtonSall.Tag = "saveDevice";
             this.radioButtonSall.Text = "-Sall";
-            this.radioButtonSall.UseVisualStyleBackColor = true;
-            this.radioButtonSall.CheckedChanged += new System.EventHandler(this.radioButtonOptionsRtl433_CheckedChanged);
+            this.radioButtonSall.UseVisualStyleBackColor = false;
+            this.radioButtonSall.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // groupBoxR
             // 
@@ -675,26 +578,26 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxR, 2);
             this.groupBoxR.Controls.Add(this.listBoxHideShowDevices);
-            this.groupBoxR.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxR.Location = new System.Drawing.Point(3, 686);
+            this.groupBoxR.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxR.Location = new System.Drawing.Point(3, 755);
             this.groupBoxR.Name = "groupBoxR";
-            this.groupBoxR.Size = new System.Drawing.Size(248, 120);
+            this.groupBoxR.Size = new System.Drawing.Size(260, 120);
             this.groupBoxR.TabIndex = 9;
             this.groupBoxR.TabStop = false;
             this.groupBoxR.Text = "hide show devices(-R)";
             // 
             // listBoxHideShowDevices
             // 
-            this.listBoxHideShowDevices.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.listBoxHideShowDevices.BackColor = System.Drawing.SystemColors.Desktop;
             this.listBoxHideShowDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listBoxHideShowDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxHideShowDevices.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.listBoxHideShowDevices.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.listBoxHideShowDevices.FormattingEnabled = true;
             this.listBoxHideShowDevices.HorizontalScrollbar = true;
             this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);
             this.listBoxHideShowDevices.Name = "listBoxHideShowDevices";
             this.listBoxHideShowDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxHideShowDevices.Size = new System.Drawing.Size(242, 101);
+            this.listBoxHideShowDevices.Size = new System.Drawing.Size(254, 101);
             this.listBoxHideShowDevices.TabIndex = 3;
             // 
             // labelHideDevices
@@ -703,8 +606,8 @@
             this.labelHideDevices.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelHideDevices, 2);
             this.labelHideDevices.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelHideDevices.ForeColor = System.Drawing.Color.Blue;
-            this.labelHideDevices.Location = new System.Drawing.Point(3, 617);
+            this.labelHideDevices.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelHideDevices.Location = new System.Drawing.Point(3, 686);
             this.labelHideDevices.Name = "labelHideDevices";
             this.labelHideDevices.Size = new System.Drawing.Size(173, 15);
             this.labelHideDevices.TabIndex = 15;
@@ -713,56 +616,57 @@
             // 
             // groupBoxHideShow
             // 
+            this.groupBoxHideShow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxHideShow, 2);
             this.groupBoxHideShow.Controls.Add(this.radioButtonShowSelect);
             this.groupBoxHideShow.Controls.Add(this.radioButtonHideSelect);
-            this.groupBoxHideShow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 643);
+            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 712);
             this.groupBoxHideShow.Name = "groupBoxHideShow";
-            this.groupBoxHideShow.Size = new System.Drawing.Size(248, 37);
+            this.groupBoxHideShow.Size = new System.Drawing.Size(260, 37);
             this.groupBoxHideShow.TabIndex = 21;
             this.groupBoxHideShow.TabStop = false;
             // 
             // radioButtonShowSelect
             // 
-            this.radioButtonShowSelect.AutoSize = true;
-            this.radioButtonShowSelect.ForeColor = System.Drawing.Color.Blue;
-            this.radioButtonShowSelect.Location = new System.Drawing.Point(127, 11);
+            this.radioButtonShowSelect.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.radioButtonShowSelect.Location = new System.Drawing.Point(115, 14);
             this.radioButtonShowSelect.Name = "radioButtonShowSelect";
             this.radioButtonShowSelect.Size = new System.Drawing.Size(83, 17);
             this.radioButtonShowSelect.TabIndex = 0;
             this.radioButtonShowSelect.Text = "Show select";
             this.radioButtonShowSelect.UseVisualStyleBackColor = true;
+            this.radioButtonShowSelect.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonHideSelect
             // 
-            this.radioButtonHideSelect.AutoSize = true;
             this.radioButtonHideSelect.Checked = true;
-            this.radioButtonHideSelect.ForeColor = System.Drawing.Color.Blue;
-            this.radioButtonHideSelect.Location = new System.Drawing.Point(6, 11);
+            this.radioButtonHideSelect.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.radioButtonHideSelect.Location = new System.Drawing.Point(6, 14);
             this.radioButtonHideSelect.Name = "radioButtonHideSelect";
             this.radioButtonHideSelect.Size = new System.Drawing.Size(78, 17);
             this.radioButtonHideSelect.TabIndex = 0;
             this.radioButtonHideSelect.TabStop = true;
             this.radioButtonHideSelect.Text = "Hide select";
             this.radioButtonHideSelect.UseVisualStyleBackColor = true;
+            this.radioButtonHideSelect.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // groupBoxSelectTypeForm
             // 
+            this.groupBoxSelectTypeForm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxSelectTypeForm, 2);
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonListMessages);
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonListDevices);
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonGraph);
-            this.groupBoxSelectTypeForm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxSelectTypeForm.Location = new System.Drawing.Point(3, 33);
             this.groupBoxSelectTypeForm.Name = "groupBoxSelectTypeForm";
-            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(248, 34);
+            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(260, 34);
             this.groupBoxSelectTypeForm.TabIndex = 22;
             this.groupBoxSelectTypeForm.TabStop = false;
             // 
             // radioButtonListMessages
             // 
-            this.radioButtonListMessages.AutoSize = true;
             this.radioButtonListMessages.Checked = true;
             this.radioButtonListMessages.Location = new System.Drawing.Point(4, 11);
             this.radioButtonListMessages.Name = "radioButtonListMessages";
@@ -771,63 +675,52 @@
             this.radioButtonListMessages.TabStop = true;
             this.radioButtonListMessages.Text = "List messages";
             this.radioButtonListMessages.UseVisualStyleBackColor = true;
-            this.radioButtonListMessages.CheckedChanged += new System.EventHandler(this.radioButtonListDevices_CheckedChanged);
+            this.radioButtonListMessages.CheckedChanged += new System.EventHandler(this.radioButtonTypeWindow_CheckedChanged);
+            this.radioButtonListMessages.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonListDevices
             // 
-            this.radioButtonListDevices.AutoSize = true;
-            this.radioButtonListDevices.Location = new System.Drawing.Point(161, 11);
+            this.radioButtonListDevices.Location = new System.Drawing.Point(173, 11);
             this.radioButtonListDevices.Name = "radioButtonListDevices";
             this.radioButtonListDevices.Size = new System.Drawing.Size(81, 17);
             this.radioButtonListDevices.TabIndex = 0;
             this.radioButtonListDevices.Text = "List devices";
             this.radioButtonListDevices.UseVisualStyleBackColor = true;
-            this.radioButtonListDevices.CheckedChanged += new System.EventHandler(this.radioButtonListDevices_CheckedChanged);
+            this.radioButtonListDevices.CheckedChanged += new System.EventHandler(this.radioButtonTypeWindow_CheckedChanged);
+            this.radioButtonListDevices.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // radioButtonGraph
             // 
-            this.radioButtonGraph.AutoSize = true;
-            this.radioButtonGraph.Location = new System.Drawing.Point(98, 11);
+            this.radioButtonGraph.Location = new System.Drawing.Point(101, 11);
             this.radioButtonGraph.Name = "radioButtonGraph";
             this.radioButtonGraph.Size = new System.Drawing.Size(54, 17);
             this.radioButtonGraph.TabIndex = 0;
             this.radioButtonGraph.Text = "Graph";
             this.radioButtonGraph.UseVisualStyleBackColor = true;
-            this.radioButtonGraph.CheckedChanged += new System.EventHandler(this.radioButtonListDevices_CheckedChanged);
-            // 
-            // buttonStartStop
-            // 
-            this.buttonStartStop.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.mainTableLayoutPanel.SetColumnSpan(this.buttonStartStop, 2);
-            this.buttonStartStop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonStartStop.ForeColor = System.Drawing.Color.Cyan;
-            this.buttonStartStop.Location = new System.Drawing.Point(3, 3);
-            this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(248, 24);
-            this.buttonStartStop.TabIndex = 19;
-            this.buttonStartStop.UseVisualStyleBackColor = false;
-            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
+            this.radioButtonGraph.CheckedChanged += new System.EventHandler(this.radioButtonTypeWindow_CheckedChanged);
+            this.radioButtonGraph.Paint += new System.Windows.Forms.PaintEventHandler(this.radioButton_Paint);
             // 
             // groupBoxEnabledDisabledDevices
             // 
+            this.groupBoxEnabledDisabledDevices.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxEnabledDisabledDevices, 2);
             this.groupBoxEnabledDisabledDevices.Controls.Add(this.checkBoxEnabledDevicesDisabled);
-            this.groupBoxEnabledDisabledDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxEnabledDisabledDevices.ForeColor = System.Drawing.Color.Blue;
-            this.groupBoxEnabledDisabledDevices.Location = new System.Drawing.Point(3, 812);
+            this.groupBoxEnabledDisabledDevices.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxEnabledDisabledDevices.Location = new System.Drawing.Point(3, 881);
             this.groupBoxEnabledDisabledDevices.Name = "groupBoxEnabledDisabledDevices";
-            this.groupBoxEnabledDisabledDevices.Size = new System.Drawing.Size(248, 41);
+            this.groupBoxEnabledDisabledDevices.Size = new System.Drawing.Size(260, 41);
             this.groupBoxEnabledDisabledDevices.TabIndex = 26;
             this.groupBoxEnabledDisabledDevices.TabStop = false;
             this.groupBoxEnabledDisabledDevices.Text = "Enabled devices disabled";
             // 
             // checkBoxEnabledDevicesDisabled
             // 
-            this.checkBoxEnabledDevicesDisabled.AutoSize = true;
-            this.checkBoxEnabledDevicesDisabled.ForeColor = System.Drawing.Color.Blue;
+            this.checkBoxEnabledDevicesDisabled.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(13, 18);
             this.checkBoxEnabledDevicesDisabled.Name = "checkBoxEnabledDevicesDisabled";
-            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(60, 17);
+            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(82, 17);
             this.checkBoxEnabledDevicesDisabled.TabIndex = 25;
             this.checkBoxEnabledDevicesDisabled.Text = "Default";
             this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
@@ -835,6 +728,9 @@
             // 
             // groupBoxOptionY
             // 
+            this.groupBoxOptionY.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxOptionY, 2);
             this.groupBoxOptionY.Controls.Add(this.radioButtonYMinmax);
             this.groupBoxOptionY.Controls.Add(this.radioButtonYClassic);
@@ -848,10 +744,9 @@
             this.groupBoxOptionY.Controls.Add(this.checkBoxYMinimumSNRPulses);
             this.groupBoxOptionY.Controls.Add(this.checkBoxYMinimumDetectionLevelPulses);
             this.groupBoxOptionY.Controls.Add(this.checkBoxYPulsesDetectionLevel);
-            this.groupBoxOptionY.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxOptionY.Location = new System.Drawing.Point(3, 1208);
+            this.groupBoxOptionY.Location = new System.Drawing.Point(3, 1224);
             this.groupBoxOptionY.Name = "groupBoxOptionY";
-            this.groupBoxOptionY.Size = new System.Drawing.Size(248, 232);
+            this.groupBoxOptionY.Size = new System.Drawing.Size(260, 216);
             this.groupBoxOptionY.TabIndex = 27;
             this.groupBoxOptionY.TabStop = false;
             this.groupBoxOptionY.Text = "options -Y";
@@ -1039,55 +934,219 @@
             this.checkBoxYPulsesDetectionLevel.UseVisualStyleBackColor = true;
             this.checkBoxYPulsesDetectionLevel.CheckedChanged += new System.EventHandler(this.checkBoxY_CheckedChanged);
             // 
+            // checkBoxEnabledPlugin
+            // 
+            this.checkBoxEnabledPlugin.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBoxEnabledPlugin.Location = new System.Drawing.Point(3, 3);
+            this.checkBoxEnabledPlugin.Name = "checkBoxEnabledPlugin";
+            this.checkBoxEnabledPlugin.Size = new System.Drawing.Size(114, 24);
+            this.checkBoxEnabledPlugin.TabIndex = 28;
+            this.checkBoxEnabledPlugin.Text = "Enabled plugin";
+            this.checkBoxEnabledPlugin.UseVisualStyleBackColor = true;
+            this.checkBoxEnabledPlugin.CheckedChanged += new System.EventHandler(this.checkBoxEnabledPlugin_CheckedChanged);
+            // 
+            // groupBoxInfos
+            // 
+            this.groupBoxInfos.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxInfos, 2);
+            this.groupBoxInfos.Controls.Add(this.labelSampleRateTxt);
+            this.groupBoxInfos.Controls.Add(this.labelTimeCycle);
+            this.groupBoxInfos.Controls.Add(this.labelFrequencyTxt);
+            this.groupBoxInfos.Controls.Add(this.labelVersionTxt);
+            this.groupBoxInfos.Controls.Add(this.labelSampleRate);
+            this.groupBoxInfos.Controls.Add(this.labelFrequency);
+            this.groupBoxInfos.Controls.Add(this.labelCycleTime);
+            this.groupBoxInfos.Controls.Add(this.labelTime433);
+            this.groupBoxInfos.Controls.Add(this.labelTimeRtl433);
+            this.groupBoxInfos.Controls.Add(this.labelVersion);
+            this.groupBoxInfos.Location = new System.Drawing.Point(3, 263);
+            this.groupBoxInfos.Name = "groupBoxInfos";
+            this.groupBoxInfos.Size = new System.Drawing.Size(260, 143);
+            this.groupBoxInfos.TabIndex = 31;
+            this.groupBoxInfos.TabStop = false;
+            // 
+            // labelSampleRateTxt
+            // 
+            this.labelSampleRateTxt.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelSampleRateTxt.AutoSize = true;
+            this.labelSampleRateTxt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelSampleRateTxt.Location = new System.Drawing.Point(11, 39);
+            this.labelSampleRateTxt.Name = "labelSampleRateTxt";
+            this.labelSampleRateTxt.Size = new System.Drawing.Size(68, 13);
+            this.labelSampleRateTxt.TabIndex = 6;
+            this.labelSampleRateTxt.Text = "Sample Rate";
+            // 
+            // labelTimeCycle
+            // 
+            this.labelTimeCycle.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelTimeCycle.AutoSize = true;
+            this.labelTimeCycle.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelTimeCycle.Location = new System.Drawing.Point(113, 64);
+            this.labelTimeCycle.Name = "labelTimeCycle";
+            this.labelTimeCycle.Size = new System.Drawing.Size(13, 13);
+            this.labelTimeCycle.TabIndex = 15;
+            this.labelTimeCycle.Text = "0";
+            this.labelTimeCycle.Visible = false;
+            // 
+            // labelFrequencyTxt
+            // 
+            this.labelFrequencyTxt.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelFrequencyTxt.AutoSize = true;
+            this.labelFrequencyTxt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelFrequencyTxt.Location = new System.Drawing.Point(13, 16);
+            this.labelFrequencyTxt.Name = "labelFrequencyTxt";
+            this.labelFrequencyTxt.Size = new System.Drawing.Size(57, 13);
+            this.labelFrequencyTxt.TabIndex = 6;
+            this.labelFrequencyTxt.Text = "Frequency";
+            // 
+            // labelVersionTxt
+            // 
+            this.labelVersionTxt.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelVersionTxt.AutoSize = true;
+            this.labelVersionTxt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelVersionTxt.Location = new System.Drawing.Point(13, 114);
+            this.labelVersionTxt.Name = "labelVersionTxt";
+            this.labelVersionTxt.Size = new System.Drawing.Size(73, 13);
+            this.labelVersionTxt.TabIndex = 4;
+            this.labelVersionTxt.Text = "Version plugin";
+            // 
+            // labelSampleRate
+            // 
+            this.labelSampleRate.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelSampleRate.AutoSize = true;
+            this.labelSampleRate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelSampleRate.Location = new System.Drawing.Point(113, 39);
+            this.labelSampleRate.Name = "labelSampleRate";
+            this.labelSampleRate.Size = new System.Drawing.Size(13, 13);
+            this.labelSampleRate.TabIndex = 6;
+            this.labelSampleRate.Text = "0";
+            // 
+            // labelFrequency
+            // 
+            this.labelFrequency.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelFrequency.AutoSize = true;
+            this.labelFrequency.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelFrequency.Location = new System.Drawing.Point(113, 16);
+            this.labelFrequency.Name = "labelFrequency";
+            this.labelFrequency.Size = new System.Drawing.Size(13, 13);
+            this.labelFrequency.TabIndex = 6;
+            this.labelFrequency.Text = "0";
+            // 
+            // labelCycleTime
+            // 
+            this.labelCycleTime.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelCycleTime.AutoSize = true;
+            this.labelCycleTime.Location = new System.Drawing.Point(11, 64);
+            this.labelCycleTime.Name = "labelCycleTime";
+            this.labelCycleTime.Size = new System.Drawing.Size(68, 13);
+            this.labelCycleTime.TabIndex = 29;
+            this.labelCycleTime.Text = "Cycle time/s:";
+            this.labelCycleTime.Visible = false;
+            // 
+            // labelTime433
+            // 
+            this.labelTime433.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelTime433.AutoSize = true;
+            this.labelTime433.Location = new System.Drawing.Point(11, 89);
+            this.labelTime433.Name = "labelTime433";
+            this.labelTime433.Size = new System.Drawing.Size(85, 13);
+            this.labelTime433.TabIndex = 30;
+            this.labelTime433.Text = "Time RTL433/s:";
+            this.labelTime433.Visible = false;
+            // 
+            // labelTimeRtl433
+            // 
+            this.labelTimeRtl433.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelTimeRtl433.AutoSize = true;
+            this.labelTimeRtl433.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelTimeRtl433.Location = new System.Drawing.Point(113, 89);
+            this.labelTimeRtl433.Name = "labelTimeRtl433";
+            this.labelTimeRtl433.Size = new System.Drawing.Size(13, 13);
+            this.labelTimeRtl433.TabIndex = 16;
+            this.labelTimeRtl433.Text = "0";
+            this.labelTimeRtl433.Visible = false;
+            // 
+            // labelVersion
+            // 
+            this.labelVersion.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelVersion.Location = new System.Drawing.Point(113, 114);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(13, 13);
+            this.labelVersion.TabIndex = 4;
+            this.labelVersion.Text = "0";
+            // 
+            // buttonStartStop
+            // 
+            this.buttonStartStop.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonStartStop.BackColor = System.Drawing.SystemColors.Desktop;
+            this.buttonStartStop.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.buttonStartStop.Location = new System.Drawing.Point(131, 3);
+            this.buttonStartStop.Name = "buttonStartStop";
+            this.buttonStartStop.Size = new System.Drawing.Size(124, 24);
+            this.buttonStartStop.TabIndex = 19;
+            this.buttonStartStop.Text = "Wait Radio";
+            this.buttonStartStop.UseVisualStyleBackColor = false;
+            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
+            this.buttonStartStop.Paint += new System.Windows.Forms.PaintEventHandler(this.button_Paint);
+            // 
+            // buttonCu8ToWav
+            // 
+            this.buttonCu8ToWav.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonCu8ToWav.BackColor = System.Drawing.SystemColors.Desktop;
+            this.buttonCu8ToWav.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.buttonCu8ToWav.Location = new System.Drawing.Point(8, 201);
+            this.buttonCu8ToWav.Name = "buttonCu8ToWav";
+            this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 28);
+            this.buttonCu8ToWav.TabIndex = 14;
+            this.buttonCu8ToWav.Text = ".cu8 to .wav";
+            this.buttonCu8ToWav.UseVisualStyleBackColor = false;
+            this.buttonCu8ToWav.Click += new System.EventHandler(this.buttonCu8ToWav_Click);
+            // 
             // Rtl_433_Panel
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
             this.Controls.Add(this.mainTableLayoutPanel);
             this.Name = "Rtl_433_Panel";
-            this.Size = new System.Drawing.Size(254, 1443);
+            this.Size = new System.Drawing.Size(266, 1443);
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
             this.groupBoxDataConv.ResumeLayout(false);
-            this.groupBoxDataConv.PerformLayout();
             this.groupBoxMetadata.ResumeLayout(false);
-            this.groupBoxMetadata.PerformLayout();
             this.groupBoxRecord.ResumeLayout(false);
-            this.groupBoxRecord.PerformLayout();
             this.groupBoxFrequency.ResumeLayout(false);
-            this.groupBoxFrequency.PerformLayout();
             this.groupBoxVerbose.ResumeLayout(false);
-            this.groupBoxVerbose.PerformLayout();
             this.groupBoxSave.ResumeLayout(false);
-            this.groupBoxSave.PerformLayout();
             this.groupBoxR.ResumeLayout(false);
             this.groupBoxHideShow.ResumeLayout(false);
-            this.groupBoxHideShow.PerformLayout();
             this.groupBoxSelectTypeForm.ResumeLayout(false);
-            this.groupBoxSelectTypeForm.PerformLayout();
             this.groupBoxEnabledDisabledDevices.ResumeLayout(false);
-            this.groupBoxEnabledDisabledDevices.PerformLayout();
             this.groupBoxOptionY.ResumeLayout(false);
             this.groupBoxOptionY.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPulseDetectionLevel)).EndInit();
+            this.groupBoxInfos.ResumeLayout(false);
+            this.groupBoxInfos.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
         #endregion
         private System.Windows.Forms.TableLayoutPanel mainTableLayoutPanel;
-        private System.Windows.Forms.Label labelVersion;
-        private System.Windows.Forms.Label labelSampleRate;
+        private System.Windows.Forms.Label labelVersionTxt;
+        private System.Windows.Forms.Label labelSampleRateTxt;
         private System.Windows.Forms.Button buttonClearMessages;
         private System.Windows.Forms.Button buttonDisplayParam;
         private System.Windows.Forms.GroupBox groupBoxVerbose;
         private System.Windows.Forms.RadioButton radioButtonNoV;
         private System.Windows.Forms.RadioButton radioButtonV;
-        private System.Windows.Forms.RadioButton radioButtonVvvv;
-        private System.Windows.Forms.Label labelFrequency;
-        private System.Windows.Forms.Label labelCenterFrequency;
+        private System.Windows.Forms.RadioButton radioButtonVVVV;
+        private System.Windows.Forms.Label labelFrequencyTxt;
         private System.Windows.Forms.GroupBox groupBoxMetadata;
         private System.Windows.Forms.RadioButton radioButtonMLevel;
         private System.Windows.Forms.RadioButton radioButtonNoM;
@@ -1142,5 +1201,12 @@
         private System.Windows.Forms.RadioButton radioButtonYMinmax;
         private System.Windows.Forms.RadioButton radioButtonYClassic;
         private System.Windows.Forms.RadioButton radioButtonYAuto;
+        private System.Windows.Forms.CheckBox checkBoxEnabledPlugin;
+        private System.Windows.Forms.Label labelVersion;
+        private System.Windows.Forms.Label labelSampleRate;
+        private System.Windows.Forms.Label labelFrequency;
+        private System.Windows.Forms.Label labelCycleTime;
+        private System.Windows.Forms.Label labelTime433;
+        private System.Windows.Forms.GroupBox groupBoxInfos;
     }
 }

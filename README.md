@@ -5,14 +5,19 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version  
+Version 1.5.5.0 February 17, 2022 Tested with SDRSharp 1854 
+     -Added an Enabled checkbox for cohabitation of the RTL433 plugin with the other plugins.  
+     -Display of the time required to process the data functions of the sampleRate/s in milliseconds (Cycle time),
+          it changes to red if it is greater than 1000(Not if source is file).  
+     -Display of the processing time per second taken by the software RTL_433 in milliseconds (Time RTL433).  
 Version 1.5.4.4  17 Janvier 2022  
      - Minor changes for Honeywell_cm921.  
           -boiler_modulation_level.  
           -ticker command.  
      - Correction crash when closed window listDevices if SDRSharp framework 6.0 since version SDRSharp 1830.  
-     - 100ms timeout in replay mode (source iq file(.wav)).  
+     - 100ms timeout in replay mode (source iq file(.wav)).Timer increased to 1000ms from V1.5.5.0  
 Version 1.5.4.3  12 Janvier 2022  
-     - Added ID for identify devices.  
+     - Added ID for identify devices.->suppression from V1.5.5.0 problem for TPMS left IDS for Honeywell 921.  
 Version 1.5.4.2 10 January 2022  
      -Fix listMessage window on receiving message of different length.  
 Version 1.5.4.1 9 January 2022  
@@ -241,21 +246,27 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.5.0  17 Février 2022   Testé avec SDRSharp 1854
+     -Ajout d'une case a cocher Enabled pour cohabitation du plugin RTL433 avec les autres plugins.  
+     -Affichage du temps nécessaire pour traiter les données fonctions du sampleRate/s en milliseconde(Cycle time),
+          celui-ci passe en rouge s'il est supérieur à 1000(Pas si la source est un fichier).  
+     -Affichage du temps de traitement par seconde pris par le logiciel RTL_433 en milliseconde(Time RTL433).  
+
 Version 1.5.4.4  17 Janvier 2022  
      - Modifications mineurs pour Honeywell_cm921.  
           -boiler_modulation_level.  
           -commande ticker.  
      - Correction crash à la fermeture des fenêtres listDevices si SDRSharp framework 6.0 à partir de la version SDRSharp 1830.  
-     - Temporisation de 100ms en mode rejeu (source iq file(.wav)).  
+     - Temporisation de 100ms en mode rejeu (source iq file(.wav)).Temporisation passée à 1000ms à partir de V1.5.5.0
 Version 1.5.4.3  12 Janvier 2022  
-     - Ajout de l'ID pour identifier les devices.  
+     - Ajout de l'ID pour identifier les devices.->supression à partir de V1.5.5.0 problème pour TPMS laissé IDS pour Honeywell 921.  
 Version 1.5.4.2  10 Janvier 2022  
      -Correctif fenêtre listMessage sur réception de message de longueur différente.  
 Version 1.5.4.1  9 Janvier 2022  
      -Correctif fenêtre listMessage sur réception de message de longueur différente. ajout de 10 colonnes au lieu de 2 si -MLevel.  
      -A voir pour ajouter des colonnes en cours de réception.  
 Version 1.5.4.0  6 January 2022  
-     -Ajout d'un dossier dll 1.5.4.0 specifique pour SDRSharp 1777 ou 1784.  
+     -Ajout d'un dossier dll 1.5.4.0 specifique pour SDRSharp 1784.  
 Version 1.5.4.0  1 Janvier 2022
      -Mise a jour de la version RTL_433(V21.12 du 29 Décembre 2021, la précédente datait du 1 Mars 2021).  
            -Ajout de 27 devices(defaut/defaut+disabled/tous)(150/174/180)-->(177/202/208).  

@@ -12,46 +12,121 @@
   **********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Timers;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Windows.Forms;
-//using System.Diagnostics;
 using System.Linq;
 using SDRSharp.Radio;
 using System.IO;
 using System.Drawing;
 using System.Threading;
+using System.Diagnostics;
 namespace SDRSharp.Rtl_433
 {
-   public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged,IDisposable
+    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged, IDisposable
     {
-        private const string _VERSION = "1.5.5.0";  //update also project property version and file version
-        public enum SAVEDEVICE{none,all,known,unknown};
         public event PropertyChangedEventHandler PropertyChanged;
-        private byte[] dataForRs433;
-        private Complex*[] _copyIQPtr;
-        private UnsafeBuffer[] _copyIQBuffer;
-        //private Stopwatch stopw;
-       // private long memoDt;
+
+        internal enum SAVEDEVICE { none, all, known, unknown };
+
+        static NativeMethods.ptrFct CBmessages;
+        static NativeMethods.ptrFctInit CBinitCbData;
+        static NativeMethods.r_cfg structCfg = new NativeMethods.r_cfg();
+        static NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
+
+        private Thread threadCallMainRTL_433;
+        private Byte[] dataForRs433;
+        private Complex*[] copyIQPtr;
+        private UnsafeBuffer[] copyIQBuffer;
         private Dictionary<String, String> listOptionsRtl433;
-        public ClassInterfaceWithRtl433(Rtl_433_Panel owner)
+        private Rtl_433_Panel owner;
+
+        private String timeForRtl433 = "";
+        private String sampleRateStr = "";
+        private Double sampleRate = 0;
+
+        private Int64 frequencyLng = 0;
+        private Int64 centerFrequencyLng = 0;
+        private String frequencyStr = "";
+        private String centerFrequencyStr = "";
+        private UInt32 EnabledDevicesDisabled = 0;
+        private String key = "";
+        private Dictionary<String, String> listData;
+
+        private List<String> listeDevice = new List<String>();
+        private String[] nameGraph = { "Pulse data", "Analyse", "fm" }; 
+
+        private Int32 bufNumber = 0;
+        private UInt32 bufLength = 0;
+        private IntPtr ptrCbData = IntPtr.Zero;
+        private IntPtr ptrCtx = IntPtr.Zero;
+        private IntPtr ptrCfg = IntPtr.Zero;
+
+        private Boolean typeWindowGraph = false;
+        private Boolean sendDataToRtl433 = false;
+        private Boolean synchro = false;
+        private Boolean nameData = false;
+        private Boolean initListDevice = false;
+        private Boolean startListDevice = false;
+        private uint memo_EnabledListDevices = 0;
+#if TESTIME
+        private Stopwatch stopw;
+        //private Stopwatch stopwTotalTime;
+        private long memoDt;
+        private long memoDtTotalTime;
+
+        private Int64 _timeForRtl433Lng = 0;
+        private Int64 _timeCycleCumul = 0;
+        private Int64 _timeForRtl433Cumul = 0;
+        private Int32 nbCycle50000 = 0;
+        private DateTime memoDate= DateTime.Now;
+        private Int32 nbCycleFor1Sec = 0;
+#endif
+        private Int32 searchZero(short[] points)
         {
-            _owner = owner;
-            //stopw = new Stopwatch();
+            Int32 step = 1000;
+            Int32 start = 0;
+            Boolean find = false;
+            Int32 i = 0;
+            while (find == false && i < points.Length)
+            {
+                for (i = start; i < points.Length - 1; i += step)
+                {
+                    if (points[i] == 0 && points[i + 1] == 0)
+                    {
+                        start = i - step;
+                        if (step == 1 || start < 0)
+                        {
+                            find = true;
+                            break;
+                        }
+                        step /= 10;
+                        break;
+                    }
+                }
+            }
+            if (!find) return points.Length - 1;
+            return i;
+        }
+        internal ClassInterfaceWithRtl433(Rtl_433_Panel owner)
+        {
+#if TESTIME
+            stopw = new Stopwatch();
+            //stopwTotalTime = new Stopwatch();
+#endif
+            this.owner = owner;
             listData = new Dictionary<String, String>();
-            SampleRateStr = "Sample rate: 0";  //no display if init to Rtl_433_panel
-            ////setTime();
+            SampleRateStr = "0";  //no display if init to Rtl_433_panel
             listOptionsRtl433 = new Dictionary<String, String>();
             dataForRs433 = new byte[Rtl_433_Processor.NBBYTEFORRTS_433];
-            _copyIQBuffer = new UnsafeBuffer[Rtl_433_Processor.NBBUFFERFORRTS_433];
-            _copyIQPtr = new Complex*[Rtl_433_Processor.NBBUFFERFORRTS_433];
-            _copyIQBuffer[0] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
-            _copyIQPtr[0] = (Complex*)_copyIQBuffer[0];
-            for (int i = 1; i < Rtl_433_Processor.NBBUFFERFORRTS_433; i++)
+            copyIQBuffer = new UnsafeBuffer[Rtl_433_Processor.NBBUFFERFORRTS_433];
+            copyIQPtr = new Complex*[Rtl_433_Processor.NBBUFFERFORRTS_433];
+            copyIQBuffer[0] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
+            copyIQPtr[0] = (Complex*)copyIQBuffer[0];
+            for (Int32 i = 1; i < Rtl_433_Processor.NBBUFFERFORRTS_433; i++)
             {
-                _copyIQBuffer[i] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
-                _copyIQPtr[i] = (Complex*)_copyIQBuffer[i];
+                copyIQBuffer[i] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
+                copyIQPtr[i] = (Complex*)copyIQBuffer[i];
             }
             setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
                                                           // _owner.setMessage(Application.ProductVersion);  version sdrSharp
@@ -60,85 +135,36 @@ namespace SDRSharp.Rtl_433
             setOptionUniqueKey("-MProtocol",true);  //for title and key devices windows
         }
         #region options rtl_433
-        /// <summary>
-        /// For display Graphic
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //public void setanalyze(String value)
-        //{
-        //    if (listOptionsRtl433.ContainsKey("analyze"))
-        //        listOptionsRtl433.Remove("analyze");
-        //    else if (value != String.Empty)
-        //        listOptionsRtl433.Add("analyze", value);
-
-            //if (listOptionsRtl433.ContainsKey("analyze") & value == "")
-            //    listOptionsRtl433.Remove("analyze");
-            //else if (!listOptionsRtl433.ContainsKey("analyze"))
-            //    listOptionsRtl433.Add("analyze", value);
-            //else
-            //    listOptionsRtl433["analyze"] = value;
-        //}
-        /// <summary>
-        /// specific key dif metadata(MbitsOrLevel) for title and key devices windows
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //public void setProtocol(String value)
-        //{
-        //    if (listOptionsRtl433.ContainsKey("MProtocol"))
-        //        listOptionsRtl433.Remove("MProtocol");
-        //    if (value!=String.Empty)
-        //        listOptionsRtl433.Add("MProtocol", value);
-
-        //    //if (listOptionsRtl433.ContainsKey("MProtocol") & value == "")
-        //    //    listOptionsRtl433.Remove("MProtocol");
-        //    //else if (!listOptionsRtl433.ContainsKey("MProtocol"))
-        //    //    listOptionsRtl433.Add("MProtocol", value);
-        //    //else
-        //    //    listOptionsRtl433["MProtocol"] = value;
-        //}
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="key">one for each Y option="-Y option"  option=auto or classic...</param>
-        ///// <param name="state">checkBox.value </param>
-
-        public void setOptionUniqueKey(String key,Boolean state)
+        internal void setOptionUniqueKey(String key,Boolean state)
         {
             if (listOptionsRtl433.ContainsKey(key))
                 listOptionsRtl433.Remove(key);
             if (state)
                 listOptionsRtl433.Add(key, key);
         }
-        public void setHideOrShowDevices(List<string> listBoxSelectedDevices, bool hide)
+        internal void setHideOrShowDevices(List<String> listBoxSelectedDevices, Boolean hideShowDevices)
         {
             Dictionary<String, String> copyListOptionsRtl433 = new Dictionary<String, String>();
-            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
+            foreach (KeyValuePair<String, String> _option in listOptionsRtl433)
             {
                 if (!(_option.Key.Contains("hide") || _option.Key.Contains("show")))
                     //keep all key not egal hide or show
                     copyListOptionsRtl433.Add(_option.Key, _option.Value);    //keep all key not egal hide or show
-                //else
-                //{
-                //    if (_option.Value.Contains("-R-"))
-                //        copyListOptionsRtl433.Add(_option.Key, "-" + _option.Value.Replace("-", "")); //register protocol
-                //}
-            }
+             }
             //-R device<protocol> show protocol
             //-R device<-1> hide protocol
             //without -R show all protocol
 
             listOptionsRtl433.Clear();
 
-            foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
+            foreach (KeyValuePair<String, String> _option in copyListOptionsRtl433)
             {
                 listOptionsRtl433.Add(_option.Key, _option.Value);
             }
             copyListOptionsRtl433.Clear();
-            foreach (string device in listBoxSelectedDevices)
+            foreach (String device in listBoxSelectedDevices)
             { 
-                if (hide)
+                if (hideShowDevices)
                 {
                    listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
                 }
@@ -147,307 +173,153 @@ namespace SDRSharp.Rtl_433
                    listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
                 }
             }
-            foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
+            foreach (KeyValuePair<String, String> _option in copyListOptionsRtl433)
             {
                 listOptionsRtl433.Add(_option.Key, _option.Value);
             }
-
             copyListOptionsRtl433.Clear();
             copyListOptionsRtl433 = null;
-            ////1-remove all hide
-            //foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
-            //{
-            //    if (_option.Key.Contains("hide"))
-            //        listOptionsRtl433.Remove(_option.Key);
-            //}
-            ////1-remove all show
-            //foreach (KeyValuePair<string, string> _option in listOptionsRtl433)  //error on modifie collection  no error v 1811??
-            //{
-            //    if (_option.Key.Contains("show"))
-            //        listOptionsRtl433.Remove(_option.Key);
-            //}
-            ////3-ajouter tous les select
-            //if(hide)
-            //{
-            //    foreach (string device in listBoxSelectedDevices)
-            //    {
-            //        listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
-            //    }
-            //}
-            //else
-            //{
-            //    foreach (string device in listBoxSelectedDevices)
-            //    {
-            //        listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
-            //    }
-            //}
-            ////Dictionary<String, String> copyListOptionsRtl433=new Dictionary<String, String>();
-            ////foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
-            ////{
-            ////    if (!_option.Key.Contains("hide"))
-            ////        copyListOptionsRtl433.Add(_option.Key,_option.Value);
-            ////    else
-            ////    {
-            ////        if (_option.Value.Contains("-R-"))
-            ////            copyListOptionsRtl433.Add(_option.Key,"-" + _option.Value.Replace("-","")); //register protocol
-            ////    }
-            ////}
-            ////listOptionsRtl433.Clear();
-            ////foreach (string device in listBoxHideDevices)
-            ////{
-            ////    listOptionsRtl433.Add("hide" + device, "-R-" + device.Trim()); //unregister protocol
-            ////}
-            ////foreach (KeyValuePair<string, string> _option in copyListOptionsRtl433)
-            ////{
-            ////    listOptionsRtl433.Add(_option.Key, _option.Value);
-            ////}
         }
-        public void setOption(String Key,String value)
+
+        internal void setShowDevicesDisabled( Boolean showDevicesDisabled)
+        {
+            if (showDevicesDisabled)
+                EnabledDevicesDisabled = 1;
+            else
+                EnabledDevicesDisabled = 0;
+
+            if (memo_EnabledListDevices!= EnabledDevicesDisabled)
+            {
+            initListDevice = false;     //need reload list devices
+            }
+            memo_EnabledListDevices = EnabledDevicesDisabled;
+        }
+
+        internal void setOption(String Key,String value)
         {
             if (listOptionsRtl433.ContainsKey(Key))
                 listOptionsRtl433.Remove(Key);
             if(!value.Contains("No "))
                 listOptionsRtl433.Add(Key, value);
         }
-        //String _Yauto = String.Empty;
-        //public String Yauto
-        //{
-        //    get { return _Yauto; }
-        //    set
-        //    {
-        //        _Yauto = value;
-        //    }
-        //}
-        //String _Yclassic = String.Empty;
-        //public String Yclassic
-        //{
-        //    get { return _Yclassic; }
-        //    set
-        //    {
-        //        _Yclassic = value;
-        //    }
-        //}
-        //String _Yminmax = String.Empty;
-        //public String Yminmax
-        //{
-        //    get { return _Yminmax; }
-        //    set
-        //    {
-        //        _Yminmax = value;
-        //    }
-        //}
-        //String _Ylevel = String.Empty;
-        //Int32 _YlevelValue = 0;
-        //public void Ylevel(String option, Int32 value)
-        //{
-        //    _Ylevel = option;
-        //    _YlevelValue = value;
-        //}
-        //String _Yminlevel = String.Empty;
-        //Int32 _YminlevelValue = 0;
-        //public void Yminlevel(String option, Int32 value)
-        //{
-        //    _Yminlevel = option;
-        //    _YminlevelValue = value;
-        //}
-        //String _Yminsnr = String.Empty;
-        //Int32 _YminsnrValue = 0;
-        //public void Yminsnr(String option, Int32 value)
-        //{
-        //    _Yminsnr = option;
-        //    _YminsnrValue = value;
-        //}
-        //String _Yautolevel = String.Empty;
-        //public String Yautolevel
-        //{
-        //    get { return _Yautolevel; }
-        //    set
-        //    {
-        //        _Yautolevel = value;
-        //    }
-        //}
-        //String _Ysquelch = String.Empty;
-        //public String Ysquelch
-        //{
-        //    get { return _Ysquelch; }
-        //    set
-        //    {
-        //        _Ysquelch = value;
-        //    }
-        //}
-        //String _Yampest = String.Empty;
-        //public String Yampest
-        //{
-        //    get { return _Yampest; }
-        //    set
-        //    {
-        //        _Yampest = value;
-        //    }
-        //}
-        //String _Ymagest = String.Empty;
-        //public String Ymagest
-        //{
-        //    get { return _Ymagest; }
-        //    set
-        //    {
-        //        _Ymagest = value;
-        //    }
-        //}
         #endregion
         #region private functions
-        private readonly Rtl_433_Panel _owner;
-        private System.Timers.Timer callMainTimer;
-        static NativeMethods.ptrFct CBmessages;
-        static NativeMethods.ptrFctInit CBinitCbData;
-        private void OnCallMainTimedEvent(object source, ElapsedEventArgs e)
+
+        internal void ProcessCallMainRtl433(object parameter)
         {
-            callMainTimer.Enabled = false;
-            string[] args = new string[listOptionsRtl433.Count()+1];  //+1 for .exe
-            int counter = 0;
-            args[counter] = "Rtl_433.exe";
-            counter++;
-            _owner.setMessage("-----------RTL433 OPTIONS --------------");
-            foreach (KeyValuePair<string, string> _option in listOptionsRtl433)
+            String[] args = new String[listOptionsRtl433.Count()+1];  //+1 for .exe
+
+            args[0] = "Rtl_433.exe"; // + @"\";
+            Int32 counter = 1;
+            owner.setMessage("-----------RTL433 OPTIONS --------------");
+            foreach (KeyValuePair<String, String> _option in listOptionsRtl433)
             {
-                _owner.setMessage(_option.Value);
-                args[counter] = _option.Value;
+                owner.setMessage(_option.Value);
+                args[counter] = _option.Value;  // + @"\";      // +@"\";
                 counter++;
             }
-            _owner.setMessage("------------------------------------------");
+            owner.setMessage("------------------------------------------");
             Int32 argc = args.Length;
             CBmessages = new NativeMethods.ptrFct(_callBackMessages);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
-            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData,(UInt32)(_sampleRate),sizeof(byte),(UInt32) _Enabled , argc, args);
+            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args);
+        }
+        #endregion
+        #region public function 
+//#if TESTIME
+        //private String _timeCycle = "";
+        //[System.ComponentModel.Bindable(true)]
+        //public String timeCycle          //no internal if binding
+        //{
+        //    get { return _timeCycle; }
+        //    set
+        //    {
+        //        _timeCycle = value;
+        //        OnPropertyChanged("timeCycle");
+        //    }
+        //}
 
-            //args = null;
-            //CBmessages = null;
-            //CBinitCbData = null;
-            //callMainTimer = null;
-        }
-#endregion
-#region public function 
-        private String _timeCycle = "";
-        [System.ComponentModel.Bindable(true)]
-        public String timeCycle
+        //[System.ComponentModel.Bindable(true)]
+        //public String TimeForRtl433          //no internal if binding
+        //{
+        //    get { return timeForRtl433; }
+        //    set
+        //    {
+        //        timeForRtl433 = value;
+        //        OnPropertyChanged("TimeForRtl433");
+        //    }
+        //}
+//#endif
+        internal void Start(Boolean senderRadio)
         {
-            get { return _timeCycle; }
+            owner.Start(senderRadio);
+        }
+        internal void Stop(Boolean senderRadio)
+        {
+            owner.Stop(false,senderRadio);
+        }
+
+        [System.ComponentModel.Bindable(true)]
+        public String SampleRateStr          //no internal if binding
+        {
+            get { return sampleRateStr; }
             set
             {
-                _timeCycle = value;
-                OnPropertyChanged("timeCycle");
-            }
-        }
-        private String _timeForRtl433 = "";
-        [System.ComponentModel.Bindable(true)]
-        public String timeForRtl433
-        {
-            get { return _timeForRtl433; }
-            set
-            {
-                _timeForRtl433 = value;
-                OnPropertyChanged("timeForRtl433");
-            }
-        }
-        public void Start(bool senderRadio)
-        {
-            _owner.Start(senderRadio);
-        }
-        public void Stop(bool senderRadio)
-        {
-            _owner.Stop(senderRadio);
-        }
-        private String _sampleRateStr = "";
-        [System.ComponentModel.Bindable(true)]
-        public String SampleRateStr
-        {
-            get { return _sampleRateStr; }
-            set
-            {
-                _sampleRateStr = "SampleRate: " + value;
+                sampleRateStr =  value;
                 OnPropertyChanged("SampleRate");
             }
         }
-        bool _RecordMONO = false;
-        public bool RecordMONO
+
+        internal double SampleRateDbl
         {
-            get { return _RecordMONO; }
+            get  { return sampleRate; }
             set
             {
-                _RecordMONO = value;
-            }
-        }
-        bool _RecordSTEREO = false;
-        public bool RecordSTEREO
-        {
-            get { return _RecordSTEREO; }
-            set
-            {
-                _RecordSTEREO = value;
-            }
-        }
-        private double _sampleRate = 0;
-        public double SampleRateDbl
-        {
-            get  { return _sampleRate; }
-            set
-            {
-            _sampleRate = value;
+            sampleRate = value;
             SampleRateStr = value.ToString();
+#if TESTIME
+            nbCycleFor1Sec = (Int32)((SampleRateDbl / Rtl_433_Processor.NBBYTEFORRTS_433));
+#endif
             }
         }
-        public string getDirectoryRecording()
+
+        internal  void recordDevice(String name,String directory )
         {
-            string directory = "./Recordings/";   //SDRSHARP.exe to SDRSHARP
-            if (!Directory.Exists(directory))
+            String nameFile = directory  + name.Replace(":", "_") + "_" + frequencyLng.ToString() + "_" + sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
+            if (owner.getRecordMONO())
             {
-                directory = "../Recordings/";  //SDRSHARP.exe to bin
-                if (!Directory.Exists(directory))
-                {
-                    directory = "";
-                }
+                String _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
+                wavRecorder.WriteBufferToWav(_nameFile, copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  sampleRate, wavRecorder.recordType.MONO);
             }
-            return directory;
-        }
-        public void recordDevice(string name)
-        {
-            string directory = getDirectoryRecording();
-            string nameFile = directory  + name.Replace(":", "_") + "_" + _frequencyLng.ToString() + "_" + _sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
-            if (_RecordMONO)
+            if (owner.getRecordSTEREO())
             {
-                string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  _sampleRate, wavRecorder.recordType.MONO);
-            }
-            if (_RecordSTEREO)
-            {
-                string _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, _copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  _sampleRate, wavRecorder.recordType.STEREO);
+                String _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
+                wavRecorder.WriteBufferToWav(_nameFile, copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433,  sampleRate, wavRecorder.recordType.STEREO);
             }
         }
-        private Boolean typeSourceFile = false;
-        //public void setTypeInputFile(Boolean typeSourceFile)
-        //{
-        //    this.typeSourceFile = typeSourceFile;
-        //}
-        private Boolean typeWindowGraph = false;
-        public void setTypeWindowGraph(Boolean typeWindowGraph)
+
+        internal void setTypeWindowGraph(Boolean typeWindowGraph)
         {
             this.typeWindowGraph = typeWindowGraph;
+#if TESTIME
+            _timeCycleCumul = 0;
+            _timeForRtl433Cumul = 0;
+            memoDtTotalTime = 0;
+#endif
         }
-        public void setSourceName(string sourceName)
+        private Boolean sourceIsFile = false;
+        internal void setSourceName(String sourceName,Boolean sourceIsFile)
         {
-            typeSourceFile = false;
-            if (sourceName.ToUpper().Contains(".WAV"))
-                typeSourceFile = true;
+            this.sourceIsFile = sourceIsFile;
             sourceName = sourceName.Replace("%20", " ");
-            _owner.setMessage(sourceName);
-            _owner.setTypeSourceFile(typeSourceFile);
+            owner.setMessage(sourceName);
         }
 #if MSGBOXDEBUG
-        public void get_version_dll_rtl_433()
+        internal void get_version_dll_rtl_433()
         {
-            string VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
+            String VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
             MessageBox.Show("version rtl_433.dll " + VersionC, "start plugin RTL433", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //string filename = @".\xSDRSharp.Rtl_433.dll";
+            //String filename = @".\xSDRSharp.Rtl_433.dll";
             //Assembly assem = Assembly.ReflectionOnlyLoadFrom(filename);
             //AssemblyName assemName = assem.GetName();
             //Version ver = assemName.Version;
@@ -458,178 +330,201 @@ namespace SDRSharp.Rtl_433
             //Version = "Version plugin: " + _VERSION;
         }
 #endif
-        private String _version = "";
-        [System.ComponentModel.Bindable(true)]
-        public String Version
+        //private String _version = "";
+        //[System.ComponentModel.Bindable(true)]
+        //public String Version
+        //{
+        //    get { return _version; }
+        //    set
+        //    {
+        //        _version =  _VERSION;
+        //        OnPropertyChanged("Version");
+        //    }
+        //}
+
+        internal void setFrequency(Int64 value)
         {
-            get { return _version; }
+            frequencyLng = value;
+            frequencyStr =  value.ToString();
+        }
+
+        internal void setCenterFrequency(Int64 value)
+        {
+            centerFrequencyLng = value;
+            centerFrequencyStr =  value.ToString(); ;
+        }
+
+        [System.ComponentModel.Bindable(true)]
+        public String FrequencyStr          //no internal if binding
+        {
+            get { return frequencyStr; }
             set
             {
-                _version = "Version plugin: " + _VERSION;
-                OnPropertyChanged("Version");
+                frequencyStr =  value;
+                OnPropertyChanged("FrequencyStr");
+                NativeMethods.setFrequency((UInt32)frequencyLng);
             }
         }
-        private long _frequencyLng = 0;
-        public void setfrequency(long value)
-        {
-            _frequencyLng = value;
-            frequency = "Frequency: " + _frequencyLng.ToString();
-        }
-        private long _centerFrequencyLng = 0;
-        public void setCenterFrequency(long value)
-        {
-            _centerFrequencyLng = value;
-            centerFrequency = "Center frequency: " + _centerFrequencyLng.ToString(); ;
-        }
-        private string _frequency = "";
+ 
         [System.ComponentModel.Bindable(true)]
-        public String frequency
+        public String CenterFrequencyStr          //no internal if binding
         {
-            get { return _frequency; }
+            get { return centerFrequencyStr; }
             set
             {
-                _frequency = value;
-                OnPropertyChanged("frequency");
-                NativeMethods.setFrequency((UInt32)_frequencyLng);
+                centerFrequencyStr = value;
+                OnPropertyChanged("CenterFrequencyStr");
+                NativeMethods.setCenterFrequency((UInt32)centerFrequencyLng);
             }
         }
-        private string _centerFrequency="";
-        [System.ComponentModel.Bindable(true)]
-        public String centerFrequency
+
+        private void OnPropertyChanged(String propertyName)
         {
-            get { return _centerFrequency; }
-            set
-            {
-                _centerFrequency = value;
-                OnPropertyChanged("centerFrequency");
-                NativeMethods.setCenterFrequency((UInt32)_centerFrequencyLng);
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));//error on stop timeCycle
         }
-        private void OnPropertyChanged(string propertyName)
+
+        internal void call_main_Rtl_433()
         {
-            //if (PropertyChanged != null)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));//error on stop timeCycle
+#if TESTIME
+            _timeForRtl433Lng = 0;
+            _timeCycleCumul = 0;
+            _timeForRtl433Cumul = 0;
+            nbCycle50000 = 0;
+            memoDtTotalTime = 0;
+#endif
+            NativeMethods.stop_sdr(ptrCtx);
+            if (!initListDevice)     //need reload list devices
+                owner.setOptionVerboseInit();
+
+            threadCallMainRTL_433 = new Thread(ProcessCallMainRtl433);
+            threadCallMainRTL_433.Name = "thread_MAIN_RTL_433";
+            threadCallMainRTL_433.Start();
         }
-        public void call_main_Rtl_433()
+   
+        internal  void send_data(Complex * _IQPtr)
         {
-            //_timeCycleLng = 0;
-            //_timeForRtl433Lng = 0;
-            //_timeCycleLngMax = 0;
-            //_timeForRtl433LngMax = 0;
-            callMainTimer = new System.Timers.Timer();
-            callMainTimer.Elapsed += new ElapsedEventHandler(OnCallMainTimedEvent);
-            callMainTimer.Interval = 1000;
-            callMainTimer.Enabled = true;
-            //callMainTimer = null;
-            //stopw.Restart();
-        }
-        //private long _timeCycleLng = 0;
-        //private long _timeForRtl433Lng = 0;
-        //private long _timeCycleLngMax = 0;
-        //private long _timeForRtl433LngMax = 0;
-        public unsafe void send_data(Complex * _IQPtr)
-        {
-            if (ptrCtx != IntPtr.Zero && startRtl433Ok)
+            //cptTest += 1;
+            if (ptrCtx != IntPtr.Zero && sendDataToRtl433)
             {
                 float maxi = wavRecorder.getMaxi(_IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433);
                 if (maxi > 0)
                 {
+                    //l'enregistrement a partir de la fenêtre device est a revoir
+                    //cette fonction send_data envoi 50000 byte a rtl433 a chaque fois.
+                    //pour rtl433,2 bytes=1 échantillon=>25000 échantillons a chaque fois.
 
-                    Utils.Memcpy(_copyIQPtr[0], _IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
-                    for (int i = Rtl_433_Processor.NBBUFFERFORRTS_433 - 1; i > 0; i--)
-                        Utils.Memcpy(_copyIQPtr[i], _copyIQPtr[i - 1], Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
-                    for (int i = 0; i < Rtl_433_Processor.NBCOMPLEXFORRTS_433; i++)
+                    //si sample rate SDRSharp =250000/sec 1 cycle doit être < 100ms.
+                    //si sample rate=1024000/sec 1 cycle doit être <25ms
+                    //si sample rate=2048000/sec 1 cycle doit être <12.5ms
+
+                    if (typeWindowGraph)  //warning if record waiting window device
+                    {
+                        Utils.Memcpy(copyIQPtr[0], _IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
+                        for (Int32 i = Rtl_433_Processor.NBBUFFERFORRTS_433 - 1; i > 0; i--)
+                            Utils.Memcpy(copyIQPtr[i], copyIQPtr[i - 1], Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
+                    }
+                    for (Int32 i = 0; i < Rtl_433_Processor.NBCOMPLEXFORRTS_433; i++)
                     {
                         dataForRs433[i * 2] = System.Convert.ToByte(127 + (_IQPtr[i].Real / maxi) * 127);
                         dataForRs433[i * 2 + 1] = System.Convert.ToByte(127 + (_IQPtr[i].Imag / maxi) * 127);
                     }
-                    //stopw.Stop();
-                    //memoDt = stopw.ElapsedMilliseconds;
-                    //stopw.Restart();
+#if TESTIME
+                    stopw.Stop();
+                    memoDt = stopw.ElapsedMilliseconds;
+                    stopw.Restart();
+#endif
                     NativeMethods.receive_buffer_cb(dataForRs433, Rtl_433_Processor.NBBYTEFORRTS_433, ptrCtx);   //take time->pb memory
-                    //stopw.Stop();
-                    //_timeCycleLng = memoDt + stopw.ElapsedMilliseconds;
-                    //_timeForRtl433Lng = stopw.ElapsedMilliseconds;
-                    //if (_timeCycleLng > _timeCycleLngMax)
-                    //    _timeCycleLngMax = _timeCycleLng;
-                    //if (_timeForRtl433Lng > _timeForRtl433LngMax)
-                    //    _timeForRtl433LngMax = _timeForRtl433Lng;
-                    ////setTime();
-                    //stopw.Restart();
+#if TESTIME
+
+                    stopw.Stop();
+                   
+                    _timeForRtl433Lng = stopw.ElapsedMilliseconds;
+                    _timeCycleCumul += (memoDt + _timeForRtl433Lng);
+                    _timeForRtl433Cumul += _timeForRtl433Lng;
+                     nbCycle50000 += 1;
+
+                    if(nbCycle50000>= nbCycleFor1Sec)
+                    {
+                        //stopwTotalTime.Stop();
+                        //Console.WriteLine(((Rtl_433_Processor.NBBYTEFORRTS_433*1000*nbCycle50000)/ stopwTotalTime.ElapsedMilliseconds).ToString());
+                        //stopwTotalTime.Restart();
+                        nbCycle50000 = 0;
+                        if(owner!=null)  //pb on stop dispose
+                            owner.setTime(_timeCycleCumul,_timeForRtl433Cumul, sourceIsFile);
+                        _timeCycleCumul =0;
+                        _timeForRtl433Cumul =0;
+                    }
+                    stopw.Restart();
+#endif
                 }
-                if (typeSourceFile)
-                    Thread.Sleep(100);  //for stop if read file     //take time->pb memory
             }
+            //if (!sendDataToRtl433)
+            //    NativeMethods.stop_sdr(ptrCtx);
         }
-        ////private void setTime()
-        ////{
-        ////    timeCycle = "Cycle time: " + _timeCycleLng.ToString() + " ms. max= " + _timeCycleLngMax.ToString() + " ms.";
-        ////    timeForRtl433 = "Cycle time Rtl433: " + _timeForRtl433Lng.ToString() + " ms. max= " + _timeForRtl433LngMax.ToString() + " ms.";
-        ////}
-        public void stopSdr() 
+//#if TESTIME
+//        private void  setTime()
+//        {
+//            timeCycle =  (_timeCycleCumul ).ToString() + " ms.";
+//            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
+//        }
+//#endif
+        internal void stopSendDataToRtl433() 
         {
-            startRtl433Ok = false;
-            NativeMethods.stop_sdr(ptrCtx);
+            sendDataToRtl433 = false;
         }
-        public void CleartimeCycleMax()
+        internal void free_console() 
+        {
+           NativeMethods.free_console();   //can error if debug try release or other version SDRSharp
+        }
+
+        internal void CleartimeCycleMax()
         {
             //_timeCycleLngMax = 0;
             //_timeForRtl433LngMax = 0;
             ////setTime();
         }
-        public void startSendData() 
+
+        internal void startSendData()
         {
+//#if TESTIME
+            //stopwTotalTime.Restart();
+//#endif
             ptrCtx = IntPtr.Zero;
-            startRtl433Ok = true;
+            sendDataToRtl433 = true;
         }
-        private UInt32 _Enabled = 0;
-        public UInt32 setEnabled
-        {
-            set
-            {
-                _Enabled = value;      //need reload list devices
-                initListDevice = false;
-                _owner.setOptionVerboseInit();
-            }
-        }
-        //private  String[] =new String _Yoption[10] ;
+
+        //public UInt32 setEnabledListDevices
+        //{
+        //    set
+        //    {
+        //        _EnabledListDevices = value;      //need reload list devices
+        //        initListDevice = false;
+        //        _owner.setOptionVerboseInit();
+        //    }
+        //}
+        //private  String[] =new String _Yoption[10] ; code to v 1.5.4.4
         //public void setYoption(String option)
         //{
         //    _Yoption = option;      //need reload list devices
         //}
 #endregion
 #region callBack for dll_rtl_433"
-        private bool startRtl433Ok = false;
-        private bool synchro = false;
-        private bool nameData = false;
-        private string key = "";
-        private Dictionary<String, String> listData;
-        private bool initListDevice = false;
-        private bool startListDevice = false;
-        private List<string> listeDevice = new List<string>();
-        private string[] nameGraph = { "Pulse data", "Analyse", "fm" };
-        public unsafe void _callBackMessages([In, MarshalAs(UnmanagedType.LPStr)] string message)
+        internal  void _callBackMessages([In, MarshalAs(UnmanagedType.LPStr)] String message)
         {
-            //string message = cloneMessage.Substring(0, cloneMessage.Length);
+            if (owner == null)
+                return;
             if (initListDevice == false)
             {
                 if (message.Contains("start devices list"))//start
                 {
+                    listeDevice.Clear();
                     startListDevice = true;
                 }
 
                 else if (message.Contains("end devices list") && startListDevice)  //stop
                 {
-                    if (initListDevice)
-                        _owner.setOptionVerboseInit();
-                    //if (!initListDevice)
-                    //    _owner.setOptionVerboseInit();
-                    initListDevice = true;
-                    _owner.setListDevices(listeDevice);
-                    //stopSdr();
-                    //listOptionsRtl433.Clear();  //for -v 
-                    //setanalyze("-a 4");
-                    //setProtocol("-Mprotocol");  //for title and key devices windows
+                     initListDevice = true;
+                    owner.setListDevices(listeDevice);
                 }
                 else
                 {
@@ -637,7 +532,7 @@ namespace SDRSharp.Rtl_433
                         listeDevice.Add(message.Substring(22).Replace("]", "-"));
                 }
                 if (startListDevice == false)
-                    _owner.setMessage(message);
+                    owner.setMessage(message);
                 return;
             }
                 //return;
@@ -646,17 +541,17 @@ namespace SDRSharp.Rtl_433
                 if (listData.Count > 1 && synchro == true)
                 {
                     Dictionary<String, String> listDataClone= new Dictionary<String, String>();
-                    lock(listData)
-                    {
+                    //lock(listData)
+                    //{
                      listDataClone = listData.ToDictionary(elem => elem.Key, elem => elem.Value);
-                    }
+                    //}
                     //*************************GRAPH***********************************************
 
                     if(typeWindowGraph)
                     {
-                        int NumGraph = 3;
+                        Int32 NumGraph =  3;
                         List<PointF>[] points = new List<PointF>[NumGraph];
-                        for (int i = 0; i < NumGraph ; i++)
+                        for (Int32 i = 0; i < NumGraph ; i++)
                             points[i] = new List<PointF>();
                         //debug version:error outofmemory to 100 devices forms
                         //release version error create handle to 200 devices forms
@@ -670,101 +565,91 @@ namespace SDRSharp.Rtl_433
 
                         //with data frozen ok
 
-                        double samples_per_us = 1000000.0 / _sampleRate;
+                        double samples_per_us = 1000000.0 / sampleRate;
                         if (ptrCfg != IntPtr.Zero && NumGraph>0)
                         {
- 
-                            NativeMethods.r_cfg structCfg = new NativeMethods.r_cfg();
-                             try {    
-                            structCfg = (NativeMethods.r_cfg)Marshal.PtrToStructure(ptrCfg, typeof(NativeMethods.r_cfg));
-                             }
-                            catch (Exception e)
+                            if (structCfg.demod == IntPtr.Zero)
                             {
-                                MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }         
+                                try
+                                {
+                                    structCfg = (NativeMethods.r_cfg)Marshal.PtrToStructure(ptrCfg, typeof(NativeMethods.r_cfg));
+                                }
+                                catch (Exception e)
+                                {
+                                    MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
                             if (structCfg.demod != IntPtr.Zero)
                             {
-                                NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
-                             try {
-                                struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
-                            }
-                            catch (Exception e)
-                            {
-                                MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                                int x = 0;
-
+                                if (struct_demod.am_analyze == IntPtr.Zero)
+                                {
+                                    try
+                                    {
+                                        struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                                Int32 x = 0;
                                 //if (struct_demod.pulse_data.num_pulses == 0)
                                 //    x = 0;
                                 if (struct_demod.pulse_data.num_pulses > 0)
                                 {
-                                    for (int bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
+                                    for (Int32 bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
                                     {
-                                        x += (int)(struct_demod.pulse_data.pulse[bit] * samples_per_us);
+                                        x += (Int32)(struct_demod.pulse_data.pulse[bit] * samples_per_us);
                                         points[0].Add(new PointF(x, 1));
                                         points[0].Add(new PointF(x, 0));
-                                        x += (int)(struct_demod.pulse_data.gap[bit] * samples_per_us);
+                                        x += (Int32)(struct_demod.pulse_data.gap[bit] * samples_per_us);
                                         points[0].Add(new PointF(x, 0));
                                         points[0].Add(new PointF(x, 1));
                                     }
                                 }
                                 else if (struct_demod.fsk_pulse_data.num_pulses > 0)
                                 {
-                                    for (int bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
+                                    for (Int32 bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
                                     {
-                                        x += (int)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
+                                        x += (Int32)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
                                         points[0].Add(new PointF(x, 1));
                                         points[0].Add(new PointF(x, 0));
-                                        x += (int)(struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
+                                        x += (Int32)(struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
                                         points[0].Add(new PointF(x, 0));
                                         points[0].Add(new PointF(x, 1));
                                     }
                                 }
-                                //else
-                                //    x = x;
                                 if (NumGraph > 1)
                                 {
-                                    int endData = searchZero(struct_demod.am_buf);
-                                    //if (endData> 0)
-                                    //{
-                                        for (int bit = 0; bit < endData; bit++)
+                                    Int32 endData = searchZero(struct_demod.am_buf);
+                                    for (Int32 bit = 0; bit < endData; bit++)
+                                    {
+                                        for (Int32 b = bit; b < bit + 10; b++)
                                         {
-                                            for (int b = bit; b < bit + 10; b++)
-                                            {
-                                                points[1].Add(new PointF(bit, (int)(struct_demod.am_buf[bit] * samples_per_us)));  //out of memory
-                                            }
+                                            points[1].Add(new PointF(bit, (Int32)(struct_demod.am_buf[bit] * samples_per_us)));  //out of memory
                                         }
-                                    //}
+                                    }
                                 }
                                 if (NumGraph > 2)
                                 {
-                                   int endData = searchZero(struct_demod.fm);
-                                   //if (endData > 0)
-                                   // {
-                                        for (int bit = 0; bit < endData; bit++)
+                                    Int32 endData = searchZero(struct_demod.fm);
+                                    for (Int32 bit = 0; bit < endData; bit++)
+                                    {
+                                        for (Int32 b = bit; b < bit + 10; b++)
                                         {
-                                            for (int b = bit; b < bit + 10; b++)
-                                            {
-                                                points[2].Add(new PointF(bit, (int)(struct_demod.fm[bit] * samples_per_us)));
-                                            }
+                                            points[2].Add(new PointF(bit, (Int32)(struct_demod.fm[bit] * samples_per_us)));
                                         }
                                     }
-                                //}
+                                }
                             }
                         }
-                        _owner.addFormDevice(listDataClone, points,nameGraph);
-                        
-                        //points = null;
-                    }
+                        owner.addFormDevice(listDataClone, points,nameGraph);
+                     }
                     else
                     {
-                        _owner.addFormDevice(listDataClone, null, nameGraph);
+                        owner.addFormDevice(listDataClone, null, nameGraph);
                     }
-                    
-                    //listDataClone.Clear();
-                    //listDataClone = null;
                     //*************************END GRAPH***********************************************
-
                 }
                 nameData = false;
                 synchro = false;
@@ -801,40 +686,10 @@ namespace SDRSharp.Rtl_433
                 }
             }
             else
-                _owner.setMessage(message);
+                owner.setMessage(message);
         }
-        private int searchZero(short[] points)
-        {
-            int step = 1000;
-            int start = 0;
-            bool find = false;
-            int i = 0;
-            while (find == false && i < points.Length)
-            {
-                for (i = start; i < points.Length - 1; i += step)
-                {
-                    if (points[i] == 0 && points[i + 1] == 0)
-                    {
-                        start = i - step;
-                        if (step == 1 || start < 0)
-                        {
-                            find = true;
-                            break;
-                        }
-                        step /= 10;
-                        break;
-                    }
-                }
-            }
-            if (!find) return points.Length - 1;
-            return i;
-        }
-        private IntPtr ptrCbData= IntPtr.Zero;
-        private Int32 bufNumber = 0;
-        private UInt32 bufLength = 0;
-        private IntPtr ptrCtx= IntPtr.Zero;
-        private IntPtr ptrCfg= IntPtr.Zero;
-        public void _callBackInitCbData([In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCbData,
+
+        internal void _callBackInitCbData([In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCbData,
             [In, MarshalAs(UnmanagedType.SysInt)] Int32 _bufNumber,
             [In, MarshalAs(UnmanagedType.SysUInt)] UInt32 _bufLength,
             [In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCtx,
@@ -863,34 +718,30 @@ namespace SDRSharp.Rtl_433
 
         public void Dispose()
         {
-            //((IDisposable)callMainTimer).Dispose(true);
-            //_owner.Dispose();
-            Dispose(true);
+             Dispose(true);
         }
-        protected virtual void Dispose(bool disposing)
+        protected virtual void Dispose(Boolean disposing)
         {
             if (disposing)
             {
                 // free managed resources
-                if (callMainTimer != null)
+                if (threadCallMainRTL_433!=null)
                 {
-                    callMainTimer.Dispose();
-                    callMainTimer = null;
+                    if (threadCallMainRTL_433.IsAlive)
+                        threadCallMainRTL_433.Join(1000);
+                    threadCallMainRTL_433 = null;
                 }
-                if (_owner != null)
-                {
-                    _owner.Dispose();
-                    //_owner = null;
-                }
+                if (owner != null)
+                     owner = null;
+                copyIQPtr = null;
+                copyIQBuffer = null;
                 GC.SuppressFinalize(this);
+#if TESTIME
+                stopw = null;
+                //stopwTotalTime = null;
+#endif
             }
-            //// free native resources if there are any.
-            //if (nativeResource != IntPtr.Zero)
-            //{
-            //    Marshal.FreeHGlobal(nativeResource);
-            //    nativeResource = IntPtr.Zero;
-            //}
-        }
+         }
 #endregion
     }
  }

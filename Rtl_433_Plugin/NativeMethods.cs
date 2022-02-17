@@ -2,13 +2,15 @@
 using System.Runtime.InteropServices;
 namespace SDRSharp.Rtl_433
 {
-    internal static class NativeMethods
+     internal static class NativeMethods //NativeMethods safeNativeMethods ...
     {
-        [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal bool AllocConsole();
-        private const string LibRtl_433 = "rtl_433";
+        [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean FreeConsole(); 
+        
+        [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean AllocConsole();
+        private const String LibRtl_433 = "rtl_433";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void receiveMessagesCallback([In]char[] text, [In]int len);
+        internal delegate void receiveMessagesCallback([In]char[] text, [In]Int32 len);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         internal delegate void ptrFct([In, MarshalAs(UnmanagedType.LPStr)] String message);
@@ -31,6 +33,9 @@ namespace SDRSharp.Rtl_433
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void stop_sdr([Out] IntPtr ctx);
+
+        [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
+        internal static extern void free_console();
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void setFrequency([Out] UInt32 frequency);
@@ -286,7 +291,7 @@ namespace SDRSharp.Rtl_433
             internal UInt32 frame_event_count;
             internal UInt32 frame_start_ago;
             internal UInt32 frame_end_ago;
-            internal timeval now;        //struct  int32 and not long -----------------------------<why?
+            internal timeval now;        //struct  int32 and not Int64 -----------------------------<why?
             internal Single sample_file_pos;
         }
 

@@ -1,4 +1,6 @@
-﻿namespace SDRSharp.Rtl_433
+﻿using System;
+
+namespace SDRSharp.Rtl_433
 {
     partial class FormDevicesListMessages
     {
@@ -11,7 +13,7 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        protected override void Dispose(Boolean disposing)
         {
             if (disposing && (components != null))
             {
@@ -37,7 +39,9 @@
             // 
             // listViewListMessages
             // 
+            this.listViewListMessages.BackColor = System.Drawing.SystemColors.Desktop;
             this.listViewListMessages.Dock = System.Windows.Forms.DockStyle.Top;
+            this.listViewListMessages.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.listViewListMessages.GridLines = true;
             this.listViewListMessages.HideSelection = false;
             this.listViewListMessages.Location = new System.Drawing.Point(0, 0);
@@ -60,8 +64,8 @@
             // 
             // toolStripStatusLabelExport
             // 
-            this.toolStripStatusLabelExport.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.toolStripStatusLabelExport.ForeColor = System.Drawing.Color.Cyan;
+            this.toolStripStatusLabelExport.BackColor = System.Drawing.SystemColors.Desktop;
+            this.toolStripStatusLabelExport.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.toolStripStatusLabelExport.Name = "toolStripStatusLabelExport";
             this.toolStripStatusLabelExport.Size = new System.Drawing.Size(67, 17);
             this.toolStripStatusLabelExport.Text = "Export data";

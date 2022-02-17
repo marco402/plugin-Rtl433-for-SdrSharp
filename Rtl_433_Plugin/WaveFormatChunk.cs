@@ -2,20 +2,20 @@
 using System.Runtime.InteropServices;
 namespace SDRSharp.Rtl_433
 {
-        public class WaveFormatChunk<T> where T : struct, IConvertible
+    internal class WaveFormatChunk<T> where T : struct, IConvertible
         {
-            public readonly string sChunkID;         // Four bytes: "fmt "
-            public readonly uint dwChunkSize;        // Length of chunk in bytes
-            public readonly ushort wFormatTag;       // 1 (MS PCM)
-            public readonly ushort wChannels;        // Number of channels
-            public readonly uint dwSamplesPerSec;    // Frequency of the audio in Hz... 44100
-            public readonly uint dwAvgBytesPerSec;   // for estimating RAM allocation
-            public readonly ushort wBlockAlign;      // sample frame size, in bytes
-            public readonly ushort wBitsPerSample;    // bits per sample
-            /// <summary>
-            /// Initializes a format chunk. Supported data types: byte, short, float
-            /// </summary>
-            public WaveFormatChunk(short channels, uint samplesPerSec)
+        internal readonly String sChunkID;         // Four bytes: "fmt "
+        internal readonly uint dwChunkSize;        // Length of chunk in bytes
+        internal readonly ushort wFormatTag;       // 1 (MS PCM)
+        internal readonly ushort wChannels;        // Number of channels
+        internal readonly uint dwSamplesPerSec;    // Frequency of the audio in Hz... 44100
+        internal readonly uint dwAvgBytesPerSec;   // for estimating RAM allocation
+        internal readonly ushort wBlockAlign;      // sample frame size, in bytes
+        internal readonly ushort wBitsPerSample;    // bits per sample
+                                                    /// <summary>
+                                                    /// Initializes a format chunk. Supported data types: byte, short, float
+                                                    /// </summary>
+        internal WaveFormatChunk(short channels, uint samplesPerSec)
             {
                 sChunkID = "fmt ";
                 dwChunkSize = 16;

@@ -1,5 +1,5 @@
 ﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
-                                FormDevices.cs 
+                         ClassFunctionsVirtualListView.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
  **************************************************************************************
@@ -17,82 +17,83 @@ using System.IO;
 using System.Windows.Forms;
 namespace SDRSharp.Rtl_433
 {
-    class ClassFunctionsVirtualListView
+    internal static class ClassFunctionsVirtualListView
     {
-        public static void initListView(ListView listDevices)
+        internal static void initListView(ListView lv)
         {
-            listDevices.View = View.Details;
-            listDevices.GridLines = true;
-            listDevices.FullRowSelect = true;
-            listDevices.Scrollable = true;
-            listDevices.MultiSelect = false;
-            listDevices.HideSelection = false;
-            listDevices.HeaderStyle = ColumnHeaderStyle.Clickable;
-            listDevices.BackColor = System.Drawing.SystemColors.ControlDark;
-            listDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            listDevices.ForeColor = System.Drawing.Color.Blue;
-            listDevices.AllowColumnReorder = false;
-            listDevices.Visible = true;
-            listDevices.VirtualMode = true;
-            listDevices.VirtualListSize = 0;
+            lv.View = View.Details;
+            lv.GridLines = true;
+            lv.FullRowSelect = true;
+            lv.Scrollable = true;
+            lv.MultiSelect = false;
+            lv.HideSelection = false;
+            lv.HeaderStyle = ColumnHeaderStyle.Clickable;
+            lv.BackColor = System.Drawing.SystemColors.Desktop;
+            lv.Dock = System.Windows.Forms.DockStyle.Fill;
+            lv.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            lv.AllowColumnReorder = false;
+            lv.Visible = true;
+            lv.VirtualMode = true;
+            lv.VirtualListSize = 0;
+            lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
         /// <summary>
-        /// add one device to cache for virtual mode
+        /// add one item to cache for virtual mode
         /// </summary>
-        /// <param name="cacheListMessages"></param>
+        /// <param name="cacheLv"></param>
         /// <param name="firstToTop">order place at the top or at the bottom</param>
-        /// <param name="nbMessage"></param>
-        /// <param name="device"></param>
-        public static void addDeviceToCache(ListViewItem[] cacheListMessages,Boolean firstToTop,int nbMessage, ListViewItem device)
+        /// <param name="nb"></param>
+        /// <param name="lv"></param>
+        internal static void addElemToCache(ListViewItem[] cacheLv,Boolean firstToTop,Int32 nb, ListViewItem lv)
         {
             if (firstToTop)
             {
-                cacheListMessages[nbMessage] = device;
+                cacheLv[nb] = lv;
             }
             else
             {
                 //last message at the top list
-                for (int m = nbMessage; m > 0; m--)
+                for (Int32 m = nb; m > 0; m--)
                 {
-                    cacheListMessages[m] = cacheListMessages[m - 1];
+                    cacheLv[m] = cacheLv[m - 1];
                 }
-                cacheListMessages[0] = device;
+                cacheLv[0] = lv;
             }
         }
         /// <summary>
         /// virtual mode nb subitem(cacheListMessages)=nb subitem(listView)
         /// </summary>
-        /// <param name="cacheListMessages"></param>
+        /// <param name="cacheLv"></param>
         /// <param name="maxColCurrent"></param>
-        public static void completeList(ListViewItem[] cacheListMessages,int maxColCurrent)
+        internal static void completeList(ListViewItem[] cacheLv,Int32 maxColCurrent)
         {
-            foreach (ListViewItem lvi in cacheListMessages)
+            foreach (ListViewItem lvi in cacheLv)
             {
                 if (lvi != null)
                 {
-                    int nbToAdd = maxColCurrent - lvi.SubItems.Count;
-                    for (int i = 0; i < nbToAdd; i++)
+                    Int32 nbToAdd = maxColCurrent - lvi.SubItems.Count;
+                    for (Int32 i = 0; i < nbToAdd; i++)
                         lvi.SubItems.Add("");
                 }
             }
         }
         /// <summary>
-        /// Add line item=device,add subItems as necessary
+        /// Add line item,add subItems as necessary
         /// </summary>
         /// <param name="listData">data in for one line</param>
         /// <param name="cacheListColumns">list colomn for virtual mode</param>
-        /// <param name="device">current device</param>
-        public static void addNewLine(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListViewItem device)
+        /// <param name="lv">current item</param>
+        internal static void addNewLine(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListViewItem lv)
         {
-            int indexColonne = 0;
-            foreach (KeyValuePair<string, string> _data in listData)
+            Int32 indexColonne = 0;
+            foreach (KeyValuePair<String, String> _data in listData)
             {
                 if (cacheListColumns.TryGetValue(_data.Key, out indexColonne))          //get index column for _data.key found _data.Key
                 {
                     //add subitems before item at indexColonne
-                    for (int i = device.SubItems.Count; i < indexColonne; i++)
-                        device.SubItems.Add("");
-                    device.SubItems[indexColonne - 1].Text = _data.Value;
+                    for (Int32 i = lv.SubItems.Count; i < indexColonne; i++)
+                        lv.SubItems.Add("");
+                    lv.SubItems[indexColonne - 1].Text = _data.Value;
                 }
             }
         }
@@ -101,60 +102,60 @@ namespace SDRSharp.Rtl_433
         /// </summary>
         /// <param name="listData"></param>
         /// <param name="cacheListColumns"></param>
-        /// <param name="device"></param>
+        /// <param name="lv"></param>
         /// <param name="maxColCurrent"></param>
-        public static void refreshLine(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListViewItem device,int maxColCurrent)
+        internal static void refreshLine(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListViewItem lv,Int32 maxColCurrent)
         {
-            for (int i = device.SubItems.Count; i < maxColCurrent; i++)
-                device.SubItems.Add("");
-            int indexColonne = 0;
-            foreach (KeyValuePair<string, string> _data in listData)
+            for (Int32 i = lv.SubItems.Count; i < maxColCurrent; i++)
+                lv.SubItems.Add("");
+            Int32 indexColonne = 0;
+            foreach (KeyValuePair<String, String> _data in listData)
             {
                 if (cacheListColumns.TryGetValue(_data.Key, out indexColonne))
-                    device.SubItems[indexColonne-1].Text = _data.Value;
+                    lv.SubItems[indexColonne-1].Text = _data.Value;
             }
 
         }
         /// <summary>
-        /// For each element in listData Add column to listViewListMessages if no exist.
+        /// For each item in listData Add column to listViewListMessages if no exist.
         /// </summary>
         /// <param name="listData">data in</param>
-        /// <param name="cacheListColumns">in no exist add element to cacheListColumns for virtual mode</param>
+        /// <param name="cacheListColumns">in no exist add item to cacheListColumns for virtual mode</param>
         /// <param name="listViewListMessages">listView</param>
         /// <param name="maxColCurrent"> update maxColCurrent</param>
         /// <returns>return maxColCurrent</returns>
-        public static int addColumn(Dictionary<String, String> listData, Dictionary<String, int> cacheListColumns, ListView listViewListMessages,int  maxColCurrent)
+        internal static Int32 addColumn(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListView lv,Int32  maxColCurrent)
         {
-            foreach (KeyValuePair<string, string> _data in listData)
+            foreach (KeyValuePair<String, String> _data in listData)
             {
-                maxColCurrent = addOneColumn(_data.Key, cacheListColumns, listViewListMessages, maxColCurrent);
+                maxColCurrent = addOneColumn(_data.Key, cacheListColumns, lv, maxColCurrent);
             }
             return maxColCurrent;
         }
-        public static int addOneColumn(String _data, Dictionary<String, int> cacheListColumns, ListView listViewListMessages, int maxColCurrent)
+        internal static Int32 addOneColumn(String _data, Dictionary<String, Int32> cacheListColumns, ListView lv, Int32 maxColCurrent)
         {
                 if (!cacheListColumns.ContainsKey(_data)) //new col
                 {
                     cacheListColumns.Add(_data, cacheListColumns.Count + 1);
-                    listViewListMessages.Columns.Add("");
-                    if (listViewListMessages.Columns.Count > maxColCurrent)
+                    lv.Columns.Add("");
+                    if (lv.Columns.Count > maxColCurrent)
                     {
-                        maxColCurrent = listViewListMessages.Columns.Count;
+                        maxColCurrent = lv.Columns.Count;
                     }
-                    listViewListMessages.Columns[cacheListColumns.Count - 1].Text = _data;
-                }
+                    lv.Columns[cacheListColumns.Count - 1].Text = _data;
+                    //listViewListMessages.Columns[cacheListColumns.Count - 1].Width = -2;
+            }
                 return maxColCurrent;
         }
-        public static void autoResizeColumns(ListView lv, int nbColumn)
+        internal static void resizeAllColumns(ListView lv)
         {
-            lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             ListView.ColumnHeaderCollection cc = lv.Columns;
-            for (int col = 0; col < nbColumn; col++)
+            for (Int32 col = 0; col < cc.Count; col++)
             {
                 //Debug.WriteLine(col.ToString()+'\t'+cc[col].Text);
                 if(cc[col].Text!="")
                 {
-                    int colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
+                    Int32 colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
                     if (colWidth > cc[col].Width)
                     {
                         cc[col].Width = colWidth;
@@ -162,20 +163,8 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
-        public static void autoResizeAllColumns(ListView lv)
-        {
-            lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            ListView.ColumnHeaderCollection cc = lv.Columns;
-            for (int i = 0; i < cc.Count; i++)
-            {
-                int colWidth = TextRenderer.MeasureText(cc[i].Text, lv.Font).Width + 10;
-                if (colWidth > cc[i].Width)
-                {
-                    cc[i].Width = colWidth;
-                }
-            }
-        }
-        public static bool serializeText(string fileName, Dictionary<String, int>  cacheListColumns, ListViewItem[] cacheListDevices,bool formatNumber,int nbMessage,bool sensDirect)
+ 
+        internal static Boolean serializeText(String fileName, Dictionary<String, Int32>  cacheListColumns, ListViewItem[] cacheLv,Boolean formatNumber,Int32 nbMessage,Boolean sensDirect)
         {
             NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
             try
@@ -183,10 +172,10 @@ namespace SDRSharp.Rtl_433
                 using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     StreamWriter str = new StreamWriter(stream);
-                    string line = string.Empty;
-                    foreach (KeyValuePair<string, int> _data in cacheListColumns)
+                    String line = String.Empty;
+                    foreach (KeyValuePair<String, Int32> _data in cacheListColumns)
                     {
-                        if (_data.Key == string.Empty)
+                        if (_data.Key == String.Empty)
                             line += "\t";
                         else
                             line += _data.Key;
@@ -196,18 +185,18 @@ namespace SDRSharp.Rtl_433
                     ListViewItem it;
                     if (sensDirect)
                     {
-                       for(int i=0;i<nbMessage;i++)
+                       for(Int32 i=0;i<nbMessage;i++)
                        {
-                            it = cacheListDevices[i];
+                            it = cacheLv[i];
                             line = processLine(it, formatNumber,nfi, cacheListColumns.Count);
                             str.WriteLine(line);
                        }
                     }
                     else
                     {
-                        for (int i = nbMessage-1; i > -1; i--)
+                        for (Int32 i = nbMessage-1; i > -1; i--)
                         {
-                            it = cacheListDevices[i];
+                            it = cacheLv[i];
                             line = processLine(it, formatNumber, nfi, cacheListColumns.Count);
                             str.WriteLine(line);
                         }
@@ -219,19 +208,19 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error export devices fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, "Error export item fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 nfi = null;
                 return false;
             }
 
         }
-        private static string processLine(ListViewItem it, bool formatNumber, NumberFormatInfo nfi,Int32 nbColumn)
+        internal static String processLine(ListViewItem it, Boolean formatNumber, NumberFormatInfo nfi,Int32 nbColumn)
         {
-            string line = string.Empty;
+            String line = String.Empty;
             Int32 nColumn = 0;
             foreach (ListViewItem.ListViewSubItem sit in it.SubItems)
             {
-                if (sit.Text == string.Empty)
+                if (sit.Text == String.Empty)
                     line += "\t";
                 else
                 {
@@ -249,7 +238,7 @@ namespace SDRSharp.Rtl_433
             }
             return line;
         }
-        public static string valideNameFile(string name, string replaceChar)
+        internal static String valideNameFile(String name, String replaceChar)
         {
             List<char> badChars = new List<char>(Path.GetInvalidFileNameChars());
             foreach (char C in badChars)
@@ -259,9 +248,9 @@ namespace SDRSharp.Rtl_433
             badChars = null;
             return name;
         }
-        private  static string deleteUnitForCalc(string value)
+        internal static String deleteUnitForCalc(String value)
         {
-            List<string> badChars = new List<string>();
+            List<String> badChars = new List<String>();
             badChars.Add(" F");
             badChars.Add(" C");
             badChars.Add(" mph");
@@ -288,20 +277,20 @@ namespace SDRSharp.Rtl_433
             badChars.Add(" dB");
             badChars.Add(" Mhz");
             badChars.Add(" %");
-            foreach (string C in badChars)
+            foreach (String C in badChars)
             {
                 value = value.Replace(C,"");
             }
             badChars = null;
             return value;
         }
-        public static ListViewItem getDevice(String deviceName, ListViewItem[] cacheListDevices)
+        internal static ListViewItem getItem(String name, ListViewItem[] cacheLv)
         {
-            foreach (ListViewItem item in cacheListDevices)
+            foreach (ListViewItem item in cacheLv)
             {
                 if (item == null)
                     break;
-                if (item.Text == deviceName)
+                if (item.Text == name)
                 {
                     return item;
                 }

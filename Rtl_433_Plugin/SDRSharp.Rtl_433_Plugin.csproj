@@ -19,9 +19,9 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\SDRSharp\bin\debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;xxMSGBOXDEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;xxMSGBOXDEBUG  TESTIME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>2</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\SDRSharp\bin\release\</OutputPath>
-    <DefineConstants>TRACE;xxMSGBOXDEBUG</DefineConstants>
+    <DefineConstants>TRACE;xxMSGBOXDEBUG  TESTIME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>2</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -178,17 +178,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SDRSharp\bin\Release\GraphLib.dll</HintPath>
     </Reference>
-    <Reference Include="SDRSharp, Version=1.0.0.1632, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SDRSharp, Version=1.0.0.1632, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.exe</HintPath>
+      <HintPath>..\SDRSharp\bin\Release\SDRSharp.exe</HintPath>
     </Reference>
     <Reference Include="SDRSharp.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.Common.dll</HintPath>
+      <HintPath>..\SDRSharp\bin\Release\SDRSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SDRSharp.Radio, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.Radio.dll</HintPath>
+      <HintPath>..\SDRSharp\bin\Release\SDRSharp.Radio.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -260,6 +260,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Rtl_433_Panel.resx">
       <DependentUpon>Rtl_433_Panel.cs</DependentUpon>

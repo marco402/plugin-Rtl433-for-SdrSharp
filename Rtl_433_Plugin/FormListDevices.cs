@@ -19,25 +19,17 @@ using System.Reflection;
 using System.Windows.Forms;
 namespace SDRSharp.Rtl_433
 {
-    public partial class FormListDevices : Form
+    internal partial class FormListDevices : Form
     {
-        private int maxDevices = 0;
-        private int maxColumns = 0;
-        private Dictionary<String, int> cacheListColumns;
+        private Int32 maxDevices = 0;
+        private Int32 maxColumns = 0;
+        private Dictionary<String, Int32> cacheListColumns;
         private ListViewItem[] cacheListDevices;
-        private int nbDevice = 0;
+        private Int32 nbDevice = 0;
         private Rtl_433_Panel classParent;
-        private bool firstToTop = false;
-        private int maxColCurrent = 0;
-        //private Stopwatch stopw;
-        #region events form
-        //protected override void OnClosed(EventArgs e)
-        //{
-        //     classParent.closingFormListDevice();
-        //     cacheListColumns=null;
-        //     cacheListDevices=null;
-        //     nbDevice = 0;
-        //}
+        private Boolean firstToTop = false;
+        private Int32 maxColCurrent = 0;
+#region events form
 #endregion
 #region private functions
         private void listDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -55,9 +47,9 @@ namespace SDRSharp.Rtl_433
                 MessageBox.Show(ex.Message, "Error fct(listDevices_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private int FindIndexIfDeviceExist(string device)
+        private Int32 FindIndexIfDeviceExist(String device)
         {
-            for (int row = 0; row < maxDevices; row++)
+            for (Int32 row = 0; row < maxDevices; row++)
             {
                 ListViewItem lvi = cacheListDevices[row];
                 if (lvi != null && lvi.Text == device)
@@ -65,36 +57,38 @@ namespace SDRSharp.Rtl_433
             }
             return -1;
         }
-        private void EnsureVisible(int item)
+        private void EnsureVisible(Int32 item)
         {
             listViewDevices.Items[item].EnsureVisible();
         }
-#endregion
-#region publics functions
-        public FormListDevices(Rtl_433_Panel classParent, int maxDevices, int maxColumns)
+        #endregion
+        #region publics functions
+        internal FormListDevices(Rtl_433_Panel classParent, Int32 maxDevices, Int32 maxColumns)
         {
             InitializeComponent();
             this.classParent = classParent;
             this.maxDevices = maxDevices;
             this.maxColumns = maxColumns;
+            this.SuspendLayout();
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewDevices, new object[] { true });
             ClassFunctionsVirtualListView.initListView(listViewDevices);
             cacheListDevices = new ListViewItem[this.maxDevices];
-            cacheListColumns = new Dictionary<String, int>();
+            cacheListColumns = new Dictionary<String, Int32>();
             this.Text = "Devices received : 0";
+            this.ResumeLayout(true);
             //stopw = new Stopwatch();
         }
-        public void refresh()
+        internal void refresh()
         {
             if (nbDevice > 0)
                 listViewDevices.Items[nbDevice - 1].EnsureVisible();
             this.Refresh();
         }
-        public void serializeText(string fileName)
+        internal void serializeText(String fileName)
         {
             ClassFunctionsVirtualListView.serializeText(fileName,cacheListColumns,cacheListDevices,false,nbDevice,true);
         }
-        public void deSerializeText(string fileName)
+        internal void deSerializeText(String fileName)
         {
             Cursor.Current = Cursors.WaitCursor;
             firstToTop = !firstToTop;
@@ -107,29 +101,29 @@ namespace SDRSharp.Rtl_433
                using (StreamReader str = new StreamReader(stream))
                {
                     //**************************init column title****************************
-                    string line = str.ReadLine();
+                    String line = str.ReadLine();
                     if (line == null)
                     {
                         MessageBox.Show("File devices.txt empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         listViewDevices.EndUpdate();
-                        this.ResumeLayout();
+                        this.ResumeLayout(true);
                         firstToTop = !firstToTop;
                         Cursor.Current = Cursors.Default;
                         return;
                     }
-                    string[] wordsTitleCol = line.Split('\t');
-                    for (int i = 2; i < wordsTitleCol.Length - 1; i++)  //start=1 no device
+                    String[] wordsTitleCol = line.Split('\t');
+                    for (Int32 i = 2; i < wordsTitleCol.Length - 1; i++)  //start=1 no device
                       if (wordsTitleCol[i - 1].Length > 0)
                         listData.Add(wordsTitleCol[i - 1], "");
                       //***********************transfer devices*********************************
-                    string[] wordsData = line.Split('\t');
+                    String[] wordsData = line.Split('\t');
                     while (str.Peek() >= 0)
                     {
                         listData.Clear();
                         line = str.ReadLine();
                         wordsData = line.Split('\t');
-                        int indice = 0;
-                        foreach (string word in wordsTitleCol)
+                        Int32 indice = 0;
+                        foreach (String word in wordsTitleCol)
                         {
                             if (!wordsTitleCol[indice].Equals("device") && !wordsTitleCol[indice].Equals("Device") &&
                                  !wordsTitleCol[indice].Equals("N mes.") && wordsTitleCol[indice].Length>0)
@@ -146,13 +140,8 @@ namespace SDRSharp.Rtl_433
             {
                 MessageBox.Show(e.Message, "Error import devices fct(deSerializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            //finally
-            //{
-            //    if (stream != null)
-            //        stream.Dispose();
-            //}
             listViewDevices.EndUpdate();
-            this.ResumeLayout();
+            this.ResumeLayout(true);
             firstToTop = !firstToTop;
             Cursor.Current = Cursors.Default;
             listData.Clear();
@@ -162,20 +151,21 @@ namespace SDRSharp.Rtl_433
         /// for deserialize
         /// </summary>
         /// <param name="listData"></param>
-        public void setInfoDevice(Dictionary<String, String> listData)
+        internal void setInfoDevice(Dictionary<String, String> listData)
         {
             this.SuspendLayout();
             listViewDevices.BeginUpdate();
             _setInfoDevice(listData);
             listViewDevices.EndUpdate();
-            this.ResumeLayout();
+            this.ResumeLayout(true);
         }
-        public void _setInfoDevice(Dictionary<String, String> listData)
+        internal void _setInfoDevice(Dictionary<String, String> listData)
         {
+            this.SuspendLayout();
             if (cacheListColumns == null)
                 return;
-            string deviceName = classParent.getDeviceName(listData);
-            if (deviceName == string.Empty)
+            String deviceName = classParent.getDeviceName(listData);
+            if (deviceName == String.Empty)
             {
                 return;
             }
@@ -187,7 +177,7 @@ namespace SDRSharp.Rtl_433
             if (cacheListColumns.Count >= maxColumns)
                  return; 
              //**********************search device******************************
-            ListViewItem device =  ClassFunctionsVirtualListView.getDevice(deviceName, cacheListDevices);
+            ListViewItem device =  ClassFunctionsVirtualListView.getItem(deviceName, cacheListDevices);
             //**************************new device***************************
             if (device==null)
             {
@@ -196,7 +186,7 @@ namespace SDRSharp.Rtl_433
                 device = new ListViewItem(deviceName);
                 ClassFunctionsVirtualListView.addNewLine(listData, cacheListColumns, device);
                 //**************add new line/device in cacheListMessages
-                ClassFunctionsVirtualListView.addDeviceToCache(cacheListDevices, firstToTop, nbDevice, device);
+                ClassFunctionsVirtualListView.addElemToCache(cacheListDevices, firstToTop, nbDevice, device);
                 //**************complete subItems for all line in cacheListMessages**********************
                 ClassFunctionsVirtualListView.completeList(cacheListDevices, maxColCurrent);
                 //************************************************
@@ -215,14 +205,15 @@ namespace SDRSharp.Rtl_433
             //**************************************************************************************
             this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() +" / " +maxColumns.ToString();
             listViewDevices.VirtualListSize = nbDevice;
-            ClassFunctionsVirtualListView.autoResizeColumns(listViewDevices, cacheListColumns.Count);
+            ClassFunctionsVirtualListView.resizeAllColumns(listViewDevices);
             //**************************************************************************************
+            this.ResumeLayout(true);
         }
         #endregion
         private void FormListDevices_FormClosed(object sender, FormClosedEventArgs e)
         {
             classParent.closingFormListDevice();
-            //cacheListColumns = null;
+            //cacheListColumns = null;    pb with framework 6.0
             //cacheListDevices = null;
             //nbDevice = 0;
         }

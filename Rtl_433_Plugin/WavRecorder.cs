@@ -5,29 +5,29 @@ using System.Windows.Forms;
 using SDRSharp.Radio;
 namespace SDRSharp.Rtl_433
 {
-   unsafe public static class wavRecorder
+    internal unsafe static class wavRecorder
     {
-        public enum recordType
+        internal enum recordType
         {
             MONO=0,    //baseBandForAudacity
             STEREO      //IQ
         }
-        public static void WriteBufferToWav(string filePath, Complex*[] buffer,  int lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
+        internal static void WriteBufferToWav(String filePath, Complex*[] buffer,  Int32 lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
         {
-            int nbBuffer = buffer.Length;
+            Int32 nbBuffer = buffer.Length;
             WaveHeader header = new WaveHeader();
             WaveFormatChunk<float> format;
             WaveDataChunk<float> data;
             float maxi = 0;
             if (recordType == recordType.MONO)
             {
-                int nbChannel = 1;
+                Int32 nbChannel = 1;
                 format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
                 data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer*2));
                 maxi = 0;
-                for (int i = 0; i < lenBuffer; i++)
+                for (Int32 i = 0; i < lenBuffer; i++)
                 {
-                    for (int j = 0; j < nbBuffer; j++)
+                    for (Int32 j = 0; j < nbBuffer; j++)
                     {
                         if (Math.Abs(buffer[j][i].Modulus()) > maxi)
                             maxi = buffer[j][i].Modulus();
@@ -35,10 +35,10 @@ namespace SDRSharp.Rtl_433
                 }
                 if (maxi > 0)
                 {
-                    for (int j = nbBuffer-1; j > -1; j--)
+                    for (Int32 j = nbBuffer-1; j > -1; j--)
                     {
-                        int indice = lenBuffer * (nbBuffer-1 - j) * 2;
-                        for (int i = 0; i < lenBuffer; i++)
+                        Int32 indice = lenBuffer * (nbBuffer-1 - j) * 2;
+                        for (Int32 i = 0; i < lenBuffer; i++)
                         {
                             data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
                             data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
@@ -48,17 +48,17 @@ namespace SDRSharp.Rtl_433
             }
             else //if (recordType == recordType.STEREO)  data and format not assigned ??
             {
-                int nbChannel = 2;
+                Int32 nbChannel = 2;
                 format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
                 data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer));
-                for (int j = 0; j < nbBuffer; j++)
+                for (Int32 j = 0; j < nbBuffer; j++)
                     maxi = Math.Max(maxi,wavRecorder.getMaxi(buffer[j], lenBuffer));
                 if (maxi > 0)
                 {
-                    for (int j = nbBuffer-1; j > -1; j--)
+                    for (Int32 j = nbBuffer-1; j > -1; j--)
                     {
-                        int indice = lenBuffer * (nbBuffer-1 - j) * 2 ;
-                        for (int i = 0; i < lenBuffer; i++)
+                        Int32 indice = lenBuffer * (nbBuffer-1 - j) * 2 ;
+                        for (Int32 i = 0; i < lenBuffer; i++)
                         {
                             data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
                             data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
@@ -107,7 +107,7 @@ namespace SDRSharp.Rtl_433
             else
                 MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-        public static float getMaxi(Complex * bufferPtr,int length)
+        internal static float getMaxi(Complex * bufferPtr,Int32 length)
         {
             float maxi = float.MinValue;
             for (var i = 0; i< length; i++)
@@ -119,7 +119,7 @@ namespace SDRSharp.Rtl_433
             }
             return maxi;
         }
-        public static void convertCu8ToWav(string fileName,bool mono,bool stereo,int nbBuffer)
+        internal static void convertCu8ToWav(String fileName,Boolean mono,Boolean stereo,Int32 nbBuffer)
         {
             Complex*[] _dstWavPtr;
             UnsafeBuffer[] _dstWavBuffer;
@@ -129,22 +129,22 @@ namespace SDRSharp.Rtl_433
                 using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
                 {
                     dataCu8 = new byte[reader.BaseStream.Length];
-                    dataCu8 = reader.ReadBytes((int)reader.BaseStream.Length);
+                    dataCu8 = reader.ReadBytes((Int32)reader.BaseStream.Length);
                 }
                 _dstWavBuffer = new UnsafeBuffer[1];
-                _dstWavBuffer[0] = UnsafeBuffer.Create((int)(dataCu8.Length), sizeof(Complex)); 
+                _dstWavBuffer[0] = UnsafeBuffer.Create((Int32)(dataCu8.Length), sizeof(Complex)); 
                 _dstWavPtr = new Complex*[1];
                 _dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
-                int maxi = dataCu8.Max();
+                Int32 maxi = dataCu8.Max();
                 if (maxi != 0)
                 {
-                    for (int i = 0; i < dataCu8.Length; i += 2)
+                    for (Int32 i = 0; i < dataCu8.Length; i += 2)
                     {
                         _dstWavPtr[0][i / 2].Real = dataCu8[i] - 127;   // 0-->-127   255->128   / maxi * 255;    // float.MaxValue;
                         _dstWavPtr[0][i / 2].Imag = dataCu8[i + 1] - 127;    ///maxi*float.MaxValue;
                     }
                     Int32 sampleRate = getSampleRateFromName(fileName); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
-                    string newName = "";
+                    String newName = "";
                     if (stereo)
                     { 
                     newName = fileName.Replace(".cu8", "_STEREO.wav");
@@ -162,15 +162,15 @@ namespace SDRSharp.Rtl_433
                 _dstWavBuffer[0].Dispose();
             }
         }
-        private static Int32 getSampleRateFromName(string fileName)
+        private static Int32 getSampleRateFromName(String fileName)
         {
             Int32 sampleRate = 250000;
-            string sampleRateStr = "";
+            String sampleRateStr = "";
             Int32 end = fileName.Length - 5;
             Int32 start = 0;
             while (start == 0)
             {
-                for (int i = end; i > 0; i--)
+                for (Int32 i = end; i > 0; i--)
                 {
                     if (fileName.Substring(i, 1) == "k")
                     {

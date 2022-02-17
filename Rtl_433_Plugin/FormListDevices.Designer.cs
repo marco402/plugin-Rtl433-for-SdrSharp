@@ -1,4 +1,6 @@
-﻿namespace SDRSharp.Rtl_433
+﻿using System;
+
+namespace SDRSharp.Rtl_433
 {
     partial class FormListDevices
     {
@@ -11,7 +13,7 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        protected override void Dispose(Boolean disposing)
         {
             if (disposing && (components != null))
             {
@@ -33,7 +35,9 @@
             // 
             // listViewDevices
             // 
+            this.listViewDevices.BackColor = System.Drawing.SystemColors.Desktop;
             this.listViewDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDevices.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.listViewDevices.HideSelection = false;
             this.listViewDevices.Location = new System.Drawing.Point(0, 0);
             this.listViewDevices.Name = "listViewDevices";
