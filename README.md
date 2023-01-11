@@ -4,7 +4,10 @@ French version after English version.
 Version Francaise après la version Anglaise.  
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
-## New Version  
+## New Version 
+Version 1.5.6.0 January 11, 2023 Tested with SDRSharp 1906
+    -Update RTL_433 (25 more devices)
+    -Change framework 4.6 to 4.8.
 Version 1.5.5.0 February 17, 2022 Tested with SDRSharp 1854 
      -Added an Enabled checkbox for cohabitation of the RTL433 plugin with the other plugins.  
      -Display of the time required to process the data functions of the sampleRate/s in milliseconds (Cycle time),
@@ -246,6 +249,9 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.6.0 11 janvier 2023 Testé avec SDRSharp 1906
+    -Mise à jour RTL_433 (25 devices supplémentaires)
+    -Passage du framework 4.6 a 4.8.
 Version 1.5.5.0  17 Février 2022   Testé avec SDRSharp 1854
      -Ajout d'une case a cocher Enabled pour cohabitation du plugin RTL433 avec les autres plugins.  
      -Affichage du temps nécessaire pour traiter les données fonctions du sampleRate/s en milliseconde(Cycle time),

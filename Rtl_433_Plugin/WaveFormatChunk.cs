@@ -9,7 +9,7 @@ namespace SDRSharp.Rtl_433
         internal readonly ushort wFormatTag;       // 1 (MS PCM)
         internal readonly ushort wChannels;        // Number of channels
         internal readonly uint dwSamplesPerSec;    // Frequency of the audio in Hz... 44100
-        internal readonly uint dwAvgBytesPerSec;   // for estimating RAM allocation
+        internal readonly uint dwAvgBytesPerSec;   // for estimating RAM allocation Number Of bytes per second. sample_rate * num_channels * Bytes Per Sample
         internal readonly ushort wBlockAlign;      // sample frame size, in bytes
         internal readonly ushort wBitsPerSample;    // bits per sample
                                                     /// <summary>

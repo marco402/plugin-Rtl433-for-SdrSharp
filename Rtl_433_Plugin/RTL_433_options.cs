@@ -146,38 +146,48 @@ namespace SDRSharp.Rtl_433
             radioButtonFreq43392.Enabled = true;
             radioButtonFreq868.Enabled = true;
             radioButtonFreq915.Enabled = true;
-            switch (Frequency)
-            {
-
-                case 315000000:
-                    radioButtonFreqFree.Checked = true;   //force event change
-                    radioButtonFreq315.Checked = true;
+            //if (radioButtonFreqFree.Checked != true)
+            //{
+                switch (Frequency)
+                {
+                    case 315000000:
+                        radioButtonFreqFree.Checked = true;   //force event change
+                        radioButtonFreq315.Checked = true;
+                        break;
+                    case 345000000:
+                        radioButtonFreqFree.Checked = true;   //force event change
+                        radioButtonFreq345.Checked = true;
+                        break;
+                    case 433920000:
+                        radioButtonFreqFree.Checked = true;   //force event change
+                        radioButtonFreq43392.Checked = true;
+                        break;
+                    case 868000000:
+                        radioButtonFreqFree.Checked = true;   //force event change
+                        radioButtonFreq868.Checked = true;
+                        break;
+                    case 915000000:
+                        radioButtonFreqFree.Checked = true;   //force event change
+                        radioButtonFreq915.Checked = true;
+                        break;
+                    default:
+                        radioButtonFreq915.Checked = true;   //force event change
+                        radioButtonFreqFree.Checked = true;
                     break;
-                case 345000000:
-                    radioButtonFreqFree.Checked = true;   //force event change
-                    radioButtonFreq345.Checked = true;
-                    break;
-                case 433920000:
-                    radioButtonFreqFree.Checked = true;   //force event change
-                    radioButtonFreq43392.Checked = true;
-                    break;
-                case 868000000:
-                    radioButtonFreqFree.Checked = true;   //force event change
-                    radioButtonFreq868.Checked = true;
-                    break;
-                case 915000000:
-                    radioButtonFreqFree.Checked = true;   //force event change
-                    radioButtonFreq915.Checked = true;
-                    break;
-                case 0:
-                    radioButtonFreq915.Checked = true;   //force event change
-                    radioButtonFreqFree.Checked = true;
-                    break;
-                default:
-                    radioButtonFreqFree.Checked = true;   //force event change
-                    radioButtonFreq43392.Checked = true;
-                    break;
+                    //case 0:
+                    //    radioButtonFreq915.Checked = true;   //force event change
+                    //    radioButtonFreqFree.Checked = true;
+                    //    break;
+                    //default:
+                    //    radioButtonFreqFree.Checked = true;   //force event change
+                    //    radioButtonFreq43392.Checked = true;
+                    //    break;
             }
+            //}
+            //else
+            //{
+
+            //}
             radioButtonFreqFree.Enabled = false; 
             radioButtonFreq315.Enabled = false;
             radioButtonFreq345.Enabled = false;

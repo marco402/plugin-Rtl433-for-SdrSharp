@@ -39,6 +39,7 @@ namespace SDRSharp.Rtl_433
             this.radioButtonNoM = new System.Windows.Forms.RadioButton();
             this.richTextBoxMessages = new System.Windows.Forms.RichTextBox();
             this.groupBoxRecord = new System.Windows.Forms.GroupBox();
+            this.checkBoxRaw = new System.Windows.Forms.CheckBox();
             this.checkBoxMONO = new System.Windows.Forms.CheckBox();
             this.checkBoxSTEREO = new System.Windows.Forms.CheckBox();
             this.groupBoxFrequency = new System.Windows.Forms.GroupBox();
@@ -287,6 +288,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxRecord.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxRecord.BackColor = System.Drawing.SystemColors.Desktop;
+            this.groupBoxRecord.Controls.Add(this.checkBoxRaw);
             this.groupBoxRecord.Controls.Add(this.checkBoxMONO);
             this.groupBoxRecord.Controls.Add(this.checkBoxSTEREO);
             this.groupBoxRecord.ForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -297,15 +299,28 @@ namespace SDRSharp.Rtl_433
             this.groupBoxRecord.TabStop = false;
             this.groupBoxRecord.Text = "Record";
             // 
+            // checkBoxRaw
+            // 
+            this.checkBoxRaw.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.checkBoxRaw.Location = new System.Drawing.Point(6, 61);
+            this.checkBoxRaw.Name = "checkBoxRaw";
+            this.checkBoxRaw.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxRaw.TabIndex = 0;
+            this.checkBoxRaw.Text = "RAW";
+            this.checkBoxRaw.UseVisualStyleBackColor = true;
+            this.checkBoxRaw.Visible = false;
+            this.checkBoxRaw.CheckedChanged += new System.EventHandler(this.checkBoxRaw_CheckedChanged);
+            // 
             // checkBoxMONO
             // 
             this.checkBoxMONO.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.checkBoxMONO.Location = new System.Drawing.Point(6, 51);
+            this.checkBoxMONO.Location = new System.Drawing.Point(6, 39);
             this.checkBoxMONO.Name = "checkBoxMONO";
             this.checkBoxMONO.Size = new System.Drawing.Size(59, 17);
             this.checkBoxMONO.TabIndex = 0;
             this.checkBoxMONO.Text = "MONO";
             this.checkBoxMONO.UseVisualStyleBackColor = true;
+            this.checkBoxMONO.CheckedChanged += new System.EventHandler(this.checkBoxMONO_CheckedChanged);
             // 
             // checkBoxSTEREO
             // 
@@ -316,6 +331,7 @@ namespace SDRSharp.Rtl_433
             this.checkBoxSTEREO.TabIndex = 0;
             this.checkBoxSTEREO.Text = "STEREO";
             this.checkBoxSTEREO.UseVisualStyleBackColor = true;
+            this.checkBoxSTEREO.CheckedChanged += new System.EventHandler(this.checkBoxSTEREO_CheckedChanged);
             // 
             // groupBoxFrequency
             // 
@@ -1208,5 +1224,6 @@ namespace SDRSharp.Rtl_433
         private System.Windows.Forms.Label labelCycleTime;
         private System.Windows.Forms.Label labelTime433;
         private System.Windows.Forms.GroupBox groupBoxInfos;
+        private System.Windows.Forms.CheckBox checkBoxRaw;
     }
 }

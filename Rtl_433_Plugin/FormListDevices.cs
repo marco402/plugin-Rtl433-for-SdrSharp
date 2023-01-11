@@ -70,6 +70,7 @@ namespace SDRSharp.Rtl_433
             this.maxDevices = maxDevices;
             this.maxColumns = maxColumns;
             this.SuspendLayout();
+            this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewDevices, new object[] { true });
             ClassFunctionsVirtualListView.initListView(listViewDevices);
             cacheListDevices = new ListViewItem[this.maxDevices];

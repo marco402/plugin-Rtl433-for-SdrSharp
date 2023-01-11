@@ -23,6 +23,11 @@
 //   last 4.0-->1784
 //   last 5.0-->1831
 //   >    6.0
+
+//devices:
+//TFA-TwinPlus sign when temperature <0.
+//alectro température /10 ?
+
 using System;
 using System.Windows.Forms;
 using SDRSharp.Common;

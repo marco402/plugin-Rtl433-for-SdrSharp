@@ -13,20 +13,25 @@ namespace SDRSharp.Rtl_433
         internal delegate void receiveMessagesCallback([In]char[] text, [In]Int32 len);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void ptrFct([In, MarshalAs(UnmanagedType.LPStr)] String message);
+        internal delegate void ptrReceiveMessagesCallback([In, MarshalAs(UnmanagedType.LPStr)] String message);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        internal delegate void receiveRecordOrder([In]char[] text, [In]Int32 len);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        internal delegate void ptrReceiveRecordOrder([In, MarshalAs(UnmanagedType.LPStr)] String message);
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "test_dll_get_version")]
         internal static extern IntPtr IntPtr_Pa_GetVersionText();
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         internal delegate void ptrFctInit(IntPtr _ptrCbData,
-            Int32 _bufNumber,
-            UInt32 _bufLength,
+            //Int32 _bufNumber,
+            //UInt32 _bufLength,
             IntPtr _ptrCtx,
             IntPtr _ptrCfg);
-
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        internal static extern void rtl_433_call_main([Out] ptrFct fctMessage, [Out] ptrFctInit fctInitCbData, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args);  // 
+        internal static extern void rtl_433_call_main([Out] ptrReceiveMessagesCallback fctMessage, [Out] ptrFctInit fctInitCbData,[Out] ptrReceiveRecordOrder ptrReceiveRecordOrder, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args);  // 
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void receive_buffer_cb([Out] byte[] iq_buf, [Out] UInt32 len, [Out]  IntPtr ctx);
@@ -42,6 +47,9 @@ namespace SDRSharp.Rtl_433
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void setCenterFrequency([Out] UInt32 centerFrequency);
+
+        [DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory")]
+        internal static extern void CopyMemory(Byte[] Destination, IntPtr Source, uint Length);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
         internal struct list
@@ -92,6 +100,18 @@ namespace SDRSharp.Rtl_433
             internal Int32 skip_samples;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
+        internal struct samp_grab
+        {
+            internal IntPtr frequency;
+            internal IntPtr samp_rate;
+            internal IntPtr sample_size;
+            internal UInt32 sg_counter;  //file save indice 
+            internal IntPtr sg_buf;
+            internal UInt32 sg_size;
+            internal UInt32 sg_index;
+            internal UInt32 sg_len;
+        }
 
         internal enum _ook_state : Int32
         {
@@ -277,7 +297,7 @@ namespace SDRSharp.Rtl_433
             internal Int32 enable_FM_demod;
             internal UInt32 fsk_pulse_detect_mode;
             internal UInt32 frequency;
-            internal IntPtr samp_grab;        //samp_grab_t*
+            internal IntPtr ptr_samp_grab;        //samp_grab_t*
             internal IntPtr am_analyze;          //am_analyze_t* 
             internal Int32 analyze_pulses;
             internal file_info load_info;
@@ -401,23 +421,28 @@ namespace SDRSharp.Rtl_433
             [FieldOffset(468 + 12)]
             internal list output_handler;
             [FieldOffset(480 + 12)]
+
+            internal list raw_handler;         //ajout 01/2023
+            [FieldOffset(492 + 12)]
+            internal Int32 has_logout;         //ajout 01/2023
+            [FieldOffset(504 + 4)]
             internal IntPtr demod;     //internal struct dm_state *demod;
-            [FieldOffset(492 + 4)]
+            [FieldOffset(508 + 4)]
             internal String sr_filename;
-            [FieldOffset(496 + 4)]
+            [FieldOffset(512 + 4)]
             internal Int32 sr_execopen;
-            [FieldOffset(500 + 4)]
+            [FieldOffset(516 + 4)]
             //internal Int32 old_model_keys;
             //[FieldOffset(508+4)]    //-----------------------------------<why?
             /* stats*/
             internal Int64 frames_since;    //time_t
-            [FieldOffset(504 + 8)]
+            [FieldOffset(520 + 8)]
             internal UInt32 frames_count; ///< stats counter for interval
-            [FieldOffset(512 + 4)]
+            [FieldOffset(528 + 4)]
             internal UInt32 frames_fsk; ///< stats counter for interval
-            [FieldOffset(516 + 4)]
+            [FieldOffset(532 + 4)]
             internal UInt32 frames_events; ///< stats counter for interval
-            [FieldOffset(520 + 4)]
+            [FieldOffset(536 + 4)]
             internal IntPtr mgr;    //internal struct mg_mgr *mgr;
         }
     }

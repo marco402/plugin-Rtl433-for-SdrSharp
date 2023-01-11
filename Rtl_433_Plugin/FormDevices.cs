@@ -91,7 +91,7 @@ namespace SDRSharp.Rtl_433
             statusStripDevices.ShowItemToolTips=true;
             toolStripSplitLabelRecordOneShoot.ToolTipText = "Record data buffer Mono Stereo or both(checkbox on panel) \n" +
                 " to directory Recordings if exist else in SdrSharp.exe directory \n" +
-                " You can replay Stereo file with SdrSharp\n" +
+                " You can replay Stereo file with SdrSharp Source=Baseband File player\n" +
                 " or load Mono Stereo with Audacity...";
             this.Width = 540;      //left small in designer else no resize if width<540(if 540 in designer)
             memoBackColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.BackColor;

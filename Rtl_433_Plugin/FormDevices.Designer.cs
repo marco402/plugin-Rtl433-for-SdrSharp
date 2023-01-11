@@ -173,6 +173,7 @@
             this.tableLayoutPanelDeviceData.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion
         private System.Windows.Forms.StatusStrip statusStripDevices;

@@ -31,7 +31,7 @@ namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
-        private const String VERSION = "1.5.5.0";  //update also project property version and file version
+        private const String VERSION = "1.5.6.0";  //update also project property version and file version
         private Boolean recordDevice = false;
         private String nameToRecord = "";
         private Boolean consoleIsAlive = false;
@@ -152,6 +152,8 @@ namespace SDRSharp.Rtl_433
                     buttonStartStop.Enabled = true;
                 }
             }
+            checkBoxMONO.Enabled = enabledPlugin;
+            checkBoxSTEREO.Enabled = enabledPlugin;
         }
 
         #endregion
@@ -251,7 +253,6 @@ namespace SDRSharp.Rtl_433
         private void enabledDisabledControlsOnStart(Boolean state)
         {
             this.SuspendLayout();
-
             //groupBoxFrequency.Enabled = state;
             //groupBoxVerbose.Enabled = state;
             //groupBoxMetadata.Enabled = state;
@@ -354,6 +355,10 @@ namespace SDRSharp.Rtl_433
             }
         }
 
+        internal void resetLabelRecord(String deviceName)
+        {
+            listformDevice[deviceName].resetLabelRecord();
+        }
         internal void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points, String[] nameGraph)
         {
             if (base.InvokeRequired)
@@ -365,8 +370,9 @@ namespace SDRSharp.Rtl_433
             }
             else
             {
-                 if (ClassInterfaceWithRtl433 == null)
+                if (ClassInterfaceWithRtl433 == null)
                     return;
+
                 String deviceName = getDeviceName(listData);
                 if (deviceName.Trim() != "")
                 {
@@ -380,6 +386,8 @@ namespace SDRSharp.Rtl_433
                             recordDevice = false;
                             ClassInterfaceWithRtl433.recordDevice(deviceName, getDirectoryRecording());
                             listformDevice[deviceName].resetLabelRecord();
+                            //ClassInterfaceWithRtl433.setRecordDevice(deviceName, getDirectoryRecording());
+                            //// listformDevice[deviceName].resetLabelRecord();
                         }
                         //lock (listformDevice)
                         //{
@@ -668,15 +676,15 @@ namespace SDRSharp.Rtl_433
             return directory;
         }
 
-        internal Boolean getRecordMONO()
-        {
-            return checkBoxMONO.Checked;
-        }
+        //internal Boolean getRecordMONO()
+        //{
+        //    return checkBoxMONO.Checked;
+        //}
 
-        internal Boolean getRecordSTEREO()
-        {
-            return checkBoxSTEREO.Checked;
-        }
+        //internal Boolean getRecordSTEREO()
+        //{
+        //    return checkBoxSTEREO.Checked;
+        //}
 
         #endregion
 
@@ -746,6 +754,7 @@ namespace SDRSharp.Rtl_433
             else
             {
                 recordDevice = choice;
+                ClassInterfaceWithRtl433.clearRecord();
                 return true;
             }
         }
@@ -935,5 +944,19 @@ namespace SDRSharp.Rtl_433
 
         #endregion
 
+        private void checkBoxSTEREO_CheckedChanged(object sender, EventArgs e)
+        {
+            ClassInterfaceWithRtl433.setSTEREO(checkBoxSTEREO.Checked);
+        }
+
+        private void checkBoxMONO_CheckedChanged(object sender, EventArgs e)
+        {
+            ClassInterfaceWithRtl433.setMONO(checkBoxMONO.Checked);
+        }
+
+        private void checkBoxRaw_CheckedChanged(object sender, EventArgs e)
+        {
+            ClassInterfaceWithRtl433.setRAW(checkBoxRaw.Checked);
+        }
     }
 }

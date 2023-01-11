@@ -109,7 +109,7 @@ namespace SDRSharp.Rtl_433
 
         internal void freeConsole()
         {
-            NativeMethods.FreeConsole();
+            NativeMethods.FreeConsole();  //possible error if visual studio
             consoleIsAlive = false;
             standardOutput.Close();
             standardOutput.Dispose();
@@ -136,6 +136,7 @@ namespace SDRSharp.Rtl_433
 
         #region processThreadRtl433
         /// <summary>
+        /// Without this thread neither floatStreamComplex decode is ok but no acces windows.
         /// setFrequency
         /// setSourceName
         /// floatStreamComplex.Open();
@@ -167,7 +168,6 @@ namespace SDRSharp.Rtl_433
                 control.SetFrequency(frequencyRtl433, true);
             }
         }
-
         /// <summary>
         /// set typeSourceFile=true if control.SourceName Contains(".WAV")
         /// set SourceName to ClassInterfaceWithRtl433
@@ -176,8 +176,10 @@ namespace SDRSharp.Rtl_433
         {
             sourceIsFile = false;
             if (control.SourceName.ToUpper().Contains(".WAV"))
+            {
                 sourceIsFile = true;
-            ClassInterfaceWithRtl433.setSourceName(control.SourceName,sourceIsFile);
+                ClassInterfaceWithRtl433.setSourceName(control.SourceName,sourceIsFile);
+            }
         }
 
         /// <summary>
@@ -206,10 +208,10 @@ namespace SDRSharp.Rtl_433
                 sendData = true;
             }   //while
             processThreadRtl433 = null;
-        } 
+        }
         #endregion
         #region interfaces
-
+        private Int32 sleep = 0;
         public double SampleRate         //IStreamProcessor
         {
             get { return sampleRate; }
@@ -220,6 +222,7 @@ namespace SDRSharp.Rtl_433
                     sampleRate = value;
                     if (ClassInterfaceWithRtl433!=null)
                         ClassInterfaceWithRtl433.SampleRateDbl = sampleRate;
+                    sleep = (int)(sampleRate / 100.0);  //500 for >1632
                 }
             }
         }
@@ -236,22 +239,33 @@ namespace SDRSharp.Rtl_433
             }
         }  //IBaseProcessor
         private Boolean sendData = false;   //source=files .wav not useful for version SDRSharp 1632 useful for 1854
+        /// <summary>
+        /// WARNING:if modifie sleep for .wav,verify:
+        /// -version 1632 and version > 1632
+        /// -memory evolution
+        /// -redim window graph
+        /// -all with install\Recordings\g001_433.92M_250k_STEREO.wav and install\Recordings\g092_868M_2048k_STEREO.wav
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="length"></param>
         public void Process(Complex* buffer, Int32 length)    //IIQProcessor
         {
             if (control.IsPlaying && !terminated)
             {
                 floatStreamComplex.Write(buffer, length);
-                if (sendData)
+                //pb redim graph if source File is .wav with version  1632
+
+                if (sendData) //if function to classInterfaceWithRtl433 when receive device nok
                 {
                     if (sourceIsFile)
-                        Thread.Sleep(1000); //with mode Source=.wav no all files: file->pb memory file (g092_868M_2048k_STEREO.wav)
+                        Thread.Sleep(sleep); //with mode Source=.wav no all files: file->pb memory file (g092_868M_2048k_STEREO.wav)
                     //else
                     //    Thread.Sleep(50);  //lost data...
                     sendData = false;
                 }
             }
-            else
-                return;
+            //else
+            //    return;
         }
 
         private void NotifyPropertyChangedHandler(object sender, PropertyChangedEventArgs e)

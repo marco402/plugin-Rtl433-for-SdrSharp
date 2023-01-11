@@ -32,6 +32,7 @@ namespace SDRSharp.Rtl_433
             InitializeComponent();
             this.classParent = classParent;
             this.maxMessages = maxDevices;
+            this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
             this.SuspendLayout();
             ClassFunctionsVirtualListView.initListView(listViewListMessages);
@@ -117,13 +118,14 @@ namespace SDRSharp.Rtl_433
             //************************************************
              nbMessage += 1;
             this.Text = memoName + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
-            //try
-            //{
-            listViewListMessages.VirtualListSize = nbMessage;
-            //}
-            //catch {
-            //    Console.WriteLine(this.Text);
-            //}
+            try   //without try:Object reference not set to an instance of an object.
+            {
+                listViewListMessages.VirtualListSize = nbMessage;
+            }
+            catch
+            {
+                Console.WriteLine(this.Text);
+            }
             ClassFunctionsVirtualListView.resizeAllColumns(listViewListMessages);
             //refresh();  // display last message when it is displayed at the bottom list
             listViewListMessages.EndUpdate();
