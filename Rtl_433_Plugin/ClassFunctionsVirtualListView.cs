@@ -178,7 +178,7 @@ namespace SDRSharp.Rtl_433
                         if (_data.Key == String.Empty)
                             line += "\t";
                         else
-                            line += _data.Key;
+                            line += _data.Key.Replace(":"," ");
                         line += "\t";
                     }
                     str.WriteLine(line);
@@ -201,6 +201,7 @@ namespace SDRSharp.Rtl_433
                             str.WriteLine(line);
                         }
                     }
+                    str.Flush();
                     str.Close();
                 }
                 nfi = null;
@@ -235,6 +236,39 @@ namespace SDRSharp.Rtl_433
                 nbColumn += 1;
                 if (nColumn==nbColumn)
                     return line;   
+            }
+            return line;
+        }
+        internal static String processLineTxt(Dictionary<String, String> listData, Boolean formatNumber, NumberFormatInfo nfi, Int32 nbColumn)
+        {
+            String line = String.Empty;
+            Int32 nColumn = 0;
+            foreach (KeyValuePair<String, String> _data in listData)
+            {
+                if (_data.Key == String.Empty)
+                    line += "\t";
+                else
+                {
+                    if (formatNumber)
+                        line += (deleteUnitForCalc(_data.Value)).Replace(".", nfi.CurrencyDecimalSeparator);
+                    else
+                        line += _data.Value;
+
+                    //for (int i = 0 ;i < _data.Key.Length -_data.Value.Length ; i++)
+                    //    line +=" ";
+                  line = line.PadRight(line.Length + _data.Key.Length - _data.Value.Length);
+
+
+                    //int l= line.Length;
+                    //if ( (_data.Value.Length-_data.Key.Length)  > 0)
+                    //    line = line.PadRight(_data.Value.Length );
+                    //else
+                        //line = line.PadRight(_data.Key.Length );
+                    line += "\t";
+                }
+                nbColumn += 1;
+                if (nColumn == nbColumn)
+                    return line;
             }
             return line;
         }

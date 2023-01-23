@@ -31,7 +31,7 @@ namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
-        private const String VERSION = "1.5.6.0";  //update also project property version and file version
+        private const String VERSION = "1.5.6.1";  //update also project property version and file version
         private Boolean recordDevice = false;
         private String nameToRecord = "";
         private Boolean consoleIsAlive = false;
@@ -97,6 +97,9 @@ namespace SDRSharp.Rtl_433
             OptionMono.SetToolTip(checkBoxMONO, "Record module de IQ to wav file for display with Audacity or another viewer");
             ToolTip ttcheckBoxEnabledDevicesDisabled = new ToolTip();
             ttcheckBoxEnabledDevicesDisabled.SetToolTip(checkBoxEnabledDevicesDisabled, "0:default,1:WARNING->enabled devices disabled in devices files");
+            ToolTip ttcheckBoxRecordTextFile = new ToolTip();
+            ttcheckBoxRecordTextFile.SetToolTip(checkBoxRecordTxtFile, "If checked, saves the data displayed on all list messages windows.\n Name = date_time_name of the device(+channel).txt.\n Warning to the free disk place.\n You can create folder Recordings.\n You can select the desired devices in the list of devices by checking show select.");
+            ttcheckBoxRecordTextFile.AutoPopDelay = 10000;
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
             richTextBoxMessages.MaxLength = 5000;
@@ -426,10 +429,10 @@ namespace SDRSharp.Rtl_433
                             {
                                 if (listformDeviceListMessages.Count > MaxDevicesWindows - 1)
                                     return;
-                                if (radioButtonMLevel.Checked)
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433)); //+2 for debug
-                                else
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433));  //5 for -mMevel //+2 for debug
+                                //if (radioButtonMLevel.Checked)
+                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433,checkBoxRecordTxtFile.Checked)); //+2 for debug
+                                //else
+                                //    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433,false));  //5 for -mMevel //+2 for debug
                                 listformDeviceListMessages[deviceName].Text = deviceName;
                                 listformDeviceListMessages[deviceName].Visible = true;
                                 listformDeviceListMessages[deviceName].Show();

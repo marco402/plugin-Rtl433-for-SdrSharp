@@ -5,10 +5,23 @@ Version Francaise après la version Anglaise.
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
 ## New Version 
-Version 1.5.6.0 January 11, 2023 Tested with SDRSharp 1906
-    -Update RTL_433 (25 more devices)
-    -Change framework 4.6 to 4.8.
-Version 1.5.5.0 February 17, 2022 Tested with SDRSharp 1854 
+Version 1.5.6.1 January 23, 2023 Tested with SDRSharp 1906.  
+    -Added recording of all received messages in text files.  
+       -Validation by the Record check box.  
+       -Only for List messages windows.  
+       -File name = date_time_device name(+channel).txt.  
+       -You can limit the devices in the list of devices by checking Show select.  
+       -You can create the Recorders folder at SDRSharp.exe.  
+       -Be careful not to saturate the disk.  
+       -The data is aligned with the first line received.  
+       -The data is separated by a tab for reloading into Open-Office.  
+       -If you uncheck Record, close the windows to stop recording.  
+       -The files are closed when the windows are closed.  
+       -You can close all windows by disabling the plugin.  
+Version 1.5.6.0 January 11, 2023 Tested with SDRSharp 1906.  
+    -Update RTL_433 (25 more devices).  
+    -Change framework 4.6 to 4.8. 
+Version 1.5.5.0 February 17, 2022 Tested with SDRSharp 1854.  
      -Added an Enabled checkbox for cohabitation of the RTL433 plugin with the other plugins.  
      -Display of the time required to process the data functions of the sampleRate/s in milliseconds (Cycle time),
           it changes to red if it is greater than 1000(Not if source is file).  
@@ -249,10 +262,23 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.5.6.0 11 janvier 2023 Testé avec SDRSharp 1906
-    -Mise à jour RTL_433 (25 devices supplémentaires)
-    -Passage du framework 4.6 a 4.8.
-Version 1.5.5.0  17 Février 2022   Testé avec SDRSharp 1854
+Version 1.5.6.1 23 janvier 2023 Testé avec SDRSharp 1906.  
+    -Ajout de l'enregistrement de tous les messages reçus dans des fichiers texte.  
+       -Validation par la case à cocher Record.  
+       -Uniquement pour les fenêtres List messages.  
+       -Nom des fichiers = date_time_name du périphérique(+canal).txt.  
+       -Vous pouvez limiter les devices dans la liste des devices en cochant Show select.  
+       -Vous pouvez créer le dossier Recorders au niveau de SDRSharp.exe.  
+       -Attention de ne pas saturer le disque.  
+       -Les données sont alignées sur la première ligne reçue.  
+       -Les données sont séparées par une tabulation pour rechargement dans un classeur Open-Office.  
+       -Si vous décochez Record, il faut fermer les fenêtre pour arrêter l'enregistrement.  
+       -Les fichiers sont fermés à la fermeture des fenêtres.  
+       -Vous pouvez fermer toutes les fenêtres en désactivant le plugin.  
+Version 1.5.6.0 11 janvier 2023 Testé avec SDRSharp 1906.  
+    -Mise à jour RTL_433 (25 devices supplémentaires).  
+    -Passage du framework 4.6 a 4.8.  
+Version 1.5.5.0  17 Février 2022   Testé avec SDRSharp 1854.  
      -Ajout d'une case a cocher Enabled pour cohabitation du plugin RTL433 avec les autres plugins.  
      -Affichage du temps nécessaire pour traiter les données fonctions du sampleRate/s en milliseconde(Cycle time),
           celui-ci passe en rouge s'il est supérieur à 1000(Pas si la source est un fichier).  
