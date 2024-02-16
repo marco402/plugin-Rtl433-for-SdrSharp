@@ -102,8 +102,8 @@ namespace SDRSharp.Rtl_433
             this.buttonStartStop = new System.Windows.Forms.Button();
             this.buttonCu8ToWav = new System.Windows.Forms.Button();
             this.groupBoxRecordTxtFile = new System.Windows.Forms.GroupBox();
-            this.checkBoxRecordTxtFile = new System.Windows.Forms.CheckBox();
             this.labelWarningRecordTextFile = new System.Windows.Forms.Label();
+            this.checkBoxRecordTxtFile = new System.Windows.Forms.CheckBox();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -739,9 +739,9 @@ namespace SDRSharp.Rtl_433
             // checkBoxEnabledDevicesDisabled
             // 
             this.checkBoxEnabledDevicesDisabled.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(13, 18);
+            this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(9, 19);
             this.checkBoxEnabledDevicesDisabled.Name = "checkBoxEnabledDevicesDisabled";
-            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(82, 17);
+            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(251, 16);
             this.checkBoxEnabledDevicesDisabled.TabIndex = 25;
             this.checkBoxEnabledDevicesDisabled.Text = "Default";
             this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
@@ -1142,16 +1142,6 @@ namespace SDRSharp.Rtl_433
             this.groupBoxRecordTxtFile.TabStop = false;
             this.groupBoxRecordTxtFile.Text = "Record  text file";
             // 
-            // checkBoxRecordTxtFile
-            // 
-            this.checkBoxRecordTxtFile.AutoSize = true;
-            this.checkBoxRecordTxtFile.Location = new System.Drawing.Point(3, 19);
-            this.checkBoxRecordTxtFile.Name = "checkBoxRecordTxtFile";
-            this.checkBoxRecordTxtFile.Size = new System.Drawing.Size(61, 17);
-            this.checkBoxRecordTxtFile.TabIndex = 0;
-            this.checkBoxRecordTxtFile.Text = "Record";
-            this.checkBoxRecordTxtFile.UseVisualStyleBackColor = true;
-            // 
             // labelWarningRecordTextFile
             // 
             this.labelWarningRecordTextFile.AutoSize = true;
@@ -1163,6 +1153,16 @@ namespace SDRSharp.Rtl_433
             this.labelWarningRecordTextFile.Size = new System.Drawing.Size(104, 62);
             this.labelWarningRecordTextFile.TabIndex = 1;
             this.labelWarningRecordTextFile.Text = "Warning to space\r\ndisk if checked.\r\nOnly if Windows\r\nList messages";
+            // 
+            // checkBoxRecordTxtFile
+            // 
+            this.checkBoxRecordTxtFile.AutoSize = true;
+            this.checkBoxRecordTxtFile.Location = new System.Drawing.Point(3, 19);
+            this.checkBoxRecordTxtFile.Name = "checkBoxRecordTxtFile";
+            this.checkBoxRecordTxtFile.Size = new System.Drawing.Size(61, 17);
+            this.checkBoxRecordTxtFile.TabIndex = 0;
+            this.checkBoxRecordTxtFile.Text = "Record";
+            this.checkBoxRecordTxtFile.UseVisualStyleBackColor = true;
             // 
             // Rtl_433_Panel
             // 

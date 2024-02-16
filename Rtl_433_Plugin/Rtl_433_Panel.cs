@@ -31,7 +31,7 @@ namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
-        private const String VERSION = "1.5.6.1";  //update also project property version and file version
+        private const String VERSION = "1.5.6.2";  //update also project property version and file version
         private Boolean recordDevice = false;
         private String nameToRecord = "";
         private Boolean consoleIsAlive = false;

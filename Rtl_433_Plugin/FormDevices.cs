@@ -118,7 +118,7 @@ namespace SDRSharp.Rtl_433
             labelWaitMessage.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             tableLayoutPanelDeviceData.Controls.Add(labelWaitMessage, 0, 0);
             labelWaitMessage.Font = new System.Drawing.Font("Segoe UI", 12F);
-            labelWaitMessage.Text = "Wait to receive new data \n max devices with graph:" + _classParent.getNbDevicesWithGraph()+ "\n You can close other devices \n" + "or change nbDevicesWithGraph in exe.config";
+            labelWaitMessage.Text = "Wait to receive new data \n max devices with graph:" + _classParent.getNbDevicesWithGraph()+ "\n You can click on display curves \n" + "or change nbDevicesWithGraph in exe.config";
         }
         private Boolean closeByProgram=false;
         internal void CloseByProgram()

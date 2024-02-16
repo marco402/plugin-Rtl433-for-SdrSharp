@@ -11,6 +11,8 @@
  All text above must be included in any redistribution.
   **********************************************************************************/
 #define xxxSAMPGRAD
+#define xxxTESTMEMORY
+#define xxxTESTIME
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -85,6 +87,10 @@ namespace SDRSharp.Rtl_433
         private DateTime memoDate= DateTime.Now;
         private Int32 nbCycleFor1Sec = 0;
 #endif
+#if TESTMEMORY
+        private Process currentProcess;
+#endif
+
         private Int32 searchZero(short[] points)
         {
             Int32 step = 1000;
@@ -117,6 +123,9 @@ namespace SDRSharp.Rtl_433
             stopw = new Stopwatch();
             //stopwTotalTime = new Stopwatch();
 #endif
+#if TESTMEMORY
+            currentProcess = Process.GetCurrentProcess();
+#endif
             this.owner = owner;
             listData = new Dictionary<String, String>();
             SampleRateStr = "0";  //no display if init to Rtl_433_panel
@@ -137,7 +146,7 @@ namespace SDRSharp.Rtl_433
             setOptionUniqueKey("-a 4",true);         //for graph
             setOptionUniqueKey("-MProtocol",true);  //for title and key devices windows
         }
-        #region options rtl_433
+#region options rtl_433
         internal void setOptionUniqueKey(String key,Boolean state)
         {
             if (listOptionsRtl433.ContainsKey(key))
@@ -205,8 +214,8 @@ namespace SDRSharp.Rtl_433
             if(!value.Contains("No "))
                 listOptionsRtl433.Add(Key, value);
         }
-        #endregion
-        #region private functions
+#endregion
+#region private functions
 
         internal void ProcessCallMainRtl433(object parameter)
         {
@@ -228,8 +237,8 @@ namespace SDRSharp.Rtl_433
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
             NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args);
         }
-        #endregion
-        #region public function 
+#endregion
+#region public function 
 //#if TESTIME
         //private String _timeCycle = "";
         //[System.ComponentModel.Bindable(true)]
@@ -519,8 +528,8 @@ namespace SDRSharp.Rtl_433
         //{
         //    _Yoption = option;      //need reload list devices
         //}
-        #endregion
-        #region callBack for dll_rtl_433"
+#endregion
+#region callBack for dll_rtl_433"
         internal void _callBackReceiveRecordOrder([In, MarshalAs(UnmanagedType.LPStr)] String message)
         {
             int i = 0;
@@ -673,7 +682,7 @@ namespace SDRSharp.Rtl_433
                                         points[0].Add(new PointF(x, 1));
                                     }
                                 }
-                                if (NumGraph > 1)
+                                 if (NumGraph > 1)
                                 {
                                     Int32 endData = searchZero(struct_demod.am_buf);
                                     for (Int32 bit = 0; bit < endData; bit++)
@@ -699,6 +708,34 @@ namespace SDRSharp.Rtl_433
                         }
                         owner.addFormDevice(listDataClone, points,nameGraph);
                         //Console.WriteLine("**********************addFormDevice");
+#if TESTMEMORY
+                        Console.WriteLine($"{currentProcess} -");
+                        Console.WriteLine("-------------------------------------");
+
+                        //Console.WriteLine($"  Physical memory usage     : {currentProcess.WorkingSet64}");
+                        //Console.WriteLine($"  Base priority             : {currentProcess.BasePriority}");
+                        //Console.WriteLine($"  Priority class            : {currentProcess.PriorityClass}");
+                        //Console.WriteLine($"  User processor time       : {currentProcess.UserProcessorTime}");
+                        //Console.WriteLine($"  Privileged processor time : {currentProcess.PrivilegedProcessorTime}");
+                        //Console.WriteLine($"  Total processor time      : {currentProcess.TotalProcessorTime}");
+                        Console.WriteLine($"  Paged system memory size  : {currentProcess.PagedSystemMemorySize64}");
+                        Console.WriteLine($"  Paged memory size         : {currentProcess.PagedMemorySize64}");
+                        Console.WriteLine($"  Private memory size       : {currentProcess.PrivateMemorySize64}");
+                        Console.WriteLine($"  Non paged memory size     : {currentProcess.NonpagedSystemMemorySize64}");
+                         Console.WriteLine($"  Virtual memory size       : {currentProcess.VirtualMemorySize64}");
+                        //if (currentProcess.Responding)
+                        //{
+                        //    Console.WriteLine("Status = Running");
+                        //}
+                        //else
+                        //{
+                        //    Console.WriteLine("Status = Not Responding");
+                        //}
+                // Display peak memory statistics for the process.
+                Console.WriteLine($"  Peak physical memory usage : { currentProcess.PeakPagedMemorySize64}");
+                Console.WriteLine($"  Peak paged memory usage    : { currentProcess.PeakVirtualMemorySize64}");
+                Console.WriteLine($"  Peak virtual memory usage  : {currentProcess.PeakWorkingSet64}");
+#endif
                     }
                     else
                     {
@@ -888,7 +925,7 @@ namespace SDRSharp.Rtl_433
         {
             this.raw = raw;
         }
-#if SAMPGRAD       
+#if SAMPGRAD
         //internal void setNameFile(String nameFile, String directory,String name)
         //{
         //    //this.nameFile = nameFile;

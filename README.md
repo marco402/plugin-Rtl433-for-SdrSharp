@@ -1,10 +1,11 @@
-
+Version 1.5.6.2 February 16, 2024 Tested with SDRSharp 1919.  
+    -Update RTL_433 (25 more devices).  
+## New Version 
 French version after English version.  
     You can display dump windows on https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433?lang=en  
 Version Francaise après la version Anglaise.  
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 
-## New Version 
 Version 1.5.6.1 January 23, 2023 Tested with SDRSharp 1906.  
     -Added recording of all received messages in text files.  
        -Validation by the Record check box.  
@@ -262,6 +263,8 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.6.2 February 16, 2024 Tested with SDRSharp 1919.  
+    -Update RTL_433 (25 more devices).  
 Version 1.5.6.1 23 janvier 2023 Testé avec SDRSharp 1906.  
     -Ajout de l'enregistrement de tous les messages reçus dans des fichiers texte.  
        -Validation par la case à cocher Record.  

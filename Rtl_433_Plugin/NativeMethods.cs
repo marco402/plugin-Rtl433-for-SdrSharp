@@ -52,20 +52,20 @@ namespace SDRSharp.Rtl_433
         internal static extern void CopyMemory(Byte[] Destination, IntPtr Source, uint Length);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct list
+        internal struct list  //list.h
         {
             internal IntPtr elems;   // void** elems;
             internal UInt32 size;        //size_t
             internal UInt32 len;        //size_t
         }
         //list_t;
-        internal enum conversion_mode_t : Int32
+        internal enum conversion_mode_t : Int32 //rtl_433.h
         {
             CONVERT_NATIVE,
             CONVERT_SI,
             CONVERT_CUSTOMARY
         }
-        internal enum time_mode_t : Int32
+        internal enum time_mode_t : Int32 //rtl_433.h
         {
             REPORT_TIME_DEFAULT,
             REPORT_TIME_DATE,
@@ -77,7 +77,7 @@ namespace SDRSharp.Rtl_433
 
 
         /// state data for pulse_FSK_detect()
-        internal enum _fsk_state : Int32
+        internal enum _fsk_state : Int32  //pulse_FSK_detect_fsk.h
         {
             PD_FSK_STATE_INIT = 0,   //< Initial frequency estimation
             PD_FSK_STATE_FH = 1,     //< High frequency (pulse)
@@ -86,12 +86,12 @@ namespace SDRSharp.Rtl_433
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct pulse_FSK_state_t
+        internal struct pulse_detect_fsk_t  //pulse_FSK_detect_fsk.h
         {
-            internal UInt32 fm_f1_est; ///< Estimate for the F1 frequency for FSK
-            internal Int32 fm_f2_est; ///< Estimate for the F2 frequency for FSK
             internal UInt32 fsk_pulse_length; ///< Counter for internal FSK pulse detection
             internal _fsk_state fsk_state;
+            internal Int32 fm_f1_est; ///< Estimate for the F1 frequency for FSK
+            internal Int32 fm_f2_est; ///< Estimate for the F2 frequency for FSK
             internal Int16 var_test_max;
             internal Int16 var_test_min;
             internal Int16 maxx;
@@ -101,7 +101,7 @@ namespace SDRSharp.Rtl_433
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct samp_grab
+        internal struct samp_grab   //samp_grab.h
         {
             internal IntPtr frequency;
             internal IntPtr samp_rate;
@@ -113,7 +113,7 @@ namespace SDRSharp.Rtl_433
             internal UInt32 sg_len;
         }
 
-        internal enum _ook_state : Int32
+        internal enum _ook_state : Int32    //pulse_detect.c
         {
             PD_OOK_STATE_IDLE = 0,
             PD_OOK_STATE_PULSE = 1,
@@ -122,7 +122,7 @@ namespace SDRSharp.Rtl_433
         }
 
         /// Internal state data for pulse_pulse_package()
-        struct pulse_detect
+        struct pulse_detect      //pulse_detect.c
         {
             internal Int32 use_mag_est;          ///< Whether the envelope data is an amplitude or magnitude.
             internal Int32 ook_fixed_high_level; ///< Manual detection level override, 0 = auto.
@@ -141,12 +141,12 @@ namespace SDRSharp.Rtl_433
 
             internal Int32 verbosity; ///< Debug output verbosity, 0=None, 1=Levels, 2=Histograms
 
-            internal pulse_FSK_state_t FSK_state;
+            internal pulse_detect_fsk_t FSK_state;
         };
 
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct sdr_dev
+        internal struct sdr_dev         //sdr.c
         {
             internal UInt32 rtl_tcp;  //SOCKET
             internal UInt32 rtl_tcp_freq; ///< last known center frequency, rtl_tcp only.
@@ -170,21 +170,21 @@ namespace SDRSharp.Rtl_433
             internal Int32 polling;
             internal IntPtr buffer;   //void*
             internal UInt32 buffer_size;   //size_t
-
+            internal UInt32 buffer_pos;  ///< sdr data buffer next write position
             internal Int32 sample_size;
-            Int32 sample_signed;
-            internal Int32 apply_rate;
+            internal Int32 sample_signed;
+            //internal Int32 apply_rate;
             internal Int32 apply_freq;
-            internal Int32 apply_corr;
-            internal Int32 apply_gain;
+            //internal Int32 apply_corr;
+            //internal Int32 apply_gain;
             internal UInt32 sample_rate;
-            internal Int32 freq_correction;
+            //internal Int32 freq_correction;
             internal UInt32 center_frequency;
-            internal String gain_str;
+            //internal String gain_str;
         }
         /// Data for a compact representation of generic pulse train.
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct pulse_data
+        internal struct pulse_data    //pulse_data.h
         {
             internal UInt64 offset;            ///< Offset to first pulse in number of samples from start of stream.
             internal UInt32 sample_rate;       ///< Sample rate the pulses are recorded with.
@@ -200,21 +200,21 @@ namespace SDRSharp.Rtl_433
             internal Int32 ook_high_estimate;      ///< Estimate for the OOK high level at end of package.
             internal Int32 fsk_f1_est;             ///< Estimate for the F1 frequency for FSK.
             internal Int32 fsk_f2_est;             ///< Estimate for the F2 frequency for FSK.
-            internal Single freq1_hz;
-            internal Single freq2_hz;
-            internal Single centerfreq_hz;
-            internal Single range_db;
-            internal Single rssi_db;
-            internal Single snr_db;
-            internal Single noise_db;
+            internal float freq1_hz;
+            internal float freq2_hz;
+            internal float centerfreq_hz;
+            internal float range_db;
+            internal float rssi_db;
+            internal float snr_db;
+            internal float noise_db;
         }
         //pulse_data_t;
 
-        internal const Int32 FILTER_ORDER = 1;
+        internal const Int32 FILTER_ORDER = 1;  //baseband.h
 
         /// Filter state buffer.
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct filter_state
+        internal struct filter_state  //baseband.h
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = FILTER_ORDER)]
             internal Int16[] y;
@@ -225,7 +225,7 @@ namespace SDRSharp.Rtl_433
 
         /// FM_Demod state buffer.
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct demodfm_state
+        internal struct demodfm_state  //baseband.h
         {
             internal Int32 xr;        ///< Last I/Q sample, real part
             internal Int32 xi;        ///< Last I/Q sample, imag part
@@ -244,7 +244,7 @@ namespace SDRSharp.Rtl_433
         }
         //demodfm_state_t;
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct file_info
+        internal struct file_info   //fileformat.h
         {
             internal UInt32 format;
             internal UInt32 raw_format;
@@ -256,23 +256,23 @@ namespace SDRSharp.Rtl_433
         }
         //file_info_t;
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct timeval
+        internal struct timeval   //
         {
             internal Int32 tv_sec;         /* seconds */
             internal Int32 tv_usec;        /* and microseconds */
         }
-        internal const Int32 MAXIMAL_BUF_LENGTH = (256 * 16384);
+        internal const Int32 MAXIMAL_BUF_LENGTH = (256 * 16384);   //rtl_433.h
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct dm_state
+        internal struct dm_state    //r_private.h
         {
-            float auto_level;
-            float squelch_offset;
-            internal Single level_limit;
-            float noise_level;
-            float min_level_auto;
-            internal Single min_level;
-            internal Single min_snr;
-            internal Single low_pass;
+            internal float auto_level;
+            internal float squelch_offset;
+            internal float level_limit;
+            internal float noise_level;
+            internal float min_level_auto;
+            internal float min_level;
+            internal float min_snr;
+            internal float low_pass;
             internal Int32 use_mag_est;
             internal Int32 detect_verbosity;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIMAL_BUF_LENGTH)]
@@ -288,7 +288,7 @@ namespace SDRSharp.Rtl_433
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIMAL_BUF_LENGTH)]
             internal Byte[] u8_buf; // format conversion buffer
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIMAL_BUF_LENGTH)]
-            internal Single[] f32_buf; // format conversion buffer
+            internal float[] f32_buf; // format conversion buffer
             internal Int32 sample_size; // CU8: 1, CS16: 2--->*2 in rtl_433
             internal IntPtr pulse_detect;        //pulse_detect_t*
             internal filter_state lowpass_filter_state;
@@ -312,11 +312,11 @@ namespace SDRSharp.Rtl_433
             internal UInt32 frame_start_ago;
             internal UInt32 frame_end_ago;
             internal timeval now;        //struct  int32 and not Int64 -----------------------------<why?
-            internal Single sample_file_pos;
+            internal float sample_file_pos;
         }
 
         [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi, Pack = 4)]
-        internal struct r_cfg
+        internal struct r_cfg   //rtl_433.h
         {
             [FieldOffset(0)]    //,MarshalAs(UnmanagedType.LPStr)
             internal String dev_query;
