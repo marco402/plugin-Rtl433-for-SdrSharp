@@ -69,10 +69,19 @@ namespace SDRSharp.Rtl_433
             this.classParent = classParent;
             this.maxDevices = maxDevices;
             this.maxColumns = maxColumns;
+            this.Font = this.classParent.Font;
+            this.BackColor = this.classParent.BackColor;
+            this.ForeColor = this.classParent.ForeColor;
+            this.Cursor = this.classParent.Cursor;
+            listViewDevices.BackColor = this.BackColor;   //pb ambient property ???
+            listViewDevices.ForeColor = this.ForeColor;
+            listViewDevices.Font = this.Font;
+            listViewDevices.Cursor = this.Cursor;
             this.SuspendLayout();
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewDevices, new object[] { true });
             ClassFunctionsVirtualListView.initListView(listViewDevices);
+
             cacheListDevices = new ListViewItem[this.maxDevices];
             cacheListColumns = new Dictionary<String, Int32>();
             this.Text = "Devices received : 0";

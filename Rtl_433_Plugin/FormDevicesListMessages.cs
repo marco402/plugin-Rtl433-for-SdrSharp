@@ -35,6 +35,14 @@ namespace SDRSharp.Rtl_433
             this.classInterfaceWithRtl433 = classInterfaceWithRtl433;
             this.recordTxt = recordTxt;
             this.classParent = classParent;
+            this.Font = this.classParent.Font;
+            this.BackColor = this.classParent.BackColor;
+            this.ForeColor = this.classParent.ForeColor;
+            this.Cursor = this.classParent.Cursor;
+            listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
+            listViewListMessages.ForeColor = this.ForeColor;
+            listViewListMessages.Font = this.Font;
+            listViewListMessages.Cursor = this.Cursor;
             this.maxMessages = maxDevices;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });

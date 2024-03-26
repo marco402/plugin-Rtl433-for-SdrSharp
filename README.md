@@ -1,6 +1,8 @@
+## New Version 
+Version 1.5.6.3 march 26, 2024 Tested with SDRSharp 1919 and 1920 beta.  
+    -Consideration of themes sdrsharp(only Font,ForeColor,BackColor and Cursor).  
 Version 1.5.6.2 February 16, 2024 Tested with SDRSharp 1919.  
     -Update RTL_433 (25 more devices).  
-## New Version 
 French version after English version.  
     You can display dump windows on https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433?lang=en  
 Version Francaise après la version Anglaise.  
@@ -263,7 +265,9 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.5.6.2 February 16, 2024 Tested with SDRSharp 1919.  
+Version 1.5.6.3 26 mars Testé avec SDRSharp 1919 et 1920 beta.  
+    -Prise en compte des thèmes sdrsharp(only Font,ForeColor,BackColor and Cursor).  
+Version 1.5.6.2 16 Février 2024 Testé vec SDRSharp 1919.  
     -Update RTL_433 (25 more devices).  
 Version 1.5.6.1 23 janvier 2023 Testé avec SDRSharp 1906.  
     -Ajout de l'enregistrement de tous les messages reçus dans des fichiers texte.  

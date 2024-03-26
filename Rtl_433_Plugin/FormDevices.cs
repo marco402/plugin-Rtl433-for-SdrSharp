@@ -55,7 +55,7 @@ namespace SDRSharp.Rtl_433
 #region declare
         private Int32 NumGraphs = 0;
         private float _nbPointX = 0;
-        private Rtl_433_Panel _classParent;
+        private Rtl_433_Panel classParent;
         private Dictionary<String, Label> listLabelKey;
         private Dictionary<String, Label> listLabelValue;
         private Int64 memoTimeMax;
@@ -80,7 +80,11 @@ namespace SDRSharp.Rtl_433
             this.SuspendLayout();
             NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
             nfi.NumberDecimalDigits = 3;
-            _classParent = classParent;
+            this.classParent = classParent;
+            this.Font = this.classParent.Font;
+            this.BackColor = this.classParent.BackColor;
+            this.ForeColor = this.classParent.ForeColor;
+            this.Cursor = this.classParent.Cursor;
             listLabelKey = new Dictionary<String, Label>();
             listLabelValue = new Dictionary<String, Label>();
             this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
@@ -106,6 +110,7 @@ namespace SDRSharp.Rtl_433
             memoHeightPlotterDisplayExDevices =  plotterDisplayExDevices.Height;
             hideShowAllGraphs(false);
             displayWaitMessage();
+            plotterDisplayExDevices.setAmbiantProperty(this.BackColor,this.ForeColor,this.Font);
             this.ResumeLayout(true);
         }
         private Label labelWaitMessage;
@@ -114,11 +119,11 @@ namespace SDRSharp.Rtl_433
             labelWaitMessage = new Label();
             labelWaitMessage.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
             labelWaitMessage.AutoSize = true;
-            labelWaitMessage.BackColor = System.Drawing.SystemColors.Desktop;
-            labelWaitMessage.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             tableLayoutPanelDeviceData.Controls.Add(labelWaitMessage, 0, 0);
-            labelWaitMessage.Font = new System.Drawing.Font("Segoe UI", 12F);
-            labelWaitMessage.Text = "Wait to receive new data \n max devices with graph:" + _classParent.getNbDevicesWithGraph()+ "\n You can click on display curves \n" + "or change nbDevicesWithGraph in exe.config";
+            labelWaitMessage.Font = this.Font; // new System.Drawing.Font("Segoe UI", 12F);
+            labelWaitMessage.BackColor = this.BackColor;
+            labelWaitMessage.ForeColor = this.ForeColor;
+            labelWaitMessage.Text = "Wait to receive new data \n max devices with graph:" + classParent.getNbDevicesWithGraph()+ "\n You can click on display curves \n" + "or change nbDevicesWithGraph in exe.config";
         }
         private Boolean closeByProgram=false;
         internal void CloseByProgram()
@@ -129,7 +134,7 @@ namespace SDRSharp.Rtl_433
         private void FormDevices_FormClosed(object sender, FormClosedEventArgs e)
         {
            if (!closeByProgram) //for foreach dictionary
-                _classParent.closingOneFormDevice(this.Text);
+                classParent.closingOneFormDevice(this.Text);
         }
          protected override void OnClosed(EventArgs e)
         {
@@ -178,8 +183,9 @@ namespace SDRSharp.Rtl_433
                     listLabelKey.Add(_data.Key, theLabelKey);
                     theLabelKey.Anchor = System.Windows.Forms.AnchorStyles.Left|System.Windows.Forms.AnchorStyles.Top;
                     theLabelKey.AutoSize = true;
-                    theLabelKey.BackColor = System.Drawing.SystemColors.Desktop;
-                    theLabelKey.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+                    theLabelKey.BackColor = this.BackColor;  // System.Drawing.SystemColors.Control;
+                    theLabelKey.ForeColor = this.ForeColor;  // System.Drawing.SystemColors.ControlText;
+                    theLabelKey.Font = this.Font;  //
                     tableLayoutPanelDeviceData.Controls.Add(theLabelKey, 0, tableLayoutPanelDeviceData.RowCount-1);
                     theLabelKey.Text = _data.Key;
                     for(Int32 col=1; col < 5; col++)
@@ -189,8 +195,9 @@ namespace SDRSharp.Rtl_433
                         theLabelValue.Tag = tableLayoutPanelDeviceData.RowCount;
                         theLabelValue.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
                         theLabelValue.AutoSize = true;
-                        theLabelValue.BackColor = System.Drawing.SystemColors.Desktop;
-                        theLabelValue.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+                        theLabelKey.BackColor = this.BackColor;
+                        theLabelKey.ForeColor = this.ForeColor;
+                        theLabelKey.Font = this.Font;  //
                         tableLayoutPanelDeviceData.Controls.Add(theLabelValue, col, tableLayoutPanelDeviceData.RowCount-1);
                     }
                 }
@@ -223,7 +230,7 @@ namespace SDRSharp.Rtl_433
             else
             {
                 toolStripStatusLabelDisplayCurves.BackColor = Color.Green;
-                toolStripStatusLabelDisplayCurves.ForeColor = Color.White;
+                toolStripStatusLabelDisplayCurves.ForeColor = System.Drawing.SystemColors.ControlText;
                 toolStripStatusLabelDisplayCurves.Text = "Display curves";
                 memoHeightPlotterDisplayExDevices = tableLayoutPanelDeviceData.RowStyles[0].Height;
                 tableLayoutPanelDeviceData.RowStyles[0].Height = 0;
@@ -393,16 +400,16 @@ namespace SDRSharp.Rtl_433
             this.SuspendLayout();
             if (toolStripSplitLabelRecordOneShoot.BackColor != memoBackColortoolStripSplitLabelRecordOneShoot)
             {
-                _classParent.setRecordDevice(this.Text, false);
+                classParent.setRecordDevice(this.Text, false);
                 resetLabelRecord();
             }
             else
             {
-               if( _classParent.setRecordDevice(this.Text, true)==true)
+               if( classParent.setRecordDevice(this.Text, true)==true)
                 {
-                toolStripSplitLabelRecordOneShoot.BackColor = Color.Green;
-                toolStripSplitLabelRecordOneShoot.ForeColor = Color.White;
-                toolStripSplitLabelRecordOneShoot.Text = "Cancel record";
+                    toolStripSplitLabelRecordOneShoot.BackColor = Color.Green;
+                    toolStripSplitLabelRecordOneShoot.ForeColor = Color.White;
+                    toolStripSplitLabelRecordOneShoot.Text = "Cancel record";
                 }
             }
             this.ResumeLayout(true);

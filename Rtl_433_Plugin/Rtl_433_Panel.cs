@@ -1,5 +1,4 @@
-﻿
-/* Written by Marc Prieur (marco40_github@sfr.fr)
+﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 Rtl_433_Panel.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -31,7 +30,7 @@ namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
     {
-        private const String VERSION = "1.5.6.2";  //update also project property version and file version
+        public String VERSION =" V: " + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
         private Boolean recordDevice = false;
         private String nameToRecord = "";
         private Boolean consoleIsAlive = false;
@@ -59,16 +58,15 @@ namespace SDRSharp.Rtl_433
 
         #region init class
 
-        internal  Rtl_433_Panel(ISharpControl control)
+        internal Rtl_433_Panel(ISharpControl control)
         {
             InitializeComponent();
             this.control = control;
-
-            labelVersion.Text = VERSION;
-//#if MSGBOXDEBUG
+            //labelVersion.Text = VERSION;
+            //#if MSGBOXDEBUG
             //_ClassInterfaceWithRtl433.get_version_dll_rtl_433();
             //Utilities.getVersion();
-//#endif
+            //#endif
             initControls();
             enabledDisabledAllControls(false);
 #if TESTWINDOWS
@@ -126,17 +124,17 @@ namespace SDRSharp.Rtl_433
         private void checkBoxEnabledPlugin_CheckedChanged(object sender, EventArgs e)
         {
             //if start radio first, test _control.isplaying
-             enabledPlugin = checkBoxEnabledPlugin.Checked;
+            enabledPlugin = checkBoxEnabledPlugin.Checked;
             if (!enabledPlugin)
             {
-                Stop(true) ;
+                Stop(true);
                 DisposePanel(false);
             }
-            else 
+            else
             {
                 ClassInterfaceWithRtl433 = new ClassInterfaceWithRtl433(this);
-                Rtl_433Processor = new Rtl_433_Processor(control,this,ClassInterfaceWithRtl433);
-                 setBinding();
+                Rtl_433Processor = new Rtl_433_Processor(control, this, ClassInterfaceWithRtl433);
+                setBinding();
                 //not in setting 
                 process_CheckBoxEnabledDevicesDisabled_CheckedChanged();
                 radioIsStarted = control.IsPlaying;  //if enabled before radio is playing
@@ -162,7 +160,7 @@ namespace SDRSharp.Rtl_433
         #endregion
 
         #region start
-    private void setBinding()
+        private void setBinding()
         {
             //labelCenterFrequency.DataBindings.Clear();
             //labelVersion.DataBindings.Clear();
@@ -183,14 +181,14 @@ namespace SDRSharp.Rtl_433
 #endif
         }
 #if TESTIME
-        internal void setTime(long timeCycleCumul,long timeForRtl433Cumul,Boolean sourceIsFile)
+        internal void setTime(long timeCycleCumul, long timeForRtl433Cumul, Boolean sourceIsFile)
         {
             labelTimeCycle.Text = (timeCycleCumul).ToString() + " ms.";
             labelTimeRtl433.Text = (timeForRtl433Cumul).ToString() + " ms.";
             if (timeCycleCumul > 1000 && !sourceIsFile)
                 labelTimeCycle.ForeColor = Color.Red;
             else
-                labelTimeCycle.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+                labelTimeCycle.ForeColor = labelSampleRate.ForeColor;
         }
 #endif
         //internal void forTestConsole(String message)
@@ -224,7 +222,7 @@ namespace SDRSharp.Rtl_433
                 if (listformDeviceListMessages == null)
                     listformDeviceListMessages = new Dictionary<String, FormDevicesListMessages>();
                 richTextBoxMessages.Clear();
-                
+
                 if (!consoleIsAlive)
                 {
                     Rtl_433Processor.openConsole();
@@ -242,7 +240,7 @@ namespace SDRSharp.Rtl_433
                     ListDevicesSH.Add(part[0]);
                 }
                 ClassInterfaceWithRtl433.setHideOrShowDevices(ListDevicesSH, radioButtonHideSelect.Checked);
-                ClassInterfaceWithRtl433.setShowDevicesDisabled( checkBoxEnabledDevicesDisabled.Checked);
+                ClassInterfaceWithRtl433.setShowDevicesDisabled(checkBoxEnabledDevicesDisabled.Checked);
                 //get sample rate
                 ClassInterfaceWithRtl433.call_main_Rtl_433();
                 Rtl_433Processor.Enabled = true;
@@ -328,7 +326,7 @@ namespace SDRSharp.Rtl_433
                 Stop(false);
         }
 
-        private void testRadioButtonListDevices() 
+        private void testRadioButtonListDevices()
         {
             if (radioButtonListDevices.Checked)
             {
@@ -382,7 +380,7 @@ namespace SDRSharp.Rtl_433
 #if TESTWINDOWS
                     cptDevicesForTest += 1;                //test device windows
 #endif
-                     if (radioButtonGraph.Checked)
+                    if (radioButtonGraph.Checked)
                     {
                         if (recordDevice & deviceName == nameToRecord)
                         {
@@ -394,19 +392,19 @@ namespace SDRSharp.Rtl_433
                         }
                         //lock (listformDevice)
                         //{
-                            if (!listformDevice.ContainsKey(deviceName))
-                            {
-                                if (listformDevice.Count > MaxDevicesWindows - 1)
-                                    return;
-                                listformDevice.Add(deviceName, new FormDevices(this));
-                                if (listformDevice.Count < nbDevicesWithGraph)
-                                    listformDevice[deviceName].displayGraph = true;
-                                listformDevice[deviceName].Text = deviceName;
-                                //listformDevice[deviceName].Visible = true;
-                                listformDevice[deviceName].Show();
-                                listformDevice[deviceName].resetLabelRecord();  //after le load for memo...
-                                                                                //if (listformDevice.Count < _nbDevicesWithGraph
-                            }
+                        if (!listformDevice.ContainsKey(deviceName))
+                        {
+                            if (listformDevice.Count > MaxDevicesWindows - 1)
+                                return;
+                            listformDevice.Add(deviceName, new FormDevices(this));
+                            if (listformDevice.Count < nbDevicesWithGraph)
+                                listformDevice[deviceName].displayGraph = true;
+                            listformDevice[deviceName].Text = deviceName;
+                            //listformDevice[deviceName].Visible = true;
+                            listformDevice[deviceName].Show();
+                            listformDevice[deviceName].resetLabelRecord();  //after le load for memo...
+                                                                            //if (listformDevice.Count < _nbDevicesWithGraph
+                        }
                         //}
                         listformDevice[deviceName].setInfoDevice(listData);
                         if (listformDevice[deviceName].displayGraph)
@@ -425,18 +423,18 @@ namespace SDRSharp.Rtl_433
                     {
                         //lock (listformDeviceListMessages)
                         //{
-                            if (!listformDeviceListMessages.ContainsKey(deviceName))
-                            {
-                                if (listformDeviceListMessages.Count > MaxDevicesWindows - 1)
-                                    return;
-                                //if (radioButtonMLevel.Checked)
-                                    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433,checkBoxRecordTxtFile.Checked)); //+2 for debug
-                                //else
-                                //    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433,false));  //5 for -mMevel //+2 for debug
-                                listformDeviceListMessages[deviceName].Text = deviceName;
-                                listformDeviceListMessages[deviceName].Visible = true;
-                                listformDeviceListMessages[deviceName].Show();
-                            }
+                        if (!listformDeviceListMessages.ContainsKey(deviceName))
+                        {
+                            if (listformDeviceListMessages.Count > MaxDevicesWindows - 1)
+                                return;
+                            //if (radioButtonMLevel.Checked)
+                            listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433, checkBoxRecordTxtFile.Checked)); //+2 for debug
+                                                                                                                                                                                                        //else
+                                                                                                                                                                                                        //    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433,false));  //5 for -mMevel //+2 for debug
+                            listformDeviceListMessages[deviceName].Text = deviceName;
+                            listformDeviceListMessages[deviceName].Visible = true;
+                            listformDeviceListMessages[deviceName].Show();
+                        }
                         //}
                         //if ((cpt % 3)==0)
                         //    for (Int32 i=1;i<20; i++)
@@ -476,13 +474,13 @@ namespace SDRSharp.Rtl_433
         /// </summary>
         /// <param name="disabledPlugin">if true:end processor</param>
         /// <param name="senderRadio"></param>
-        internal void Stop(Boolean disabledPlugin ,Boolean senderRadio = false)
+        internal void Stop(Boolean disabledPlugin, Boolean senderRadio = false)
         {
             if (ClassInterfaceWithRtl433 != null)
-                ClassInterfaceWithRtl433.stopSendDataToRtl433(); 
+                ClassInterfaceWithRtl433.stopSendDataToRtl433();
             if (Rtl_433Processor != null)
                 Rtl_433Processor.Stop(disabledPlugin);
-             enabledDisabledControlsOnStart(checkBoxEnabledPlugin.Checked);
+            enabledDisabledControlsOnStart(checkBoxEnabledPlugin.Checked);
             if (senderRadio)
             {
                 radioIsStarted = false;
@@ -713,8 +711,8 @@ namespace SDRSharp.Rtl_433
         {
             //lock (listformDevice)
             //{
-                if (listformDevice.ContainsKey(key))
-                    listformDevice.Remove(key);
+            if (listformDevice.ContainsKey(key))
+                listformDevice.Remove(key);
             //}
         }
 
@@ -722,8 +720,8 @@ namespace SDRSharp.Rtl_433
         {
             //lock (listformDeviceListMessages)
             //{
-                if (listformDeviceListMessages.ContainsKey(key))
-                    listformDeviceListMessages.Remove(key);
+            if (listformDeviceListMessages.ContainsKey(key))
+                listformDeviceListMessages.Remove(key);
             //}
         }
 
@@ -805,7 +803,7 @@ namespace SDRSharp.Rtl_433
 
         private void process_CheckBoxEnabledDevicesDisabled_CheckedChanged()
         {
-           if (checkBoxEnabledDevicesDisabled.Checked)
+            if (checkBoxEnabledDevicesDisabled.Checked)
             {
                 checkBoxEnabledDevicesDisabled.Text = "Enabled devices disabled";
             }
@@ -818,7 +816,7 @@ namespace SDRSharp.Rtl_433
 
         private void radioButtonTypeWindow_CheckedChanged(object sender, EventArgs e)
         {
-            if(checkBoxEnabledPlugin.Checked)
+            if (checkBoxEnabledPlugin.Checked)
                 testRadioButtonListDevices();
         }
         //if  refresh problem richTextBox (if update system or antivirus)
@@ -830,120 +828,120 @@ namespace SDRSharp.Rtl_433
         #endregion
 
         #region pb disabled controls
-        private System.Drawing.Color _foreColorDisabled = System.Drawing.SystemColors.ControlDark;
-        private System.Drawing.Font _font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        private SolidBrush backColorBrush = new SolidBrush(System.Drawing.SystemColors.Desktop);
-        private void radioButton_Paint(object sender, PaintEventArgs e)
-        {
-           // base.OnPaint(e);
-            RadioButton oneButton = (RadioButton)sender;
-            System.Drawing.SolidBrush textBrush;
-            if (oneButton.Enabled)
-                textBrush = new System.Drawing.SolidBrush(oneButton.ForeColor);
-            else
-                textBrush = new System.Drawing.SolidBrush(this._foreColorDisabled);
-            //SolidBrush blueBrush = new SolidBrush(oneButton.BackColor);
-             //(System.Drawing.SystemColors.Desktop);
-            RectangleF rectButton = e.Graphics.VisibleClipBounds;
-            RectangleF rectClear = new RectangleF(rectButton.X+17.0F, rectButton.Y, rectButton.Width-17.0F, rectButton.Height);
-            e.Graphics.FillRectangle(backColorBrush, rectClear);
-            e.Graphics.DrawString( oneButton.Text, _font, textBrush, 17.0F, 1.0F); 
-        }
-        private void button_Paint(object sender, PaintEventArgs e)
-        {
-            //base.OnPaint(e);
-            Button oneButton = (Button)sender;
-            System.Drawing.SolidBrush textBrush;
-            if (oneButton.Enabled)
-                textBrush = new System.Drawing.SolidBrush(oneButton.ForeColor);
-            else
-                textBrush = new System.Drawing.SolidBrush(this._foreColorDisabled);
-            SolidBrush backColorBrush = new SolidBrush(oneButton.BackColor);
-            RectangleF rectButton = e.Graphics.VisibleClipBounds;
-            RectangleF rectClear = new RectangleF(rectButton.X + 47.0F, rectButton.Y+5.0F, rectButton.Width - 57.0F, rectButton.Height-10.0F);
-            e.Graphics.FillRectangle(backColorBrush, rectClear);
-            e.Graphics.DrawString(oneButton.Text, _font, textBrush, 47.0F, 4.0F); 
-        }
+        //private System.Drawing.Color _foreColorDisabled = System.Drawing.SystemColors.ControlDark;
+        //private System.Drawing.Font _font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //private SolidBrush backColorBrush = new SolidBrush(System.Drawing.SystemColors.Desktop);
+        //private void radioButton_Paint(object sender, PaintEventArgs e)
+        //{
+        //    // base.OnPaint(e);
+        //    RadioButton oneButton = (RadioButton)sender;
+        //    System.Drawing.SolidBrush textBrush;
+        //    if (oneButton.Enabled)
+        //        textBrush = new System.Drawing.SolidBrush(oneButton.ForeColor);
+        //    else
+        //        textBrush = new System.Drawing.SolidBrush(this._foreColorDisabled);
+        //    //SolidBrush blueBrush = new SolidBrush(oneButton.BackColor);
+        //    //(System.Drawing.SystemColors.Desktop);
+        //    RectangleF rectButton = e.Graphics.VisibleClipBounds;
+        //    RectangleF rectClear = new RectangleF(rectButton.X + 17.0F, rectButton.Y, rectButton.Width - 17.0F, rectButton.Height);
+        //    e.Graphics.FillRectangle(backColorBrush, rectClear);
+        //    e.Graphics.DrawString(oneButton.Text, _font, textBrush, 17.0F, 1.0F);
+        //}
+        //private void button_Paint(object sender, PaintEventArgs e)
+        //{
+        //    //base.OnPaint(e);
+        //    Button oneButton = (Button)sender;
+        //    System.Drawing.SolidBrush textBrush;
+        //    if (oneButton.Enabled)
+        //        textBrush = new System.Drawing.SolidBrush(oneButton.ForeColor);
+        //    else
+        //        textBrush = new System.Drawing.SolidBrush(this._foreColorDisabled);
+        //    SolidBrush backColorBrush = new SolidBrush(oneButton.BackColor);
+        //    RectangleF rectButton = e.Graphics.VisibleClipBounds;
+        //    RectangleF rectClear = new RectangleF(rectButton.X + 47.0F, rectButton.Y + 5.0F, rectButton.Width - 57.0F, rectButton.Height - 10.0F);
+        //    e.Graphics.FillRectangle(backColorBrush, rectClear);
+        //    e.Graphics.DrawString(oneButton.Text, _font, textBrush, 47.0F, 4.0F);
+        //}
 
         #endregion
 
         #region optionY TODO
 
-        private void checkBoxY_CheckedChanged(object sender, EventArgs e)
-        {
-            //System.Windows.Forms.CheckBox chck = (System.Windows.Forms.CheckBox)sender;
-            //String option = (String)chck.Tag;
-            //Boolean check = chck.Checked;
-            //if ((String)chck.Tag == "ampest or magest")
-            //    if (chck.Checked)
-            //    {
-            //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", true);
-            //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", false);
-            //        chck.Text = "-Yampest";
-            //    }
-            //    else
-            //    {
-            //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", true);
-            //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", false);
-            //        chck.Text = "-Ymagest";
-            //    }
-            //else if ((String)chck.Tag == "-Ylevel" | (String)chck.Tag == "-Yminlevel" | (String)chck.Tag == "-Yminsnr")
-            //    processWithParameter((String)chck.Tag);
-            //else
-            //    _ClassInterfaceWithRtl433.setOptionUniqueKey(option, check);
-        }
+        //private void checkBoxY_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    //System.Windows.Forms.CheckBox chck = (System.Windows.Forms.CheckBox)sender;
+        //    //String option = (String)chck.Tag;
+        //    //Boolean check = chck.Checked;
+        //    //if ((String)chck.Tag == "ampest or magest")
+        //    //    if (chck.Checked)
+        //    //    {
+        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", true);
+        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", false);
+        //    //        chck.Text = "-Yampest";
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", true);
+        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", false);
+        //    //        chck.Text = "-Ymagest";
+        //    //    }
+        //    //else if ((String)chck.Tag == "-Ylevel" | (String)chck.Tag == "-Yminlevel" | (String)chck.Tag == "-Yminsnr")
+        //    //    processWithParameter((String)chck.Tag);
+        //    //else
+        //    //    _ClassInterfaceWithRtl433.setOptionUniqueKey(option, check);
+        //}
 
-        private void radioButtonYFSK_CheckedChanged(object sender, EventArgs e)
-        {
-            //System.Windows.Forms.RadioButton chck = (System.Windows.Forms.RadioButton)sender;
-            //if (chck.Checked)
-            //    _ClassInterfaceWithRtl433.setOption("YFSK", (String)chck.Tag);
-        }
+        //private void radioButtonYFSK_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    //System.Windows.Forms.RadioButton chck = (System.Windows.Forms.RadioButton)sender;
+        //    //if (chck.Checked)
+        //    //    _ClassInterfaceWithRtl433.setOption("YFSK", (String)chck.Tag);
+        //}
 
-        private void numericUpDownFSK_ValueChanged(object sender, EventArgs e)
-        {
-            //System.Windows.Forms.NumericUpDown chck = (System.Windows.Forms.NumericUpDown)sender;
-            //processWithParameter((String)chck.Tag);
-            ////if ((String)chck.Tag== "-Ylevel" & checkBoxYPulsesDetectionLevel.Checked)
-            ////{
-            ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag, '=',  chck.Value));
-            ////}
+        //private void numericUpDownFSK_ValueChanged(object sender, EventArgs e)
+        //{
+        //    //System.Windows.Forms.NumericUpDown chck = (System.Windows.Forms.NumericUpDown)sender;
+        //    //processWithParameter((String)chck.Tag);
+        //    ////if ((String)chck.Tag== "-Ylevel" & checkBoxYPulsesDetectionLevel.Checked)
+        //    ////{
+        //    ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag, '=',  chck.Value));
+        //    ////}
 
-            ////else if ((String)chck.Tag == "-Yminlevel" & checkBoxYMinimumDetectionLevelPulses.Checked)
-            ////{
-            ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag,'=', chck.Value));
-            ////}
-            ////else if ((String)chck.Tag == "-Yminsnr" & checkBoxYMinimumSNRPulses.Checked)
-            ////{
-            ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag, '=',  chck.Value));
-            ////}
-        }
+        //    ////else if ((String)chck.Tag == "-Yminlevel" & checkBoxYMinimumDetectionLevelPulses.Checked)
+        //    ////{
+        //    ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag,'=', chck.Value));
+        //    ////}
+        //    ////else if ((String)chck.Tag == "-Yminsnr" & checkBoxYMinimumSNRPulses.Checked)
+        //    ////{
+        //    ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag, '=',  chck.Value));
+        //    ////}
+        //}
 
-        private void processWithParameter(String tag)
-        {
-            //if (tag == "-Ylevel")
-            //{
-            //    if (checkBoxYPulsesDetectionLevel.Checked)
-            //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownPulseDetectionLevel.Value));
-            //    else
-            //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
-            //}
+        //private void processWithParameter(String tag)
+        //{
+        //    //if (tag == "-Ylevel")
+        //    //{
+        //    //    if (checkBoxYPulsesDetectionLevel.Checked)
+        //    //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownPulseDetectionLevel.Value));
+        //    //    else
+        //    //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
+        //    //}
 
-            //else if (tag == "-Yminlevel")
-            //{
-            //    if (checkBoxYMinimumDetectionLevelPulses.Checked)
-            //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownMinimumDetectionLevel.Value));
-            //    else
-            //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
-            //}
-            //else if (tag == "-Yminsnr")
-            //{
-            //    if (checkBoxYMinimumSNRPulses.Checked)
-            //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownMinimumSNRPulses.Value));
-            //    else
-            //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
-            //}
-        }
+        //    //else if (tag == "-Yminlevel")
+        //    //{
+        //    //    if (checkBoxYMinimumDetectionLevelPulses.Checked)
+        //    //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownMinimumDetectionLevel.Value));
+        //    //    else
+        //    //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
+        //    //}
+        //    //else if (tag == "-Yminsnr")
+        //    //{
+        //    //    if (checkBoxYMinimumSNRPulses.Checked)
+        //    //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownMinimumSNRPulses.Value));
+        //    //    else
+        //    //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
+        //    //}
+        //}
 
         #endregion
 

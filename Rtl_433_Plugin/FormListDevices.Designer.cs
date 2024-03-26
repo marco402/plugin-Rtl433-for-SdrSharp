@@ -35,9 +35,7 @@ namespace SDRSharp.Rtl_433
             // 
             // listViewDevices
             // 
-            this.listViewDevices.BackColor = System.Drawing.SystemColors.Desktop;
             this.listViewDevices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewDevices.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.listViewDevices.HideSelection = false;
             this.listViewDevices.Location = new System.Drawing.Point(0, 0);
             this.listViewDevices.Name = "listViewDevices";

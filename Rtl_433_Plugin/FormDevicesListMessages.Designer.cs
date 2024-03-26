@@ -39,9 +39,7 @@ namespace SDRSharp.Rtl_433
             // 
             // listViewListMessages
             // 
-            this.listViewListMessages.BackColor = System.Drawing.SystemColors.Desktop;
             this.listViewListMessages.Dock = System.Windows.Forms.DockStyle.Top;
-            this.listViewListMessages.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.listViewListMessages.GridLines = true;
             this.listViewListMessages.HideSelection = false;
             this.listViewListMessages.Location = new System.Drawing.Point(0, 0);
@@ -64,8 +62,6 @@ namespace SDRSharp.Rtl_433
             // 
             // toolStripStatusLabelExport
             // 
-            this.toolStripStatusLabelExport.BackColor = System.Drawing.SystemColors.Desktop;
-            this.toolStripStatusLabelExport.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.toolStripStatusLabelExport.Name = "toolStripStatusLabelExport";
             this.toolStripStatusLabelExport.Size = new System.Drawing.Size(67, 17);
             this.toolStripStatusLabelExport.Text = "Export data";

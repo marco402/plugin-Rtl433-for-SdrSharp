@@ -28,9 +28,7 @@ namespace SDRSharp.Rtl_433
             lv.MultiSelect = false;
             lv.HideSelection = false;
             lv.HeaderStyle = ColumnHeaderStyle.Clickable;
-            lv.BackColor = System.Drawing.SystemColors.Desktop;
             lv.Dock = System.Windows.Forms.DockStyle.Fill;
-            lv.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             lv.AllowColumnReorder = false;
             lv.Visible = true;
             lv.VirtualMode = true;
