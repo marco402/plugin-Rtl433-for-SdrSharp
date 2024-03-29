@@ -162,15 +162,17 @@ namespace SDRSharp.Rtl_433
             }
             catch
             {
+#if WITHCONSOLE
                 Console.WriteLine(this.Text);
+#endif
             }
             ClassFunctionsVirtualListView.resizeAllColumns(listViewListMessages);
             //refresh();  // display last message when it is displayed at the bottom list
             listViewListMessages.EndUpdate();
             this.ResumeLayout(true);
         }
-        #endregion
-        #region Events Form
+#endregion
+#region Events Form
         private void toolStripStatusLabelExport_Click(object sender, EventArgs e)
         {
             String directory = classParent.getDirectoryRecording();
@@ -199,8 +201,8 @@ namespace SDRSharp.Rtl_433
             }
             //GC.Collect();
         }
-        #endregion
-        #region SERIALIZE
+#endregion
+#region SERIALIZE
         String initSerializeOK = "";
         StreamWriter str;
         NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
@@ -251,6 +253,6 @@ namespace SDRSharp.Rtl_433
             String line = ClassFunctionsVirtualListView.processLineTxt(listData, formatNumber, nfi, cacheListColumns.Count);
             str.WriteLine(line);
         }
-        #endregion
+#endregion
     }
 }

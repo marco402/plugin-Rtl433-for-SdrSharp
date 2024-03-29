@@ -4,11 +4,12 @@ namespace SDRSharp.Rtl_433
 {
      internal static class NativeMethods //NativeMethods safeNativeMethods ...
     {
+#if WITHCONSOLE
         [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean FreeConsole(); 
         
         [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean AllocConsole();
         private const String LibRtl_433 = "rtl_433";
-
+#endif
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         internal delegate void receiveMessagesCallback([In]char[] text, [In]Int32 len);
 
@@ -38,10 +39,10 @@ namespace SDRSharp.Rtl_433
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void stop_sdr([Out] IntPtr ctx);
-
+#if WITHCONSOLE
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void free_console();
-
+#endif
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void setFrequency([Out] UInt32 frequency);
 

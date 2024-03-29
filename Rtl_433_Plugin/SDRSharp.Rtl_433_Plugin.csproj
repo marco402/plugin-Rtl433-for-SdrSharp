@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\SDRSharp\bin\release\</OutputPath>
-    <DefineConstants>TRACE;xxMSGBOXDEBUG  TESTIME</DefineConstants>
+    <DefineConstants>TRACE;xxMSGBOXDEBUG  TESTIME xxWITHCONSOLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>2</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>

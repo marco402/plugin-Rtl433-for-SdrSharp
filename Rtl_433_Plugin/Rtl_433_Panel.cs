@@ -33,7 +33,9 @@ namespace SDRSharp.Rtl_433
         public String VERSION =" V: " + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
         private Boolean recordDevice = false;
         private String nameToRecord = "";
+#if WITHCONSOLE
         private Boolean consoleIsAlive = false;
+#endif
         private Boolean radioIsStarted = false;
 
         TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
@@ -222,12 +224,13 @@ namespace SDRSharp.Rtl_433
                 if (listformDeviceListMessages == null)
                     listformDeviceListMessages = new Dictionary<String, FormDevicesListMessages>();
                 richTextBoxMessages.Clear();
-
+#if WITHCONSOLE
                 if (!consoleIsAlive)
                 {
                     Rtl_433Processor.openConsole();
                     consoleIsAlive = true;
                 }
+#endif
                 processParameterOnStart();
                 //Rtl_433Processor.Enabled = true;
                 //Rtl_433Processor.Start();
@@ -454,6 +457,7 @@ namespace SDRSharp.Rtl_433
                         listformDeviceListMessages[deviceName].setMessages(listData);
                     }
                 }
+#if WITHCONSOLE
                 else
                 {
                     foreach (KeyValuePair<String, String> _line in listData)
@@ -462,12 +466,13 @@ namespace SDRSharp.Rtl_433
                         Console.WriteLine("  " + _line.Value);
                     }
                 }
+#endif
             }
         }
 
-        #endregion
+#endregion
 
-        #region stop
+#region stop
 
         /// <summary>
         /// stop and clean
@@ -531,6 +536,7 @@ namespace SDRSharp.Rtl_433
                 formListDevice.Close();
                 formListDevice = null;
             }
+#if WITHCONSOLE
             if (consoleIsAlive)
             {
                 if (Rtl_433Processor != null)
@@ -539,6 +545,7 @@ namespace SDRSharp.Rtl_433
                     ClassInterfaceWithRtl433.free_console();
                 consoleIsAlive = false;
             }
+#endif
             //clean _Rtl_433Processor
             if (Rtl_433Processor != null)
             {
@@ -553,9 +560,9 @@ namespace SDRSharp.Rtl_433
             }
         }
 
-        #endregion
+#endregion
 
-        #region internal functions
+#region internal functions
 
         internal void setSampleRate(double SampleRate)
         {
@@ -687,9 +694,9 @@ namespace SDRSharp.Rtl_433
         //    return checkBoxSTEREO.Checked;
         //}
 
-        #endregion
+#endregion
 
-        #region private functions
+#region private functions
 
         private void displayParam()
         {
@@ -703,9 +710,9 @@ namespace SDRSharp.Rtl_433
             richTextBoxMessages.ResumeLayout();
         }
 
-        #endregion
+#endregion
 
-        #region callBack from devices form
+#region callBack from devices form
 
         internal void closingOneFormDevice(String key)
         {
@@ -760,9 +767,9 @@ namespace SDRSharp.Rtl_433
             }
         }
 
-        #endregion
+#endregion
 
-        #region event panel control
+#region event panel control
 
         private void buttonDisplayParam_Click(object sender, EventArgs e)
         {
@@ -825,9 +832,9 @@ namespace SDRSharp.Rtl_433
             richTextBoxMessages.Refresh();
         }
 
-        #endregion
+#endregion
 
-        #region pb disabled controls
+#region pb disabled controls
         //private System.Drawing.Color _foreColorDisabled = System.Drawing.SystemColors.ControlDark;
         //private System.Drawing.Font _font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         //private SolidBrush backColorBrush = new SolidBrush(System.Drawing.SystemColors.Desktop);
@@ -863,9 +870,9 @@ namespace SDRSharp.Rtl_433
         //    e.Graphics.DrawString(oneButton.Text, _font, textBrush, 47.0F, 4.0F);
         //}
 
-        #endregion
+#endregion
 
-        #region optionY TODO
+#region optionY TODO
 
         //private void checkBoxY_CheckedChanged(object sender, EventArgs e)
         //{
@@ -943,7 +950,7 @@ namespace SDRSharp.Rtl_433
         //    //}
         //}
 
-        #endregion
+#endregion
 
         private void checkBoxSTEREO_CheckedChanged(object sender, EventArgs e)
         {

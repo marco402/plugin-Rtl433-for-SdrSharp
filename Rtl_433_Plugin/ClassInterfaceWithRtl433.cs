@@ -493,11 +493,12 @@ namespace SDRSharp.Rtl_433
         {
             sendDataToRtl433 = false;
         }
+#if WITHCONSOLE
         internal void free_console() 
         {
            NativeMethods.free_console();   //can error if debug try release or other version SDRSharp
         }
-
+#endif
         internal void CleartimeCycleMax()
         {
             //_timeCycleLngMax = 0;
@@ -838,69 +839,69 @@ namespace SDRSharp.Rtl_433
             }
          }
 #endregion
-        private static Byte[] CopyTabToDest(IntPtr Source, UInt32 len)
-        {
-            Byte[] Dest = new byte[len];
-            // If the Target is nothing, immediate return of nothing.
-            if (Source == null) return null;
+        //private static Byte[] CopyTabToDest(IntPtr Source, UInt32 len)
+        //{
+        //    Byte[] Dest = new byte[len];
+        //    // If the Target is nothing, immediate return of nothing.
+        //    if (Source == null) return null;
 
-            // get an instance of the WINAPI class that
-            // holds the API functions. 
-           // WINAPI API = new WINAPI();
+        //    // get an instance of the WINAPI class that
+        //    // holds the API functions. 
+        //   // WINAPI API = new WINAPI();
 
-            // Declare an IntPtr which will hold a memory address, don't
-            // panic here! Just keep going! 
-            //IntPtr p_objTarget;
+        //    // Declare an IntPtr which will hold a memory address, don't
+        //    // panic here! Just keep going! 
+        //    //IntPtr p_objTarget;
 
-            try
-            {
-                // Call AllocHGlobal to allocate enough memory on the heap
-                // for a 'Target' object. AllocHGlobal returns a pointer
-                // to this memory, which is needed for the next call. 
-                //p_objTarget = Marshal.AllocHGlobal(Marshal.SizeOf(Target));
+        //    try
+        //    {
+        //        // Call AllocHGlobal to allocate enough memory on the heap
+        //        // for a 'Target' object. AllocHGlobal returns a pointer
+        //        // to this memory, which is needed for the next call. 
+        //        //p_objTarget = Marshal.AllocHGlobal(Marshal.SizeOf(Target));
 
-                // To copy Target to the heap, use StructureToPtr
-                // as in the following line of code. This is useful
-                // for API calls that require prefilled structures.
-                //Marshal.StructureToPtr(Target, p_objTarget, true);
+        //        // To copy Target to the heap, use StructureToPtr
+        //        // as in the following line of code. This is useful
+        //        // for API calls that require prefilled structures.
+        //        //Marshal.StructureToPtr(Target, p_objTarget, true);
 
-                // Use CopyMemory to take the data from the source string
-                // (Source) and copy it to the block of memory on the
-                // heap (which, coincidentally is the same size as the
-                // source string, we defined sizes in our class definition).
-                NativeMethods.CopyMemory(Dest, Source, len);
+        //        // Use CopyMemory to take the data from the source string
+        //        // (Source) and copy it to the block of memory on the
+        //        // heap (which, coincidentally is the same size as the
+        //        // source string, we defined sizes in our class definition).
+        //        NativeMethods.CopyMemory(Dest, Source, len);
 
-                // Now, tell the Marshaler to copy the data on the heap
-                // (the results of CopyMemory) into our instance of the
-                // Target object (clsTest).
-                //Marshal.PtrToStructure(p_objTarget, Target);
+        //        // Now, tell the Marshaler to copy the data on the heap
+        //        // (the results of CopyMemory) into our instance of the
+        //        // Target object (clsTest).
+        //        //Marshal.PtrToStructure(p_objTarget, Target);
 
-                // Free the memory that was allocated on the heap, otherwise
-                // you will create a memory leak. 
-                //Marshal.FreeHGlobal(p_objTarget);
-            }
-            //catch (System.OutOfMemoryException ex)
-            //{
-            //    // An exception could occur if the system is out of
-            //    // memory and the block of heap memory could not be
-            //    // set aside for you. 
-            //    Console.WriteLine("Exception Caught: " + ex.Message);
-            //    //CoughUpCookies(ex);
-            //}
-            catch (Exception e)
-            {
-                // General exception caught, show the message and move on...
-                //CoughUpCookies(e);
-                Console.WriteLine("Exception Caught: " + e.Message);
-            }
+        //        // Free the memory that was allocated on the heap, otherwise
+        //        // you will create a memory leak. 
+        //        //Marshal.FreeHGlobal(p_objTarget);
+        //    }
+        //    //catch (System.OutOfMemoryException ex)
+        //    //{
+        //    //    // An exception could occur if the system is out of
+        //    //    // memory and the block of heap memory could not be
+        //    //    // set aside for you. 
+        //    //    Console.WriteLine("Exception Caught: " + ex.Message);
+        //    //    //CoughUpCookies(ex);
+        //    //}
+        //    catch (Exception e)
+        //    {
+        //        // General exception caught, show the message and move on...
+        //        //CoughUpCookies(e);
+        //        Console.WriteLine("Exception Caught: " + e.Message);
+        //    }
 
-            // Free resources assigned to our instance of the WINAPI class 
-            //API = null;
+        //    // Free resources assigned to our instance of the WINAPI class 
+        //    //API = null;
 
-            // send the results back for printing 
-            return Dest;   //   (Object)Target;
+        //    // send the results back for printing 
+        //    return Dest;   //   (Object)Target;
 
-        }
+        //}
 //#if SAMPGRAD
         internal void clearRecord()
         {

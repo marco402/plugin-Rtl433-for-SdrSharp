@@ -35,8 +35,9 @@ namespace SDRSharp.Rtl_433
         private readonly ComplexFifoStream floatStreamComplex = new ComplexFifoStream(BlockMode.BlockingRead);
         private ISharpControl control;
         private Rtl_433_Panel panelRtl_433;
-
+#if WITHCONSOLE
         private Boolean consoleIsAlive = false;
+#endif
         private Boolean sourceIsFile = false;
         private Boolean terminated = true;
         private Boolean _Enabled = false;
@@ -45,7 +46,7 @@ namespace SDRSharp.Rtl_433
         private Int64 frequency = 0;
         private Int64 centerFrequency = 0;
         private Int32 productVersion = 0;
-        #region class
+#region class
         internal Rtl_433_Processor(ISharpControl control, Rtl_433_Panel panelRtl_433, ClassInterfaceWithRtl433 classInterfaceWithRtl433)
         {
             this.control = control;
@@ -57,7 +58,7 @@ namespace SDRSharp.Rtl_433
             IQPtr = (Complex*)IQBuffer;
         }
 
-
+#if WITHCONSOLE
         IntPtr stdHandle ;
         Microsoft.Win32.SafeHandles.SafeFileHandle safeFileHandle ;
         FileStream fileStream ;
@@ -119,7 +120,7 @@ namespace SDRSharp.Rtl_433
             safeFileHandle.Dispose();
             stdHandle=IntPtr.Zero;
         }
-
+#endif
         internal Int64 FrequencyRtl433
         {
             get
@@ -132,9 +133,9 @@ namespace SDRSharp.Rtl_433
                 setFrequency();
             }
         }
-        #endregion
+#endregion
 
-        #region processThreadRtl433
+#region processThreadRtl433
         /// <summary>
         /// Without this thread neither floatStreamComplex decode is ok but no acces windows.
         /// setFrequency
@@ -209,8 +210,8 @@ namespace SDRSharp.Rtl_433
             }   //while
             processThreadRtl433 = null;
         }
-        #endregion
-        #region interfaces
+#endregion
+#region interfaces
         private Int32 sleep = 0;
         public double SampleRate         //IStreamProcessor
         {
@@ -386,7 +387,7 @@ namespace SDRSharp.Rtl_433
                 panelRtl_433 = null; 
             }
         }
-        #endregion
+#endregion
     }
 }
  
