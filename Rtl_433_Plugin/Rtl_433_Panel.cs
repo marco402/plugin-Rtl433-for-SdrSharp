@@ -33,9 +33,8 @@ namespace SDRSharp.Rtl_433
         public String VERSION =" V: " + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
         private Boolean recordDevice = false;
         private String nameToRecord = "";
-#if WITHCONSOLE
         private Boolean consoleIsAlive = false;
-#endif
+        private Boolean withConsole = false;
         private Boolean radioIsStarted = false;
 
         TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
@@ -224,13 +223,17 @@ namespace SDRSharp.Rtl_433
                 if (listformDeviceListMessages == null)
                     listformDeviceListMessages = new Dictionary<String, FormDevicesListMessages>();
                 richTextBoxMessages.Clear();
-#if WITHCONSOLE
-                if (!consoleIsAlive)
+                if (!consoleIsAlive && withConsole)
                 {
                     Rtl_433Processor.openConsole();
                     consoleIsAlive = true;
                 }
-#endif
+                if (consoleIsAlive && !withConsole)
+                {
+                    ClassInterfaceWithRtl433.free_console();
+                    Rtl_433Processor.freeConsole();
+                    consoleIsAlive = false;
+                }
                 processParameterOnStart();
                 //Rtl_433Processor.Enabled = true;
                 //Rtl_433Processor.Start();
@@ -457,16 +460,17 @@ namespace SDRSharp.Rtl_433
                         listformDeviceListMessages[deviceName].setMessages(listData);
                     }
                 }
-#if WITHCONSOLE
                 else
                 {
-                    foreach (KeyValuePair<String, String> _line in listData)
+                    if (withConsole)
                     {
-                        Console.Write(_line.Key);
-                        Console.WriteLine("  " + _line.Value);
+                        foreach (KeyValuePair<String, String> _line in listData)
+                        {
+                            Console.Write(_line.Key);
+                            Console.WriteLine("  " + _line.Value);
+                        }
                     }
                 }
-#endif
             }
         }
 
@@ -536,7 +540,7 @@ namespace SDRSharp.Rtl_433
                 formListDevice.Close();
                 formListDevice = null;
             }
-#if WITHCONSOLE
+
             if (consoleIsAlive)
             {
                 if (Rtl_433Processor != null)
@@ -545,7 +549,7 @@ namespace SDRSharp.Rtl_433
                     ClassInterfaceWithRtl433.free_console();
                 consoleIsAlive = false;
             }
-#endif
+
             //clean _Rtl_433Processor
             if (Rtl_433Processor != null)
             {
@@ -965,6 +969,15 @@ namespace SDRSharp.Rtl_433
         private void checkBoxRaw_CheckedChanged(object sender, EventArgs e)
         {
             ClassInterfaceWithRtl433.setRAW(checkBoxRaw.Checked);
+        }
+
+        private void radioButtonV_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!radioButtonNoV.Checked)  //console
+                withConsole = true;
+            else                          //no console
+                withConsole = false;
+            ClassInterfaceWithRtl433.setWithConsole(withConsole);
         }
     }
 }

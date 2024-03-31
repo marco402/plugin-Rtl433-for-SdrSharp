@@ -35,9 +35,7 @@ namespace SDRSharp.Rtl_433
         private readonly ComplexFifoStream floatStreamComplex = new ComplexFifoStream(BlockMode.BlockingRead);
         private ISharpControl control;
         private Rtl_433_Panel panelRtl_433;
-#if WITHCONSOLE
         private Boolean consoleIsAlive = false;
-#endif
         private Boolean sourceIsFile = false;
         private Boolean terminated = true;
         private Boolean _Enabled = false;
@@ -58,7 +56,6 @@ namespace SDRSharp.Rtl_433
             IQPtr = (Complex*)IQBuffer;
         }
 
-#if WITHCONSOLE
         IntPtr stdHandle ;
         Microsoft.Win32.SafeHandles.SafeFileHandle safeFileHandle ;
         FileStream fileStream ;
@@ -110,6 +107,8 @@ namespace SDRSharp.Rtl_433
 
         internal void freeConsole()
         {
+            if (consoleIsAlive)
+            {
             NativeMethods.FreeConsole();  //possible error if visual studio
             consoleIsAlive = false;
             standardOutput.Close();
@@ -118,9 +117,10 @@ namespace SDRSharp.Rtl_433
             fileStream.Dispose();
             safeFileHandle.Close();
             safeFileHandle.Dispose();
-            stdHandle=IntPtr.Zero;
+            stdHandle = IntPtr.Zero;
+            }
         }
-#endif
+
         internal Int64 FrequencyRtl433
         {
             get

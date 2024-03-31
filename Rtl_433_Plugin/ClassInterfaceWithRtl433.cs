@@ -235,7 +235,7 @@ namespace SDRSharp.Rtl_433
             CBmessages = new NativeMethods.ptrReceiveMessagesCallback(_callBackMessages);
             CBReceiveRecordOrder = new NativeMethods.ptrReceiveRecordOrder(_callBackReceiveRecordOrder);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
-            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args);
+            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, withConsole);
         }
 #endregion
 #region public function 
@@ -415,7 +415,6 @@ namespace SDRSharp.Rtl_433
             NativeMethods.stop_sdr(ptrCtx);
             if (!initListDevice)     //need reload list devices
                 owner.setOptionVerboseInit();
-
             threadCallMainRTL_433 = new Thread(ProcessCallMainRtl433);
             threadCallMainRTL_433.Name = "thread_MAIN_RTL_433";
             threadCallMainRTL_433.Start();
@@ -482,23 +481,26 @@ namespace SDRSharp.Rtl_433
             //if (!sendDataToRtl433)
             //    NativeMethods.stop_sdr(ptrCtx);
         }
-//#if TESTIME
-//        private void  setTime()
-//        {
-//            timeCycle =  (_timeCycleCumul ).ToString() + " ms.";
-//            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
-//        }
-//#endif
+        //#if TESTIME
+        //        private void  setTime()
+        //        {
+        //            timeCycle =  (_timeCycleCumul ).ToString() + " ms.";
+        //            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
+        //        }
+        //#endif
+        private Boolean withConsole = false;
+        public void setWithConsole(Boolean withConsole)
+        {
+            this.withConsole = withConsole;
+        }
         internal void stopSendDataToRtl433() 
         {
             sendDataToRtl433 = false;
         }
-#if WITHCONSOLE
         internal void free_console() 
         {
            NativeMethods.free_console();   //can error if debug try release or other version SDRSharp
         }
-#endif
         internal void CleartimeCycleMax()
         {
             //_timeCycleLngMax = 0;

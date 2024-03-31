@@ -4,12 +4,11 @@ namespace SDRSharp.Rtl_433
 {
      internal static class NativeMethods //NativeMethods safeNativeMethods ...
     {
-#if WITHCONSOLE
         [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean FreeConsole(); 
         
         [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean AllocConsole();
         private const String LibRtl_433 = "rtl_433";
-#endif
+
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         internal delegate void receiveMessagesCallback([In]char[] text, [In]Int32 len);
 
@@ -32,17 +31,17 @@ namespace SDRSharp.Rtl_433
             IntPtr _ptrCtx,
             IntPtr _ptrCfg);
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        internal static extern void rtl_433_call_main([Out] ptrReceiveMessagesCallback fctMessage, [Out] ptrFctInit fctInitCbData,[Out] ptrReceiveRecordOrder ptrReceiveRecordOrder, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args);  // 
+        internal static extern void rtl_433_call_main([Out] ptrReceiveMessagesCallback fctMessage, [Out] ptrFctInit fctInitCbData,[Out] ptrReceiveRecordOrder ptrReceiveRecordOrder, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args,[Out] Boolean withConsole);  // 
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void receive_buffer_cb([Out] byte[] iq_buf, [Out] UInt32 len, [Out]  IntPtr ctx);
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void stop_sdr([Out] IntPtr ctx);
-#if WITHCONSOLE
+
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void free_console();
-#endif
+
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void setFrequency([Out] UInt32 frequency);
 

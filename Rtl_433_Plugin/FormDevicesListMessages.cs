@@ -162,9 +162,8 @@ namespace SDRSharp.Rtl_433
             }
             catch
             {
-#if WITHCONSOLE
-                Console.WriteLine(this.Text);
-#endif
+            //if(withConsole)
+            //    Console.WriteLine(this.Text);
             }
             ClassFunctionsVirtualListView.resizeAllColumns(listViewListMessages);
             //refresh();  // display last message when it is displayed at the bottom list

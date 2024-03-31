@@ -233,9 +233,9 @@ namespace SDRSharp.Rtl_433
 
         internal void setOptionVerboseInit()
         {
-            if (!radioButtonV.Checked)
-                 radioButtonV.Checked=true;
-                //if (radioButtonNoV.Checked && _ClassInterfaceWithRtl433!=null)
+            //if (!radioButtonV.Checked)                  //to have the  devices list
+            //    radioButtonV.Checked = true;
+            //if (radioButtonNoV.Checked && _ClassInterfaceWithRtl433!=null)
             ClassInterfaceWithRtl433.setOption(radioButtonV.Tag.ToString(), radioButtonV.Text);
         }
 

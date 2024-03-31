@@ -1,4 +1,5 @@
 ## New Version 
+Version 1.5.6.4 March 31, 2024 Display console only if verbose.
 Version 1.5.6.3 march 26, 2024 Tested with SDRSharp 1919 and 1920 beta.  
     -Consideration of themes sdrsharp(only Font,ForeColor,BackColor and Cursor).  
 Version 1.5.6.2 February 16, 2024 Tested with SDRSharp 1919.  
@@ -265,7 +266,8 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.5.6.3 26 mars Testé avec SDRSharp 1919 et 1920 beta.  
+Version 1.5.6.4 31 Mars 2024 Affichage de la console uniquement si verbose.
+Version 1.5.6.3 26 Mars 2024 Testé avec SDRSharp 1919 et 1920 beta.  
     -Prise en compte des thèmes sdrsharp(only Font,ForeColor,BackColor and Cursor).  
 Version 1.5.6.2 16 Février 2024 Testé vec SDRSharp 1919.  
     -Update RTL_433 (25 more devices).  
