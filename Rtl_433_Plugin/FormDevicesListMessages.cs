@@ -39,15 +39,15 @@ namespace SDRSharp.Rtl_433
             this.BackColor = this.classParent.BackColor;
             this.ForeColor = this.classParent.ForeColor;
             this.Cursor = this.classParent.Cursor;
-            listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
-            listViewListMessages.ForeColor = this.ForeColor;
-            listViewListMessages.Font = this.Font;
-            listViewListMessages.Cursor = this.Cursor;
             this.maxMessages = maxDevices;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
             this.SuspendLayout();
             ClassFunctionsVirtualListView.initListView(listViewListMessages);
+            listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
+            listViewListMessages.ForeColor = this.ForeColor;
+            listViewListMessages.Font = this.Font;
+            listViewListMessages.Cursor = this.Cursor;
             cacheListMessages = new ListViewItem[this.maxMessages]; 
             cacheListColumns = new Dictionary<String, Int32>();
             cacheListColumns.Add("N° Mes.",  1);

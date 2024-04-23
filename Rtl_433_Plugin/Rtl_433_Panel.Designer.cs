@@ -521,6 +521,7 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSnone.Tag = "saveDevice";
             this.radioButtonSnone.Text = "No -S";
             this.radioButtonSnone.UseVisualStyleBackColor = false;
+            this.radioButtonSnone.CheckedChanged += new System.EventHandler(this.radioButtonSnone_CheckedChanged);
             // 
             // radioButtonSunknown
             // 
@@ -531,6 +532,7 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSunknown.Tag = "saveDevice";
             this.radioButtonSunknown.Text = "-Sunknown";
             this.radioButtonSunknown.UseVisualStyleBackColor = false;
+            this.radioButtonSunknown.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonSknown
             // 
@@ -541,6 +543,7 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSknown.Tag = "saveDevice";
             this.radioButtonSknown.Text = "-Sknown";
             this.radioButtonSknown.UseVisualStyleBackColor = false;
+            this.radioButtonSknown.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonSall
             // 
@@ -551,6 +554,7 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSall.Tag = "saveDevice";
             this.radioButtonSall.Text = "-Sall";
             this.radioButtonSall.UseVisualStyleBackColor = false;
+            this.radioButtonSall.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // groupBoxR
             // 

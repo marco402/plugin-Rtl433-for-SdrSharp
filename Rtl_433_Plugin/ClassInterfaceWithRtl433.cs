@@ -235,7 +235,11 @@ namespace SDRSharp.Rtl_433
             CBmessages = new NativeMethods.ptrReceiveMessagesCallback(_callBackMessages);
             CBReceiveRecordOrder = new NativeMethods.ptrReceiveRecordOrder(_callBackReceiveRecordOrder);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
+#if CONSOLEFORM
+            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, false);
+# else
             NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, withConsole);
+#endif
         }
 #endregion
 #region public function 
@@ -488,11 +492,15 @@ namespace SDRSharp.Rtl_433
         //            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
         //        }
         //#endif
+#if CONSOLEFORM
+        private Boolean withConsole = true;
+#else
         private Boolean withConsole = false;
         public void setWithConsole(Boolean withConsole)
         {
             this.withConsole = withConsole;
         }
+#endif
         internal void stopSendDataToRtl433() 
         {
             sendDataToRtl433 = false;

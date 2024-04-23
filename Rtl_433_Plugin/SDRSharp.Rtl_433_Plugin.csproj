@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\SDRSharp\bin\release\</OutputPath>
-    <DefineConstants>TRACE;xxMSGBOXDEBUG  TESTIME</DefineConstants>
+    <DefineConstants>TRACE;xxMSGBOXDEBUG  TESTIME CONSOLEFORM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>2</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -206,6 +206,12 @@
   <ItemGroup>
     <Compile Include="ClassFunctionsVirtualListView.cs" />
     <Compile Include="ClassInterfaceWithRtl433.cs" />
+    <Compile Include="FormConsole.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormConsole.Designer.cs">
+      <DependentUpon>FormConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormDevices.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -248,6 +254,9 @@
     <Compile Include="WavRecorder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FormConsole.resx">
+      <DependentUpon>FormConsole.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormDevices.resx">
       <DependentUpon>FormDevices.cs</DependentUpon>
     </EmbeddedResource>

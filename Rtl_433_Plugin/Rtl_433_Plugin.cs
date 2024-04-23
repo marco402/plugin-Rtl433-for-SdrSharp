@@ -49,6 +49,7 @@ namespace SDRSharp.Rtl_433
                 controlPanel.setFrequency(Utils.GetLongSetting("RTL_433_plugin.Frequency", 433920000));
                 controlPanel.setMaxDevicesWindows(Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", 100));
                 controlPanel.setNbDevicesWithGraph(Utils.GetIntSetting("RTL_433_plugin.nbDevicesWithGraph", 5));
+                controlPanel.setMaxLinesConsole(Utils.GetIntSetting("RTL_433_plugin.maxLinesConsole", 1000));
                //controlPanel.Dock = DockStyle.Left; sans effet //egal version 1920 no docking-->il faut:prefered docking position. where ?
             }
             catch (Exception e)
@@ -77,6 +78,7 @@ namespace SDRSharp.Rtl_433
                 Utils.SaveSetting("RTL_433_plugin.Frequency", controlPanel.getFrequency());
                 Utils.SaveSetting("RTL_433_plugin.maxDevicesWindows", Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", 100));
                 Utils.SaveSetting("RTL_433_plugin.nbDevicesWithGraph", Utils.GetIntSetting("RTL_433_plugin.nbDevicesWithGraph", 5));
+                Utils.SaveSetting("RTL_433_plugin.maxLinesConsole", Utils.GetIntSetting("RTL_433_plugin.maxLinesConsole", 1000));
                 controlPanel.Stop(true);
             }
         }

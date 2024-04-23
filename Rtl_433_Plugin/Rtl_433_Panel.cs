@@ -34,7 +34,13 @@ namespace SDRSharp.Rtl_433
         private Boolean recordDevice = false;
         private String nameToRecord = "";
         private Boolean consoleIsAlive = false;
+#if CONSOLEFORM
+        FormConsole formConsole = null;
+        private Boolean withConsole = true;
+        private Boolean nBLinesMax = false;
+#else
         private Boolean withConsole = false;
+#endif
         private Boolean radioIsStarted = false;
 
         TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
@@ -56,13 +62,17 @@ namespace SDRSharp.Rtl_433
         private FormListDevices formListDevice = null;
         private Boolean enabledPlugin = false;
         private ISharpControl control;
-
-        #region init class
+#region init class
 
         internal Rtl_433_Panel(ISharpControl control)
         {
             InitializeComponent();
             this.control = control;
+            //this.Location = new System.Drawing.Point(0, 100);  //no change with 1920 beta 
+            //mainTableLayoutPanel.Location = new System.Drawing.Point(0, 100);  //no change with 1920 beta
+
+            this.Size = new System.Drawing.Size(296, 600);   //ok for load first with 1920 beta (erase sdrsharp.layout)
+
             //labelVersion.Text = VERSION;
             //#if MSGBOXDEBUG
             //_ClassInterfaceWithRtl433.get_version_dll_rtl_433();
@@ -91,9 +101,9 @@ namespace SDRSharp.Rtl_433
             buttonStartStop.Text = "Wait";
             buttonStartStop.Enabled = false;
             ToolTip OptionStereo = new ToolTip();
-            OptionStereo.SetToolTip(checkBoxSTEREO, "Record IQ to wav file for reload with SDRSharp");
+            OptionStereo.SetToolTip(checkBoxSTEREO, "Record IQ to wav file for reload with SDRSharp(Graph windows)");
             ToolTip OptionMono = new ToolTip();
-            OptionMono.SetToolTip(checkBoxMONO, "Record module de IQ to wav file for display with Audacity or another viewer");
+            OptionMono.SetToolTip(checkBoxMONO, "Record module de IQ to wav file for display with Audacity or another viewer(Graph windows)");
             ToolTip ttcheckBoxEnabledDevicesDisabled = new ToolTip();
             ttcheckBoxEnabledDevicesDisabled.SetToolTip(checkBoxEnabledDevicesDisabled, "0:default,1:WARNING->enabled devices disabled in devices files");
             ToolTip ttcheckBoxRecordTextFile = new ToolTip();
@@ -129,10 +139,26 @@ namespace SDRSharp.Rtl_433
             if (!enabledPlugin)
             {
                 Stop(true);
+#if CONSOLEFORM
+                if (consoleIsAlive)
+                {
+                    formConsole.Close();
+                    consoleIsAlive = false;
+                }
+#endif
                 DisposePanel(false);
             }
             else
             {
+//#if CONSOLEFORM
+//                if (!consoleIsAlive)
+//                {
+//                    formConsole = new FormConsole(this,maxLinesConsole);
+//                    formConsole.Visible = true;
+//                    formConsole.Show();
+//                    consoleIsAlive = true;
+//                }
+//#endif
                 ClassInterfaceWithRtl433 = new ClassInterfaceWithRtl433(this);
                 Rtl_433Processor = new Rtl_433_Processor(control, this, ClassInterfaceWithRtl433);
                 setBinding();
@@ -158,9 +184,9 @@ namespace SDRSharp.Rtl_433
             checkBoxSTEREO.Enabled = enabledPlugin;
         }
 
-        #endregion
+#endregion
 
-        #region start
+#region start
         private void setBinding()
         {
             //labelCenterFrequency.DataBindings.Clear();
@@ -225,15 +251,19 @@ namespace SDRSharp.Rtl_433
                 richTextBoxMessages.Clear();
                 if (!consoleIsAlive && withConsole)
                 {
+#if !CONSOLEFORM
                     Rtl_433Processor.openConsole();
                     consoleIsAlive = true;
+#endif
                 }
+#if !CONSOLEFORM
                 if (consoleIsAlive && !withConsole)
                 {
                     ClassInterfaceWithRtl433.free_console();
                     Rtl_433Processor.freeConsole();
                     consoleIsAlive = false;
                 }
+#endif
                 processParameterOnStart();
                 //Rtl_433Processor.Enabled = true;
                 //Rtl_433Processor.Start();
@@ -464,20 +494,51 @@ namespace SDRSharp.Rtl_433
                 {
                     if (withConsole)
                     {
-                        foreach (KeyValuePair<String, String> _line in listData)
-                        {
-                            Console.Write(_line.Key);
-                            Console.WriteLine("  " + _line.Value);
-                        }
+
+#if CONSOLEFORM
+                    traitement(listData);
+#else
+                       foreach (KeyValuePair<String, String> _line in listData)
+                       {
+                            Console.WriteLine(_line.Key + "  " + _line.Value+"\r\n");
+                       }
+#endif
+                           // Console.WriteLine(_line.Key + "  " + _line.Value+"\r\n");
+                            //Console.WriteLine("  " + _line.Value);
+ 
                     }
                 }
             }
         }
 
-#endregion
+        #endregion
 
-#region stop
+        #region stop
+#if CONSOLEFORM
 
+        internal void traitement(Dictionary<String, String> listData)
+        {
+            if (!consoleIsAlive)
+            {
+                formConsole = new FormConsole(this, maxLinesConsole);
+                consoleIsAlive = true;
+                formConsole.Visible = true;
+                formConsole.Show();
+            }
+            if (consoleIsAlive)
+            {
+                if (!nBLinesMax)
+                    nBLinesMax = formConsole.WriteLine(listData);
+             }
+        }
+
+        internal void closeConsole()
+        {
+            nBLinesMax = false;
+            consoleIsAlive = false;
+            formConsole = null;
+        }
+#endif
         /// <summary>
         /// stop and clean
         /// </summary>
@@ -973,11 +1034,24 @@ namespace SDRSharp.Rtl_433
 
         private void radioButtonV_CheckedChanged(object sender, EventArgs e)
         {
+#if !CONSOLEFORM
             if (!radioButtonNoV.Checked)  //console
                 withConsole = true;
             else                          //no console
                 withConsole = false;
             ClassInterfaceWithRtl433.setWithConsole(withConsole);
+#endif
+        }
+
+        private void radioButtonSnone_CheckedChanged(object sender, EventArgs e)
+        {
+#if !CONSOLEFORM
+            if (!radioButtonSnone.Checked)  //console
+                withConsole = true;
+            else                          //no console
+                withConsole = false;
+            ClassInterfaceWithRtl433.setWithConsole(withConsole);
+#endif
         }
     }
 }
