@@ -4,9 +4,9 @@ namespace SDRSharp.Rtl_433
 {
      internal static class NativeMethods //NativeMethods safeNativeMethods ...
     {
-        [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean FreeConsole(); 
+        //[DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean FreeConsole(); 
         
-        [DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean AllocConsole();
+        //[DllImport("kernel32.dll")] [return: MarshalAs(UnmanagedType.Bool)] static extern internal Boolean AllocConsole();
         private const String LibRtl_433 = "rtl_433";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -31,7 +31,7 @@ namespace SDRSharp.Rtl_433
             IntPtr _ptrCtx,
             IntPtr _ptrCfg);
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        internal static extern void rtl_433_call_main([Out] ptrReceiveMessagesCallback fctMessage, [Out] ptrFctInit fctInitCbData,[Out] ptrReceiveRecordOrder ptrReceiveRecordOrder, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args,[Out] Boolean withConsole);  // 
+        internal static extern void rtl_433_call_main([Out] ptrReceiveMessagesCallback fctMessage, [Out] ptrFctInit fctInitCbData,[Out] ptrReceiveRecordOrder ptrReceiveRecordOrder, [Out] UInt32 param_samp_rate, [Out] Int32 param_sample_size, [Out] UInt32 disabled, [Out] Int32 argc, String[] args);  //,[Out] Boolean withConsole) 
 
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall)]
         internal static extern void receive_buffer_cb([Out] byte[] iq_buf, [Out] UInt32 len, [Out]  IntPtr ctx);
@@ -122,27 +122,27 @@ namespace SDRSharp.Rtl_433
         }
 
         /// Internal state data for pulse_pulse_package()
-        struct pulse_detect      //pulse_detect.c
-        {
-            internal Int32 use_mag_est;          ///< Whether the envelope data is an amplitude or magnitude.
-            internal Int32 ook_fixed_high_level; ///< Manual detection level override, 0 = auto.
-            internal Int32 ook_min_high_level;   ///< Minimum estimate of high level (-12 dB: 1000 amp, 4000 mag).
-            internal Int32 ook_high_low_ratio;   ///< Default ratio between high and low (noise) level (9 dB: x8 amp, 11 dB: x3.6 mag).
+        //struct pulse_detect      //pulse_detect.c
+        //{
+        //    internal Int32 use_mag_est;          ///< Whether the envelope data is an amplitude or magnitude.
+        //    internal Int32 ook_fixed_high_level; ///< Manual detection level override, 0 = auto.
+        //    internal Int32 ook_min_high_level;   ///< Minimum estimate of high level (-12 dB: 1000 amp, 4000 mag).
+        //    internal Int32 ook_high_low_ratio;   ///< Default ratio between high and low (noise) level (9 dB: x8 amp, 11 dB: x3.6 mag).
 
-            internal _ook_state ook_state;
-            internal Int32 pulse_length; ///< Counter for internal pulse detection
-            internal Int32 max_pulse;    ///< Size of biggest pulse detected
+        //    internal _ook_state ook_state;
+        //    internal Int32 pulse_length; ///< Counter for internal pulse detection
+        //    internal Int32 max_pulse;    ///< Size of biggest pulse detected
 
-            internal Int32 data_counter;    ///< Counter for how much of data chunk is processed
-            internal Int32 lead_in_counter; ///< Counter for allowing initial noise estimate to settle
+        //    internal Int32 data_counter;    ///< Counter for how much of data chunk is processed
+        //    internal Int32 lead_in_counter; ///< Counter for allowing initial noise estimate to settle
 
-            internal Int32 ook_low_estimate;  ///< Estimate for the OOK low level (base noise level) in the envelope data
-            internal Int32 ook_high_estimate; ///< Estimate for the OOK high level
+        //    internal Int32 ook_low_estimate;  ///< Estimate for the OOK low level (base noise level) in the envelope data
+        //    internal Int32 ook_high_estimate; ///< Estimate for the OOK high level
 
-            internal Int32 verbosity; ///< Debug output verbosity, 0=None, 1=Levels, 2=Histograms
+        //    internal Int32 verbosity; ///< Debug output verbosity, 0=None, 1=Levels, 2=Histograms
 
-            internal pulse_detect_fsk_t FSK_state;
-        };
+        //    internal pulse_detect_fsk_t FSK_state;
+        //};
 
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 4)]

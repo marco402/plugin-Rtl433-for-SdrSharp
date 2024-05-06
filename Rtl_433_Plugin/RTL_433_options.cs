@@ -23,7 +23,7 @@ namespace SDRSharp.Rtl_433
 
         internal void setMaxLinesConsole(Int32 maxLinesConsole)
         {
-            this.maxLinesConsole = maxLinesConsole;
+             this.maxLinesConsole = maxLinesConsole;
         }
         internal Int32 getNbDevicesWithGraph()
         {

@@ -12,7 +12,7 @@
   **********************************************************************************/
 #define xxxSAMPGRAD
 #define xxxTESTMEMORY
-#define xxxTESTIME
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -46,7 +46,7 @@ namespace SDRSharp.Rtl_433
         private Dictionary<String, String> listOptionsRtl433;
         private Rtl_433_Panel owner;
 
-        private String timeForRtl433 = "";
+        //private String timeForRtl433 = "";
         private String sampleRateStr = "";
         private Double sampleRate = 0;
 
@@ -61,8 +61,8 @@ namespace SDRSharp.Rtl_433
         private List<String> listeDevice = new List<String>();
         private String[] nameGraph = { "Pulse data", "Analyse", "fm" }; 
 
-        private Int32 bufNumber = 0;
-        private UInt32 bufLength = 0;
+        //private Int32 bufNumber = 0;
+        //private UInt32 bufLength = 0;
         private IntPtr ptrCbData = IntPtr.Zero;
         private IntPtr ptrCtx = IntPtr.Zero;
         private IntPtr ptrCfg = IntPtr.Zero;
@@ -78,8 +78,7 @@ namespace SDRSharp.Rtl_433
         private Stopwatch stopw;
         //private Stopwatch stopwTotalTime;
         private long memoDt;
-        private long memoDtTotalTime;
-
+        private long memoDtTotalTime = 0;
         private Int64 _timeForRtl433Lng = 0;
         private Int64 _timeCycleCumul = 0;
         private Int64 _timeForRtl433Cumul = 0;
@@ -223,23 +222,23 @@ namespace SDRSharp.Rtl_433
 
             args[0] = "Rtl_433.exe"; // + @"\";
             Int32 counter = 1;
-            owner.setMessage("-----------RTL433 OPTIONS --------------");
+            owner.setMessage("-----------RTL433 OPTIONS --------------\n");
             foreach (KeyValuePair<String, String> _option in listOptionsRtl433)
             {
-                owner.setMessage(_option.Value);
-                args[counter] = _option.Value;  // + @"\";      // +@"\";
+                owner.setMessage(_option.Value+"\n");
+                args[counter] = _option.Value;
                 counter++;
             }
-            owner.setMessage("------------------------------------------");
+            owner.setMessage("------------------------------------------\n");
             Int32 argc = args.Length;
             CBmessages = new NativeMethods.ptrReceiveMessagesCallback(_callBackMessages);
-            CBReceiveRecordOrder = new NativeMethods.ptrReceiveRecordOrder(_callBackReceiveRecordOrder);
+            //CBReceiveRecordOrder = new NativeMethods.ptrReceiveRecordOrder(_callBackReceiveRecordOrder);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
-#if CONSOLEFORM
-            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, false);
-# else
-            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, withConsole);
-#endif
+//#if CONSOLEFORM
+//            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, false);
+//# else
+            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args);  //, withConsole
+//#endif
         }
 #endregion
 #region public function 
@@ -492,23 +491,23 @@ namespace SDRSharp.Rtl_433
         //            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
         //        }
         //#endif
-#if CONSOLEFORM
-        private Boolean withConsole = true;
-#else
-        private Boolean withConsole = false;
-        public void setWithConsole(Boolean withConsole)
-        {
-            this.withConsole = withConsole;
-        }
-#endif
+//#if CONSOLEFORM
+//        private Boolean withConsole = true;
+//#else
+        //private Boolean withConsole = false;
+        //public void setWithConsole(Boolean withConsole)
+        //{
+        //    this.withConsole = withConsole;
+        //}
+//#endif
         internal void stopSendDataToRtl433() 
         {
             sendDataToRtl433 = false;
         }
-        internal void free_console() 
-        {
-           NativeMethods.free_console();   //can error if debug try release or other version SDRSharp
-        }
+        //internal void free_console() 
+        //{
+        //   NativeMethods.free_console();   //can error if debug try release or other version SDRSharp
+        //}
         internal void CleartimeCycleMax()
         {
             //_timeCycleLngMax = 0;
@@ -541,10 +540,10 @@ namespace SDRSharp.Rtl_433
         //}
 #endregion
 #region callBack for dll_rtl_433"
-        internal void _callBackReceiveRecordOrder([In, MarshalAs(UnmanagedType.LPStr)] String message)
-        {
-            int i = 0;
-        }
+        //internal void _callBackReceiveRecordOrder([In, MarshalAs(UnmanagedType.LPStr)] String message)
+        //{
+        //    int i = 0;
+        //}
 
 
         internal  void _callBackMessages([In, MarshalAs(UnmanagedType.LPStr)] String message)
@@ -619,9 +618,10 @@ namespace SDRSharp.Rtl_433
                             }
                             if (structCfg.demod != IntPtr.Zero)
                             {
-                                if (struct_demod.am_analyze == IntPtr.Zero)
-                                {
-                                    try
+                                //if (struct_demod.am_analyze == IntPtr.Zero)  //1.5.4.4 comment 3 lines
+                                //{
+                                NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();//1.5.4.4 add this line
+                                try
                                     {
                                         struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
                                     }
@@ -629,7 +629,7 @@ namespace SDRSharp.Rtl_433
                                     {
                                         MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
-                                }
+                                //}
 #if SAMPGRAD
                                 ////if ((mono || stereo || raw) && nameRecord != String.Empty)
                                 ////{

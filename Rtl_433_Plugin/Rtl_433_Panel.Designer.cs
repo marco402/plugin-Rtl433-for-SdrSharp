@@ -30,6 +30,8 @@ namespace SDRSharp.Rtl_433
         private void InitializeComponent()
         {
             this.mainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.listViewConsole = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxDataConv = new System.Windows.Forms.GroupBox();
             this.radioButtonDataConvCustomary = new System.Windows.Forms.RadioButton();
             this.radioButtonDataConvSI = new System.Windows.Forms.RadioButton();
@@ -37,9 +39,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxMetadata = new System.Windows.Forms.GroupBox();
             this.radioButtonMLevel = new System.Windows.Forms.RadioButton();
             this.radioButtonNoM = new System.Windows.Forms.RadioButton();
-            this.richTextBoxMessages = new System.Windows.Forms.RichTextBox();
             this.groupBoxRecord = new System.Windows.Forms.GroupBox();
-            this.checkBoxRaw = new System.Windows.Forms.CheckBox();
             this.checkBoxMONO = new System.Windows.Forms.CheckBox();
             this.checkBoxSTEREO = new System.Windows.Forms.CheckBox();
             this.groupBoxFrequency = new System.Windows.Forms.GroupBox();
@@ -55,8 +55,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonVV = new System.Windows.Forms.RadioButton();
             this.radioButtonV = new System.Windows.Forms.RadioButton();
             this.radioButtonVVVV = new System.Windows.Forms.RadioButton();
-            this.buttonClearMessages = new System.Windows.Forms.Button();
-            this.buttonDisplayParam = new System.Windows.Forms.Button();
             this.groupBoxSave = new System.Windows.Forms.GroupBox();
             this.radioButtonSnone = new System.Windows.Forms.RadioButton();
             this.radioButtonSunknown = new System.Windows.Forms.RadioButton();
@@ -74,20 +72,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonGraph = new System.Windows.Forms.RadioButton();
             this.groupBoxEnabledDisabledDevices = new System.Windows.Forms.GroupBox();
             this.checkBoxEnabledDevicesDisabled = new System.Windows.Forms.CheckBox();
-            this.groupBoxOptionY = new System.Windows.Forms.GroupBox();
-            this.radioButtonYMinmax = new System.Windows.Forms.RadioButton();
-            this.radioButtonYClassic = new System.Windows.Forms.RadioButton();
-            this.radioButtonYAuto = new System.Windows.Forms.RadioButton();
-            this.numericUpDownMinimumSNRPulses = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownMinimumDetectionLevel = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownPulseDetectionLevel = new System.Windows.Forms.NumericUpDown();
-            this.checkBoxYAmpest = new System.Windows.Forms.CheckBox();
-            this.checkBoxYSquelch = new System.Windows.Forms.CheckBox();
-            this.checkBoxYAutoLevel = new System.Windows.Forms.CheckBox();
-            this.checkBoxYMinimumSNRPulses = new System.Windows.Forms.CheckBox();
-            this.checkBoxYMinimumDetectionLevelPulses = new System.Windows.Forms.CheckBox();
-            this.checkBoxYPulsesDetectionLevel = new System.Windows.Forms.CheckBox();
-            this.checkBoxEnabledPlugin = new System.Windows.Forms.CheckBox();
             this.groupBoxInfos = new System.Windows.Forms.GroupBox();
             this.labelSampleRateTxt = new System.Windows.Forms.Label();
             this.labelTimeCycle = new System.Windows.Forms.Label();
@@ -97,11 +81,18 @@ namespace SDRSharp.Rtl_433
             this.labelCycleTime = new System.Windows.Forms.Label();
             this.labelTime433 = new System.Windows.Forms.Label();
             this.labelTimeRtl433 = new System.Windows.Forms.Label();
-            this.buttonStartStop = new System.Windows.Forms.Button();
-            this.buttonCu8ToWav = new System.Windows.Forms.Button();
             this.groupBoxRecordTxtFile = new System.Windows.Forms.GroupBox();
             this.labelWarningRecordTextFile = new System.Windows.Forms.Label();
             this.checkBoxRecordTxtFile = new System.Windows.Forms.CheckBox();
+            this.groupBoxEnabledPlugin = new System.Windows.Forms.GroupBox();
+            this.checkBoxEnabledPlugin = new System.Windows.Forms.CheckBox();
+            this.buttonStartStop = new System.Windows.Forms.Button();
+            this.groupBoxConsole = new System.Windows.Forms.GroupBox();
+            this.buttonSelectToClipboard = new System.Windows.Forms.Button();
+            this.buttonAllToClipboard = new System.Windows.Forms.Button();
+            this.buttonDisplayParam = new System.Windows.Forms.Button();
+            this.buttonClearMessages = new System.Windows.Forms.Button();
+            this.buttonCu8ToWav = new System.Windows.Forms.Button();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxMetadata.SuspendLayout();
@@ -113,12 +104,10 @@ namespace SDRSharp.Rtl_433
             this.groupBoxHideShow.SuspendLayout();
             this.groupBoxSelectTypeForm.SuspendLayout();
             this.groupBoxEnabledDisabledDevices.SuspendLayout();
-            this.groupBoxOptionY.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPulseDetectionLevel)).BeginInit();
             this.groupBoxInfos.SuspendLayout();
             this.groupBoxRecordTxtFile.SuspendLayout();
+            this.groupBoxEnabledPlugin.SuspendLayout();
+            this.groupBoxConsole.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -129,47 +118,62 @@ namespace SDRSharp.Rtl_433
             this.mainTableLayoutPanel.ColumnCount = 2;
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.mainTableLayoutPanel.Controls.Add(this.listViewConsole, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 6);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxMetadata, 1, 5);
-            this.mainTableLayoutPanel.Controls.Add(this.richTextBoxMessages, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxRecord, 1, 3);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxFrequency, 1, 2);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxVerbose, 0, 5);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonClearMessages, 1, 11);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonDisplayParam, 0, 11);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSave, 1, 6);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxR, 0, 9);
             this.mainTableLayoutPanel.Controls.Add(this.labelHideDevices, 0, 7);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxHideShow, 0, 8);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxSelectTypeForm, 0, 1);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxEnabledDisabledDevices, 0, 10);
-            this.mainTableLayoutPanel.Controls.Add(this.groupBoxOptionY, 0, 13);
-            this.mainTableLayoutPanel.Controls.Add(this.checkBoxEnabledPlugin, 0, 0);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxInfos, 0, 4);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonStartStop, 1, 0);
-            this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 3);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxRecordTxtFile, 0, 2);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxEnabledPlugin, 0, 0);
+            this.mainTableLayoutPanel.Controls.Add(this.groupBoxConsole, 0, 11);
+            this.mainTableLayoutPanel.Controls.Add(this.buttonCu8ToWav, 0, 3);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
-            this.mainTableLayoutPanel.RowCount = 14;
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 122F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 87F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 124F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 161F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 119F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 126F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.mainTableLayoutPanel.RowCount = 13;
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.mainTableLayoutPanel.Size = new System.Drawing.Size(296, 1229);
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 130F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(296, 1276);
             this.mainTableLayoutPanel.TabIndex = 1;
-            this.mainTableLayoutPanel.CellPaint += new System.Windows.Forms.TableLayoutCellPaintEventHandler(this.mainTableLayoutPanel_CellPaint);
+            this.mainTableLayoutPanel.SizeChanged += new System.EventHandler(this.mainTableLayoutPanel_SizeChanged);
+            // 
+            // listViewConsole
+            // 
+            this.listViewConsole.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listViewConsole.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.mainTableLayoutPanel.SetColumnSpan(this.listViewConsole, 2);
+            this.listViewConsole.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewConsole.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listViewConsole.HideSelection = false;
+            this.listViewConsole.Location = new System.Drawing.Point(3, 950);
+            this.listViewConsole.Name = "listViewConsole";
+            this.listViewConsole.Size = new System.Drawing.Size(290, 323);
+            this.listViewConsole.TabIndex = 33;
+            this.listViewConsole.UseCompatibleStateImageBehavior = false;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "RTL_433 messages ";
             // 
             // groupBoxDataConv
             // 
@@ -179,7 +183,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvCustomary);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvSI);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvNative);
-            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 567);
+            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 533);
             this.groupBoxDataConv.Name = "groupBoxDataConv";
             this.groupBoxDataConv.Size = new System.Drawing.Size(144, 113);
             this.groupBoxDataConv.TabIndex = 20;
@@ -190,7 +194,7 @@ namespace SDRSharp.Rtl_433
             // 
             this.radioButtonDataConvCustomary.Location = new System.Drawing.Point(9, 77);
             this.radioButtonDataConvCustomary.Name = "radioButtonDataConvCustomary";
-            this.radioButtonDataConvCustomary.Size = new System.Drawing.Size(83, 17);
+            this.radioButtonDataConvCustomary.Size = new System.Drawing.Size(111, 17);
             this.radioButtonDataConvCustomary.TabIndex = 11;
             this.radioButtonDataConvCustomary.Tag = "dataconv";
             this.radioButtonDataConvCustomary.Text = "-Ccustomary";
@@ -220,14 +224,13 @@ namespace SDRSharp.Rtl_433
             // 
             // groupBoxMetadata
             // 
-            this.groupBoxMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxMetadata.Controls.Add(this.radioButtonMLevel);
             this.groupBoxMetadata.Controls.Add(this.radioButtonNoM);
-            this.groupBoxMetadata.Location = new System.Drawing.Point(153, 406);
+            this.groupBoxMetadata.Location = new System.Drawing.Point(153, 392);
             this.groupBoxMetadata.Name = "groupBoxMetadata";
-            this.groupBoxMetadata.Size = new System.Drawing.Size(140, 155);
+            this.groupBoxMetadata.Size = new System.Drawing.Size(140, 135);
             this.groupBoxMetadata.TabIndex = 10;
             this.groupBoxMetadata.TabStop = false;
             this.groupBoxMetadata.Text = "metaData(-M)";
@@ -254,47 +257,18 @@ namespace SDRSharp.Rtl_433
             this.radioButtonNoM.Text = "No -M";
             this.radioButtonNoM.UseVisualStyleBackColor = false;
             // 
-            // richTextBoxMessages
-            // 
-            this.richTextBoxMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainTableLayoutPanel.SetColumnSpan(this.richTextBoxMessages, 2);
-            this.richTextBoxMessages.Location = new System.Drawing.Point(3, 959);
-            this.richTextBoxMessages.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
-            this.richTextBoxMessages.MaxLength = 3000;
-            this.richTextBoxMessages.Name = "richTextBoxMessages";
-            this.richTextBoxMessages.ReadOnly = true;
-            this.richTextBoxMessages.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBoxMessages.Size = new System.Drawing.Size(290, 257);
-            this.richTextBoxMessages.TabIndex = 5;
-            this.richTextBoxMessages.Text = "";
-            // 
             // groupBoxRecord
             // 
-            this.groupBoxRecord.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxRecord.Controls.Add(this.checkBoxRaw);
+            this.groupBoxRecord.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxRecord.Controls.Add(this.checkBoxMONO);
             this.groupBoxRecord.Controls.Add(this.checkBoxSTEREO);
-            this.groupBoxRecord.Location = new System.Drawing.Point(153, 195);
+            this.groupBoxRecord.Location = new System.Drawing.Point(153, 197);
             this.groupBoxRecord.Name = "groupBoxRecord";
-            this.groupBoxRecord.Size = new System.Drawing.Size(140, 81);
+            this.groupBoxRecord.Size = new System.Drawing.Size(140, 65);
             this.groupBoxRecord.TabIndex = 12;
             this.groupBoxRecord.TabStop = false;
             this.groupBoxRecord.Text = "Record";
-            // 
-            // checkBoxRaw
-            // 
-            this.checkBoxRaw.Location = new System.Drawing.Point(6, 61);
-            this.checkBoxRaw.Name = "checkBoxRaw";
-            this.checkBoxRaw.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxRaw.TabIndex = 0;
-            this.checkBoxRaw.Text = "RAW";
-            this.checkBoxRaw.UseVisualStyleBackColor = true;
-            this.checkBoxRaw.Visible = false;
-            this.checkBoxRaw.CheckedChanged += new System.EventHandler(this.checkBoxRaw_CheckedChanged);
             // 
             // checkBoxMONO
             // 
@@ -319,16 +293,16 @@ namespace SDRSharp.Rtl_433
             // groupBoxFrequency
             // 
             this.groupBoxFrequency.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq915);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq868);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq43392);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq345);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq315);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreqFree);
-            this.groupBoxFrequency.Location = new System.Drawing.Point(153, 73);
+            this.groupBoxFrequency.Location = new System.Drawing.Point(153, 88);
             this.groupBoxFrequency.Name = "groupBoxFrequency";
-            this.groupBoxFrequency.Size = new System.Drawing.Size(140, 116);
+            this.groupBoxFrequency.Size = new System.Drawing.Size(140, 103);
             this.groupBoxFrequency.TabIndex = 13;
             this.groupBoxFrequency.TabStop = false;
             this.groupBoxFrequency.Text = "Frequency";
@@ -406,9 +380,9 @@ namespace SDRSharp.Rtl_433
             this.groupBoxVerbose.Controls.Add(this.radioButtonVV);
             this.groupBoxVerbose.Controls.Add(this.radioButtonV);
             this.groupBoxVerbose.Controls.Add(this.radioButtonVVVV);
-            this.groupBoxVerbose.Location = new System.Drawing.Point(3, 406);
+            this.groupBoxVerbose.Location = new System.Drawing.Point(3, 392);
             this.groupBoxVerbose.Name = "groupBoxVerbose";
-            this.groupBoxVerbose.Size = new System.Drawing.Size(144, 155);
+            this.groupBoxVerbose.Size = new System.Drawing.Size(144, 135);
             this.groupBoxVerbose.TabIndex = 9;
             this.groupBoxVerbose.TabStop = false;
             this.groupBoxVerbose.Text = "verbose(-v)";
@@ -428,7 +402,7 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonVVV
             // 
-            this.radioButtonVVV.Location = new System.Drawing.Point(9, 89);
+            this.radioButtonVVV.Location = new System.Drawing.Point(9, 88);
             this.radioButtonVVV.Name = "radioButtonVVV";
             this.radioButtonVVV.Size = new System.Drawing.Size(46, 17);
             this.radioButtonVVV.TabIndex = 8;
@@ -439,7 +413,7 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonVV
             // 
-            this.radioButtonVV.Location = new System.Drawing.Point(9, 68);
+            this.radioButtonVV.Location = new System.Drawing.Point(9, 65);
             this.radioButtonVV.Name = "radioButtonVV";
             this.radioButtonVV.Size = new System.Drawing.Size(40, 17);
             this.radioButtonVV.TabIndex = 8;
@@ -461,7 +435,7 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonVVVV
             // 
-            this.radioButtonVVVV.Location = new System.Drawing.Point(9, 112);
+            this.radioButtonVVVV.Location = new System.Drawing.Point(9, 111);
             this.radioButtonVVVV.Name = "radioButtonVVVV";
             this.radioButtonVVVV.Size = new System.Drawing.Size(52, 17);
             this.radioButtonVVVV.TabIndex = 8;
@@ -470,40 +444,15 @@ namespace SDRSharp.Rtl_433
             this.radioButtonVVVV.UseVisualStyleBackColor = true;
             this.radioButtonVVVV.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
-            // buttonClearMessages
-            // 
-            this.buttonClearMessages.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonClearMessages.AutoSize = true;
-            this.buttonClearMessages.Location = new System.Drawing.Point(165, 929);
-            this.buttonClearMessages.Name = "buttonClearMessages";
-            this.buttonClearMessages.Size = new System.Drawing.Size(115, 23);
-            this.buttonClearMessages.TabIndex = 7;
-            this.buttonClearMessages.Text = "Clear Messages";
-            this.buttonClearMessages.UseVisualStyleBackColor = false;
-            this.buttonClearMessages.Click += new System.EventHandler(this.buttonClearMessages_Click);
-            // 
-            // buttonDisplayParam
-            // 
-            this.buttonDisplayParam.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonDisplayParam.AutoSize = true;
-            this.buttonDisplayParam.Location = new System.Drawing.Point(31, 929);
-            this.buttonDisplayParam.Name = "buttonDisplayParam";
-            this.buttonDisplayParam.Size = new System.Drawing.Size(87, 23);
-            this.buttonDisplayParam.TabIndex = 7;
-            this.buttonDisplayParam.Text = "Display Param";
-            this.buttonDisplayParam.UseVisualStyleBackColor = false;
-            this.buttonDisplayParam.Click += new System.EventHandler(this.buttonDisplayParam_Click);
-            // 
             // groupBoxSave
             // 
-            this.groupBoxSave.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBoxSave.Controls.Add(this.radioButtonSnone);
             this.groupBoxSave.Controls.Add(this.radioButtonSunknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSall);
-            this.groupBoxSave.Location = new System.Drawing.Point(153, 567);
+            this.groupBoxSave.Location = new System.Drawing.Point(153, 533);
             this.groupBoxSave.Name = "groupBoxSave";
             this.groupBoxSave.Size = new System.Drawing.Size(140, 113);
             this.groupBoxSave.TabIndex = 9;
@@ -525,7 +474,7 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonSunknown
             // 
-            this.radioButtonSunknown.Location = new System.Drawing.Point(9, 89);
+            this.radioButtonSunknown.Location = new System.Drawing.Point(9, 88);
             this.radioButtonSunknown.Name = "radioButtonSunknown";
             this.radioButtonSunknown.Size = new System.Drawing.Size(100, 17);
             this.radioButtonSunknown.TabIndex = 8;
@@ -536,7 +485,7 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonSknown
             // 
-            this.radioButtonSknown.Location = new System.Drawing.Point(9, 68);
+            this.radioButtonSknown.Location = new System.Drawing.Point(9, 65);
             this.radioButtonSknown.Name = "radioButtonSknown";
             this.radioButtonSknown.Size = new System.Drawing.Size(67, 17);
             this.radioButtonSknown.TabIndex = 8;
@@ -561,18 +510,18 @@ namespace SDRSharp.Rtl_433
             this.groupBoxR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxR.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxR, 2);
             this.groupBoxR.Controls.Add(this.listBoxHideShowDevices);
-            this.groupBoxR.Location = new System.Drawing.Point(3, 755);
+            this.groupBoxR.Location = new System.Drawing.Point(3, 708);
             this.groupBoxR.Name = "groupBoxR";
-            this.groupBoxR.Size = new System.Drawing.Size(290, 120);
+            this.groupBoxR.Size = new System.Drawing.Size(290, 124);
             this.groupBoxR.TabIndex = 9;
             this.groupBoxR.TabStop = false;
             this.groupBoxR.Text = "hide show devices(-R)";
             // 
             // listBoxHideShowDevices
             // 
-            this.listBoxHideShowDevices.BackColor = System.Drawing.SystemColors.Control;
             this.listBoxHideShowDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listBoxHideShowDevices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxHideShowDevices.FormattingEnabled = true;
@@ -580,7 +529,7 @@ namespace SDRSharp.Rtl_433
             this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);
             this.listBoxHideShowDevices.Name = "listBoxHideShowDevices";
             this.listBoxHideShowDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxHideShowDevices.Size = new System.Drawing.Size(284, 101);
+            this.listBoxHideShowDevices.Size = new System.Drawing.Size(284, 105);
             this.listBoxHideShowDevices.TabIndex = 3;
             // 
             // labelHideDevices
@@ -588,7 +537,7 @@ namespace SDRSharp.Rtl_433
             this.labelHideDevices.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelHideDevices.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelHideDevices, 2);
-            this.labelHideDevices.Location = new System.Drawing.Point(3, 689);
+            this.labelHideDevices.Location = new System.Drawing.Point(3, 649);
             this.labelHideDevices.Name = "labelHideDevices";
             this.labelHideDevices.Size = new System.Drawing.Size(154, 13);
             this.labelHideDevices.TabIndex = 15;
@@ -597,13 +546,12 @@ namespace SDRSharp.Rtl_433
             // 
             // groupBoxHideShow
             // 
-            this.groupBoxHideShow.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxHideShow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxHideShow, 2);
             this.groupBoxHideShow.Controls.Add(this.radioButtonShowSelect);
             this.groupBoxHideShow.Controls.Add(this.radioButtonHideSelect);
-            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 712);
+            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 665);
             this.groupBoxHideShow.Name = "groupBoxHideShow";
             this.groupBoxHideShow.Size = new System.Drawing.Size(290, 37);
             this.groupBoxHideShow.TabIndex = 21;
@@ -631,14 +579,13 @@ namespace SDRSharp.Rtl_433
             // 
             // groupBoxSelectTypeForm
             // 
-            this.groupBoxSelectTypeForm.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxSelectTypeForm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxSelectTypeForm, 2);
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonListMessages);
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonListDevices);
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonGraph);
-            this.groupBoxSelectTypeForm.Location = new System.Drawing.Point(3, 33);
+            this.groupBoxSelectTypeForm.Location = new System.Drawing.Point(3, 48);
             this.groupBoxSelectTypeForm.Name = "groupBoxSelectTypeForm";
             this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(290, 34);
             this.groupBoxSelectTypeForm.TabIndex = 22;
@@ -678,12 +625,11 @@ namespace SDRSharp.Rtl_433
             // 
             // groupBoxEnabledDisabledDevices
             // 
-            this.groupBoxEnabledDisabledDevices.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxEnabledDisabledDevices.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxEnabledDisabledDevices, 2);
             this.groupBoxEnabledDisabledDevices.Controls.Add(this.checkBoxEnabledDevicesDisabled);
-            this.groupBoxEnabledDisabledDevices.Location = new System.Drawing.Point(3, 881);
+            this.groupBoxEnabledDisabledDevices.Location = new System.Drawing.Point(3, 838);
             this.groupBoxEnabledDisabledDevices.Name = "groupBoxEnabledDisabledDevices";
             this.groupBoxEnabledDisabledDevices.Size = new System.Drawing.Size(290, 41);
             this.groupBoxEnabledDisabledDevices.TabIndex = 26;
@@ -695,225 +641,19 @@ namespace SDRSharp.Rtl_433
             this.checkBoxEnabledDevicesDisabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxEnabledDevicesDisabled.Location = new System.Drawing.Point(9, 19);
+            this.checkBoxEnabledDevicesDisabled.Margin = new System.Windows.Forms.Padding(10);
             this.checkBoxEnabledDevicesDisabled.Name = "checkBoxEnabledDevicesDisabled";
-            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(87, 16);
+            this.checkBoxEnabledDevicesDisabled.Padding = new System.Windows.Forms.Padding(10);
+            this.checkBoxEnabledDevicesDisabled.Size = new System.Drawing.Size(217, 16);
             this.checkBoxEnabledDevicesDisabled.TabIndex = 25;
             this.checkBoxEnabledDevicesDisabled.Text = "Default";
             this.checkBoxEnabledDevicesDisabled.UseVisualStyleBackColor = true;
             this.checkBoxEnabledDevicesDisabled.CheckedChanged += new System.EventHandler(this.checkBoxEnabledDevicesDisabled_CheckedChanged);
             // 
-            // groupBoxOptionY
-            // 
-            this.groupBoxOptionY.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxOptionY, 2);
-            this.groupBoxOptionY.Controls.Add(this.radioButtonYMinmax);
-            this.groupBoxOptionY.Controls.Add(this.radioButtonYClassic);
-            this.groupBoxOptionY.Controls.Add(this.radioButtonYAuto);
-            this.groupBoxOptionY.Controls.Add(this.numericUpDownMinimumSNRPulses);
-            this.groupBoxOptionY.Controls.Add(this.numericUpDownMinimumDetectionLevel);
-            this.groupBoxOptionY.Controls.Add(this.numericUpDownPulseDetectionLevel);
-            this.groupBoxOptionY.Controls.Add(this.checkBoxYAmpest);
-            this.groupBoxOptionY.Controls.Add(this.checkBoxYSquelch);
-            this.groupBoxOptionY.Controls.Add(this.checkBoxYAutoLevel);
-            this.groupBoxOptionY.Controls.Add(this.checkBoxYMinimumSNRPulses);
-            this.groupBoxOptionY.Controls.Add(this.checkBoxYMinimumDetectionLevelPulses);
-            this.groupBoxOptionY.Controls.Add(this.checkBoxYPulsesDetectionLevel);
-            this.groupBoxOptionY.Location = new System.Drawing.Point(3, 1224);
-            this.groupBoxOptionY.Name = "groupBoxOptionY";
-            this.groupBoxOptionY.Size = new System.Drawing.Size(290, 2);
-            this.groupBoxOptionY.TabIndex = 27;
-            this.groupBoxOptionY.TabStop = false;
-            this.groupBoxOptionY.Text = "options -Y";
-            // 
-            // radioButtonYMinmax
-            // 
-            this.radioButtonYMinmax.AutoSize = true;
-            this.radioButtonYMinmax.Location = new System.Drawing.Point(13, 59);
-            this.radioButtonYMinmax.Name = "radioButtonYMinmax";
-            this.radioButtonYMinmax.Size = new System.Drawing.Size(153, 17);
-            this.radioButtonYMinmax.TabIndex = 2;
-            this.radioButtonYMinmax.TabStop = true;
-            this.radioButtonYMinmax.Tag = "-Yminmax";
-            this.radioButtonYMinmax.Text = "FSK pulse detector minmax";
-            this.radioButtonYMinmax.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonYClassic
-            // 
-            this.radioButtonYClassic.AutoSize = true;
-            this.radioButtonYClassic.Location = new System.Drawing.Point(13, 39);
-            this.radioButtonYClassic.Name = "radioButtonYClassic";
-            this.radioButtonYClassic.Size = new System.Drawing.Size(150, 17);
-            this.radioButtonYClassic.TabIndex = 2;
-            this.radioButtonYClassic.TabStop = true;
-            this.radioButtonYClassic.Tag = "-Yclassic";
-            this.radioButtonYClassic.Text = "FSK pulse detector classic";
-            this.radioButtonYClassic.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonYAuto
-            // 
-            this.radioButtonYAuto.AutoSize = true;
-            this.radioButtonYAuto.Location = new System.Drawing.Point(13, 19);
-            this.radioButtonYAuto.Name = "radioButtonYAuto";
-            this.radioButtonYAuto.Size = new System.Drawing.Size(139, 17);
-            this.radioButtonYAuto.TabIndex = 2;
-            this.radioButtonYAuto.TabStop = true;
-            this.radioButtonYAuto.Tag = "-Yauto";
-            this.radioButtonYAuto.Text = "FSK pulse detector auto";
-            this.radioButtonYAuto.UseVisualStyleBackColor = true;
-            // 
-            // numericUpDownMinimumSNRPulses
-            // 
-            this.numericUpDownMinimumSNRPulses.Location = new System.Drawing.Point(148, 116);
-            this.numericUpDownMinimumSNRPulses.Maximum = new decimal(new int[] {
-            99,
-            0,
-            0,
-            0});
-            this.numericUpDownMinimumSNRPulses.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownMinimumSNRPulses.Name = "numericUpDownMinimumSNRPulses";
-            this.numericUpDownMinimumSNRPulses.Size = new System.Drawing.Size(64, 20);
-            this.numericUpDownMinimumSNRPulses.TabIndex = 1;
-            this.numericUpDownMinimumSNRPulses.Tag = "-Yminsnr";
-            this.numericUpDownMinimumSNRPulses.Value = new decimal(new int[] {
-            9,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDownMinimumDetectionLevel
-            // 
-            this.numericUpDownMinimumDetectionLevel.Location = new System.Drawing.Point(148, 96);
-            this.numericUpDownMinimumDetectionLevel.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDownMinimumDetectionLevel.Minimum = new decimal(new int[] {
-            99,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDownMinimumDetectionLevel.Name = "numericUpDownMinimumDetectionLevel";
-            this.numericUpDownMinimumDetectionLevel.Size = new System.Drawing.Size(64, 20);
-            this.numericUpDownMinimumDetectionLevel.TabIndex = 1;
-            this.numericUpDownMinimumDetectionLevel.Tag = "-Yminlevel";
-            this.numericUpDownMinimumDetectionLevel.Value = new decimal(new int[] {
-            12,
-            0,
-            0,
-            -2147483648});
-            // 
-            // numericUpDownPulseDetectionLevel
-            // 
-            this.numericUpDownPulseDetectionLevel.Location = new System.Drawing.Point(148, 76);
-            this.numericUpDownPulseDetectionLevel.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDownPulseDetectionLevel.Minimum = new decimal(new int[] {
-            30,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDownPulseDetectionLevel.Name = "numericUpDownPulseDetectionLevel";
-            this.numericUpDownPulseDetectionLevel.Size = new System.Drawing.Size(64, 20);
-            this.numericUpDownPulseDetectionLevel.TabIndex = 1;
-            this.numericUpDownPulseDetectionLevel.Tag = "-Ylevel";
-            this.numericUpDownPulseDetectionLevel.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            // 
-            // checkBoxYAmpest
-            // 
-            this.checkBoxYAmpest.AutoSize = true;
-            this.checkBoxYAmpest.Location = new System.Drawing.Point(13, 179);
-            this.checkBoxYAmpest.Name = "checkBoxYAmpest";
-            this.checkBoxYAmpest.Size = new System.Drawing.Size(61, 17);
-            this.checkBoxYAmpest.TabIndex = 0;
-            this.checkBoxYAmpest.Tag = "ampest or magest";
-            this.checkBoxYAmpest.Text = "Ampest";
-            this.checkBoxYAmpest.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxYSquelch
-            // 
-            this.checkBoxYSquelch.AutoSize = true;
-            this.checkBoxYSquelch.Location = new System.Drawing.Point(13, 159);
-            this.checkBoxYSquelch.Name = "checkBoxYSquelch";
-            this.checkBoxYSquelch.Size = new System.Drawing.Size(65, 17);
-            this.checkBoxYSquelch.TabIndex = 0;
-            this.checkBoxYSquelch.Tag = "-Ysquelch";
-            this.checkBoxYSquelch.Text = "Squelch";
-            this.checkBoxYSquelch.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxYAutoLevel
-            // 
-            this.checkBoxYAutoLevel.AutoSize = true;
-            this.checkBoxYAutoLevel.Location = new System.Drawing.Point(13, 139);
-            this.checkBoxYAutoLevel.Name = "checkBoxYAutoLevel";
-            this.checkBoxYAutoLevel.Size = new System.Drawing.Size(73, 17);
-            this.checkBoxYAutoLevel.TabIndex = 0;
-            this.checkBoxYAutoLevel.Tag = "-Yautolevel";
-            this.checkBoxYAutoLevel.Text = "Auto level";
-            this.checkBoxYAutoLevel.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxYMinimumSNRPulses
-            // 
-            this.checkBoxYMinimumSNRPulses.AutoSize = true;
-            this.checkBoxYMinimumSNRPulses.Location = new System.Drawing.Point(13, 119);
-            this.checkBoxYMinimumSNRPulses.Name = "checkBoxYMinimumSNRPulses";
-            this.checkBoxYMinimumSNRPulses.Size = new System.Drawing.Size(129, 17);
-            this.checkBoxYMinimumSNRPulses.TabIndex = 0;
-            this.checkBoxYMinimumSNRPulses.Tag = "-Yminsnr";
-            this.checkBoxYMinimumSNRPulses.Text = "Minimum SNR  pulses";
-            this.checkBoxYMinimumSNRPulses.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxYMinimumDetectionLevelPulses
-            // 
-            this.checkBoxYMinimumDetectionLevelPulses.AutoSize = true;
-            this.checkBoxYMinimumDetectionLevelPulses.Location = new System.Drawing.Point(13, 99);
-            this.checkBoxYMinimumDetectionLevelPulses.Name = "checkBoxYMinimumDetectionLevelPulses";
-            this.checkBoxYMinimumDetectionLevelPulses.Size = new System.Drawing.Size(134, 17);
-            this.checkBoxYMinimumDetectionLevelPulses.TabIndex = 0;
-            this.checkBoxYMinimumDetectionLevelPulses.Tag = "-Yminlevel";
-            this.checkBoxYMinimumDetectionLevelPulses.Text = "Min detect level pulses";
-            this.checkBoxYMinimumDetectionLevelPulses.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxYPulsesDetectionLevel
-            // 
-            this.checkBoxYPulsesDetectionLevel.AutoSize = true;
-            this.checkBoxYPulsesDetectionLevel.Location = new System.Drawing.Point(13, 79);
-            this.checkBoxYPulsesDetectionLevel.Name = "checkBoxYPulsesDetectionLevel";
-            this.checkBoxYPulsesDetectionLevel.Size = new System.Drawing.Size(129, 17);
-            this.checkBoxYPulsesDetectionLevel.TabIndex = 0;
-            this.checkBoxYPulsesDetectionLevel.Tag = "-Ylevel";
-            this.checkBoxYPulsesDetectionLevel.Text = "Pulses detection level";
-            this.checkBoxYPulsesDetectionLevel.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxEnabledPlugin
-            // 
-            this.checkBoxEnabledPlugin.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkBoxEnabledPlugin.Location = new System.Drawing.Point(3, 3);
-            this.checkBoxEnabledPlugin.Name = "checkBoxEnabledPlugin";
-            this.checkBoxEnabledPlugin.Size = new System.Drawing.Size(144, 24);
-            this.checkBoxEnabledPlugin.TabIndex = 28;
-            this.checkBoxEnabledPlugin.Text = "Enabled plugin";
-            this.checkBoxEnabledPlugin.UseVisualStyleBackColor = true;
-            this.checkBoxEnabledPlugin.CheckedChanged += new System.EventHandler(this.checkBoxEnabledPlugin_CheckedChanged);
-            // 
             // groupBoxInfos
             // 
-            this.groupBoxInfos.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxInfos.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxInfos, 2);
             this.groupBoxInfos.Controls.Add(this.labelSampleRateTxt);
             this.groupBoxInfos.Controls.Add(this.labelTimeCycle);
@@ -923,7 +663,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxInfos.Controls.Add(this.labelCycleTime);
             this.groupBoxInfos.Controls.Add(this.labelTime433);
             this.groupBoxInfos.Controls.Add(this.labelTimeRtl433);
-            this.groupBoxInfos.Location = new System.Drawing.Point(3, 282);
+            this.groupBoxInfos.Location = new System.Drawing.Point(3, 268);
             this.groupBoxInfos.Name = "groupBoxInfos";
             this.groupBoxInfos.Size = new System.Drawing.Size(290, 118);
             this.groupBoxInfos.TabIndex = 31;
@@ -1013,28 +753,6 @@ namespace SDRSharp.Rtl_433
             this.labelTimeRtl433.Text = "0";
             this.labelTimeRtl433.Visible = false;
             // 
-            // buttonStartStop
-            // 
-            this.buttonStartStop.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonStartStop.Location = new System.Drawing.Point(161, 3);
-            this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(124, 24);
-            this.buttonStartStop.TabIndex = 19;
-            this.buttonStartStop.Text = "Wait Radio";
-            this.buttonStartStop.UseVisualStyleBackColor = false;
-            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
-            // 
-            // buttonCu8ToWav
-            // 
-            this.buttonCu8ToWav.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonCu8ToWav.Location = new System.Drawing.Point(23, 221);
-            this.buttonCu8ToWav.Name = "buttonCu8ToWav";
-            this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 28);
-            this.buttonCu8ToWav.TabIndex = 14;
-            this.buttonCu8ToWav.Text = ".cu8 to .wav";
-            this.buttonCu8ToWav.UseVisualStyleBackColor = false;
-            this.buttonCu8ToWav.Click += new System.EventHandler(this.buttonCu8ToWav_Click);
-            // 
             // groupBoxRecordTxtFile
             // 
             this.groupBoxRecordTxtFile.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1042,9 +760,9 @@ namespace SDRSharp.Rtl_433
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxRecordTxtFile.Controls.Add(this.labelWarningRecordTextFile);
             this.groupBoxRecordTxtFile.Controls.Add(this.checkBoxRecordTxtFile);
-            this.groupBoxRecordTxtFile.Location = new System.Drawing.Point(3, 73);
+            this.groupBoxRecordTxtFile.Location = new System.Drawing.Point(3, 88);
             this.groupBoxRecordTxtFile.Name = "groupBoxRecordTxtFile";
-            this.groupBoxRecordTxtFile.Size = new System.Drawing.Size(144, 116);
+            this.groupBoxRecordTxtFile.Size = new System.Drawing.Size(144, 103);
             this.groupBoxRecordTxtFile.TabIndex = 32;
             this.groupBoxRecordTxtFile.TabStop = false;
             this.groupBoxRecordTxtFile.Text = "Record  text file";
@@ -1069,13 +787,128 @@ namespace SDRSharp.Rtl_433
             this.checkBoxRecordTxtFile.Text = "Record";
             this.checkBoxRecordTxtFile.UseVisualStyleBackColor = true;
             // 
+            // groupBoxEnabledPlugin
+            // 
+            this.groupBoxEnabledPlugin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxEnabledPlugin, 2);
+            this.groupBoxEnabledPlugin.Controls.Add(this.checkBoxEnabledPlugin);
+            this.groupBoxEnabledPlugin.Controls.Add(this.buttonStartStop);
+            this.groupBoxEnabledPlugin.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxEnabledPlugin.Name = "groupBoxEnabledPlugin";
+            this.groupBoxEnabledPlugin.Size = new System.Drawing.Size(290, 39);
+            this.groupBoxEnabledPlugin.TabIndex = 34;
+            this.groupBoxEnabledPlugin.TabStop = false;
+            // 
+            // checkBoxEnabledPlugin
+            // 
+            this.checkBoxEnabledPlugin.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBoxEnabledPlugin.AutoSize = true;
+            this.checkBoxEnabledPlugin.Location = new System.Drawing.Point(3, 16);
+            this.checkBoxEnabledPlugin.Name = "checkBoxEnabledPlugin";
+            this.checkBoxEnabledPlugin.Size = new System.Drawing.Size(96, 17);
+            this.checkBoxEnabledPlugin.TabIndex = 28;
+            this.checkBoxEnabledPlugin.Text = "Enabled plugin";
+            this.checkBoxEnabledPlugin.UseVisualStyleBackColor = true;
+            this.checkBoxEnabledPlugin.CheckedChanged += new System.EventHandler(this.checkBoxEnabledPlugin_CheckedChanged);
+            // 
+            // buttonStartStop
+            // 
+            this.buttonStartStop.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.buttonStartStop.Location = new System.Drawing.Point(160, 14);
+            this.buttonStartStop.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.buttonStartStop.Name = "buttonStartStop";
+            this.buttonStartStop.Size = new System.Drawing.Size(124, 22);
+            this.buttonStartStop.TabIndex = 19;
+            this.buttonStartStop.Text = "Wait Radio";
+            this.buttonStartStop.UseVisualStyleBackColor = false;
+            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
+            // 
+            // groupBoxConsole
+            // 
+            this.groupBoxConsole.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxConsole, 4);
+            this.groupBoxConsole.Controls.Add(this.buttonSelectToClipboard);
+            this.groupBoxConsole.Controls.Add(this.buttonAllToClipboard);
+            this.groupBoxConsole.Controls.Add(this.buttonDisplayParam);
+            this.groupBoxConsole.Controls.Add(this.buttonClearMessages);
+            this.groupBoxConsole.Location = new System.Drawing.Point(3, 885);
+            this.groupBoxConsole.Name = "groupBoxConsole";
+            this.groupBoxConsole.Size = new System.Drawing.Size(290, 59);
+            this.groupBoxConsole.TabIndex = 35;
+            this.groupBoxConsole.TabStop = false;
+            // 
+            // buttonSelectToClipboard
+            // 
+            this.buttonSelectToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonSelectToClipboard.AutoSize = true;
+            this.buttonSelectToClipboard.Location = new System.Drawing.Point(215, 13);
+            this.buttonSelectToClipboard.Name = "buttonSelectToClipboard";
+            this.buttonSelectToClipboard.Size = new System.Drawing.Size(61, 40);
+            this.buttonSelectToClipboard.TabIndex = 9;
+            this.buttonSelectToClipboard.Text = "Select to\r\nclipboard";
+            this.buttonSelectToClipboard.UseVisualStyleBackColor = false;
+            this.buttonSelectToClipboard.Click += new System.EventHandler(this.buttonSelectToClipboard_Click);
+            // 
+            // buttonAllToClipboard
+            // 
+            this.buttonAllToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonAllToClipboard.AutoSize = true;
+            this.buttonAllToClipboard.Location = new System.Drawing.Point(147, 13);
+            this.buttonAllToClipboard.Name = "buttonAllToClipboard";
+            this.buttonAllToClipboard.Size = new System.Drawing.Size(61, 40);
+            this.buttonAllToClipboard.TabIndex = 8;
+            this.buttonAllToClipboard.Text = "   All to \r\nclipboard";
+            this.buttonAllToClipboard.UseVisualStyleBackColor = false;
+            this.buttonAllToClipboard.Click += new System.EventHandler(this.buttonAllToClipboard_Click);
+            // 
+            // buttonDisplayParam
+            // 
+            this.buttonDisplayParam.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonDisplayParam.AutoSize = true;
+            this.buttonDisplayParam.Location = new System.Drawing.Point(4, 13);
+            this.buttonDisplayParam.Name = "buttonDisplayParam";
+            this.buttonDisplayParam.Size = new System.Drawing.Size(61, 40);
+            this.buttonDisplayParam.TabIndex = 7;
+            this.buttonDisplayParam.Text = "Display\r\n Param";
+            this.buttonDisplayParam.UseVisualStyleBackColor = false;
+            this.buttonDisplayParam.Click += new System.EventHandler(this.buttonDisplayParam_Click);
+            // 
+            // buttonClearMessages
+            // 
+            this.buttonClearMessages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonClearMessages.AutoSize = true;
+            this.buttonClearMessages.Location = new System.Drawing.Point(72, 13);
+            this.buttonClearMessages.Name = "buttonClearMessages";
+            this.buttonClearMessages.Size = new System.Drawing.Size(68, 40);
+            this.buttonClearMessages.TabIndex = 7;
+            this.buttonClearMessages.Text = "    Clear\r\n Messages";
+            this.buttonClearMessages.UseVisualStyleBackColor = false;
+            this.buttonClearMessages.Click += new System.EventHandler(this.buttonClearMessages_Click);
+            // 
+            // buttonCu8ToWav
+            // 
+            this.buttonCu8ToWav.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonCu8ToWav.Location = new System.Drawing.Point(23, 215);
+            this.buttonCu8ToWav.Name = "buttonCu8ToWav";
+            this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 28);
+            this.buttonCu8ToWav.TabIndex = 14;
+            this.buttonCu8ToWav.Text = ".cu8 to .wav";
+            this.buttonCu8ToWav.UseVisualStyleBackColor = false;
+            this.buttonCu8ToWav.Click += new System.EventHandler(this.buttonCu8ToWav_Click);
+            // 
             // Rtl_433_Panel
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
             this.Controls.Add(this.mainTableLayoutPanel);
             this.Name = "Rtl_433_Panel";
-            this.Size = new System.Drawing.Size(296, 1229);
+            this.Size = new System.Drawing.Size(296, 1276);
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
             this.groupBoxDataConv.ResumeLayout(false);
@@ -1088,15 +921,14 @@ namespace SDRSharp.Rtl_433
             this.groupBoxHideShow.ResumeLayout(false);
             this.groupBoxSelectTypeForm.ResumeLayout(false);
             this.groupBoxEnabledDisabledDevices.ResumeLayout(false);
-            this.groupBoxOptionY.ResumeLayout(false);
-            this.groupBoxOptionY.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumSNRPulses)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinimumDetectionLevel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPulseDetectionLevel)).EndInit();
             this.groupBoxInfos.ResumeLayout(false);
             this.groupBoxInfos.PerformLayout();
             this.groupBoxRecordTxtFile.ResumeLayout(false);
             this.groupBoxRecordTxtFile.PerformLayout();
+            this.groupBoxEnabledPlugin.ResumeLayout(false);
+            this.groupBoxEnabledPlugin.PerformLayout();
+            this.groupBoxConsole.ResumeLayout(false);
+            this.groupBoxConsole.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1123,7 +955,6 @@ namespace SDRSharp.Rtl_433
         private System.Windows.Forms.RadioButton radioButtonFreq345;
         private System.Windows.Forms.RadioButton radioButtonFreq315;
         private System.Windows.Forms.RadioButton radioButtonFreqFree;
-        private System.Windows.Forms.RichTextBox richTextBoxMessages;
         private System.Windows.Forms.GroupBox groupBoxRecord;
         private System.Windows.Forms.CheckBox checkBoxMONO;
         private System.Windows.Forms.CheckBox checkBoxSTEREO;
@@ -1152,28 +983,20 @@ namespace SDRSharp.Rtl_433
         private System.Windows.Forms.RadioButton radioButtonListMessages;
         private System.Windows.Forms.CheckBox checkBoxEnabledDevicesDisabled;
         private System.Windows.Forms.GroupBox groupBoxEnabledDisabledDevices;
-        private System.Windows.Forms.GroupBox groupBoxOptionY;
-        private System.Windows.Forms.NumericUpDown numericUpDownPulseDetectionLevel;
-        private System.Windows.Forms.CheckBox checkBoxYAmpest;
-        private System.Windows.Forms.CheckBox checkBoxYSquelch;
-        private System.Windows.Forms.CheckBox checkBoxYAutoLevel;
-        private System.Windows.Forms.CheckBox checkBoxYMinimumSNRPulses;
-        private System.Windows.Forms.CheckBox checkBoxYMinimumDetectionLevelPulses;
-        private System.Windows.Forms.CheckBox checkBoxYPulsesDetectionLevel;
-        private System.Windows.Forms.NumericUpDown numericUpDownMinimumSNRPulses;
-        private System.Windows.Forms.NumericUpDown numericUpDownMinimumDetectionLevel;
-        private System.Windows.Forms.RadioButton radioButtonYMinmax;
-        private System.Windows.Forms.RadioButton radioButtonYClassic;
-        private System.Windows.Forms.RadioButton radioButtonYAuto;
         private System.Windows.Forms.CheckBox checkBoxEnabledPlugin;
         private System.Windows.Forms.Label labelSampleRate;
         private System.Windows.Forms.Label labelFrequency;
         private System.Windows.Forms.Label labelCycleTime;
         private System.Windows.Forms.Label labelTime433;
         private System.Windows.Forms.GroupBox groupBoxInfos;
-        private System.Windows.Forms.CheckBox checkBoxRaw;
         private System.Windows.Forms.GroupBox groupBoxRecordTxtFile;
         private System.Windows.Forms.Label labelWarningRecordTextFile;
         private System.Windows.Forms.CheckBox checkBoxRecordTxtFile;
+        private System.Windows.Forms.ListView listViewConsole;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.GroupBox groupBoxEnabledPlugin;
+        private System.Windows.Forms.GroupBox groupBoxConsole;
+        private System.Windows.Forms.Button buttonSelectToClipboard;
+        private System.Windows.Forms.Button buttonAllToClipboard;
     }
 }

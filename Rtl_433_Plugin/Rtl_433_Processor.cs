@@ -35,7 +35,7 @@ namespace SDRSharp.Rtl_433
         private readonly ComplexFifoStream floatStreamComplex = new ComplexFifoStream(BlockMode.BlockingRead);
         private ISharpControl control;
         private Rtl_433_Panel panelRtl_433;
-        private Boolean consoleIsAlive = false;
+        //private Boolean consoleIsAlive = false;
         private Boolean sourceIsFile = false;
         private Boolean terminated = true;
         private Boolean _Enabled = false;
@@ -43,7 +43,7 @@ namespace SDRSharp.Rtl_433
         private Int64 frequencyRtl433 = 0;
         private Int64 frequency = 0;
         private Int64 centerFrequency = 0;
-        private Int32 productVersion = 0;
+        //private Int32 productVersion = 0;
 #region class
         internal Rtl_433_Processor(ISharpControl control, Rtl_433_Panel panelRtl_433, ClassInterfaceWithRtl433 classInterfaceWithRtl433)
         {
@@ -56,10 +56,10 @@ namespace SDRSharp.Rtl_433
             IQPtr = (Complex*)IQBuffer;
         }
 
-        IntPtr stdHandle ;
-        Microsoft.Win32.SafeHandles.SafeFileHandle safeFileHandle ;
-        FileStream fileStream ;
-        StreamWriter standardOutput ;
+        //IntPtr stdHandle ;
+        //Microsoft.Win32.SafeHandles.SafeFileHandle safeFileHandle ;
+        //FileStream fileStream ;
+        //StreamWriter standardOutput ;
 
         [DllImport("kernel32.dll",
             EntryPoint = "GetStdHandle",
@@ -76,50 +76,50 @@ namespace SDRSharp.Rtl_433
         private static extern IntPtr CreateFile(string lpFileName, uint
                 dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint
                 dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
-        internal void openConsole()
-        {
-            if (consoleIsAlive == false)
-            {
-                Boolean ret = NativeMethods.AllocConsole();
-                //without this seven line ok but nok if close and open console no writeLine here and crash if WriteLine in processor.send_rtl433 or panel 
-                //in this case console is exec or output window visual studio
+        //internal void openConsole()
+        //{
+        //    if (consoleIsAlive == false)
+        //    {
+        //        Boolean ret = NativeMethods.AllocConsole();
+        //        //without this seven line ok but nok if close and open console no writeLine here and crash if WriteLine in processor.send_rtl433 or panel 
+        //        //in this case console is exec or output window visual studio
 
-                stdHandle = CreateFile("CONOUT$", GENERIC_WRITE, FILE_SHARE_WRITE, 0,OPEN_EXISTING, 0, 0);
-                safeFileHandle = new Microsoft.Win32.SafeHandles.SafeFileHandle(stdHandle, true);
-                fileStream = new FileStream(safeFileHandle, System.IO.FileAccess.Write);
-                //Encoding encoding = Encoding.GetEncoding(MY_CODE_PAGE);
-                standardOutput = new StreamWriter(fileStream);  //, encoding
-                standardOutput.AutoFlush = true;
-                Console.SetOut(standardOutput);
-                //Console.WriteLine("This text you can see in console window.");
-                try
-                {
-                    //Console.BufferHeight = 5000;  //error if in visual studio 
-                    Console.Title = "Verbose messages  from RTL_433";
-                    consoleIsAlive = true;
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message + "  Rtl_433_Processor->openConsole", "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
+        //        stdHandle = CreateFile("CONOUT$", GENERIC_WRITE, FILE_SHARE_WRITE, 0,OPEN_EXISTING, 0, 0);
+        //        safeFileHandle = new Microsoft.Win32.SafeHandles.SafeFileHandle(stdHandle, true);
+        //        fileStream = new FileStream(safeFileHandle, System.IO.FileAccess.Write);
+        //        //Encoding encoding = Encoding.GetEncoding(MY_CODE_PAGE);
+        //        standardOutput = new StreamWriter(fileStream);  //, encoding
+        //        standardOutput.AutoFlush = true;
+        //        Console.SetOut(standardOutput);
+        //        //Console.WriteLine("This text you can see in console window.");
+        //        try
+        //        {
+        //            //Console.BufferHeight = 5000;  //error if in visual studio 
+        //            Console.Title = "Verbose messages  from RTL_433";
+        //            consoleIsAlive = true;
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            MessageBox.Show(e.Message + "  Rtl_433_Processor->openConsole", "Error openConsole", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        }
+        //    }
+        //}
 
-        internal void freeConsole()
-        {
-            if (consoleIsAlive)
-            {
-            NativeMethods.FreeConsole();  //possible error if visual studio
-            consoleIsAlive = false;
-            standardOutput.Close();
-            standardOutput.Dispose();
-            fileStream.Close();
-            fileStream.Dispose();
-            safeFileHandle.Close();
-            safeFileHandle.Dispose();
-            stdHandle = IntPtr.Zero;
-            }
-        }
+        //internal void freeConsole()
+        //{
+        //    if (consoleIsAlive)
+        //    {
+        //    NativeMethods.FreeConsole();  //possible error if visual studio
+        //    consoleIsAlive = false;
+        //    standardOutput.Close();
+        //    standardOutput.Dispose();
+        //    fileStream.Close();
+        //    fileStream.Dispose();
+        //    safeFileHandle.Close();
+        //    safeFileHandle.Dispose();
+        //    stdHandle = IntPtr.Zero;
+        //    }
+        //}
 
         internal Int64 FrequencyRtl433
         {

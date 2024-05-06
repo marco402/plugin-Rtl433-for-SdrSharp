@@ -14,6 +14,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System;
+using System.Text;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing;
@@ -31,16 +32,18 @@ namespace SDRSharp.Rtl_433
     public partial class Rtl_433_Panel : UserControl
     {
         public String VERSION =" V: " + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
+        private Boolean listViewConsoleFull = false;
+        List<ListViewItem> cacheLignes;
         private Boolean recordDevice = false;
         private String nameToRecord = "";
-        private Boolean consoleIsAlive = false;
-#if CONSOLEFORM
-        FormConsole formConsole = null;
-        private Boolean withConsole = true;
-        private Boolean nBLinesMax = false;
-#else
-        private Boolean withConsole = false;
-#endif
+        //private Boolean consoleIsAlive = false;
+//#if CONSOLEFORM
+//        FormConsole formConsole = null;
+//        private Boolean withConsole = true;
+//        private Boolean nBLinesMax = false;
+//#else
+//        private Boolean withConsole = false;
+//#endif
         private Boolean radioIsStarted = false;
 
         TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
@@ -68,16 +71,15 @@ namespace SDRSharp.Rtl_433
         {
             InitializeComponent();
             this.control = control;
-            //this.Location = new System.Drawing.Point(0, 100);  //no change with 1920 beta 
-            //mainTableLayoutPanel.Location = new System.Drawing.Point(0, 100);  //no change with 1920 beta
-
+            displayTypeForm = TYPEFORM.LISTMES;
             this.Size = new System.Drawing.Size(296, 600);   //ok for load first with 1920 beta (erase sdrsharp.layout)
-
-            //labelVersion.Text = VERSION;
             //#if MSGBOXDEBUG
             //_ClassInterfaceWithRtl433.get_version_dll_rtl_433();
             //Utilities.getVersion();
             //#endif
+            initDisplayParam();  //before initControls
+            setMaxLinesConsole(1000);             // for displayParam to initControls before init Plugin
+            initVirtualListView();
             initControls();
             enabledDisabledAllControls(false);
 #if TESTWINDOWS
@@ -85,6 +87,166 @@ namespace SDRSharp.Rtl_433
 #endif
         }
 
+#region  listViewConsole 
+        private void initVirtualListView()
+        {
+            typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewConsole, new object[] { true });
+            this.SuspendLayout();
+            SDRSharp.Rtl_433.ClassFunctionsVirtualListView.initListView(listViewConsole);
+            listViewConsole.GridLines = false;
+            listViewConsole.FullRowSelect = false;
+            listViewConsole.View = View.Details;   //hide column header
+            listViewConsole.MultiSelect = true;
+            listViewConsole.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(listViewConsole_RetrieveVirtualItem);
+            this.ResumeLayout(true);
+        }
+
+        internal void listViewConsole_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            if (cacheLignes != null)
+            {
+                try
+                {
+                    if (e.ItemIndex >= 0)
+                    {
+                        ListViewItem lvi = cacheLignes[e.ItemIndex];
+                        if (lvi != null)
+                            e.Item = lvi;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error fct(listViewConsole_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+ 
+        internal Boolean WriteLine(Dictionary<String, String> listData)
+        {
+            String theLine = String.Empty;
+            foreach (KeyValuePair<String, String> _line in listData)
+                theLine += (_line.Key + _line.Value);
+            return WriteLine(theLine);
+        }
+
+        private String memoLigne="";
+        internal Boolean WriteLine(String theLine)
+        {
+            //if (theLine.Contains("rows"))
+            //    memoLigne = memoLigne;
+            ////#if DEBUG
+            //byte[] L = Encoding.ASCII.GetBytes(theLine);
+
+            //for (int c = 0; c < theLine.Length; c++)
+            //{
+            //    //if (theLine.Substring(c, 1) == "\n")        //0a
+            //    //    Debug.Write("(lf)\n");
+            //    //else 
+            //    if (theLine.Substring(c, 1) == "\n")   //0a
+            //        Debug.Write("(lf)\n");
+            //    else
+            //        Debug.Write("0" + L[c].ToString("x") + "(" + theLine.Substring(c, 1) + ")");
+            //}
+            //Debug.WriteLine("");
+            //for (int c = 0; c < theLine.Length; c++)
+            //    Debug.Write(theLine.Substring(c, 1));
+            //Debug.WriteLine("");
+            ////#endif
+            int cptLine = 0;
+            Boolean retour = false;
+            if (cacheLignes == null)
+            {
+                cacheLignes = new List<ListViewItem>();
+            }
+            this.SuspendLayout();
+            listViewConsole.BeginUpdate();
+            memoLigne += theLine;
+            String[] newLigne = memoLigne.Split((char)0x0a);
+            memoLigne = "";
+            int lastWord = 0;
+            if (newLigne[newLigne.Length - 1].Length > 0)
+            {
+                memoLigne = newLigne[newLigne.Length - 1];
+                lastWord = 1;
+            }
+            for (int i = 0; i < newLigne.Length - lastWord; i++)
+            {
+                if (newLigne[i].Length > 0)
+                {
+                    ListViewItem ligne = new ListViewItem(newLigne[i]);
+                    cacheLignes.Add(ligne);
+                    cptLine += 1;
+                }
+            }
+            listViewConsole.VirtualListSize += cptLine;
+            if (listViewConsole.VirtualListSize > maxLinesConsole - 1)
+            {
+                listViewConsole.ForeColor = Color.Red;
+                ListViewItem ligne = new ListViewItem("You have reached the maximum number of rows provided in the console(" + maxLinesConsole.ToString() + ")");
+                cacheLignes.Add(ligne);
+                ligne = new ListViewItem("if necessary you can increase it in SDRSharp.config(key RTL_433_plugin.maxLinesConsole");
+                cacheLignes.Add(ligne);
+                listViewConsole.VirtualListSize += 2;
+                listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + maxLinesConsole.ToString() + "/" + maxLinesConsole.ToString();
+                retour = true;
+             }
+            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString() + "/" + maxLinesConsole.ToString();
+            if (listViewConsole.VirtualListSize > 0)
+            {
+                var last = listViewConsole.Items[listViewConsole.VirtualListSize - 1];
+                last.EnsureVisible();
+            }
+            listViewConsole.EndUpdate();
+            this.ResumeLayout(true);
+            return retour;
+
+        }
+        private void buttonAllToClipboard_Click(object sender, EventArgs e)
+        {
+            Clipboard.Clear();
+            String text = String.Empty;
+            if (listViewConsole.Items.Count > 1)
+            {
+                for (int item = 0; item < listViewConsole.Items.Count; item++)
+                    text += listViewConsole.Items[item].Text + "\n";
+                Clipboard.SetText(text);
+            }
+        }
+
+        private void buttonSelectToClipboard_Click(object sender, EventArgs e)
+        {
+            Clipboard.Clear();
+            String text = String.Empty;
+            ListView.SelectedIndexCollection col = listViewConsole.SelectedIndices;
+            if (col.Count > 0)
+            {
+                foreach (int item in col)
+                    text += listViewConsole.Items[item].Text;
+                Clipboard.SetText(text);
+            }
+        }
+        //#if DEBUG
+        //private static char Chr(byte src)
+        //{
+        //    return (System.Text.Encoding.GetEncoding("iso-8859-1").GetChars(new byte[] {src})[0]);
+        //}
+        //#endif
+        private void mainTableLayoutPanel_SizeChanged(object sender, EventArgs e)
+        {
+            listViewConsole.Columns[0].Width = listViewConsole.Width;
+        }
+        private void buttonClearMessages_Click(object sender, EventArgs e)
+        {
+            clearListViewConsole();
+        }
+        private void clearListViewConsole()
+        {
+            listViewConsole.VirtualListSize = 0;
+            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=0" + "/" + maxLinesConsole.ToString();
+            cacheLignes = null;
+            listViewConsoleFull = false;
+        }
+#endregion
         private void initControls()
         {
 #if TESTIME
@@ -95,8 +257,6 @@ namespace SDRSharp.Rtl_433
             ToolTip ttlabelTimeCycle = new ToolTip();
             ttlabelTimeCycle.SetToolTip(labelTimeCycle, "Red if Time cycle > 1000ms., you risk losing messages(not if source=file)");
 #endif
-            //groupBoxDataConv.Enabled = true;
-            //groupBoxMetadata.Enabled = true;
             displayParam();
             buttonStartStop.Text = "Wait";
             buttonStartStop.Enabled = false;
@@ -111,11 +271,12 @@ namespace SDRSharp.Rtl_433
             ttcheckBoxRecordTextFile.AutoPopDelay = 10000;
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
-            richTextBoxMessages.MaxLength = 5000;
-            groupBoxOptionY.Visible = false;  //if true complete enabledDisabledControlsOnStart
             ToolTip OptionVerbose = new ToolTip();
-            OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv too much informations !");
+            OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv possible bad devices for debug !");
             labelSampleRate.Text = control.RFBandwidth.ToString();
+            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString(); //  + "/" + maxLinesConsole.ToString(); maxLinesConsole not init here
+            listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //pb heritage ?
+            listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //pb heritage ?
         }
 
         private void enabledDisabledAllControls(Boolean state)
@@ -128,7 +289,10 @@ namespace SDRSharp.Rtl_433
             checkBoxMONO.Enabled = state;
             checkBoxSTEREO.Enabled = state;
             buttonCu8ToWav.Enabled = state;
+            buttonDisplayParam.Enabled = state;
             buttonClearMessages.Enabled = state;
+            buttonAllToClipboard.Enabled = state;
+            buttonSelectToClipboard.Enabled = state;
             this.ResumeLayout(true);
         }
 
@@ -139,13 +303,13 @@ namespace SDRSharp.Rtl_433
             if (!enabledPlugin)
             {
                 Stop(true);
-#if CONSOLEFORM
-                if (consoleIsAlive)
-                {
-                    formConsole.Close();
-                    consoleIsAlive = false;
-                }
-#endif
+//#if CONSOLEFORM
+                //if (consoleIsAlive)
+                //{
+                //    formConsole.Close();
+                //    consoleIsAlive = false;
+                //}
+//#endif
                 DisposePanel(false);
             }
             else
@@ -218,10 +382,6 @@ namespace SDRSharp.Rtl_433
                 labelTimeCycle.ForeColor = labelSampleRate.ForeColor;
         }
 #endif
-        //internal void forTestConsole(String message)
-        //{
-        //    Console.WriteLine(message);
-        //}
         internal void Start(Boolean senderRadio = false)
         {
             if (senderRadio)
@@ -248,22 +408,24 @@ namespace SDRSharp.Rtl_433
                     listformDevice = new Dictionary<String, FormDevices>();
                 if (listformDeviceListMessages == null)
                     listformDeviceListMessages = new Dictionary<String, FormDevicesListMessages>();
-                richTextBoxMessages.Clear();
-                if (!consoleIsAlive && withConsole)
-                {
-#if !CONSOLEFORM
-                    Rtl_433Processor.openConsole();
-                    consoleIsAlive = true;
-#endif
-                }
-#if !CONSOLEFORM
-                if (consoleIsAlive && !withConsole)
-                {
-                    ClassInterfaceWithRtl433.free_console();
-                    Rtl_433Processor.freeConsole();
-                    consoleIsAlive = false;
-                }
-#endif
+                clearListViewConsole();
+                listViewConsole.ForeColor = this.ForeColor;
+
+//                if (!consoleIsAlive && withConsole)
+//                {
+//#if !CONSOLEFORM
+//                    Rtl_433Processor.openConsole();
+//                    consoleIsAlive = true;
+//#endif
+//                }
+//#if !CONSOLEFORM
+//                if (consoleIsAlive && !withConsole)
+//                {
+//                    ClassInterfaceWithRtl433.free_console();
+//                    Rtl_433Processor.freeConsole();
+//                    consoleIsAlive = false;
+//                }
+//#endif
                 processParameterOnStart();
                 //Rtl_433Processor.Enabled = true;
                 //Rtl_433Processor.Start();
@@ -297,7 +459,7 @@ namespace SDRSharp.Rtl_433
             //groupBoxHideShow.Enabled = state;
             //groupBoxDataConv.Enabled = state;
             groupBoxRecord.Enabled = true; //keep enabled for record device window
-            groupBoxOptionY.Enabled = false;
+            //groupBoxOptionY.Enabled = false;
 
             radioButtonFreqFree.Enabled = state; //try for version from 1830 text disabled  black(no visible)
             radioButtonFreq315.Enabled = state;
@@ -492,53 +654,47 @@ namespace SDRSharp.Rtl_433
                 }
                 else
                 {
-                    if (withConsole)
-                    {
-
-#if CONSOLEFORM
-                    traitement(listData);
-#else
-                       foreach (KeyValuePair<String, String> _line in listData)
-                       {
-                            Console.WriteLine(_line.Key + "  " + _line.Value+"\r\n");
-                       }
-#endif
-                           // Console.WriteLine(_line.Key + "  " + _line.Value+"\r\n");
-                            //Console.WriteLine("  " + _line.Value);
- 
-                    }
+                    //if (withConsole)
+                    //{
+//#if CONSOLEFORM
+//                    traitement(listData);
+//#else
+//                    //if (!listViewConsoleFull)
+//                    //    listViewConsoleFull = WriteLine(listData);
+//#endif
+                    //}
                 }
             }
         }
 
-        #endregion
+#endregion
 
-        #region stop
-#if CONSOLEFORM
+#region stop
+//#if CONSOLEFORM
 
-        internal void traitement(Dictionary<String, String> listData)
-        {
-            if (!consoleIsAlive)
-            {
-                formConsole = new FormConsole(this, maxLinesConsole);
-                consoleIsAlive = true;
-                formConsole.Visible = true;
-                formConsole.Show();
-            }
-            if (consoleIsAlive)
-            {
-                if (!nBLinesMax)
-                    nBLinesMax = formConsole.WriteLine(listData);
-             }
-        }
+//        internal void traitement(Dictionary<String, String> listData)
+//        {
+//            if (!consoleIsAlive)
+//            {
+//                formConsole = new FormConsole(this, maxLinesConsole);
+//                consoleIsAlive = true;
+//                formConsole.Visible = true;
+//                formConsole.Show();
+//            }
+//            if (consoleIsAlive)
+//            {
+//                if (!nBLinesMax)
+//                    nBLinesMax = formConsole.WriteLine(listData);
+//             }
+//        }
 
-        internal void closeConsole()
-        {
-            nBLinesMax = false;
-            consoleIsAlive = false;
-            formConsole = null;
-        }
-#endif
+//        internal void closeConsole()
+//        {
+//            nBLinesMax = false;
+//            consoleIsAlive = false;
+//            formConsole = null;
+//        }
+//#endif
         /// <summary>
         /// stop and clean
         /// </summary>
@@ -602,14 +758,14 @@ namespace SDRSharp.Rtl_433
                 formListDevice = null;
             }
 
-            if (consoleIsAlive)
-            {
-                if (Rtl_433Processor != null)
-                    Rtl_433Processor.freeConsole();
-                if (ClassInterfaceWithRtl433 != null)
-                    ClassInterfaceWithRtl433.free_console();
-                consoleIsAlive = false;
-            }
+            //if (consoleIsAlive)
+            //{
+            //    if (Rtl_433Processor != null)
+            //        Rtl_433Processor.freeConsole();
+            //    if (ClassInterfaceWithRtl433 != null)
+            //        ClassInterfaceWithRtl433.free_console();
+            //    consoleIsAlive = false;
+            //}
 
             //clean _Rtl_433Processor
             if (Rtl_433Processor != null)
@@ -655,11 +811,15 @@ namespace SDRSharp.Rtl_433
             }
             else
             {
-                richTextBoxMessages.SuspendLayout();
-                richTextBoxMessages.AppendText(message + "\n");
-                richTextBoxMessages.SelectionStart = richTextBoxMessages.Text.Length;
-                richTextBoxMessages.ScrollToCaret();
-                richTextBoxMessages.ResumeLayout();
+                if (!listViewConsoleFull)
+                {
+                    listViewConsoleFull = WriteLine(message);
+                    //Dictionary<String, String> listMessage;
+                    //listMessage = new Dictionary<String, String>();
+                    //listMessage.Add(message, "");
+                    //listViewConsoleFull=WriteLine(listMessage);
+                    //listMessage = null;
+                }
             }
         }
 
@@ -762,17 +922,24 @@ namespace SDRSharp.Rtl_433
 #endregion
 
 #region private functions
-
+        //Dictionary<String, String> listInfos;
+        String listInfos;
+        private void initDisplayParam()
+        {
+            //listInfos = new Dictionary<String, String>();
+            //lock(listData)
+            //{
+            listInfos="Parameters configure source\n" +
+            "   -Sampling mode->quadrature sampling\n" +
+            "   -Preferred Sample Rate->0.25 MSPS, imposed if record .wav\n" +
+            "   -AGC:on(corresponds to auto gain with rtl433) can be manually->off.\n" +
+            "   -RTL AGC:on.(not the AGC panel) can be set off if good signals.\n" +
+            "   -Check frequency\n";
+        }
         private void displayParam()
         {
-            richTextBoxMessages.SuspendLayout();
-            richTextBoxMessages.Clear();
-            richTextBoxMessages.AppendText("Parameters configure source\n");
-            richTextBoxMessages.AppendText("sampling mode->\nquadrature sampling\n");
-            richTextBoxMessages.AppendText("Preferred Sample Rate->\n0.25 MSPS, imposed if record .wav\n");
-            richTextBoxMessages.AppendText("Tuner AGC:on(corresponds to auto gain with rtl433) can be manually-> off.\n");
-            richTextBoxMessages.AppendText("RTL AGC:on.(not the AGC panel) can be set off if good signals.\n");
-            richTextBoxMessages.ResumeLayout();
+            if (!listViewConsoleFull)
+                listViewConsoleFull=WriteLine(listInfos);
         }
 
 #endregion
@@ -841,11 +1008,6 @@ namespace SDRSharp.Rtl_433
             displayParam();
         }
 
-        private void buttonClearMessages_Click(object sender, EventArgs e)
-        {
-            richTextBoxMessages.Clear();
-        }
-
         private void buttonCu8ToWav_Click(object sender, EventArgs e)
         {
             if (!checkBoxMONO.Checked && !checkBoxSTEREO.Checked)
@@ -891,12 +1053,6 @@ namespace SDRSharp.Rtl_433
             if (checkBoxEnabledPlugin.Checked)
                 testRadioButtonListDevices();
         }
-        //if  refresh problem richTextBox (if update system or antivirus)
-        private void mainTableLayoutPanel_CellPaint(object sender, TableLayoutCellPaintEventArgs e)
-        {
-            richTextBoxMessages.Refresh();
-        }
-
 #endregion
 
 #region pb disabled controls
@@ -1027,31 +1183,32 @@ namespace SDRSharp.Rtl_433
             ClassInterfaceWithRtl433.setMONO(checkBoxMONO.Checked);
         }
 
-        private void checkBoxRaw_CheckedChanged(object sender, EventArgs e)
-        {
-            ClassInterfaceWithRtl433.setRAW(checkBoxRaw.Checked);
-        }
+        //private void checkBoxRaw_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    ClassInterfaceWithRtl433.setRAW(checkBoxRaw.Checked);
+        //}
 
         private void radioButtonV_CheckedChanged(object sender, EventArgs e)
         {
-#if !CONSOLEFORM
-            if (!radioButtonNoV.Checked)  //console
-                withConsole = true;
-            else                          //no console
-                withConsole = false;
-            ClassInterfaceWithRtl433.setWithConsole(withConsole);
-#endif
+//#if !CONSOLEFORM
+            //if (!radioButtonNoV.Checked)  //console
+            //if (!radioButtonNoV.Checked)  //console
+            //    withConsole = true;
+            //else                          //no console
+            //    withConsole = false;
+            //ClassInterfaceWithRtl433.setWithConsole(withConsole);
+//#endif
         }
 
         private void radioButtonSnone_CheckedChanged(object sender, EventArgs e)
         {
-#if !CONSOLEFORM
-            if (!radioButtonSnone.Checked)  //console
-                withConsole = true;
-            else                          //no console
-                withConsole = false;
-            ClassInterfaceWithRtl433.setWithConsole(withConsole);
-#endif
+//#if !CONSOLEFORM
+            //if (!radioButtonSnone.Checked)  //console
+            //    withConsole = true;
+            //else                          //no console
+            //    withConsole = false;
+            //ClassInterfaceWithRtl433.setWithConsole(withConsole);
+//#endif
         }
     }
 }
