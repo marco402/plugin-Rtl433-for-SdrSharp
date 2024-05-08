@@ -398,7 +398,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonNoV.Tag = "verbose";
             this.radioButtonNoV.Text = "No -v";
             this.radioButtonNoV.UseVisualStyleBackColor = true;
-            this.radioButtonNoV.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonVVV
             // 
@@ -409,7 +408,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonVVV.Tag = "verbose";
             this.radioButtonVVV.Text = "-vvv";
             this.radioButtonVVV.UseVisualStyleBackColor = true;
-            this.radioButtonVVV.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonVV
             // 
@@ -420,7 +418,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonVV.Tag = "verbose";
             this.radioButtonVV.Text = "-vv";
             this.radioButtonVV.UseVisualStyleBackColor = true;
-            this.radioButtonVV.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonV
             // 
@@ -431,7 +428,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonV.Tag = "verbose";
             this.radioButtonV.Text = "-v";
             this.radioButtonV.UseVisualStyleBackColor = true;
-            this.radioButtonV.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonVVVV
             // 
@@ -442,7 +438,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonVVVV.Tag = "verbose";
             this.radioButtonVVVV.Text = "-vvvv";
             this.radioButtonVVVV.UseVisualStyleBackColor = true;
-            this.radioButtonVVVV.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // groupBoxSave
             // 
@@ -470,7 +465,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSnone.Tag = "saveDevice";
             this.radioButtonSnone.Text = "No -S";
             this.radioButtonSnone.UseVisualStyleBackColor = false;
-            this.radioButtonSnone.CheckedChanged += new System.EventHandler(this.radioButtonSnone_CheckedChanged);
             // 
             // radioButtonSunknown
             // 
@@ -481,7 +475,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSunknown.Tag = "saveDevice";
             this.radioButtonSunknown.Text = "-Sunknown";
             this.radioButtonSunknown.UseVisualStyleBackColor = false;
-            this.radioButtonSunknown.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonSknown
             // 
@@ -492,7 +485,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSknown.Tag = "saveDevice";
             this.radioButtonSknown.Text = "-Sknown";
             this.radioButtonSknown.UseVisualStyleBackColor = false;
-            this.radioButtonSknown.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // radioButtonSall
             // 
@@ -503,7 +495,6 @@ namespace SDRSharp.Rtl_433
             this.radioButtonSall.Tag = "saveDevice";
             this.radioButtonSall.Text = "-Sall";
             this.radioButtonSall.UseVisualStyleBackColor = false;
-            this.radioButtonSall.CheckedChanged += new System.EventHandler(this.radioButtonV_CheckedChanged);
             // 
             // groupBoxR
             // 
@@ -522,8 +513,10 @@ namespace SDRSharp.Rtl_433
             // 
             // listBoxHideShowDevices
             // 
+            this.listBoxHideShowDevices.BackColor = System.Drawing.SystemColors.Control;
             this.listBoxHideShowDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listBoxHideShowDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxHideShowDevices.ForeColor = System.Drawing.SystemColors.ControlText;
             this.listBoxHideShowDevices.FormattingEnabled = true;
             this.listBoxHideShowDevices.HorizontalScrollbar = true;
             this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);

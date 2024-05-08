@@ -1,14 +1,19 @@
-## New Version 
+## New Version  
+Version 1.5.7.0 May 8, 2024.  
+    -Removing the console RTL_433.  
+    -The information is transferred to the text box at the bottom of the plugin.  
+    -Modification to accommodate theme changes (SDRSharp 1920).  
+  
+French version after English version.  
+    You can display dump windows on https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433?lang=en  
+Version Francaise après la version Anglaise.  
+    Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
+	
 Version 1.5.6.4 March 31, 2024 Display console only if verbose.
 Version 1.5.6.3 march 26, 2024 Tested with SDRSharp 1919 and 1920 beta.  
     -Consideration of themes sdrsharp(only Font,ForeColor,BackColor and Cursor).  
 Version 1.5.6.2 February 16, 2024 Tested with SDRSharp 1919.  
     -Update RTL_433 (25 more devices).  
-French version after English version.  
-    You can display dump windows on https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433?lang=en  
-Version Francaise après la version Anglaise.  
-    Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
-
 Version 1.5.6.1 January 23, 2023 Tested with SDRSharp 1906.  
     -Added recording of all received messages in text files.  
        -Validation by the Record check box.  
@@ -266,6 +271,11 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.7.0 8 Mai 2024  
+    -Supression de la console RTL_433.  
+    -Les informations sont transférées dans la zone de texte en bas du plugin.  
+    -Modification pour s'adapter aux changements de theme(SDRSharp 1920)  
+    
 Version 1.5.6.4 31 Mars 2024 Affichage de la console uniquement si verbose.
 Version 1.5.6.3 26 Mars 2024 Testé avec SDRSharp 1919 et 1920 beta.  
     -Prise en compte des thèmes sdrsharp(only Font,ForeColor,BackColor and Cursor).  

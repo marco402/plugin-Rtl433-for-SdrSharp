@@ -3,6 +3,7 @@
 .vs/**
 /rtl_433_dll/
 /GraphDisplay/
+libusb/**
 test_rtl_433_dll/**
 debug/**
 release/**
@@ -18,13 +19,8 @@ SDRSharp.Radio/**
 GeneratedFiles/**
 rtl-sdr/**
 packages/**
-libusb/**
 !/.gitignore
 !/README.md
 captures/**
-
-
-
-
-
+UpgradeLog*
 

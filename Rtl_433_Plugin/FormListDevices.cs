@@ -100,62 +100,62 @@ namespace SDRSharp.Rtl_433
         }
         internal void deSerializeText(String fileName)
         {
-            Cursor.Current = Cursors.WaitCursor;
-            firstToTop = !firstToTop;
-            this.SuspendLayout();
-            listViewDevices.BeginUpdate();
-            Dictionary<String, String> listData = new Dictionary<String, String>();
-            Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
-            try
-            {
-               using (StreamReader str = new StreamReader(stream))
-               {
-                    //**************************init column title****************************
-                    String line = str.ReadLine();
-                    if (line == null)
+                Cursor.Current = Cursors.WaitCursor;
+                firstToTop = !firstToTop;
+                this.SuspendLayout();
+                listViewDevices.BeginUpdate();
+                Dictionary<String, String> listData = new Dictionary<String, String>();
+                Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
+                try
+                {
+                    using (StreamReader str = new StreamReader(stream))
                     {
-                        MessageBox.Show("File devices.txt empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        listViewDevices.EndUpdate();
-                        this.ResumeLayout(true);
-                        firstToTop = !firstToTop;
-                        Cursor.Current = Cursors.Default;
-                        return;
-                    }
-                    String[] wordsTitleCol = line.Split('\t');
-                    for (Int32 i = 2; i < wordsTitleCol.Length - 1; i++)  //start=1 no device
-                      if (wordsTitleCol[i - 1].Length > 0)
-                        listData.Add(wordsTitleCol[i - 1], "");
-                      //***********************transfer devices*********************************
-                    String[] wordsData = line.Split('\t');
-                    while (str.Peek() >= 0)
-                    {
-                        listData.Clear();
-                        line = str.ReadLine();
-                        wordsData = line.Split('\t');
-                        Int32 indice = 0;
-                        foreach (String word in wordsTitleCol)
+                        //**************************init column title****************************
+                        String line = str.ReadLine();
+                        if (line == null)
                         {
-                            if (!wordsTitleCol[indice].Equals("device") && !wordsTitleCol[indice].Equals("Device") &&
-                                 !wordsTitleCol[indice].Equals("N mes.") && wordsTitleCol[indice].Length>0)
-                                    listData.Add(word, wordsData[indice]);
-                            indice += 1;
+                            MessageBox.Show("File devices.txt empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            listViewDevices.EndUpdate();
+                            this.ResumeLayout(true);
+                            firstToTop = !firstToTop;
+                            Cursor.Current = Cursors.Default;
+                            return;
                         }
-                        _setInfoDevice(listData); 
-                     }
-                    //*****************************************************************************
-                    str.Close();
+                        String[] wordsTitleCol = line.Split('\t');
+                        for (Int32 i = 2; i < wordsTitleCol.Length - 1; i++)  //start=1 no device
+                            if (wordsTitleCol[i - 1].Length > 0)
+                                listData.Add(wordsTitleCol[i - 1], "");
+                        //***********************transfer devices*********************************
+                        String[] wordsData = line.Split('\t');
+                        while (str.Peek() >= 0)
+                        {
+                            listData.Clear();
+                            line = str.ReadLine();
+                            wordsData = line.Split('\t');
+                            Int32 indice = 0;
+                            foreach (String word in wordsTitleCol)
+                            {
+                                if (!wordsTitleCol[indice].Equals("device") && !wordsTitleCol[indice].Equals("Device") &&
+                                     !wordsTitleCol[indice].Equals("N mes.") && wordsTitleCol[indice].Length > 0)
+                                    listData.Add(word, wordsData[indice]);
+                                indice += 1;
+                            }
+                            _setInfoDevice(listData);
+                        }
+                        //*****************************************************************************
+                        str.Close();
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error import devices fct(deSerializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            listViewDevices.EndUpdate();
-            this.ResumeLayout(true);
-            firstToTop = !firstToTop;
-            Cursor.Current = Cursors.Default;
-            listData.Clear();
-            listData = null;
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Error import devices fct(deSerializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                listViewDevices.EndUpdate();
+                this.ResumeLayout(true);
+                firstToTop = !firstToTop;
+                Cursor.Current = Cursors.Default;
+                listData.Clear();
+                listData = null;
         }
         /// <summary>
         /// for deserialize
@@ -213,7 +213,7 @@ namespace SDRSharp.Rtl_433
             }
  
             //**************************************************************************************
-            this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() +" / " +maxColumns.ToString();
+            this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() +"/" +maxColumns.ToString();
             listViewDevices.VirtualListSize = nbDevice;
             ClassFunctionsVirtualListView.resizeAllColumns(listViewDevices);
             //**************************************************************************************

@@ -234,11 +234,7 @@ namespace SDRSharp.Rtl_433
             CBmessages = new NativeMethods.ptrReceiveMessagesCallback(_callBackMessages);
             //CBReceiveRecordOrder = new NativeMethods.ptrReceiveRecordOrder(_callBackReceiveRecordOrder);
             CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
-//#if CONSOLEFORM
-//            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args, false);
-//# else
             NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args);  //, withConsole
-//#endif
         }
 #endregion
 #region public function 
@@ -298,6 +294,7 @@ namespace SDRSharp.Rtl_433
 #endif
             }
         }
+#endregion
         private String nameFile = String.Empty;
         private String nameRecord = String.Empty;
         internal  void setRecordDevice(String nameRecord, String directory )
@@ -491,23 +488,10 @@ namespace SDRSharp.Rtl_433
         //            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
         //        }
         //#endif
-//#if CONSOLEFORM
-//        private Boolean withConsole = true;
-//#else
-        //private Boolean withConsole = false;
-        //public void setWithConsole(Boolean withConsole)
-        //{
-        //    this.withConsole = withConsole;
-        //}
-//#endif
         internal void stopSendDataToRtl433() 
         {
             sendDataToRtl433 = false;
         }
-        //internal void free_console() 
-        //{
-        //   NativeMethods.free_console();   //can error if debug try release or other version SDRSharp
-        //}
         internal void CleartimeCycleMax()
         {
             //_timeCycleLngMax = 0;
@@ -524,27 +508,7 @@ namespace SDRSharp.Rtl_433
             sendDataToRtl433 = true;
         }
 
-        //public UInt32 setEnabledListDevices
-        //{
-        //    set
-        //    {
-        //        _EnabledListDevices = value;      //need reload list devices
-        //        initListDevice = false;
-        //        _owner.setOptionVerboseInit();
-        //    }
-        //}
-        //private  String[] =new String _Yoption[10] ; code to v 1.5.4.4
-        //public void setYoption(String option)
-        //{
-        //    _Yoption = option;      //need reload list devices
-        //}
-#endregion
 #region callBack for dll_rtl_433"
-        //internal void _callBackReceiveRecordOrder([In, MarshalAs(UnmanagedType.LPStr)] String message)
-        //{
-        //    int i = 0;
-        //}
-
 
         internal  void _callBackMessages([In, MarshalAs(UnmanagedType.LPStr)] String message)
         {
@@ -572,7 +536,7 @@ namespace SDRSharp.Rtl_433
                     owner.setMessage(message);
                 return;
             }
-                //return;
+
             if (message.Contains("**********"))//stop
             {
                 if (listData.Count > 1 && synchro == true)

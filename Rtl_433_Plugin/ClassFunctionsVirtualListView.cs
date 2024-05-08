@@ -174,11 +174,10 @@ namespace SDRSharp.Rtl_433
                     foreach (KeyValuePair<String, Int32> _data in cacheListColumns)
                     {
                         if (_data.Key == String.Empty)
-                            line += "\t";
+                            line += "\t\t";
                         else
-                            line += _data.Key.Replace(":"," ");
-                        line += "\t";
-                    }
+                            line +=(_data.Key+"\t");
+                     }
                     str.WriteLine(line);
                     ListViewItem it;
                     if (sensDirect)
@@ -252,17 +251,7 @@ namespace SDRSharp.Rtl_433
                     else
                         line += _data.Value;
 
-                    //for (int i = 0 ;i < _data.Key.Length -_data.Value.Length ; i++)
-                    //    line +=" ";
-                  line = line.PadRight(line.Length + _data.Key.Length - _data.Value.Length);
-
-
-                    //int l= line.Length;
-                    //if ( (_data.Value.Length-_data.Key.Length)  > 0)
-                    //    line = line.PadRight(_data.Value.Length );
-                    //else
-                        //line = line.PadRight(_data.Key.Length );
-                    line += "\t";
+                    line = line.PadRight(line.Length + _data.Key.Length - _data.Value.Length) + "\t";;
                 }
                 nbColumn += 1;
                 if (nColumn == nbColumn)

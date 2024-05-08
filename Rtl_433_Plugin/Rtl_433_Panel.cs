@@ -12,21 +12,14 @@
   **********************************************************************************/
 //#define TESTWINDOWS
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System;
-using System.Text;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using SDRSharp.Common;
 using System.Diagnostics;
-//#if NOTESTFORMLISTMESSAGES
-//                    addFormDevice(listData, points, nameGraph);
-//#else
-//addFormDeviceListMessages(listData);
-//#endif
+
 namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl
@@ -36,16 +29,7 @@ namespace SDRSharp.Rtl_433
         List<ListViewItem> cacheLignes;
         private Boolean recordDevice = false;
         private String nameToRecord = "";
-        //private Boolean consoleIsAlive = false;
-//#if CONSOLEFORM
-//        FormConsole formConsole = null;
-//        private Boolean withConsole = true;
-//        private Boolean nBLinesMax = false;
-//#else
-//        private Boolean withConsole = false;
-//#endif
         private Boolean radioIsStarted = false;
-
         TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
 #if TESTWINDOWS
         private Int32 cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
@@ -73,10 +57,6 @@ namespace SDRSharp.Rtl_433
             this.control = control;
             displayTypeForm = TYPEFORM.LISTMES;
             this.Size = new System.Drawing.Size(296, 600);   //ok for load first with 1920 beta (erase sdrsharp.layout)
-            //#if MSGBOXDEBUG
-            //_ClassInterfaceWithRtl433.get_version_dll_rtl_433();
-            //Utilities.getVersion();
-            //#endif
             initDisplayParam();  //before initControls
             setMaxLinesConsole(1000);             // for displayParam to initControls before init Plugin
             initVirtualListView();
@@ -234,6 +214,8 @@ namespace SDRSharp.Rtl_433
         private void mainTableLayoutPanel_SizeChanged(object sender, EventArgs e)
         {
             listViewConsole.Columns[0].Width = listViewConsole.Width;
+            listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //Put here Too early in initcontrols.
+            listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //
         }
         private void buttonClearMessages_Click(object sender, EventArgs e)
         {
@@ -275,8 +257,8 @@ namespace SDRSharp.Rtl_433
             OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv possible bad devices for debug !");
             labelSampleRate.Text = control.RFBandwidth.ToString();
             listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString(); //  + "/" + maxLinesConsole.ToString(); maxLinesConsole not init here
-            listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //pb heritage ?
-            listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //pb heritage ?
+            //listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //pb heritage ? Too early here, put in Layout Resize
+            //listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //pb heritage ?
         }
 
         private void enabledDisabledAllControls(Boolean state)
@@ -303,26 +285,10 @@ namespace SDRSharp.Rtl_433
             if (!enabledPlugin)
             {
                 Stop(true);
-//#if CONSOLEFORM
-                //if (consoleIsAlive)
-                //{
-                //    formConsole.Close();
-                //    consoleIsAlive = false;
-                //}
-//#endif
                 DisposePanel(false);
             }
             else
             {
-//#if CONSOLEFORM
-//                if (!consoleIsAlive)
-//                {
-//                    formConsole = new FormConsole(this,maxLinesConsole);
-//                    formConsole.Visible = true;
-//                    formConsole.Show();
-//                    consoleIsAlive = true;
-//                }
-//#endif
                 ClassInterfaceWithRtl433 = new ClassInterfaceWithRtl433(this);
                 Rtl_433Processor = new Rtl_433_Processor(control, this, ClassInterfaceWithRtl433);
                 setBinding();
@@ -410,22 +376,6 @@ namespace SDRSharp.Rtl_433
                     listformDeviceListMessages = new Dictionary<String, FormDevicesListMessages>();
                 clearListViewConsole();
                 listViewConsole.ForeColor = this.ForeColor;
-
-//                if (!consoleIsAlive && withConsole)
-//                {
-//#if !CONSOLEFORM
-//                    Rtl_433Processor.openConsole();
-//                    consoleIsAlive = true;
-//#endif
-//                }
-//#if !CONSOLEFORM
-//                if (consoleIsAlive && !withConsole)
-//                {
-//                    ClassInterfaceWithRtl433.free_console();
-//                    Rtl_433Processor.freeConsole();
-//                    consoleIsAlive = false;
-//                }
-//#endif
                 processParameterOnStart();
                 //Rtl_433Processor.Enabled = true;
                 //Rtl_433Processor.Start();
@@ -489,7 +439,7 @@ namespace SDRSharp.Rtl_433
             radioButtonDataConvNative.Enabled = state;
             radioButtonDataConvSI.Enabled = state;
 
-            listBoxHideShowDevices.Enabled = state;
+            //listBoxHideShowDevices.Enabled = state;
             checkBoxEnabledDevicesDisabled.Enabled = state;
             this.ResumeLayout(true);
         }
@@ -532,13 +482,14 @@ namespace SDRSharp.Rtl_433
                 String directory = getDirectoryRecording();
                 if (formListDevice == null && File.Exists(directory + FILELISTEDEVICES))
                 {
-                    formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
-                    formListDevice.Show();
-                    DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        formListDevice.deSerializeText(directory + FILELISTEDEVICES);
-                    }
+                    openformListDevice(directory);
+                    //formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
+                    //formListDevice.Show();
+                    //DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    //if (dialogResult == DialogResult.Yes)
+                    //{
+                    //    formListDevice.deSerializeText(directory + FILELISTEDEVICES);
+                    //}
                 }
                 ClassInterfaceWithRtl433.setTypeWindowGraph(false);
             }
@@ -560,9 +511,9 @@ namespace SDRSharp.Rtl_433
         }
         internal void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points, String[] nameGraph)
         {
-            if (base.InvokeRequired)
+            if (InvokeRequired)
             {
-                base.BeginInvoke((Action)delegate
+                BeginInvoke((Action)delegate
                 {
                     addFormDevice(listData, points, nameGraph);
                 });
@@ -612,10 +563,12 @@ namespace SDRSharp.Rtl_433
                     {
                         if (formListDevice == null)
                         {
-                            formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
-                            formListDevice.Show();
+                            openformListDevice(getDirectoryRecording());
+                            //formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
+                            //formListDevice.Show();
                         }
-                        formListDevice.setInfoDevice(listData);
+                       else
+                            formListDevice.setInfoDevice(listData);
                     }
                     else  //TYPEFORM.LISTMES
                     {
@@ -652,49 +605,21 @@ namespace SDRSharp.Rtl_433
                         listformDeviceListMessages[deviceName].setMessages(listData);
                     }
                 }
-                else
-                {
-                    //if (withConsole)
-                    //{
-//#if CONSOLEFORM
-//                    traitement(listData);
-//#else
-//                    //if (!listViewConsoleFull)
-//                    //    listViewConsoleFull = WriteLine(listData);
-//#endif
-                    //}
-                }
+             }
+        }
+        private void openformListDevice(String directory)
+        {
+            formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
+            formListDevice.Show();
+            DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult == DialogResult.Yes)
+            {
+                formListDevice.deSerializeText(directory + FILELISTEDEVICES);
             }
         }
+        #endregion
 
-#endregion
-
-#region stop
-//#if CONSOLEFORM
-
-//        internal void traitement(Dictionary<String, String> listData)
-//        {
-//            if (!consoleIsAlive)
-//            {
-//                formConsole = new FormConsole(this, maxLinesConsole);
-//                consoleIsAlive = true;
-//                formConsole.Visible = true;
-//                formConsole.Show();
-//            }
-//            if (consoleIsAlive)
-//            {
-//                if (!nBLinesMax)
-//                    nBLinesMax = formConsole.WriteLine(listData);
-//             }
-//        }
-
-//        internal void closeConsole()
-//        {
-//            nBLinesMax = false;
-//            consoleIsAlive = false;
-//            formConsole = null;
-//        }
-//#endif
+        #region stop
         /// <summary>
         /// stop and clean
         /// </summary>
@@ -787,9 +712,9 @@ namespace SDRSharp.Rtl_433
 
         internal void setSampleRate(double SampleRate)
         {
-            if (base.InvokeRequired)
+            if (InvokeRequired)
             {
-                base.BeginInvoke((Action)delegate
+                BeginInvoke((Action)delegate
                 {
                     setSampleRate(SampleRate);
                 });
@@ -802,9 +727,9 @@ namespace SDRSharp.Rtl_433
 
         internal void setMessage(String message)
         {
-            if (base.InvokeRequired)
+            if (InvokeRequired)
             {
-                base.BeginInvoke((Action)delegate
+                BeginInvoke((Action)delegate
                 {
                     setMessage(message);
                 });
@@ -825,9 +750,9 @@ namespace SDRSharp.Rtl_433
 
         internal void setListDevices(List<String> listeDevice)
         {
-            if (base.InvokeRequired)
+            if (InvokeRequired)
             {
-                base.BeginInvoke((Action)delegate
+                BeginInvoke((Action)delegate
                 {
                     setListDevices(listeDevice);
                 });
@@ -888,10 +813,7 @@ namespace SDRSharp.Rtl_433
                 DialogResult dialogResult = MessageBox.Show("Do you want export devices list(devices.txt)", "Export devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (dialogResult == DialogResult.Yes)
-                {
-                    String directory = getDirectoryRecording();
-                    formListDevice.serializeText(directory + FILELISTEDEVICES);
-                }
+                    formListDevice.serializeText(getDirectoryRecording() + FILELISTEDEVICES);
             }
         }
 
@@ -926,7 +848,7 @@ namespace SDRSharp.Rtl_433
         String listInfos;
         private void initDisplayParam()
         {
-            //listInfos = new Dictionary<String, String>();
+            ////listInfos = new Dictionary<String, String>();
             //lock(listData)
             //{
             listInfos="Parameters configure source\n" +
@@ -1047,131 +969,12 @@ namespace SDRSharp.Rtl_433
             }
         }
 
-
         private void radioButtonTypeWindow_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxEnabledPlugin.Checked)
                 testRadioButtonListDevices();
         }
-#endregion
-
-#region pb disabled controls
-        //private System.Drawing.Color _foreColorDisabled = System.Drawing.SystemColors.ControlDark;
-        //private System.Drawing.Font _font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        //private SolidBrush backColorBrush = new SolidBrush(System.Drawing.SystemColors.Desktop);
-        //private void radioButton_Paint(object sender, PaintEventArgs e)
-        //{
-        //    // base.OnPaint(e);
-        //    RadioButton oneButton = (RadioButton)sender;
-        //    System.Drawing.SolidBrush textBrush;
-        //    if (oneButton.Enabled)
-        //        textBrush = new System.Drawing.SolidBrush(oneButton.ForeColor);
-        //    else
-        //        textBrush = new System.Drawing.SolidBrush(this._foreColorDisabled);
-        //    //SolidBrush blueBrush = new SolidBrush(oneButton.BackColor);
-        //    //(System.Drawing.SystemColors.Desktop);
-        //    RectangleF rectButton = e.Graphics.VisibleClipBounds;
-        //    RectangleF rectClear = new RectangleF(rectButton.X + 17.0F, rectButton.Y, rectButton.Width - 17.0F, rectButton.Height);
-        //    e.Graphics.FillRectangle(backColorBrush, rectClear);
-        //    e.Graphics.DrawString(oneButton.Text, _font, textBrush, 17.0F, 1.0F);
-        //}
-        //private void button_Paint(object sender, PaintEventArgs e)
-        //{
-        //    //base.OnPaint(e);
-        //    Button oneButton = (Button)sender;
-        //    System.Drawing.SolidBrush textBrush;
-        //    if (oneButton.Enabled)
-        //        textBrush = new System.Drawing.SolidBrush(oneButton.ForeColor);
-        //    else
-        //        textBrush = new System.Drawing.SolidBrush(this._foreColorDisabled);
-        //    SolidBrush backColorBrush = new SolidBrush(oneButton.BackColor);
-        //    RectangleF rectButton = e.Graphics.VisibleClipBounds;
-        //    RectangleF rectClear = new RectangleF(rectButton.X + 47.0F, rectButton.Y + 5.0F, rectButton.Width - 57.0F, rectButton.Height - 10.0F);
-        //    e.Graphics.FillRectangle(backColorBrush, rectClear);
-        //    e.Graphics.DrawString(oneButton.Text, _font, textBrush, 47.0F, 4.0F);
-        //}
-
-#endregion
-
-#region optionY TODO
-
-        //private void checkBoxY_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    //System.Windows.Forms.CheckBox chck = (System.Windows.Forms.CheckBox)sender;
-        //    //String option = (String)chck.Tag;
-        //    //Boolean check = chck.Checked;
-        //    //if ((String)chck.Tag == "ampest or magest")
-        //    //    if (chck.Checked)
-        //    //    {
-        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", true);
-        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", false);
-        //    //        chck.Text = "-Yampest";
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Ymagest", true);
-        //    //        _ClassInterfaceWithRtl433.setOptionUniqueKey("-Yampest", false);
-        //    //        chck.Text = "-Ymagest";
-        //    //    }
-        //    //else if ((String)chck.Tag == "-Ylevel" | (String)chck.Tag == "-Yminlevel" | (String)chck.Tag == "-Yminsnr")
-        //    //    processWithParameter((String)chck.Tag);
-        //    //else
-        //    //    _ClassInterfaceWithRtl433.setOptionUniqueKey(option, check);
-        //}
-
-        //private void radioButtonYFSK_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    //System.Windows.Forms.RadioButton chck = (System.Windows.Forms.RadioButton)sender;
-        //    //if (chck.Checked)
-        //    //    _ClassInterfaceWithRtl433.setOption("YFSK", (String)chck.Tag);
-        //}
-
-        //private void numericUpDownFSK_ValueChanged(object sender, EventArgs e)
-        //{
-        //    //System.Windows.Forms.NumericUpDown chck = (System.Windows.Forms.NumericUpDown)sender;
-        //    //processWithParameter((String)chck.Tag);
-        //    ////if ((String)chck.Tag== "-Ylevel" & checkBoxYPulsesDetectionLevel.Checked)
-        //    ////{
-        //    ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag, '=',  chck.Value));
-        //    ////}
-
-        //    ////else if ((String)chck.Tag == "-Yminlevel" & checkBoxYMinimumDetectionLevelPulses.Checked)
-        //    ////{
-        //    ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag,'=', chck.Value));
-        //    ////}
-        //    ////else if ((String)chck.Tag == "-Yminsnr" & checkBoxYMinimumSNRPulses.Checked)
-        //    ////{
-        //    ////    _ClassInterfaceWithRtl433.setOption((String)chck.Tag, String.Concat(chck.Tag, '=',  chck.Value));
-        //    ////}
-        //}
-
-        //private void processWithParameter(String tag)
-        //{
-        //    //if (tag == "-Ylevel")
-        //    //{
-        //    //    if (checkBoxYPulsesDetectionLevel.Checked)
-        //    //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownPulseDetectionLevel.Value));
-        //    //    else
-        //    //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
-        //    //}
-
-        //    //else if (tag == "-Yminlevel")
-        //    //{
-        //    //    if (checkBoxYMinimumDetectionLevelPulses.Checked)
-        //    //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownMinimumDetectionLevel.Value));
-        //    //    else
-        //    //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
-        //    //}
-        //    //else if (tag == "-Yminsnr")
-        //    //{
-        //    //    if (checkBoxYMinimumSNRPulses.Checked)
-        //    //        _ClassInterfaceWithRtl433.setOption(tag, String.Concat(tag, '=', numericUpDownMinimumSNRPulses.Value));
-        //    //    else
-        //    //        _ClassInterfaceWithRtl433.setOption(tag, "No ");
-        //    //}
-        //}
-
-#endregion
+        #endregion
 
         private void checkBoxSTEREO_CheckedChanged(object sender, EventArgs e)
         {
@@ -1181,34 +984,6 @@ namespace SDRSharp.Rtl_433
         private void checkBoxMONO_CheckedChanged(object sender, EventArgs e)
         {
             ClassInterfaceWithRtl433.setMONO(checkBoxMONO.Checked);
-        }
-
-        //private void checkBoxRaw_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    ClassInterfaceWithRtl433.setRAW(checkBoxRaw.Checked);
-        //}
-
-        private void radioButtonV_CheckedChanged(object sender, EventArgs e)
-        {
-//#if !CONSOLEFORM
-            //if (!radioButtonNoV.Checked)  //console
-            //if (!radioButtonNoV.Checked)  //console
-            //    withConsole = true;
-            //else                          //no console
-            //    withConsole = false;
-            //ClassInterfaceWithRtl433.setWithConsole(withConsole);
-//#endif
-        }
-
-        private void radioButtonSnone_CheckedChanged(object sender, EventArgs e)
-        {
-//#if !CONSOLEFORM
-            //if (!radioButtonSnone.Checked)  //console
-            //    withConsole = true;
-            //else                          //no console
-            //    withConsole = false;
-            //ClassInterfaceWithRtl433.setWithConsole(withConsole);
-//#endif
         }
     }
 }
