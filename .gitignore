@@ -23,4 +23,6 @@ packages/**
 !/README.md
 captures/**
 UpgradeLog*
+SDRSharp.psess
+SDRSharp240913.vsp
 

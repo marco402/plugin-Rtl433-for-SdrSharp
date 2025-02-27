@@ -10,382 +10,126 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
-#define xxxSAMPGRAD
-#define xxxTESTMEMORY
-
+//#define noV1632   //Real and Imag inversed    two case ok with 1632 and file _Protocol_1_Model__Silvercrest-Remote_433920000hz_250k_08_02_2025_10_47_38.wav
+using SDRSharp.Radio;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
-using System.Windows.Forms;
-using System.Linq;
-using SDRSharp.Radio;
-using System.IO;
-using System.Drawing;
-using System.Threading;
 using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace SDRSharp.Rtl_433
-
 {
-    public unsafe class ClassInterfaceWithRtl433 : INotifyPropertyChanged, IDisposable
+    enum Package_types
     {
+        PULSE_DATA_OOK = 1,
+        PULSE_DATA_FSK = 2,
+    };
+    internal partial class ClassInterfaceWithRtl433 : INotifyPropertyChanged, IDisposable
+    {
+#region declarations
+        internal float[] memoDataIQForRs433=new float[NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ];
+        private Int32 ptrMemoDataForRs433 = 0;
         public event PropertyChangedEventHandler PropertyChanged;
-        internal enum SAVEDEVICE { none, all, known, unknown };
-
         static NativeMethods.ptrReceiveMessagesCallback CBmessages;
-        static NativeMethods.ptrReceiveRecordOrder CBReceiveRecordOrder;
+        static NativeMethods.ptrReceiveStructDevicesCallback CBStructDevices;
         static NativeMethods.ptrFctInit CBinitCbData;
-        static NativeMethods.r_cfg structCfg = new NativeMethods.r_cfg();
-        static NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();
-
         private Thread threadCallMainRTL_433;
-        private Byte[] dataForRs433;
-        private Complex*[] copyIQPtr;
-        private UnsafeBuffer[] copyIQBuffer;
         private Dictionary<String, String> listOptionsRtl433;
-        private Rtl_433_Panel owner;
-
-        //private String timeForRtl433 = "";
-        private String sampleRateStr = "";
-        private Double sampleRate = 0;
-
+        private Rtl_433_Panel panelRtl_433;
         private Int64 frequencyLng = 0;
         private Int64 centerFrequencyLng = 0;
         private String frequencyStr = "";
         private String centerFrequencyStr = "";
-        private UInt32 EnabledDevicesDisabled = 0;
-        private String key = "";
-        private Dictionary<String, String> listData;
-
-        private List<String> listeDevice = new List<String>();
-        private String[] nameGraph = { "Pulse data", "Analyse", "fm" }; 
-
-        //private Int32 bufNumber = 0;
-        //private UInt32 bufLength = 0;
-        private IntPtr ptrCbData = IntPtr.Zero;
+        private UInt32 EnabledDevicesDisabled = 0;             //=1=> treat devices with disabled =1
+        private readonly List<String> listeDevice = new List<String>();
         private IntPtr ptrCtx = IntPtr.Zero;
-        private IntPtr ptrCfg = IntPtr.Zero;
-
-        private Boolean typeWindowGraph = false;
+        private IntPtr ptrDemod = IntPtr.Zero;
         private Boolean sendDataToRtl433 = false;
-        private Boolean synchro = false;
-        private Boolean nameData = false;
         private Boolean initListDevice = false;
         private Boolean startListDevice = false;
-        private uint memo_EnabledListDevices = 0;
-#if TESTIME
+        private UInt32 memo_EnabledListDevices = 0;
+#if DEBUG
         private Stopwatch stopw;
-        //private Stopwatch stopwTotalTime;
-        private long memoDt;
-        private long memoDtTotalTime = 0;
-        private Int64 _timeForRtl433Lng = 0;
-        private Int64 _timeCycleCumul = 0;
-        private Int64 _timeForRtl433Cumul = 0;
+        private Stopwatch stopwRtl433;
+        private float _timeForRtl433Float = 0;
+        private float memoDt;
+        private float _timeCycleCumul = 0;
+        private float _timeForRtl433Cumul = 0;
+        private float _timeDisplayCumul = 0;
         private Int32 nbCycle50000 = 0;
-        private DateTime memoDate= DateTime.Now;
-        private Int32 nbCycleFor1Sec = 0;
+        private float nbCycleFor1Sec = 0;
 #endif
-#if TESTMEMORY
-        private Process currentProcess;
-#endif
+        private Boolean sourceIsFile = false;
+        private String sampleRateStr = "";
+        private Double sampleRate = 0;
+        private ClassTraceGraphe myClassTraceGraphe=null;
+#endregion
 
-        private Int32 searchZero(short[] points)
-        {
-            Int32 step = 1000;
-            Int32 start = 0;
-            Boolean find = false;
-            Int32 i = 0;
-            while (find == false && i < points.Length)
-            {
-                for (i = start; i < points.Length - 1; i += step)
-                {
-                    if (points[i] == 0 && points[i + 1] == 0)
-                    {
-                        start = i - step;
-                        if (step == 1 || start < 0)
-                        {
-                            find = true;
-                            break;
-                        }
-                        step /= 10;
-                        break;
-                    }
-                }
-            }
-            if (!find) return points.Length - 1;
-            return i;
-        }
+#region public function 
         internal ClassInterfaceWithRtl433(Rtl_433_Panel owner)
         {
-#if TESTIME
+            Debug.WriteLine($"ClassInterfaceWithRtl433 {owner}");
+#if DEBUG
             stopw = new Stopwatch();
-            //stopwTotalTime = new Stopwatch();
+            stopwRtl433 = new Stopwatch();
 #endif
-#if TESTMEMORY
-            currentProcess = Process.GetCurrentProcess();
-#endif
-            this.owner = owner;
-            listData = new Dictionary<String, String>();
+            this.panelRtl_433 = owner;
             SampleRateStr = "0";  //no display if init to Rtl_433_panel
-            listOptionsRtl433 = new Dictionary<String, String>();
-            dataForRs433 = new byte[Rtl_433_Processor.NBBYTEFORRTS_433];
-            copyIQBuffer = new UnsafeBuffer[Rtl_433_Processor.NBBUFFERFORRTS_433];
-            copyIQPtr = new Complex*[Rtl_433_Processor.NBBUFFERFORRTS_433];
-            copyIQBuffer[0] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
-            copyIQPtr[0] = (Complex*)copyIQBuffer[0];
-            for (Int32 i = 1; i < Rtl_433_Processor.NBBUFFERFORRTS_433; i++)
-            {
-                copyIQBuffer[i] = UnsafeBuffer.Create(Rtl_433_Processor.NBCOMPLEXFORRTS_433, sizeof(Complex));
-                copyIQPtr[i] = (Complex*)copyIQBuffer[i];
-            }
-            setOption("verbose","-v");                    //setVerbose("-v");  //for list devices details
-                                                          // _owner.setMessage(Application.ProductVersion);  version sdrSharp
-                                                          //call_main_Rtl_433(false);
-            setOptionUniqueKey("-a 4",true);         //for graph
-            setOptionUniqueKey("-MProtocol",true);  //for title and key devices windows
-        }
-#region options rtl_433
-        internal void setOptionUniqueKey(String key,Boolean state)
+            InitOptionsRTL433();
+            myClassTraceGraphe = new ClassTraceGraphe();
+          }
+
+        internal void ThreadCallMainRtl433(object parameter)
         {
-            if (listOptionsRtl433.ContainsKey(key))
-                listOptionsRtl433.Remove(key);
-            if (state)
-                listOptionsRtl433.Add(key, key);
-        }
-        internal void setHideOrShowDevices(List<String> listBoxSelectedDevices, Boolean hideShowDevices)
-        {
-            Dictionary<String, String> copyListOptionsRtl433 = new Dictionary<String, String>();
-            foreach (KeyValuePair<String, String> _option in listOptionsRtl433)
-            {
-                if (!(_option.Key.Contains("hide") || _option.Key.Contains("show")))
-                    //keep all key not egal hide or show
-                    copyListOptionsRtl433.Add(_option.Key, _option.Value);    //keep all key not egal hide or show
-             }
-            //-R device<protocol> show protocol
-            //-R device<-1> hide protocol
-            //without -R show all protocol
-
-            listOptionsRtl433.Clear();
-
-            foreach (KeyValuePair<String, String> _option in copyListOptionsRtl433)
-            {
-                listOptionsRtl433.Add(_option.Key, _option.Value);
-            }
-            copyListOptionsRtl433.Clear();
-            foreach (String device in listBoxSelectedDevices)
-            { 
-                if (hideShowDevices)
-                {
-                   listOptionsRtl433.Add("hide" + device, "-R -" + device.Trim()); //hide protocol
-                }
-                else
-                {
-                   listOptionsRtl433.Add("show" + device, "-R " + device.Trim()); //show protocol
-                }
-            }
-            foreach (KeyValuePair<String, String> _option in copyListOptionsRtl433)
-            {
-                listOptionsRtl433.Add(_option.Key, _option.Value);
-            }
-            copyListOptionsRtl433.Clear();
-            copyListOptionsRtl433 = null;
-        }
-
-        internal void setShowDevicesDisabled( Boolean showDevicesDisabled)
-        {
-            if (showDevicesDisabled)
-                EnabledDevicesDisabled = 1;
-            else
-                EnabledDevicesDisabled = 0;
-
-            if (memo_EnabledListDevices!= EnabledDevicesDisabled)
-            {
-            initListDevice = false;     //need reload list devices
-            }
-            memo_EnabledListDevices = EnabledDevicesDisabled;
-        }
-
-        internal void setOption(String Key,String value)
-        {
-            if (listOptionsRtl433.ContainsKey(Key))
-                listOptionsRtl433.Remove(Key);
-            if(!value.Contains("No "))
-                listOptionsRtl433.Add(Key, value);
-        }
-#endregion
-#region private functions
-
-        internal void ProcessCallMainRtl433(object parameter)
-        {
-            String[] args = new String[listOptionsRtl433.Count()+1];  //+1 for .exe
-
-            args[0] = "Rtl_433.exe"; // + @"\";
-            Int32 counter = 1;
-            owner.setMessage("-----------RTL433 OPTIONS --------------\n");
-            foreach (KeyValuePair<String, String> _option in listOptionsRtl433)
-            {
-                owner.setMessage(_option.Value+"\n");
-                args[counter] = _option.Value;
-                counter++;
-            }
-            owner.setMessage("------------------------------------------\n");
+            ptrMemoDataForRs433 = 0;
+            String[] args = GetArg();
             Int32 argc = args.Length;
-            CBmessages = new NativeMethods.ptrReceiveMessagesCallback(_callBackMessages);
-            //CBReceiveRecordOrder = new NativeMethods.ptrReceiveRecordOrder(_callBackReceiveRecordOrder);
-            CBinitCbData = new NativeMethods.ptrFctInit(_callBackInitCbData);
-            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBReceiveRecordOrder, (UInt32)(sampleRate), sizeof(byte), (UInt32)EnabledDevicesDisabled, argc, args);  //, withConsole
+            CBmessages = new NativeMethods.ptrReceiveMessagesCallback(CallBackMessages);
+            CBStructDevices = new NativeMethods.ptrReceiveStructDevicesCallback(CallBackDevices);
+            CBinitCbData = new NativeMethods.ptrFctInit(CallBackInitCbData);
+            UInt32 sampleRateDecim = (UInt32)(Math.Round(sampleRate / Rtl_433_Processor.decimation)); //see for pass samplerate to float in RTL_433
+            NativeMethods.rtl_433_call_main(CBmessages, CBinitCbData, CBStructDevices, sampleRateDecim, sizeof(byte), (UInt32)EnabledDevicesDisabled, this.sourceIsFile, argc, args);
+            args = null;
         }
-#endregion
-#region public function 
-//#if TESTIME
-        //private String _timeCycle = "";
-        //[System.ComponentModel.Bindable(true)]
-        //public String timeCycle          //no internal if binding
-        //{
-        //    get { return _timeCycle; }
-        //    set
-        //    {
-        //        _timeCycle = value;
-        //        OnPropertyChanged("timeCycle");
-        //    }
-        //}
-
-        //[System.ComponentModel.Bindable(true)]
-        //public String TimeForRtl433          //no internal if binding
-        //{
-        //    get { return timeForRtl433; }
-        //    set
-        //    {
-        //        timeForRtl433 = value;
-        //        OnPropertyChanged("TimeForRtl433");
-        //    }
-        //}
-//#endif
         internal void Start(Boolean senderRadio)
         {
-            owner.Start(senderRadio);
+            panelRtl_433.Start(senderRadio);
         }
-        internal void Stop(Boolean senderRadio)
-        {
-            owner.Stop(false,senderRadio);
-        }
-
-        [System.ComponentModel.Bindable(true)]
-        public String SampleRateStr          //no internal if binding
-        {
-            get { return sampleRateStr; }
-            set
-            {
-                sampleRateStr =  value;
-                OnPropertyChanged("SampleRate");
-            }
-        }
-
-        internal double SampleRateDbl
-        {
-            get  { return sampleRate; }
-            set
-            {
-            sampleRate = value;
-            SampleRateStr = value.ToString();
-#if TESTIME
-            nbCycleFor1Sec = (Int32)((SampleRateDbl / Rtl_433_Processor.NBBYTEFORRTS_433));
-#endif
-            }
-        }
-#endregion
-        private String nameFile = String.Empty;
-        private String nameRecord = String.Empty;
-        internal  void setRecordDevice(String nameRecord, String directory )
-        {
-            this.nameRecord = nameRecord;
-            nameFile = directory  + nameRecord.Replace(":", "_") + "_" + frequencyLng.ToString() + "_" + sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
-        }
-        //marc ajout 2/1/2023
-        internal void recordDevice(String name, String directory)
-        {
-            String nameFile = directory + name.Replace(":", "_") + "_" + frequencyLng.ToString() + "_" + sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
-            if (this.mono)
-            {
-                String _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433, sampleRate, wavRecorder.recordType.MONO);
-            }
-            if (this.stereo)
-            {
-                String _nameFile = nameFile + ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
-                wavRecorder.WriteBufferToWav(_nameFile, copyIQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433, sampleRate, wavRecorder.recordType.STEREO);
-            }
-        }
-        //fin ajout
-        internal void setTypeWindowGraph(Boolean typeWindowGraph)
-        {
-            this.typeWindowGraph = typeWindowGraph;
-#if TESTIME
-            _timeCycleCumul = 0;
-            _timeForRtl433Cumul = 0;
-            memoDtTotalTime = 0;
-#endif
-        }
-        private Boolean sourceIsFile = false;
-        internal void setSourceName(String sourceName,Boolean sourceIsFile)
+        //private String sourceName="";
+        internal void SetSourceName(String sourceName, Boolean sourceIsFile)
         {
             this.sourceIsFile = sourceIsFile;
             sourceName = sourceName.Replace("%20", " ");
-            owner.setMessage(sourceName);
+            //this.sourceName = sourceName.Replace("%20", " ");
+            panelRtl_433.SetMessage(sourceName + "\n");
+            panelRtl_433.SetSourceType(sourceIsFile);
         }
-#if MSGBOXDEBUG
-        internal void get_version_dll_rtl_433()
-        {
-            String VersionC = Marshal.PtrToStringAnsi(NativeMethods.IntPtr_Pa_GetVersionText());
-            MessageBox.Show("version rtl_433.dll " + VersionC, "start plugin RTL433", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //String filename = @".\xSDRSharp.Rtl_433.dll";
-            //Assembly assem = Assembly.ReflectionOnlyLoadFrom(filename);
-            //AssemblyName assemName = assem.GetName();
-            //Version ver = assemName.Version;
-
-            //if (VersionC != _VERSION)
-            //     MessageBox.Show("version rtl_433.dll not égal to SDRSharp.Rtl_433.dll" + VersionC + "<->" + _VERSION, "SDRSharp.Rtl_433.dll");
-            //Version = VersionC;  //
-            //Version = "Version plugin: " + _VERSION;
-        }
-#endif
-        //private String _version = "";
-        //[System.ComponentModel.Bindable(true)]
-        //public String Version
-        //{
-        //    get { return _version; }
-        //    set
-        //    {
-        //        _version =  _VERSION;
-        //        OnPropertyChanged("Version");
-        //    }
-        //}
-
-        internal void setFrequency(Int64 value)
+        internal void SetFrequency(Int64 value)
         {
             frequencyLng = value;
-            FrequencyStr =  value.ToString();
+            FrequencyStr = value.ToString();
+            if (panelRtl_433 != null)
+                panelRtl_433.SetFrequency(frequencyLng);
         }
-
-        internal void setCenterFrequency(Int64 value)
+        internal void SetCenterFrequency(Int64 value)
         {
             centerFrequencyLng = value;
-            CenterFrequencyStr =  value.ToString(); 
+            CenterFrequencyStr = value.ToString();
         }
-
         [System.ComponentModel.Bindable(true)]
         public String FrequencyStr          //no internal if binding
         {
             get { return frequencyStr; }
             set
             {
-                frequencyStr =  value;
+                frequencyStr = value;
                 OnPropertyChanged("FrequencyStr");
                 NativeMethods.setFrequency((UInt32)frequencyLng);
             }
         }
- 
         [System.ComponentModel.Bindable(true)]
         public String CenterFrequencyStr          //no internal if binding
         {
@@ -397,124 +141,358 @@ namespace SDRSharp.Rtl_433
                 NativeMethods.setCenterFrequency((UInt32)centerFrequencyLng);
             }
         }
+        internal void Call_main_Rtl_433()
+        {
+#if DEBUG
+            _timeCycleCumul = 0;
+            _timeForRtl433Cumul = 0;
+            nbCycle50000 = 0;
+#endif
+            if (ptrCtx != IntPtr.Zero)
+                NativeMethods.stop_sdr(ptrCtx);
+            if (!initListDevice)     //need reload list devices
+                panelRtl_433.SetOptionVerboseInit();
 
+            threadCallMainRTL_433 = null;
+
+            threadCallMainRTL_433 = new Thread(ThreadCallMainRtl433)
+                {
+                    Name = "thread_MAIN_RTL_433"
+                };
+
+            threadCallMainRTL_433.Start();
+        }
+#if TESTBOUCLEREPLAYMARC
+        private Int32 cptBoucle=500;
+        private String memoFilePB = "";
+#endif
+        internal unsafe void Send_data(Complex* _IQPtr, Int32 len)
+        {
+////#if DEBUG
+////            int deb = 0;
+////            if (Math.Abs(_IQPtr[0].Real + 0.7165354)<0.00001)
+////                deb = deb;
+////#endif
+#if TESTBOUCLEREPLAYMARC
+            cptBoucle--;
+            if (cptBoucle == 0)
+            {
+                if(memoFilePB!="")
+                {
+                Trace.WriteLine("time-out:  " + this.sourceName);
+                    //copy to pbFiles
+                }
+                memoFilePB = this.sourceName;
+                panelRtl_433.controlStopRadio();
+                cptBoucle = 500;  //50
+            }
+#endif
+            Int32 maxiBuffer = NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ-1;  //for time
+            if (ptrCtx != IntPtr.Zero && sendDataToRtl433)
+            {
+                float coefficient = ClassUtils.GetMaxiPtrComplex(_IQPtr, len);
+//#if DEBUG
+//                if (coefficient != 1f)
+//                    Debug.WriteLine("coefficient!=1-->" + coefficient.ToString());
+//#endif
+                if (coefficient > 0.0)
+                {
+                    Thread.BeginCriticalRegion();
+                    Int32 len2 = len * 2;
+                    byte[] dataForRs433 = new byte[len2];
+#if V1632
+                    if (ptrMemoDataForRs433 + len2 > NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ)
+                    {
+                        Int32 lenEnd = NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ - ptrMemoDataForRs433;
+                        ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, ptrMemoDataForRs433, lenEnd);
+                        Int32 lenStart = len2 - lenEnd;
+                        ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, 0, lenStart);
+                    }
+                    else
+                        ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, ptrMemoDataForRs433, len2);
+#else
+                    // R and I inversed
+                   //int pp = ptrMemoDataForRs433;
+                   if (ptrMemoDataForRs433 + len2 > NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ)
+                    {
+                        Int32 lenEnd = (NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ - ptrMemoDataForRs433)/2;
+                        ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, ptrMemoDataForRs433, lenEnd);
+
+                        ////for (int p = 0;p < lenEnd;p++)
+                        ////{
+                        ////    memoDataIQForRs433[pp++] = _IQPtr[p].Imag;
+                        ////    memoDataIQForRs433[pp++] = _IQPtr[p].Real;
+                        ////}
+                        Int32 lenStart = len - lenEnd;
+                        ////for (int p = 0;p < lenStart; p++)
+                        ////{
+                        ////    memoDataIQForRs433[p++] = _IQPtr[p].Imag;
+                        ////    memoDataIQForRs433[p++] = _IQPtr[p].Real;
+                        ////}
+                        ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, 0, lenStart);
+                    }
+                    else
+                        ////for (int p = 0;p < len; p++)
+                        ////{
+                        ////     memoDataIQForRs433[pp++] = _IQPtr[p].Imag;
+                        ////     memoDataIQForRs433[pp++] = _IQPtr[p].Real;
+                        //// }
+                        ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, ptrMemoDataForRs433, len2);
+
+#if DEBUG
+//if(ptrMemoDataForRs433>127000*2)
+//                    {
+//                        String message = "";
+//                        for (int i = 0; i < 100; i++)
+//                            message += ($"buffer[{i}]={memoDataIQForRs433[i]}\n");
+
+//                        //panelRtl_433.SetMessage(($"buffer[{900}].Real={buffer[900].Real}  buffer[{900}].Imag={buffer[900].Imag}\n"));
+//                        for (int i = 126800*2; i < 126900*2; i++)
+//                            message += ($"buffer[{i}]={memoDataIQForRs433[i]}\n");
+//                        Debug.WriteLine(message);
+//                    }
+
+#endif
+
+#endif
+                    //Int32 j = 0;
+                    //Int32 i = 0;
+                    //coefficient = (coefficient * 2f) ;  //val for 1
+                    //for (i = 0; i < len; i++)
+                    //{
+                    //    j = i * 2;
+
+                    //    try
+                    //    {
+                    //        dataForRs433[j] = Convert.ToByte(127+memoDataIQForRs433[ptrMemoDataForRs433] * coefficient);
+                    //        dataForRs433[j + 1] = Convert.ToByte(127 + memoDataIQForRs433[ptrMemoDataForRs433 + 1] * coefficient);
+                    //    }
+                    //    catch
+                    //    {
+                    //        dataForRs433[j] = 0;
+                    //        dataForRs433[j + 1] = 0;
+                    //        Debug.WriteLine("classInterface-> " + (127 + memoDataIQForRs433[ptrMemoDataForRs433] * coefficient));
+                    //        Debug.WriteLine("classInterface-> " + (127 + memoDataIQForRs433[ptrMemoDataForRs433 + 1] * coefficient));
+                    //    }
+                    //    ptrMemoDataForRs433 += 2;
+                    //    if (ptrMemoDataForRs433 > maxiBuffer)
+                    //        ptrMemoDataForRs433 = 0;
+                    //    }
+
+
+                    for (int j = 0; j < len2;)
+                    {
+                        try
+                        {
+                            //Debug.WriteLine(j+" "+ptrMemoDataForRs433);
+                            dataForRs433[j++] = System.Convert.ToByte(ClassConst.FLOATTOBYTE + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * ClassConst.FLOATTOBYTE);
+                        }
+                        catch
+                        {
+                            if ((ClassConst.FLOATTOBYTE + (memoDataIQForRs433[ptrMemoDataForRs433-1] / coefficient) * ClassConst.FLOATTOBYTE) < 0)
+                                dataForRs433[j-1] = 0;
+                            else
+                                dataForRs433[j-1] = 255;
+
+                            Debug.WriteLine("classInterface-> " + (ClassConst.FLOATTOBYTE + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * ClassConst.FLOATTOBYTE));
+                        }
+               //try
+               //         {
+               //             dataForRs433[j++] = System.Convert.ToByte(127.5f + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * 127.5f);
+               //         }
+               //         catch
+               //         {
+               //             dataForRs433[j++] = 0;
+               //             Debug.WriteLine("classInterface-> " + (127.5f + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * 127.5f));
+               //         }
+                        //ptrMemoDataForRs433 += 2;
+                            if (ptrMemoDataForRs433 > maxiBuffer)
+                                ptrMemoDataForRs433 = 0;
+                    }
+                    //if (i != len)
+                    //        Debug.WriteLine("  ClassInterfaceWithRtl433->i != len");
+
+                    Thread.EndCriticalRegion();
+#if DEBUG
+                    stopw.Stop();
+                    memoDt = stopw.ElapsedMilliseconds;
+                    _timeForRtl433Float = 0;
+                    stopwRtl433.Restart();
+#endif
+                    NativeMethods.receive_buffer_cb(dataForRs433, (UInt32)len * 2, ptrCtx);
+                    dataForRs433 = null;
+#if DEBUG
+                    stopwRtl433.Stop();
+                    _timeForRtl433Float += stopwRtl433.ElapsedMilliseconds;
+
+
+                    float timeCycle = memoDt;
+                    _timeCycleCumul += timeCycle;
+                    _timeForRtl433Cumul += _timeForRtl433Float;
+                    nbCycle50000 ++;
+                    _timeDisplayCumul+= panelRtl_433.TimeDisplay;
+                    if (nbCycle50000 >= nbCycleFor1Sec)
+                    {
+                        if (panelRtl_433 != null)  //pb on stop dispose
+                        {
+                            nbCycle50000 = 0;
+                            float delta = nbCycleFor1Sec - (float)Math.Floor(nbCycleFor1Sec);
+                            _timeDisplayCumul = (_timeDisplayCumul - panelRtl_433.TimeDisplay) + panelRtl_433.TimeDisplay * delta;
+                            _timeForRtl433Cumul = (_timeForRtl433Cumul - _timeForRtl433Float) + _timeForRtl433Float * delta;
+                            _timeCycleCumul = (_timeCycleCumul - timeCycle) + (timeCycle * delta)+_timeDisplayCumul+_timeForRtl433Cumul;
+                            panelRtl_433.SetTime(_timeCycleCumul, _timeForRtl433Cumul,_timeDisplayCumul ,sourceIsFile);
+                        }
+                        _timeCycleCumul = 0;
+                        _timeForRtl433Cumul = 0;
+                        _timeDisplayCumul = 0;
+                    }
+                    if (stopw != null)
+                        stopw.Restart();
+#endif
+                }
+            }
+        }
+        internal void StopSendDataToRtl433()
+        {
+            sendDataToRtl433 = false;
+        }
+        internal void StartSendData()
+        {
+            ptrCtx = IntPtr.Zero;
+            sendDataToRtl433 = true;
+        }
+        [System.ComponentModel.Bindable(true)]
+        public String SampleRateStr          //no internal if binding
+        {
+            get { return sampleRateStr; }
+            set
+            {
+                sampleRateStr = value;
+                OnPropertyChanged("SampleRateStr");
+            }
+        }
+        internal double SampleRateDbl
+        {
+            get { return sampleRate; }
+            set
+            {
+                sampleRate = value;
+                SampleRateStr = value.ToString();
+#if DEBUG
+                nbCycleFor1Sec = (float)((SampleRateDbl / Rtl_433_Processor.nbByteForRtl433));
+#endif
+            }
+        }
+#endregion
+#region private functions
         private void OnPropertyChanged(String propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));//error on stop timeCycle
         }
-
-        internal void call_main_Rtl_433()
-        {
-#if TESTIME
-            _timeForRtl433Lng = 0;
-            _timeCycleCumul = 0;
-            _timeForRtl433Cumul = 0;
-            nbCycle50000 = 0;
-            memoDtTotalTime = 0;
-#endif
-            NativeMethods.stop_sdr(ptrCtx);
-            if (!initListDevice)     //need reload list devices
-                owner.setOptionVerboseInit();
-            threadCallMainRTL_433 = new Thread(ProcessCallMainRtl433);
-            threadCallMainRTL_433.Name = "thread_MAIN_RTL_433";
-            threadCallMainRTL_433.Start();
-        }
-        //private int cptTest = 0;
-        internal  void send_data(Complex * _IQPtr)
-        {
-            if (ptrCtx != IntPtr.Zero && sendDataToRtl433)
-            {
-                float maxi = wavRecorder.getMaxi(_IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433);
-                if (maxi > 0)
-                {
-                    //l'enregistrement a partir de la fenêtre device est a revoir
-                    //cette fonction send_data envoi 50000 byte a rtl433 a chaque fois.
-                    //pour rtl433,2 bytes=1 échantillon=>25000 échantillons a chaque fois.
-
-                    //si sample rate SDRSharp =250000/sec 1 cycle doit être < 100ms.
-                    //si sample rate=1024000/sec 1 cycle doit être <25ms
-                    //si sample rate=2048000/sec 1 cycle doit être <12.5ms
-                    Thread.BeginCriticalRegion();
-                        if (typeWindowGraph)  //warning if record waiting window device
-                        {
-                            Utils.Memcpy(copyIQPtr[0], _IQPtr, Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
-                            for (Int32 i = Rtl_433_Processor.NBBUFFERFORRTS_433 - 1; i > 0; i--)
-                                Utils.Memcpy(copyIQPtr[i], copyIQPtr[i - 1], Rtl_433_Processor.NBCOMPLEXFORRTS_433 * sizeof(Complex));  //memo for record
-                        }
-                        for (Int32 i = 0; i < Rtl_433_Processor.NBCOMPLEXFORRTS_433; i++)
-                        {
-                            dataForRs433[i * 2] = System.Convert.ToByte(127 + (_IQPtr[i].Real / maxi) * 127);
-                            dataForRs433[i * 2 + 1] = System.Convert.ToByte(127 + (_IQPtr[i].Imag / maxi) * 127);
-                        }
-                    Thread.EndCriticalRegion();
-#if TESTIME
-                    stopw.Stop();
-                    memoDt = stopw.ElapsedMilliseconds;
-                    stopw.Restart();
-#endif
-                  //  Console.WriteLine("**********************receive_buffer_cb");
-                    NativeMethods.receive_buffer_cb(dataForRs433, Rtl_433_Processor.NBBYTEFORRTS_433, ptrCtx);   //take time->pb memory
-#if TESTIME
-
-                    stopw.Stop();
-                   
-                    _timeForRtl433Lng = stopw.ElapsedMilliseconds;
-                    _timeCycleCumul += (memoDt + _timeForRtl433Lng);
-                    _timeForRtl433Cumul += _timeForRtl433Lng;
-                     nbCycle50000 += 1;
-
-                    if(nbCycle50000>= nbCycleFor1Sec)
-                    {
-                        //stopwTotalTime.Stop();
-                        //Console.WriteLine(((Rtl_433_Processor.NBBYTEFORRTS_433*1000*nbCycle50000)/ stopwTotalTime.ElapsedMilliseconds).ToString());
-                        //stopwTotalTime.Restart();
-                        nbCycle50000 = 0;
-                        if(owner!=null)  //pb on stop dispose
-                            owner.setTime(_timeCycleCumul,_timeForRtl433Cumul, sourceIsFile);
-                        _timeCycleCumul =0;
-                        _timeForRtl433Cumul =0;
-                    }
-                    stopw.Restart();
-#endif
-                }
-            }
-            //if (!sendDataToRtl433)
-            //    NativeMethods.stop_sdr(ptrCtx);
-        }
-        //#if TESTIME
-        //        private void  setTime()
-        //        {
-        //            timeCycle =  (_timeCycleCumul ).ToString() + " ms.";
-        //            timeForRtl433 =  (_timeForRtl433Cumul ).ToString() + " ms." ;
-        //        }
-        //#endif
-        internal void stopSendDataToRtl433() 
-        {
-            sendDataToRtl433 = false;
-        }
-        internal void CleartimeCycleMax()
-        {
-            //_timeCycleLngMax = 0;
-            //_timeForRtl433LngMax = 0;
-            ////setTime();
-        }
-
-        internal void startSendData()
-        {
-//#if TESTIME
-            //stopwTotalTime.Restart();
-//#endif
-            ptrCtx = IntPtr.Zero;
-            sendDataToRtl433 = true;
-        }
+#endregion
 
 #region callBack for dll_rtl_433"
-
-        internal  void _callBackMessages([In, MarshalAs(UnmanagedType.LPStr)] String message)
+        private Dictionary<String, String> FillsListDataClone(NativeMethods.R_deviceToPlugin info)
         {
-            if (owner == null)
+            Dictionary<String, String> listData = new Dictionary<String, String>();
+            String Key;
+            String Value;
+            Int32 tiret = 1;
+            for (Int32 i = 0; i < info.nbInfosDevice; i++)
+            {
+                IntPtr strPtrKey = (IntPtr)Marshal.PtrToStructure(info.Key_Device, typeof(IntPtr));
+                Key = ClassUtils.FirstCharToUpper(Marshal.PtrToStringAnsi(strPtrKey));    //mainly for channel or Channel...limit nb column
+                info.Key_Device = new IntPtr(info.Key_Device.ToInt64() + IntPtr.Size);
+
+                IntPtr strPtrValue = (IntPtr)Marshal.PtrToStructure(info.Value_Device, typeof(IntPtr));
+                Value = (Marshal.PtrToStringAnsi(strPtrValue));
+                info.Value_Device = new IntPtr(info.Value_Device.ToInt64() + IntPtr.Size);
+                try
+                {
+                listData.Add(Key, Value);
+                }
+                catch
+                {
+                    Key = Key.PadRight(tiret+Key.Length, '-');
+                    listData.Add(Key, Value);
+                    tiret += 1;
+                }
+            }
+            return listData;
+        }
+        private Boolean selectFormGraph;
+        internal Boolean SetSelectFormGraph
+        {
+            set
+            {
+                selectFormGraph = value;
+#if DEBUG
+                _timeCycleCumul = 0;
+                _timeForRtl433Cumul = 0;
+#endif
+            }
+        }
+        internal void CallBackDevices(IntPtr ptrInfosToPlugin)
+        {
+            if (panelRtl_433 == null)
                 return;
-            if (initListDevice == false)
+#if DEBUG
+            stopwRtl433.Stop();
+            _timeForRtl433Float = stopwRtl433.ElapsedMilliseconds;
+#endif
+            NativeMethods.R_deviceToPlugin info = new NativeMethods.R_deviceToPlugin();
+            try
+            {
+                info = (NativeMethods.R_deviceToPlugin)Marshal.PtrToStructure(ptrInfosToPlugin, typeof(NativeMethods.R_deviceToPlugin));
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message + "  ClassInterfaceWithRtl433->_callBackDevices", "Error ptrInfosToPlugin");
+                return;
+            }
+            Dictionary<String, String> listData = FillsListDataClone(info);
+
+            //*************************GRAPH***********************************************
+
+            //if (info.lenForRecord == 0)
+            //{
+            //    panelRtl_433.SetMessage("info.lenForRecord = 0 for " + GetProtocol(listData) + "\n");
+            //    panelRtl_433. TreatForms(listData);
+            //    return;
+            //}
+            if (selectFormGraph)
+            {
+                //util for treatGraph with one parameter
+                List<PointF>[] points = null;
+                double SampleRateDecime = SampleRateDbl / Rtl_433_Processor.decimation;
+
+                points = myClassTraceGraphe.TreatGraph(info, listData, SampleRateDecime, ptrDemod, frequencyStr,out string[] nameGraph, memoDataIQForRs433, ptrMemoDataForRs433, out float[] dataIQForRecord, panelRtl_433);
+                if (points!=null)
+                {
+                    panelRtl_433.TreatForms(listData, points,nameGraph, dataIQForRecord, (Int32)SampleRateDecime, FrequencyStr);
+                }
+                else
+                {
+#if DEBUG
+                    panelRtl_433.SetMessage("(points[0].Count = 0 for " + GetProtocol(listData) + "\n");
+#endif
+                    panelRtl_433.TreatForms(listData);
+                }
+            }
+            else
+            {
+                panelRtl_433.TreatForms(listData);
+            }
+#if DEBUG
+            stopwRtl433.Restart();
+#endif
+        }
+        internal void CallBackMessages([In, MarshalAs(UnmanagedType.LPStr)] String message)
+        {
+            if (panelRtl_433 == null)
+                return;
+            //init devices list to listeDevice
+            if (!initListDevice)
             {
                 if (message.Contains("start devices list"))//start
                 {
@@ -524,462 +502,72 @@ namespace SDRSharp.Rtl_433
 
                 else if (message.Contains("end devices list") && startListDevice)  //stop
                 {
-                     initListDevice = true;
-                    owner.setListDevices(listeDevice);
+                    initListDevice = true;
+                    panelRtl_433.SetListDevices(listeDevice);
                 }
                 else
                 {
                     if (message.Length > 21 && message.Contains("Registering"))
                         listeDevice.Add(message.Substring(22).Replace("]", "-"));
                 }
-                if (startListDevice == false)
-                    owner.setMessage(message);
+                if (!startListDevice)
+                    panelRtl_433.SetMessage(message);
                 return;
             }
-
-            if (message.Contains("**********"))//stop
-            {
-                if (listData.Count > 1 && synchro == true)
-                {
-                    Dictionary<String, String> listDataClone= new Dictionary<String, String>();
-                    //lock(listData)
-                    //{
-                     listDataClone = listData.ToDictionary(elem => elem.Key, elem => elem.Value);
-                    //}
-                    //*************************GRAPH***********************************************
-
-                    if(typeWindowGraph)
-                    {
-                        Int32 NumGraph =  3;
-                        List<PointF>[] points = new List<PointF>[NumGraph];
-                        for (Int32 i = 0; i < NumGraph ; i++)
-                            points[i] = new List<PointF>();
-                        //debug version:error outofmemory to 100 devices forms
-                        //release version error create handle to 200 devices forms
-                        //debug mode:
-                        //memory test in visual studio with replay file Model_ GT-WT03 Id_175_434037000_250000_02_03_2021 12 2 52 STEREO.wav:
-                        //170M with comment _owner.addFormDevice(listDataClone, points,nameGraph); and NumGraph>100-->ok
-
-                        //with only NumGraph>100 108M avant start plugin--->147M after 80 mn.
-                        //add only structCfg ok
-                        // without _owner.addFormDevice ok
-
-                        //with data frozen ok
-
-                        double samples_per_us = 1000000.0 / sampleRate;
-                        if (ptrCfg != IntPtr.Zero && NumGraph>0)
-                        {
-                            if (structCfg.demod == IntPtr.Zero)
-                            {
-                                try
-                                {
-                                    structCfg = (NativeMethods.r_cfg)Marshal.PtrToStructure(ptrCfg, typeof(NativeMethods.r_cfg));
-                                }
-                                catch (Exception e)
-                                {
-                                    MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error structCfg", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                            }
-                            if (structCfg.demod != IntPtr.Zero)
-                            {
-                                //if (struct_demod.am_analyze == IntPtr.Zero)  //1.5.4.4 comment 3 lines
-                                //{
-                                NativeMethods.dm_state struct_demod = new NativeMethods.dm_state();//1.5.4.4 add this line
-                                try
-                                    {
-                                        struct_demod = (NativeMethods.dm_state)Marshal.PtrToStructure(structCfg.demod, typeof(NativeMethods.dm_state));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        MessageBox.Show(e.Message + "  ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    }
-                                //}
-#if SAMPGRAD
-                                ////if ((mono || stereo || raw) && nameRecord != String.Empty)
-                                ////{
-                                    if (struct_demod.ptr_samp_grab != IntPtr.Zero)
-                                    {
-                                        NativeMethods.samp_grab struct_demod_samp_grab = new NativeMethods.samp_grab();
-                                        try
-                                        {
-                                            struct_demod_samp_grab = (NativeMethods.samp_grab)Marshal.PtrToStructure(struct_demod.ptr_samp_grab, typeof(NativeMethods.samp_grab));
-                                            if (struct_demod_samp_grab.sg_buf != null)
-                                            {
-                                                if (struct_demod_samp_grab.sg_size > 0)
-                                                {
-                                                //for record,receive device but struct_demod.frame_end_ago < 25000
-                                                if (struct_demod.frame_start_ago > 0 && struct_demod.frame_end_ago > 25000)
-                                                    {
-                                                        if (samp_grab_write(struct_demod_samp_grab, struct_demod.frame_start_ago, struct_demod.frame_end_ago))
-                                                        {
-                                                            owner.resetLabelRecord(nameRecord);
-                                                            clearRecord();
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                 Console.WriteLine("**********************struct_demod_samp_grab.sg_size=0");
-                                            }
-                                            else
-                                                Console.WriteLine("**********************struct_demod_samp_grab.sg_buf=0");
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            MessageBox.Show(e.Message + "**********************ClassInterfaceWithRtl433->_callBackMessages", "Error struct_demod", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                        }
-                                    }
-                                    else
-                                        Console.WriteLine("**********************struct_demod.ptr_samp_grab=0");
-                                ////}
-#endif
-                                Int32 x = 0;
-                                if (struct_demod.pulse_data.num_pulses > 0)
-                                {
-                                    for (Int32 bit = 0; bit < (struct_demod.pulse_data.num_pulses); bit++)
-                                    {
-                                        x += (Int32)(struct_demod.pulse_data.pulse[bit] * samples_per_us);
-                                        points[0].Add(new PointF(x, 1));
-                                        points[0].Add(new PointF(x, 0));
-                                        x += (Int32)(struct_demod.pulse_data.gap[bit] * samples_per_us);
-                                        points[0].Add(new PointF(x, 0));
-                                        points[0].Add(new PointF(x, 1));
-                                    }
-                                }
-                                else if (struct_demod.fsk_pulse_data.num_pulses > 0)
-                                {
-                                    for (Int32 bit = 0; bit < (struct_demod.fsk_pulse_data.num_pulses); bit++)
-                                    {
-                                        x += (Int32)(struct_demod.fsk_pulse_data.pulse[bit] * samples_per_us);
-                                        points[0].Add(new PointF(x, 1));
-                                        points[0].Add(new PointF(x, 0));
-                                        x += (Int32)(struct_demod.fsk_pulse_data.gap[bit] * samples_per_us);
-                                        points[0].Add(new PointF(x, 0));
-                                        points[0].Add(new PointF(x, 1));
-                                    }
-                                }
-                                 if (NumGraph > 1)
-                                {
-                                    Int32 endData = searchZero(struct_demod.am_buf);
-                                    for (Int32 bit = 0; bit < endData; bit++)
-                                    {
-                                        for (Int32 b = bit; b < bit + 10; b++)
-                                        {
-                                            points[1].Add(new PointF(bit, (Int32)(struct_demod.am_buf[bit] * samples_per_us)));  //out of memory
-                                        }
-                                    }
-                                }
-                                if (NumGraph > 2)
-                                {
-                                    Int32 endData = searchZero(struct_demod.fm);
-                                    for (Int32 bit = 0; bit < endData; bit++)
-                                    {
-                                        for (Int32 b = bit; b < bit + 10; b++)
-                                        {
-                                            points[2].Add(new PointF(bit, (Int32)(struct_demod.fm[bit] * samples_per_us)));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        owner.addFormDevice(listDataClone, points,nameGraph);
-                        //Console.WriteLine("**********************addFormDevice");
-#if TESTMEMORY
-                        Console.WriteLine($"{currentProcess} -");
-                        Console.WriteLine("-------------------------------------");
-
-                        //Console.WriteLine($"  Physical memory usage     : {currentProcess.WorkingSet64}");
-                        //Console.WriteLine($"  Base priority             : {currentProcess.BasePriority}");
-                        //Console.WriteLine($"  Priority class            : {currentProcess.PriorityClass}");
-                        //Console.WriteLine($"  User processor time       : {currentProcess.UserProcessorTime}");
-                        //Console.WriteLine($"  Privileged processor time : {currentProcess.PrivilegedProcessorTime}");
-                        //Console.WriteLine($"  Total processor time      : {currentProcess.TotalProcessorTime}");
-                        Console.WriteLine($"  Paged system memory size  : {currentProcess.PagedSystemMemorySize64}");
-                        Console.WriteLine($"  Paged memory size         : {currentProcess.PagedMemorySize64}");
-                        Console.WriteLine($"  Private memory size       : {currentProcess.PrivateMemorySize64}");
-                        Console.WriteLine($"  Non paged memory size     : {currentProcess.NonpagedSystemMemorySize64}");
-                         Console.WriteLine($"  Virtual memory size       : {currentProcess.VirtualMemorySize64}");
-                        //if (currentProcess.Responding)
-                        //{
-                        //    Console.WriteLine("Status = Running");
-                        //}
-                        //else
-                        //{
-                        //    Console.WriteLine("Status = Not Responding");
-                        //}
-                // Display peak memory statistics for the process.
-                Console.WriteLine($"  Peak physical memory usage : { currentProcess.PeakPagedMemorySize64}");
-                Console.WriteLine($"  Peak paged memory usage    : { currentProcess.PeakVirtualMemorySize64}");
-                Console.WriteLine($"  Peak virtual memory usage  : {currentProcess.PeakWorkingSet64}");
-#endif
-                    }
-                    else
-                    {
-                        owner.addFormDevice(listDataClone, null, nameGraph);
-                        //Console.WriteLine("**********************addFormDevice");
-                        //Console.WriteLine(cptTest);
-                        //cptTest = 0;
-                    }
-                    //*************************END GRAPH***********************************************
-                }
-                nameData = false;
-                synchro = false;
-                key = "";
-                return;
-            }
-            if (!synchro && message.Contains("@@@@@@@@@@"))//start  
-            {
-                synchro = true;
-                listData.Clear();
-                nameData = false;
-                key = message;
-                return;
-            }
-            else if (synchro && !nameData)
-            {
-                key = message;
-                nameData = true;
-                return;
-            }
-            else if (synchro && nameData)
-            {
-                try {                    //if key do not exist
-                listData.Add( key.Substring(0, 1).ToUpper()+key.Substring(1), message);
-                nameData = false;
-                key = "";
-                return;
-                }
-                catch
-                {
-                nameData = false;
-                key = "";
-                return;
-                }
-            }
-            else
-                owner.setMessage(message);
+            panelRtl_433.SetMessage(message);  //all other messages to listViewConsole 
         }
 
-        internal void _callBackInitCbData([In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCbData,
-            //[In, MarshalAs(UnmanagedType.SysInt)] Int32 _bufNumber,
-            //[In, MarshalAs(UnmanagedType.SysUInt)] UInt32 _bufLength,
+        internal void CallBackInitCbData([In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCbData,
             [In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCtx,
-            [In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrCfg)
+            [In, MarshalAs(UnmanagedType.FunctionPtr)] IntPtr _ptrDemod)
         {
-            ptrCbData = _ptrCbData;
-            //bufNumber = _bufNumber;
-            //bufLength = _bufLength;
+            //ptrCbData = _ptrCbData;
             ptrCtx = _ptrCtx;
-            ptrCfg = _ptrCfg;
+            ptrDemod = _ptrDemod;
         }
 #endregion
-#region devices form
-        private void CloseOneForms(String name)
+        private static String GetProtocol(Dictionary<String, String> listData)
         {
-            List<Form> formsToClose = new List<Form>();
-            foreach (Form form in Application.OpenForms)
+            string protocol = "";
+            foreach (KeyValuePair<String, String> _line in listData)
             {
-                if (form.Text == name)
+                if (_line.Key.ToUpper().Contains("MODEL"))
                 {
-                    formsToClose.Add(form);
+                    protocol = _line.Value;
                 }
             }
-            formsToClose.ForEach(f => f.Close());
+            return protocol;
         }
-
+#region devices form
         public void Dispose()
         {
-             Dispose(true);
+            Debug.WriteLine("ClassInterfaceWithRtl433->Dispose");
+            Dispose(true);
+
         }
         protected virtual void Dispose(Boolean disposing)
         {
             if (disposing)
             {
-                // free managed resources
-                if (threadCallMainRTL_433!=null)
+
+                if (threadCallMainRTL_433 != null)
                 {
                     if (threadCallMainRTL_433.IsAlive)
                         threadCallMainRTL_433.Join(1000);
                     threadCallMainRTL_433 = null;
                 }
-                if (owner != null)
-                     owner = null;
-                //copyIQPtr = null;
-                //copyIQBuffer = null;
+                if (panelRtl_433 != null)
+                    panelRtl_433 = null;
+                if (myClassTraceGraphe != null)
+                    myClassTraceGraphe = null;
+                memoDataIQForRs433 = null;
                 GC.SuppressFinalize(this);
-#if TESTIME
+#if DEBUG
                 stopw = null;
-                //stopwTotalTime = null;
+                stopwRtl433 = null;
 #endif
             }
-         }
+        }
 #endregion
-        //private static Byte[] CopyTabToDest(IntPtr Source, UInt32 len)
-        //{
-        //    Byte[] Dest = new byte[len];
-        //    // If the Target is nothing, immediate return of nothing.
-        //    if (Source == null) return null;
-
-        //    // get an instance of the WINAPI class that
-        //    // holds the API functions. 
-        //   // WINAPI API = new WINAPI();
-
-        //    // Declare an IntPtr which will hold a memory address, don't
-        //    // panic here! Just keep going! 
-        //    //IntPtr p_objTarget;
-
-        //    try
-        //    {
-        //        // Call AllocHGlobal to allocate enough memory on the heap
-        //        // for a 'Target' object. AllocHGlobal returns a pointer
-        //        // to this memory, which is needed for the next call. 
-        //        //p_objTarget = Marshal.AllocHGlobal(Marshal.SizeOf(Target));
-
-        //        // To copy Target to the heap, use StructureToPtr
-        //        // as in the following line of code. This is useful
-        //        // for API calls that require prefilled structures.
-        //        //Marshal.StructureToPtr(Target, p_objTarget, true);
-
-        //        // Use CopyMemory to take the data from the source string
-        //        // (Source) and copy it to the block of memory on the
-        //        // heap (which, coincidentally is the same size as the
-        //        // source string, we defined sizes in our class definition).
-        //        NativeMethods.CopyMemory(Dest, Source, len);
-
-        //        // Now, tell the Marshaler to copy the data on the heap
-        //        // (the results of CopyMemory) into our instance of the
-        //        // Target object (clsTest).
-        //        //Marshal.PtrToStructure(p_objTarget, Target);
-
-        //        // Free the memory that was allocated on the heap, otherwise
-        //        // you will create a memory leak. 
-        //        //Marshal.FreeHGlobal(p_objTarget);
-        //    }
-        //    //catch (System.OutOfMemoryException ex)
-        //    //{
-        //    //    // An exception could occur if the system is out of
-        //    //    // memory and the block of heap memory could not be
-        //    //    // set aside for you. 
-        //    //    Console.WriteLine("Exception Caught: " + ex.Message);
-        //    //    //CoughUpCookies(ex);
-        //    //}
-        //    catch (Exception e)
-        //    {
-        //        // General exception caught, show the message and move on...
-        //        //CoughUpCookies(e);
-        //        Console.WriteLine("Exception Caught: " + e.Message);
-        //    }
-
-        //    // Free resources assigned to our instance of the WINAPI class 
-        //    //API = null;
-
-        //    // send the results back for printing 
-        //    return Dest;   //   (Object)Target;
-
-        //}
-//#if SAMPGRAD
-        internal void clearRecord()
-        {
-            nameFile = String.Empty;
-            nameRecord = String.Empty;
-        }
-
-
-        private Boolean mono = false;
-        internal void setMONO(Boolean mono)
-        {
-            this.mono = mono;
-        }
-        private Boolean stereo = false;
-        internal void setSTEREO(Boolean stereo)
-        {
-            this.stereo = stereo;
-        }
-
-        private Boolean raw = false;
-        internal void setRAW(Boolean raw)
-        {
-            this.raw = raw;
-        }
-#if SAMPGRAD
-        //internal void setNameFile(String nameFile, String directory,String name)
-        //{
-        //    //this.nameFile = nameFile;
-        //    this.nameFile = directory + name.Replace(":", "_") + "_" + frequencyLng.ToString() + "_" + sampleRate.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
-        //    if (mono)
-        //        this.nameFile = this.nameFile + ((wavRecorder.recordType)wavRecorder.recordType.MONO + ".wav");
-        //    if (stereo)
-        //       this.nameFile = this.nameFile + ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
-        //}
-        private const UInt32 BLOCK_SIZE = (128 * 1024); /* bytes */
-        /// <summary>
-        /// function  samp_grab_write() from samp_grab.c 
-        /// </summary>
-        /// <param name="struct_demod_samp_grab"></param>
-        /// <param name="frame_start_ago"></param>
-        /// <param name="frame_end_ago"></param>
-        /// <returns></returns>
-        private unsafe Boolean samp_grab_write(NativeMethods.samp_grab struct_demod_samp_grab, UInt32 frame_start_ago, UInt32 frame_end_ago)
-        {
-            //Protocol_3 Model_ Prologue-TH Channel_1_433920000_250000 512k en cu8 2049k en .wav OK en .raw(source vasili) ok
-            //Protocol_138 OK
-            //Protocol_196 OK
-            UInt32 frame_pad = 25000 / 8; // this could also be a fixed value, e.g. 10000 samples
-            UInt32 start_padded = frame_start_ago + frame_pad;
-            UInt32 end_padded = frame_end_ago - frame_pad;
-            UInt32 len_padded = start_padded - end_padded;
-            UInt32 end_pos = 0;
-            UInt32 start_pos = 0;
-            UInt32  wlen=0;
-            UInt32 wrest=0;
-            UInt32 signal_bsize=0;
-            signal_bsize = 2 * len_padded;
-            signal_bsize += BLOCK_SIZE - (signal_bsize % BLOCK_SIZE);
-            if (signal_bsize > struct_demod_samp_grab.sg_len)
-            {
-                //fprintf(stderr, "Signal bigger than buffer, signal = %u > buffer %u !!\n", signal_bsize, g->sg_len);
-                signal_bsize = struct_demod_samp_grab.sg_len;
-            }
-            end_pos = (UInt32)Marshal.ReadInt32(struct_demod_samp_grab.sample_size) * end_padded;
-            if (struct_demod_samp_grab.sg_index >= end_pos)
-                end_pos = struct_demod_samp_grab.sg_index - end_pos;
-            else
-                end_pos = struct_demod_samp_grab.sg_size - end_pos + struct_demod_samp_grab.sg_index;
-            if (end_pos >= signal_bsize)
-                start_pos = end_pos - signal_bsize;
-            else
-                start_pos = struct_demod_samp_grab.sg_size - signal_bsize + end_pos;
-            wlen = signal_bsize;
-            wrest = 0;
-            if (start_pos > struct_demod_samp_grab.sg_size)
-            {
-                Console.WriteLine("start_pos > struct_demod_samp_grab.sg_size");
-                return false;
-            }
-            if (start_pos + signal_bsize > struct_demod_samp_grab.sg_size)
-            {
-                wlen = struct_demod_samp_grab.sg_size - start_pos;
-                wrest = signal_bsize - wlen;
-            }
-            if (wrest > 0)
-                wrest = wrest;
-            return false;
-            String format = Marshal.ReadInt32(struct_demod_samp_grab.sample_size) == 2 ? "cu8" : "cs16";
-            double freq_mhz = frequencyLng / 1000000.0;
-            double rate_khz = sampleRate / 1000.0;
-            Byte[] buffer_samp_grab = CopyTabToDest((IntPtr)((UInt32)struct_demod_samp_grab.sg_buf+start_pos),  wlen);
-
-            //****************save file to cu8****************
-            //String nameFile = "Test" + "_" + freq_mhz.ToString() + "_" + rate_khz.ToString() + "_" + DateTime.Now.Date.ToString("d").Replace("/", "_") + " " + DateTime.Now.Hour + " " + DateTime.Now.Minute + " " + DateTime.Now.Second + " ";
-            //nameFile += ((wavRecorder.recordType)wavRecorder.recordType.STEREO + ".wav");
-            
-                wavRecorder.writeCu8ToWav(nameFile, buffer_samp_grab, mono, stereo,raw);
-            
-            //wavRecorder.writeByte(nameFile + ".raw", buffer_samp_grab);//for debug
-            //if (stereo)
-            //    wavRecorder.writeCu8ToWav(nameFile, buffer_samp_grab, owner.getRecordSTEREO(), owner.getRecordSTEREO());
-            //****************end save file to cu8************
-            return true;
-        }
-#endif
     }
 }

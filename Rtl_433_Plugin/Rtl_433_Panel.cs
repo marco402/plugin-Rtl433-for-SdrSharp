@@ -10,78 +10,69 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
-//#define TESTWINDOWS
-using System.Reflection;
-using System;
-using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+#define noTESTWINDOWS    //for test memory
+#define noTESTRECURSIF                  //used for copy one file for each srcFolder to dstFolder   used for zip download on RTL433 and convert CU8 to Wav and test with TESTBOUCLEREPLAYMARC
+#define noTESTBATCH                     //genere file batch
 using SDRSharp.Common;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Drawing;
+using System.Reflection;
+using System.Windows.Forms;
 namespace SDRSharp.Rtl_433
 {
-    public partial class Rtl_433_Panel : UserControl
+    public partial class Rtl_433_Panel : UserControl  //no internal for this partial vs2017? 
     {
-        public String VERSION =" V: " + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
+        #region declaration
         private Boolean listViewConsoleFull = false;
+        internal String VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
         List<ListViewItem> cacheLignes;
-        private Boolean recordDevice = false;
-        private String nameToRecord = "";
         private Boolean radioIsStarted = false;
-        TYPEFORM displayTypeForm = TYPEFORM.LISTMES;
 #if TESTWINDOWS
         private Int32 cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
 #endif
-        private const Int32 NBCOLUMN = 100;
-        private enum TYPEFORM : Int32
-        {
-            LISTDEV,
-            GRAPH,
-            LISTMES
-        }
-        private const String FILELISTEDEVICES = "devices.txt";
-        private Dictionary<String, FormDevices> listformDevice;
-        private Dictionary<String, FormDevicesListMessages> listformDeviceListMessages;
+        private Stopwatch stopwDisplay;
         private Rtl_433_Processor Rtl_433Processor;
         private ClassInterfaceWithRtl433 ClassInterfaceWithRtl433;
-        private FormListDevices formListDevice = null;
-        private Boolean enabledPlugin = false;
-        private ISharpControl control;
-#region init class
-
+        public Boolean enabledPlugin = false;
+        private readonly ISharpControl control;
+        private Boolean sourceIsFile = false;
+        #endregion
+        #region class Rtl_433_Panel
         internal Rtl_433_Panel(ISharpControl control)
         {
             InitializeComponent();
             this.control = control;
-            displayTypeForm = TYPEFORM.LISTMES;
-            this.Size = new System.Drawing.Size(296, 600);   //ok for load first with 1920 beta (erase sdrsharp.layout)
-            initDisplayParam();  //before initControls
-            setMaxLinesConsole(1000);             // for displayParam to initControls before init Plugin
-            initVirtualListView();
-            initControls();
-            enabledDisabledAllControls(false);
+            InitDisplayParam();  //before initControls
+            ClassUtils.MaxLinesConsole = 1000;             // for displayParam to initControls before init Plugin
+            InitVirtualListView();
+            InitControls();
+            EnabledDisabledAllControls(false);
+            buttonCu8ToWav.Enabled = true;   //decal plugin first click
+ 
+            //with 1920 version move scrollbarre at the first click when the plugin is anchored ???
+            //same if disabled with the designer
+           radioButtonSnone.Enabled = true;
+
 #if TESTWINDOWS
             MessageBox.Show("Version de test");
 #endif
         }
-
-#region  listViewConsole 
-        private void initVirtualListView()
+        #region  listViewConsole 
+        private void InitVirtualListView()
         {
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewConsole, new object[] { true });
             this.SuspendLayout();
-            SDRSharp.Rtl_433.ClassFunctionsVirtualListView.initListView(listViewConsole);
+            SDRSharp.Rtl_433.ClassFunctionsVirtualListView.InitListView(listViewConsole);
             listViewConsole.GridLines = false;
             listViewConsole.FullRowSelect = false;
             listViewConsole.View = View.Details;   //hide column header
             listViewConsole.MultiSelect = true;
-            listViewConsole.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(listViewConsole_RetrieveVirtualItem);
+            listViewConsole.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(ListViewConsole_RetrieveVirtualItem);
             this.ResumeLayout(true);
         }
-
-        internal void listViewConsole_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        internal void ListViewConsole_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             if (cacheLignes != null)
             {
@@ -96,11 +87,10 @@ namespace SDRSharp.Rtl_433
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error fct(listViewConsole_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine(ex.Message, "Error fct(listViewConsole_RetrieveVirtualItem)");
                 }
             }
         }
- 
         internal Boolean WriteLine(Dictionary<String, String> listData)
         {
             String theLine = String.Empty;
@@ -108,31 +98,10 @@ namespace SDRSharp.Rtl_433
                 theLine += (_line.Key + _line.Value);
             return WriteLine(theLine);
         }
-
-        private String memoLigne="";
+        private String memoLigne = "";
         internal Boolean WriteLine(String theLine)
         {
-            //if (theLine.Contains("rows"))
-            //    memoLigne = memoLigne;
-            ////#if DEBUG
-            //byte[] L = Encoding.ASCII.GetBytes(theLine);
-
-            //for (int c = 0; c < theLine.Length; c++)
-            //{
-            //    //if (theLine.Substring(c, 1) == "\n")        //0a
-            //    //    Debug.Write("(lf)\n");
-            //    //else 
-            //    if (theLine.Substring(c, 1) == "\n")   //0a
-            //        Debug.Write("(lf)\n");
-            //    else
-            //        Debug.Write("0" + L[c].ToString("x") + "(" + theLine.Substring(c, 1) + ")");
-            //}
-            //Debug.WriteLine("");
-            //for (int c = 0; c < theLine.Length; c++)
-            //    Debug.Write(theLine.Substring(c, 1));
-            //Debug.WriteLine("");
-            ////#endif
-            int cptLine = 0;
+            Int32 cptLine = 0;
             Boolean retour = false;
             if (cacheLignes == null)
             {
@@ -143,34 +112,34 @@ namespace SDRSharp.Rtl_433
             memoLigne += theLine;
             String[] newLigne = memoLigne.Split((char)0x0a);
             memoLigne = "";
-            int lastWord = 0;
+            Int32 lastWord = 0;
             if (newLigne[newLigne.Length - 1].Length > 0)
             {
                 memoLigne = newLigne[newLigne.Length - 1];
                 lastWord = 1;
             }
-            for (int i = 0; i < newLigne.Length - lastWord; i++)
+            for (Int32 i = 0; i < newLigne.Length - lastWord; i++)
             {
                 if (newLigne[i].Length > 0)
                 {
                     ListViewItem ligne = new ListViewItem(newLigne[i]);
                     cacheLignes.Add(ligne);
-                    cptLine += 1;
+                    cptLine ++;
                 }
             }
             listViewConsole.VirtualListSize += cptLine;
-            if (listViewConsole.VirtualListSize > maxLinesConsole - 1)
+            if (listViewConsole.VirtualListSize > ClassUtils.MaxLinesConsole - 1)
             {
                 listViewConsole.ForeColor = Color.Red;
-                ListViewItem ligne = new ListViewItem("You have reached the maximum number of rows provided in the console(" + maxLinesConsole.ToString() + ")");
+                ListViewItem ligne = new ListViewItem("You have reached the maximum number of rows provided in the console(" + ClassUtils.MaxLinesConsole.ToString() + ")");
                 cacheLignes.Add(ligne);
                 ligne = new ListViewItem("if necessary you can increase it in SDRSharp.config(key RTL_433_plugin.maxLinesConsole");
                 cacheLignes.Add(ligne);
                 listViewConsole.VirtualListSize += 2;
-                listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + maxLinesConsole.ToString() + "/" + maxLinesConsole.ToString();
+                listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + ClassUtils.MaxLinesConsole.ToString() + "/" + ClassUtils.MaxLinesConsole.ToString();
                 retour = true;
-             }
-            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString() + "/" + maxLinesConsole.ToString();
+            }
+            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString() + "/" + ClassUtils.MaxLinesConsole.ToString();
             if (listViewConsole.VirtualListSize > 0)
             {
                 var last = listViewConsole.Items[listViewConsole.VirtualListSize - 1];
@@ -181,95 +150,101 @@ namespace SDRSharp.Rtl_433
             return retour;
 
         }
-        private void buttonAllToClipboard_Click(object sender, EventArgs e)
+        private void ButtonAllToClipboard_Click(object sender, EventArgs e)
         {
             Clipboard.Clear();
             String text = String.Empty;
             if (listViewConsole.Items.Count > 1)
             {
-                for (int item = 0; item < listViewConsole.Items.Count; item++)
+                for (Int32 item = 0; item < listViewConsole.Items.Count; item++)
                     text += listViewConsole.Items[item].Text + "\n";
                 Clipboard.SetText(text);
             }
         }
-
-        private void buttonSelectToClipboard_Click(object sender, EventArgs e)
+        private void ButtonSelectToClipboard_Click(object sender, EventArgs e)
         {
             Clipboard.Clear();
             String text = String.Empty;
             ListView.SelectedIndexCollection col = listViewConsole.SelectedIndices;
             if (col.Count > 0)
             {
-                foreach (int item in col)
+                foreach (Int32 item in col)
                     text += listViewConsole.Items[item].Text;
                 Clipboard.SetText(text);
             }
         }
-        //#if DEBUG
-        //private static char Chr(byte src)
-        //{
-        //    return (System.Text.Encoding.GetEncoding("iso-8859-1").GetChars(new byte[] {src})[0]);
-        //}
-        //#endif
-        private void mainTableLayoutPanel_SizeChanged(object sender, EventArgs e)
+        private void MainTableLayoutPanel_SizeChanged(object sender, EventArgs e)
         {
             listViewConsole.Columns[0].Width = listViewConsole.Width;
             listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //Put here Too early in initcontrols.
             listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //
         }
-        private void buttonClearMessages_Click(object sender, EventArgs e)
+        private void ButtonClearMessages_Click(object sender, EventArgs e)
         {
-            clearListViewConsole();
+            ClearListViewConsole();
         }
-        private void clearListViewConsole()
+        private void ClearListViewConsole()
         {
             listViewConsole.VirtualListSize = 0;
-            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=0" + "/" + maxLinesConsole.ToString();
+            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=0" + "/" + ClassUtils.MaxLinesConsole.ToString();
             cacheLignes = null;
             listViewConsoleFull = false;
         }
-#endregion
-        private void initControls()
+        #endregion
+        private void InitControls()
         {
-#if TESTIME
+#if DEBUG
             labelCycleTime.Visible = true;
+            labelTime433.Visible = true;
+            labelTimeDisplay.Visible = true;
             labelTimeCycle.Visible = true;
             labelTime433.Visible = true;
             labelTimeRtl433.Visible = true;
+            labelTimeDisplayWindows.Visible = true;
             ToolTip ttlabelTimeCycle = new ToolTip();
             ttlabelTimeCycle.SetToolTip(labelTimeCycle, "Red if Time cycle > 1000ms., you risk losing messages(not if source=file)");
+#else
+            labelCycleTime.Visible = false;
+            labelTime433.Visible = false;
+            labelTimeDisplay.Visible = false;
+            labelTimeCycle.Visible = false;
+            labelTime433.Visible = false;
+            labelTimeRtl433.Visible = false;
+           labelTimeDisplayWindows.Visible = false;
 #endif
-            displayParam();
-            buttonStartStop.Text = "Wait";
+            DisplayParam();
+
+#if DEBUG && TESTSTARTWITHOUTRADIO
+            //#endif
+            //#if DEBUG && !TESTSTARTWITHOUTRADIO
+            buttonStartStop.Text = "Start";
+            buttonStartStop.Enabled = true;
+            EnabledDisabledAllControls(true);
+#else
+            buttonStartStop.Text = "Wait";  //normal case
             buttonStartStop.Enabled = false;
-            ToolTip OptionStereo = new ToolTip();
-            OptionStereo.SetToolTip(checkBoxSTEREO, "Record IQ to wav file for reload with SDRSharp(Graph windows)");
-            ToolTip OptionMono = new ToolTip();
-            OptionMono.SetToolTip(checkBoxMONO, "Record module de IQ to wav file for display with Audacity or another viewer(Graph windows)");
-            ToolTip ttcheckBoxEnabledDevicesDisabled = new ToolTip();
-            ttcheckBoxEnabledDevicesDisabled.SetToolTip(checkBoxEnabledDevicesDisabled, "0:default,1:WARNING->enabled devices disabled in devices files");
-            ToolTip ttcheckBoxRecordTextFile = new ToolTip();
-            ttcheckBoxRecordTextFile.SetToolTip(checkBoxRecordTxtFile, "If checked, saves the data displayed on all list messages windows.\n Name = date_time_name of the device(+channel).txt.\n Warning to the free disk place.\n You can create folder Recordings.\n You can select the desired devices in the list of devices by checking show select.");
-            ttcheckBoxRecordTextFile.AutoPopDelay = 10000;
+#endif
+            //radioButtonWav.Checked = true;
+            ToolTip ttlabelFrequency = new ToolTip();
+            ttlabelFrequency.SetToolTip(labelFrequency, "If Orange:F<300Mhz or F>1000Mhz.");
+            ttlabelFrequency.AutoPopDelay = 10000;
+            ToolTip ttlabelSampleRate = new ToolTip();
+            ttlabelSampleRate.SetToolTip(labelSampleRate, "If Orange:Sample rate is not at 250000.");
+            ttlabelSampleRate.AutoPopDelay = 10000;
+
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
-            ToolTip OptionVerbose = new ToolTip();
-            OptionVerbose.SetToolTip(groupBoxVerbose, "WARNING -vvv and -vvvv possible bad devices for debug !");
             labelSampleRate.Text = control.RFBandwidth.ToString();
             listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString(); //  + "/" + maxLinesConsole.ToString(); maxLinesConsole not init here
-            //listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //pb heritage ? Too early here, put in Layout Resize
-            //listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //pb heritage ?
+            checkBoxEnabledPlugin.Text = "Enabled plugin (" + VERSION + ")";
         }
-
-        private void enabledDisabledAllControls(Boolean state)
+        private void EnabledDisabledAllControls(Boolean state)
         {
-            enabledDisabledControlsOnStart(state);
+            EnabledDisabledControlsOnStart(state);
             this.SuspendLayout();
             radioButtonListDevices.Enabled = state;
             radioButtonListMessages.Enabled = state;
             radioButtonGraph.Enabled = state;
-            checkBoxMONO.Enabled = state;
-            checkBoxSTEREO.Enabled = state;
             buttonCu8ToWav.Enabled = state;
             buttonDisplayParam.Enabled = state;
             buttonClearMessages.Enabled = state;
@@ -277,75 +252,107 @@ namespace SDRSharp.Rtl_433
             buttonSelectToClipboard.Enabled = state;
             this.ResumeLayout(true);
         }
-
-        private void checkBoxEnabledPlugin_CheckedChanged(object sender, EventArgs e)
+        private void FreeRessources()
+        {
+             Stop(false);
+            //first plugin.close call by  SDRSharp.MainForm
+            if (myClassFormListMessages != null)
+            {
+                myClassFormListMessages.Close();
+                myClassFormListMessages = null;
+            }
+            if (myClassFormDevices != null)
+            {
+                myClassFormDevices.Close();
+                myClassFormDevices = null;
+            }
+            if (myClassFormDevicesList != null)
+            {
+                myClassFormDevicesList.Close();
+                myClassFormDevicesList = null;
+            }
+            if (ClassInterfaceWithRtl433 != null)
+            {
+                ClassInterfaceWithRtl433.Dispose();
+                ClassInterfaceWithRtl433 = null;
+            }
+            if (Rtl_433Processor != null)
+            {
+                Rtl_433Processor.Dispose();
+                Rtl_433Processor = null;
+            }
+            if (stopwDisplay != null)
+                stopwDisplay = null;
+            GC.SuppressFinalize(this);
+        }
+        private void CheckBoxEnabledPlugin_CheckedChanged(object sender, EventArgs e)
         {
             //if start radio first, test _control.isplaying
             enabledPlugin = checkBoxEnabledPlugin.Checked;
             if (!enabledPlugin)
             {
-                Stop(true);
-                DisposePanel(false);
+                checkBoxEnabledPlugin.Text = "Enabled plugin (" + VERSION + ")";
+                Debug.WriteLine("panel->FreeRessources");
+                FreeRessources();
             }
             else
             {
+
                 ClassInterfaceWithRtl433 = new ClassInterfaceWithRtl433(this);
                 Rtl_433Processor = new Rtl_433_Processor(control, this, ClassInterfaceWithRtl433);
-                setBinding();
+                Rtl_433Processor.SetSourceName();
+                SetBinding();
                 //not in setting 
-                process_CheckBoxEnabledDevicesDisabled_CheckedChanged();
-                radioIsStarted = control.IsPlaying;  //if enabled before radio is playing
-                setSampleRate(control.RFBandwidth);
-                setFrequency(control.Frequency);
-                //setCenterFrequency(control.CenterFrequency);
-                // ClassInterfaceWithRtl433.SampleRateDbl = control.RFBandwidth;
-                //Rtl_433Processor.FrequencyRtl433 = control.frequency;
-                //Rtl_433Processor.SampleRate = control.RFBandwidth;
-                // ClassInterfaceWithRtl433.CenterFrequencyStr=control.CenterFrequency.ToString();
-                //ClassInterfaceWithRtl433.FrequencyStr = frequency.ToString(); 
-                enabledDisabledAllControls(enabledPlugin);
+#if !(DEBUG && TESTSTARTWITHOUTRADIO)
+                radioIsStarted = control.IsPlaying;  //if enabled before radio is playing: normal case
+#endif
+                SetSampleRate(control.RFBandwidth);
+                SetFrequency(control.Frequency);
+                EnabledDisabledAllControls(enabledPlugin);
                 if (radioIsStarted && enabledPlugin)
                 {
                     buttonStartStop.Text = "Start";
                     buttonStartStop.Enabled = true;
+                    //pluginStarted = false;
                 }
+                checkBoxEnabledPlugin.Text = "Disabled plugin";
+                ClassUtils.BackColor = this.BackColor;
+                ClassUtils.ForeColor = this.ForeColor;
+                ClassUtils.Cursor = this.Cursor;
+                ClassUtils.Font = this.Font;
+                //ClassUtils.Wav = true;
+                //ClassUtils.Raw = false;
             }
-            checkBoxMONO.Enabled = enabledPlugin;
-            checkBoxSTEREO.Enabled = enabledPlugin;
         }
-
 #endregion
-
 #region start
-        private void setBinding()
+        private void SetBinding()
         {
-            //labelCenterFrequency.DataBindings.Clear();
-            //labelVersion.DataBindings.Clear();
             labelSampleRate.DataBindings.Clear();
             labelFrequency.DataBindings.Clear();
-
-            //labelCenterFrequency.DataBindings.Add("Text", ClassInterfaceWithRtl433, "CenterFrequencyStr");
-            //labelVersion.DataBindings.Add("Text", _ClassInterfaceWithRtl433, "Version");
             labelSampleRate.DataBindings.Add("Text", ClassInterfaceWithRtl433, "SampleRateStr");
             labelFrequency.DataBindings.Add("Text", ClassInterfaceWithRtl433, "FrequencyStr");
-#if TESTIME
-            //labelTimeRtl433.DataBindings.Clear();
-            //labelTimeCycle.DataBindings.Clear();
-            //labelTimeRtl433.DataBindings.Add("Text", ClassInterfaceWithRtl433, "timeForRtl433");
-            //labelTimeCycle.DataBindings.Add("Text", ClassInterfaceWithRtl433, "timeCycle");
+#if DEBUG
             labelTimeCycle.Text = "0";
             labelTimeRtl433.Text = "0";
+            labelTimeDisplay.Text = "0";
 #endif
         }
-#if TESTIME
-        internal void setTime(long timeCycleCumul, long timeForRtl433Cumul, Boolean sourceIsFile)
+#if DEBUG
+        internal void SetTime(float timeCycleCumul, float timeForRtl433Cumul,float _timeDisplayCumul, Boolean sourceIsFile)
         {
-            labelTimeCycle.Text = (timeCycleCumul).ToString() + " ms.";
-            labelTimeRtl433.Text = (timeForRtl433Cumul).ToString() + " ms.";
-            if (timeCycleCumul > 1000 && !sourceIsFile)
-                labelTimeCycle.ForeColor = Color.Red;
-            else
-                labelTimeCycle.ForeColor = labelSampleRate.ForeColor;
+            try    //for crash when close sdrsharp
+            {
+                labelTimeCycle.Text = ((int)timeCycleCumul).ToString() + " ms.";
+                labelTimeRtl433.Text = ((int)timeForRtl433Cumul).ToString() + " ms.";
+                //if (timeCycleCumul > 1000 && !sourceIsFile)
+                //    labelTimeCycle.ForeColor = Color.Red;
+                //else
+                //    labelTimeCycle.ForeColor = labelSampleRate.ForeColor;
+                labelTimeDisplay.Text = ((int)_timeDisplayCumul).ToString() + " ms.";
+            }
+            catch
+            { }
         }
 #endif
         internal void Start(Boolean senderRadio = false)
@@ -353,6 +360,7 @@ namespace SDRSharp.Rtl_433
             if (senderRadio)
             {
                 radioIsStarted = true;
+#if !(DEBUG && TESTSTARTWITHOUTRADIO)     //no change stat button start/stop: normal case
                 if (enabledPlugin)
                 {
                     buttonStartStop.Enabled = true;
@@ -362,399 +370,200 @@ namespace SDRSharp.Rtl_433
                 {
                     buttonStartStop.Enabled = false;
                     buttonStartStop.Text = "Wait";
+                    EnabledDisabledControlsOnStart(true);
                 }
-                //setSampleRate(control.RFBandwidth);
-                //setFrequency(control.Frequency);
-                //setCenterFrequency(control.CenterFrequency);
+                SetSampleRate(control.RFBandwidth);
+                SetFrequency(control.Frequency);
+#endif
             }
             else
             {
+                if (stopwDisplay == null)
+                    stopwDisplay = new Stopwatch();
                 buttonStartStop.Text = "Stop";
-                if (listformDevice == null)
-                    listformDevice = new Dictionary<String, FormDevices>();
-                if (listformDeviceListMessages == null)
-                    listformDeviceListMessages = new Dictionary<String, FormDevicesListMessages>();
-                clearListViewConsole();
+                ClearListViewConsole();
                 listViewConsole.ForeColor = this.ForeColor;
-                processParameterOnStart();
-                //Rtl_433Processor.Enabled = true;
-                //Rtl_433Processor.Start();
-                //processParameterOnStart();
-                enabledDisabledControlsOnStart(false);
+                ProcessParameterOnStart();  //call Rtl_433Processor.SampleRate--->decimation 
+                EnabledDisabledControlsOnStart(false);
                 List<String> ListDevicesSH = new List<String>();
                 foreach (String device in listBoxHideShowDevices.SelectedItems)
                 {
                     String[] part = device.Split(new char[] { '-' });
                     ListDevicesSH.Add(part[0]);
                 }
-                ClassInterfaceWithRtl433.setHideOrShowDevices(ListDevicesSH, radioButtonHideSelect.Checked);
-                ClassInterfaceWithRtl433.setShowDevicesDisabled(checkBoxEnabledDevicesDisabled.Checked);
-                //get sample rate
-                ClassInterfaceWithRtl433.call_main_Rtl_433();
+                ClassInterfaceWithRtl433.SetHideOrShowDevices(ListDevicesSH, radioButtonHideSelect.Checked);
+                // put this if option ClassInterfaceWithRtl433.SetShowDevicesDisabled(false);
+                ClassInterfaceWithRtl433.Call_main_Rtl_433();
                 Rtl_433Processor.Enabled = true;
-                Rtl_433Processor.Start();
+                Rtl_433Processor.Start();   //call setSourceName() init nbByteForRtl433 and nbComplexForRtl
             }
-            setSampleRate(control.RFBandwidth);
-            setFrequency(control.Frequency);
-            //setCenterFrequency(control.CenterFrequency);
         }
-
-        private void enabledDisabledControlsOnStart(Boolean state)
+        private void EnabledDisabledControlsOnStart(Boolean state)
         {
             this.SuspendLayout();
-            //groupBoxFrequency.Enabled = state;
-            //groupBoxVerbose.Enabled = state;
-            //groupBoxMetadata.Enabled = state;
-            //groupBoxSave.Enabled = state;
-            //groupBoxHideShow.Enabled = state;
-            //groupBoxDataConv.Enabled = state;
-            groupBoxRecord.Enabled = true; //keep enabled for record device window
-            //groupBoxOptionY.Enabled = false;
-
+            
             radioButtonFreqFree.Enabled = state; //try for version from 1830 text disabled  black(no visible)
             radioButtonFreq315.Enabled = state;
             radioButtonFreq345.Enabled = state;
             radioButtonFreq43392.Enabled = state;
             radioButtonFreq868.Enabled = state;
             radioButtonFreq915.Enabled = state;
-
-            radioButtonNoV.Enabled = state;
-            radioButtonV.Enabled = state;
-            radioButtonVV.Enabled = state;
-            radioButtonVVV.Enabled = state;
-            radioButtonVVVV.Enabled = state;
-
-            radioButtonNoM.Enabled = state;
-            radioButtonMLevel.Enabled = state;
-
             radioButtonSnone.Enabled = state;
             radioButtonSknown.Enabled = state;
             radioButtonSunknown.Enabled = state;
             radioButtonSall.Enabled = state;
-
             radioButtonHideSelect.Enabled = state;
             radioButtonShowSelect.Enabled = state;
-
             radioButtonDataConvCustomary.Enabled = state;
             radioButtonDataConvNative.Enabled = state;
             radioButtonDataConvSI.Enabled = state;
-
-            //listBoxHideShowDevices.Enabled = state;
-            checkBoxEnabledDevicesDisabled.Enabled = state;
             this.ResumeLayout(true);
         }
-
-        private void processParameterOnStart()
+        private void ProcessParameterOnStart()
         {
-            //type of windows
-            testRadioButtonListDevices();
-            //frequency
-            frequency = getFrequency();
+            frequency = GetFrequency();
             Rtl_433Processor.FrequencyRtl433 = frequency;
             Rtl_433Processor.SampleRate = control.RFBandwidth;
-            //verbose
-            getRadioButtonVerbose();
-            //metaData
-            getMetaData();
+            Rtl_433Processor.SetSourceName();
             //data Convert
-            getDataConv();
+            GetDataConv();
+            //metaData
+            ClassInterfaceWithRtl433.SetOption("MbitsOrLevel", "-Mlevel");
             //save cu8
-            getRadioButtonSaveCu8();
+            GetRadioButtonSaveCu8();
             //hide show devices To Start
         }
-
-        private void buttonStartStop_Click(object sender, EventArgs e)
+        private void ButtonStartStop_Click(object sender, EventArgs e)
         {
-            if (buttonStartStop.Text == "Start")
+            ButtonStartStop();
+        }
+        internal void ButtonStartStop(Boolean disabledPlugin = false)
+        {
+            if (buttonStartStop.Text == "Start" || disabledPlugin)
             {
-                ClassInterfaceWithRtl433.startSendData();  //only by button
+                InitPanel();
+                ClassInterfaceWithRtl433.StartSendData();  //only by button
+
+                if (radioButtonListDevices.Checked && myClassFormDevicesList == null)
+                {
+                    myClassFormDevicesList = new ClassFormDevicesList(this);
+                    myClassFormDevicesList.ChooseFormListDevice = true;
+                    shownFormDeviceList = true;
+                    //myClassFormDevicesList.    ChooseformDevicesList = true;
+                }
                 Start();
             }
             else
-                Stop(false);
+                Stop(disabledPlugin);
         }
-
-        private void testRadioButtonListDevices()
-        {
-            if (radioButtonListDevices.Checked)
-            {
-                displayTypeForm = TYPEFORM.LISTDEV;
-                String directory = getDirectoryRecording();
-                if (formListDevice == null && File.Exists(directory + FILELISTEDEVICES))
-                {
-                    openformListDevice(directory);
-                    //formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
-                    //formListDevice.Show();
-                    //DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    //if (dialogResult == DialogResult.Yes)
-                    //{
-                    //    formListDevice.deSerializeText(directory + FILELISTEDEVICES);
-                    //}
-                }
-                ClassInterfaceWithRtl433.setTypeWindowGraph(false);
-            }
-            else if (radioButtonGraph.Checked)
-            {
-                displayTypeForm = TYPEFORM.GRAPH;
-                ClassInterfaceWithRtl433.setTypeWindowGraph(true);
-            }
-            else  //TYPEFORM.LISTMES
-            {
-                displayTypeForm = TYPEFORM.LISTMES;
-                ClassInterfaceWithRtl433.setTypeWindowGraph(false);
-            }
-        }
-
-        internal void resetLabelRecord(String deviceName)
-        {
-            listformDevice[deviceName].resetLabelRecord();
-        }
-        internal void addFormDevice(Dictionary<String, String> listData, List<PointF>[] points, String[] nameGraph)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke((Action)delegate
-                {
-                    addFormDevice(listData, points, nameGraph);
-                });
-            }
-            else
-            {
-                if (ClassInterfaceWithRtl433 == null)
-                    return;
-
-                String deviceName = getDeviceName(listData);
-                if (deviceName.Trim() != "")
-                {
-#if TESTWINDOWS
-                    cptDevicesForTest += 1;                //test device windows
-#endif
-                    if (radioButtonGraph.Checked)
-                    {
-                        if (recordDevice & deviceName == nameToRecord)
-                        {
-                            recordDevice = false;
-                            ClassInterfaceWithRtl433.recordDevice(deviceName, getDirectoryRecording());
-                            listformDevice[deviceName].resetLabelRecord();
-                            //ClassInterfaceWithRtl433.setRecordDevice(deviceName, getDirectoryRecording());
-                            //// listformDevice[deviceName].resetLabelRecord();
-                        }
-                        //lock (listformDevice)
-                        //{
-                        if (!listformDevice.ContainsKey(deviceName))
-                        {
-                            if (listformDevice.Count > MaxDevicesWindows - 1)
-                                return;
-                            listformDevice.Add(deviceName, new FormDevices(this));
-                            if (listformDevice.Count < nbDevicesWithGraph)
-                                listformDevice[deviceName].displayGraph = true;
-                            listformDevice[deviceName].Text = deviceName;
-                            //listformDevice[deviceName].Visible = true;
-                            listformDevice[deviceName].Show();
-                            listformDevice[deviceName].resetLabelRecord();  //after le load for memo...
-                                                                            //if (listformDevice.Count < _nbDevicesWithGraph
-                        }
-                        //}
-                        listformDevice[deviceName].setInfoDevice(listData);
-                        if (listformDevice[deviceName].displayGraph)
-                            listformDevice[deviceName].setDataGraph(points, nameGraph);
-                    }
-                    else if (radioButtonListDevices.Checked)
-                    {
-                        if (formListDevice == null)
-                        {
-                            openformListDevice(getDirectoryRecording());
-                            //formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
-                            //formListDevice.Show();
-                        }
-                       else
-                            formListDevice.setInfoDevice(listData);
-                    }
-                    else  //TYPEFORM.LISTMES
-                    {
-                        //lock (listformDeviceListMessages)
-                        //{
-                        if (!listformDeviceListMessages.ContainsKey(deviceName))
-                        {
-                            if (listformDeviceListMessages.Count > MaxDevicesWindows - 1)
-                                return;
-                            //if (radioButtonMLevel.Checked)
-                            listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433, checkBoxRecordTxtFile.Checked)); //+2 for debug
-                                                                                                                                                                                                        //else
-                                                                                                                                                                                                        //    listformDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, MaxDevicesWindows * 10, deviceName, ClassInterfaceWithRtl433,false));  //5 for -mMevel //+2 for debug
-                            listformDeviceListMessages[deviceName].Text = deviceName;
-                            listformDeviceListMessages[deviceName].Visible = true;
-                            listformDeviceListMessages[deviceName].Show();
-                        }
-                        //}
-                        //if ((cpt % 3)==0)
-                        //    for (Int32 i=1;i<20; i++)
-                        //        listData.Add(i.ToString(), i.ToString());
-                        //if ((cpt > 5 & cpt<10) |(cpt > 13 & cpt<15))
-                        //{
-                        //    for (Int32 i=1;i<20; i++)
-                        //        listData.Add(i.ToString(), i.ToString());
-
-                        //}
-                        //if (cpt == 10)
-                        //    for (Int32 i = 1; i < 100; i++)
-                        //        listData.Add(i.ToString(), i.ToString());
-
-                        //    cpt = cpt; 
-                        //cpt += 1;
-                        listformDeviceListMessages[deviceName].setMessages(listData);
-                    }
-                }
-             }
-        }
-        private void openformListDevice(String directory)
-        {
-            formListDevice = new FormListDevices(this, MaxDevicesWindows * 10, NBCOLUMN);
-            formListDevice.Show();
-            DialogResult dialogResult = MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (dialogResult == DialogResult.Yes)
-            {
-                formListDevice.deSerializeText(directory + FILELISTEDEVICES);
-            }
-        }
-        #endregion
-
-        #region stop
+        internal float TimeDisplay { get; set; }
+#endregion
+#region stop
         /// <summary>
         /// stop and clean
         /// </summary>
         /// <param name="disabledPlugin">if true:end processor</param>
         /// <param name="senderRadio"></param>
-        internal void Stop(Boolean disabledPlugin, Boolean senderRadio = false)
+        ///from stop radio.NotifyPropertyChangedHandler:disabledPlugin=false,senderRadio=true
+        ///from plugin.close:disabledPlugin=true,senderRadio=false
+        ///from disposePanel:disabledPlugin=true,senderRadio=false
+        ///from buttonStartStop_Click and != start:disabledPlugin=false,senderRadio=false
+        internal void Stop(Boolean senderRadio = false)
         {
+#if (DEBUG && TESTSTARTWITHOUTRADIO)
+            return;
+#else
             if (ClassInterfaceWithRtl433 != null)
-                ClassInterfaceWithRtl433.stopSendDataToRtl433();
+                ClassInterfaceWithRtl433.StopSendDataToRtl433();
+            //if (myClassFormDevices != null)
+            //    myClassFormDevices.Stop();
             if (Rtl_433Processor != null)
-                Rtl_433Processor.Stop(disabledPlugin);
-            enabledDisabledControlsOnStart(checkBoxEnabledPlugin.Checked);
-            if (senderRadio)
+                Rtl_433Processor.Stop();
+
+            if (senderRadio)                   //normal case
             {
                 radioIsStarted = false;
                 buttonStartStop.Text = "Wait";
                 buttonStartStop.Enabled = false;
+                EnabledDisabledControlsOnStart(true);    //stop by radio
             }
             else
             {
                 if (radioIsStarted)
                 {
                     buttonStartStop.Text = "Start";
-                    if (enabledPlugin)
-                        buttonStartStop.Enabled = true;
-                    else
-                        buttonStartStop.Enabled = false;
-                }
+                    buttonStartStop.Enabled = enabledPlugin;
+//#if !TESTBOUCLEREPLAYMARC
+//                    enabledDisabledControlsOnStart(false);                    //voir false for TESTBOUCLEREPLAYMARC
+//#else
+                    EnabledDisabledControlsOnStart(true);                    //voir false for TESTBOUCLEREPLAYMARC
+//#endif
+                }                             //normal case
                 else
                 {
                     buttonStartStop.Text = "Wait";
                     buttonStartStop.Enabled = false;
+                    EnabledDisabledControlsOnStart(true);
                 }
             }
+#endif
         }
-
-        private void DisposePanel(Boolean EndAll)
-        {
-            if (ClassInterfaceWithRtl433 != null)
-                Stop(true);
-            //clean panel, close windows
-            if (listformDevice != null)
-            {
-                foreach (KeyValuePair<String, FormDevices> _form in listformDevice)
-                {
-                    listformDevice[_form.Key].CloseByProgram();
-                }
-                listformDevice = null;
-            }
-            if (listformDeviceListMessages != null)
-            {
-                foreach (KeyValuePair<String, FormDevicesListMessages> _form in listformDeviceListMessages)
-                {
-                    listformDeviceListMessages[_form.Key].CloseByProgram();
-                }
-                listformDeviceListMessages = null;
-            }
-            if (formListDevice != null)
-            {
-                formListDevice.Close();
-                formListDevice = null;
-            }
-
-            //if (consoleIsAlive)
-            //{
-            //    if (Rtl_433Processor != null)
-            //        Rtl_433Processor.freeConsole();
-            //    if (ClassInterfaceWithRtl433 != null)
-            //        ClassInterfaceWithRtl433.free_console();
-            //    consoleIsAlive = false;
-            //}
-
-            //clean _Rtl_433Processor
-            if (Rtl_433Processor != null)
-            {
-                Rtl_433Processor.Dispose();
-                Rtl_433Processor = null;
-            }
-
-            if (ClassInterfaceWithRtl433 != null)
-            {
-                ClassInterfaceWithRtl433.Dispose();
-                ClassInterfaceWithRtl433 = null;
-            }
-        }
-
 #endregion
-
 #region internal functions
 
-        internal void setSampleRate(double SampleRate)
+        public Boolean PluginIsRun
+        {
+            get {
+                if(buttonStartStop.Text == "Stop")
+                    return true;
+                else
+                    return false;
+            }
+
+        }
+
+
+        internal void SetSampleRate(double SampleRate)
         {
             if (InvokeRequired)
             {
                 BeginInvoke((Action)delegate
                 {
-                    setSampleRate(SampleRate);
+                    SetSampleRate(SampleRate);
                 });
             }
             else
             {
                 labelSampleRate.Text = SampleRate.ToString();
+
+                if (SampleRate > 250000)
+                    labelSampleRate.ForeColor = Color.Orange;
+                else
+                    labelSampleRate.ForeColor = labelSampleRateTxt.ForeColor;
             }
         }
-
-        internal void setMessage(String message)
+        internal void SetMessage(String message)
         {
             if (InvokeRequired)
             {
                 BeginInvoke((Action)delegate
                 {
-                    setMessage(message);
+                    SetMessage(message);
                 });
             }
             else
             {
                 if (!listViewConsoleFull)
-                {
                     listViewConsoleFull = WriteLine(message);
-                    //Dictionary<String, String> listMessage;
-                    //listMessage = new Dictionary<String, String>();
-                    //listMessage.Add(message, "");
-                    //listViewConsoleFull=WriteLine(listMessage);
-                    //listMessage = null;
-                }
             }
         }
-
-        internal void setListDevices(List<String> listeDevice)
+        internal void SetListDevices(List<String> listeDevice)
         {
             if (InvokeRequired)
             {
                 BeginInvoke((Action)delegate
                 {
-                    setListDevices(listeDevice);
+                    SetListDevices(listeDevice);
                 });
             }
             else
@@ -768,222 +577,221 @@ namespace SDRSharp.Rtl_433
                 this.ResumeLayout(true);
             }
         }
-
-        internal String getDeviceName(Dictionary<String, String> listData)
+        //private String sourceName = "";
+        internal void SetSourceType(Boolean sourceIsFile)
         {
-            String key = "";
-            String model = "";
-            String protocol = "";
-            String channel = "";
-            String idDEvice = "";
-            foreach (KeyValuePair<String, String> _line in listData)
-            {
-                if (_line.Key.ToUpper().Contains("CHANNEL") & channel == "" & _line.Value != "")
-                {
-                    channel = _line.Value;
-                    key += (" Channel:" + channel);
-                }
-                else if (_line.Key.ToUpper().Contains("PROTOCOL") & protocol == "" & _line.Value != "")  //protect humidity contain id
-                {
-                    protocol = _line.Value;
-                    key += " Protocol:" + protocol;
-                }
-                else if (_line.Key.ToUpper().Contains("MODEL") & model == "" & _line.Value != "")
-                {
-                    model = _line.Value;
-                    key += " Model: " + model;
-                }
-                else if (_line.Key.ToUpper().Contains("IDS") & idDEvice == "" & _line.Value != "")  //ids for honeywell if id pb for tpms
-                {
-                    idDEvice = _line.Value;
-                    key += " Ids: " + idDEvice;
-                }
-            }
-#if TESTWINDOWS
-            if (key.Trim() != "")   //test device windows
-                key += cptDevicesForTest.ToString();   //test device windows
-#endif
-            return key;
+            //this.sourceName = sourceName;
+            this.sourceIsFile = sourceIsFile;
         }
-
-        internal void saveDevicesList()
-        {
-            if (formListDevice != null)
-            {
-                DialogResult dialogResult = MessageBox.Show("Do you want export devices list(devices.txt)", "Export devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (dialogResult == DialogResult.Yes)
-                    formListDevice.serializeText(getDirectoryRecording() + FILELISTEDEVICES);
-            }
-        }
-
-        internal String getDirectoryRecording()
-        {
-            String directory = "./Recordings/";   //SDRSHARP.exe to SDRSHARP
-            if (!Directory.Exists(directory))
-            {
-                directory = "../Recordings/";  //SDRSHARP.exe to bin
-                if (!Directory.Exists(directory))
-                {
-                    directory = "";
-                }
-            }
-            return directory;
-        }
-
-        //internal Boolean getRecordMONO()
-        //{
-        //    return checkBoxMONO.Checked;
-        //}
-
-        //internal Boolean getRecordSTEREO()
-        //{
-        //    return checkBoxSTEREO.Checked;
-        //}
-
 #endregion
-
 #region private functions
-        //Dictionary<String, String> listInfos;
         String listInfos;
-        private void initDisplayParam()
+        private void InitDisplayParam()
         {
-            ////listInfos = new Dictionary<String, String>();
-            //lock(listData)
-            //{
-            listInfos="Parameters configure source\n" +
+            listInfos = "Parameters configure source\n" +
             "   -Sampling mode->quadrature sampling\n" +
-            "   -Preferred Sample Rate->0.25 MSPS, imposed if record .wav\n" +
+            "   -Sufficient Sample Rate->0.25 MSPS\n" +
             "   -AGC:on(corresponds to auto gain with rtl433) can be manually->off.\n" +
             "   -RTL AGC:on.(not the AGC panel) can be set off if good signals.\n" +
-            "   -Check frequency\n";
+            "   -Check frequency\n\n" ;
+
         }
-        private void displayParam()
+        private void DisplayParam()
         {
             if (!listViewConsoleFull)
-                listViewConsoleFull=WriteLine(listInfos);
+                listViewConsoleFull = WriteLine(listInfos);
         }
 
 #endregion
-
-#region callBack from devices form
-
-        internal void closingOneFormDevice(String key)
-        {
-            //lock (listformDevice)
-            //{
-            if (listformDevice.ContainsKey(key))
-                listformDevice.Remove(key);
-            //}
-        }
-
-        internal void closingOneFormDeviceListMessages(String key)
-        {
-            //lock (listformDeviceListMessages)
-            //{
-            if (listformDeviceListMessages.ContainsKey(key))
-                listformDeviceListMessages.Remove(key);
-            //}
-        }
-
-        internal void closingFormListDevice()
-        {
-            saveDevicesList();
-            formListDevice = null;
-        }
-
-        internal Boolean setRecordDevice(String name, Boolean choice)
-        {
-            if (choice)
-            {
-                if ((!checkBoxMONO.Checked && !checkBoxSTEREO.Checked) || labelSampleRate.Text != "250000")
-                {
-                    MessageBox.Show("Choice MONO/STEREO or record only to 250000 MSPS->use -S option", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return false;
-                }
-                else
-                {
-                    foreach (KeyValuePair<String, FormDevices> _form in listformDevice)
-                    {
-                        if (_form.Key != name)
-                            listformDevice[_form.Key].resetLabelRecord();
-                    }
-                    nameToRecord = name;
-                    recordDevice = choice;
-                    return true;
-                }
-            }
-            else
-            {
-                recordDevice = choice;
-                ClassInterfaceWithRtl433.clearRecord();
-                return true;
-            }
-        }
-
-#endregion
-
 #region event panel control
-
-        private void buttonDisplayParam_Click(object sender, EventArgs e)
+        private void ButtonDisplayParam_Click(object sender, EventArgs e)
         {
-            displayParam();
+            DisplayParam();
         }
-
-        private void buttonCu8ToWav_Click(object sender, EventArgs e)
+        private void ButtonCu8ToWav_Click(object sender, EventArgs e)
         {
-            if (!checkBoxMONO.Checked && !checkBoxSTEREO.Checked)
-                MessageBox.Show("Choice MONO / STEREO (stop before)", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            else
+            Int32 cptPb = 0;
+#if !TESTRECURSIF && !TESTBATCH
+            using (OpenFileDialog openCu8 = new OpenFileDialog())
             {
-                OpenFileDialog openCu8 = new OpenFileDialog();
                 openCu8.DefaultExt = "cu8";
                 openCu8.Filter = "cu8 files|*.cu8";
                 openCu8.Multiselect = true;
+
                 if (openCu8.ShowDialog() == DialogResult.OK)
                 {
                     foreach (String file in openCu8.FileNames)
                     {
-                        wavRecorder.convertCu8ToWav(file, checkBoxMONO.Checked, checkBoxSTEREO.Checked, 1);
+                        Int32 sampleRate = ClassUtils.ConvertCu8ToWav(file);
+                        if (sampleRate == -1)
+                        {
+                            MessageBox.Show("No sample rate detected in the file name: _sample rate+k " + file, "Cancel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            cptPb ++;
+                        }
                     }
-                    MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (cptPb == 0)
+                        MessageBox.Show("Translate is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    else
+                        MessageBox.Show("Translate is NOT completed  " + (openCu8.FileNames.Length - cptPb).ToString() + "/" + openCu8.FileNames.Length.ToString() + " ok files", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 openCu8.Dispose();
             }
-        }
-
-        private void checkBoxEnabledDevicesDisabled_CheckedChanged(object sender, EventArgs e)
-        {
-            process_CheckBoxEnabledDevicesDisabled_CheckedChanged();
-        }
-
-        private void process_CheckBoxEnabledDevicesDisabled_CheckedChanged()
-        {
-            if (checkBoxEnabledDevicesDisabled.Checked)
+#elif TESTRECURSIF && !TESTBATCH
+            try
             {
-                checkBoxEnabledDevicesDisabled.Text = "Enabled devices disabled";
+                //Set a variable to the My Documents path.
+                string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\tests";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string dstPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\rtl_433_tests-master";
+                Int32 lenPath = srcPath.Length+1;
+                var files = from file in Directory.EnumerateFiles(srcPath, "*.cu8", SearchOption.AllDirectories)
+                            //from line in File.ReadLines(file)
+                            //where line.Contains(".cu8")
+                            select new
+                            {
+                                File = file,
+                                //Line = line
+                            };
+                String memoDirectory = "";
+                Int32 cptFile = 0;
+                foreach (var f in files)
+                {
+                    try
+                    {
+                        String directory = Path.GetDirectoryName(f.File);
+                        if (!(memoDirectory == directory))
+                        {
+
+                            String newFile = directory.Substring(lenPath).Replace("\\", "_") + "_" + Path.GetFileName($"{f.File}");
+                            Debug.WriteLine(newFile);
+                            Debug.WriteLine(dstPath + "\\" + newFile);
+
+                            File.Copy($"{f.File}", dstPath + "\\" + newFile);
+                            memoDirectory = directory;
+                            cptFile ++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                }
+                Debug.WriteLine(cptFile.ToString());
+
+
             }
+            catch (UnauthorizedAccessException uAEx)
+            {
+                Debug.WriteLine(uAEx.Message);
+            }
+            catch (PathTooLongException pathEx)
+            {
+                Debug.WriteLine(pathEx.Message);
+            }
+            if (cptPb == 0)
+                MessageBox.Show("Translate is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
+                MessageBox.Show("Translate is NOT completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+#elif TESTBATCH
+
+            //generate batch file for replay with RTL_433 console mode->dstFile
+            //put srcPath,dstFile 
+            //and PathRtl433_EXE where you are compiled RTL_433
+            //run SDRSharp, enabled plugin and cu8 to Wav
+            //open Console to PathRtl433_EXE
+            //run AllFiles.bat
+
+            string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\rtl_433_tests-master";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string dstFile = "C:\\marc\\tnt\\rtl_433\\rtl_433-master_06052024\\vs17_32\\Debug\\FilesRTL433AllOK.bat ";
+            var files = from file in Directory.EnumerateFiles(srcPath, "*.cu8", SearchOption.AllDirectories)
+                        select new
+                        {
+                            File = file,
+                        };
+            Int32 cptFile = 0;
+            try
             {
-                checkBoxEnabledDevicesDisabled.Text = "Default value";
+                using (Stream stream = new FileStream(dstFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    String Line = "";
+                    String PathRtl433_EXE = "C:\\marc\\tnt\\rtl_433\\rtl_433-master_06052024\\vs17_32\\Debug\\rtl_433";
+                    
+                            StreamWriter str = new StreamWriter(stream);
+                    str.WriteLine("cls");
+                    str.WriteLine("REM: "+DateTime.Now);
+                    foreach (var file in files)
+                    {
+                        Int32 sampleRate = 0;
+                        Int32 sampleRateFromFileName = wavRecorder.getSampleRateFromName(file.File); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
+                        if (sampleRateFromFileName == -1)
+                        {
+                            sampleRateFromFileName = 250;
+                            sampleRate = 250000;
+                            //MessageBox.Show("No sample rate detected in the file name", "Cancel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            //return -1;
+                        }
+                        else
+                            sampleRate = sampleRateFromFileName;
+
+                        String Option = " -s " + sampleRate.ToString() + " -C si -r ";
+
+                        Line = PathRtl433_EXE + Option + file.File;
+                        str.WriteLine(Line);
+                        cptFile ++;
+                        if(cptFile%20==0)
+                            str.WriteLine("Pause");
+                    }
+                    str.Flush();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            MessageBox.Show("Copyfile is completed for "+ cptFile.ToString() + " files", "Translate cu8 nameFile with options to batch file", MessageBoxButtons.OK, MessageBoxIcon.Information);
+#endif
+        }
+
+        private void RadioButtonTypeWindow_CheckedChanged(object sender, EventArgs e)
+        {
+            SetRadioButtonTypeWindow();
+        }
+
+        private void InitPanel()
+        {
+            SetRadioButtonTypeWindow();
+            //SetRadioButtonRaw();
+            //SetRecordText = checkBoxRecordTxtFile.Checked;
+        }
+
+        private void SetRadioButtonTypeWindow()
+        {
+           if (checkBoxEnabledPlugin.Checked)
+            {
+                SetSelectFormGraph = radioButtonGraph.Checked;
+                ClassInterfaceWithRtl433.SetSelectFormGraph = radioButtonGraph.Checked;
+                //SetSelectFormListMessages = radioButtonListMessages.Checked;
+                SetSelectFormListDevice = radioButtonListDevices.Checked;
+                if (myClassFormDevicesList != null)
+                    myClassFormDevicesList.ChooseFormListDevice = radioButtonListDevices.Checked;
             }
         }
 
-        private void radioButtonTypeWindow_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxEnabledPlugin.Checked)
-                testRadioButtonListDevices();
-        }
-        #endregion
 
-        private void checkBoxSTEREO_CheckedChanged(object sender, EventArgs e)
-        {
-            ClassInterfaceWithRtl433.setSTEREO(checkBoxSTEREO.Checked);
-        }
-
-        private void checkBoxMONO_CheckedChanged(object sender, EventArgs e)
-        {
-            ClassInterfaceWithRtl433.setMONO(checkBoxMONO.Checked);
-        }
+        //private void RadioButtonRaw_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    SetRadioButtonRaw();
+        //}
+        //private void SetRadioButtonRaw ()
+        //{
+        //    //setWav=radioButtonWav.Checked; 
+        //    //setRaw=radioButtonRaw.Checked;
+        //    ClassUtils.Wav=true; //wav and raw exclusif
+        //    ClassUtils.Raw=false;
+        //}
+        //private void CheckBoxRecordTxtFile_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    SetRecordText = checkBoxRecordTxtFile.Checked;
+        //}
+#endregion
     }
 }

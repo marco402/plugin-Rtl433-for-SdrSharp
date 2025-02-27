@@ -1,4 +1,81 @@
 ## New Version  
+Version 1.5.8.0 February 27, 2025.  
+    -Devices window.  
+        -Synchronization of the 3 graphs. Pulses, Am or Fm and IQ.  
+        -Ability to validate the recording of the next message on all device windows
+            compared to only 1 previously.  
+    -Normalized wav file names for SDRSharp.  
+        Frequency and sample rate.  
+    -Removed the choice of MONO or STEREO, recordings from the device window are files
+        wav has 2 channels I and Q.  
+    -Removed the verbose choice.  
+    -Removed the choice enabled devices disabled.  
+    -Removed metadata:always displayed.  
+    -Decimation IQ of sampleRate/250000, prefer a sampleRate of 250000, less time and less memory.  
+        The theoretical lower limit is 200000.  
+    -Updated devices RTL433 version 24.10 (2024-10-30): 217--->238 devices.  
+    -Changed RTL_433 for 64bits.  
+
+## Installation  
+For all versions, the location of the plugins is indicated in the SDRSharp.config or SDRSharp file.exe.config,
+under the key core.pluginsDirectory.Il is thus possible to have 1 single plugin folder for several SDRSharp versions.  
+
+​Warning:3 differents SDRSharp installations.  
+Since version 1830, there is no longer a bin folder, just put the 3 dll either in the plugins folder
+either in plugins/DLL_433 no need for key.
+For versions that have sdrsharp.exe in a bin folder.  
+In this case, position yourself in C:SDRSharp/plugins  
+    - Create a folder RTL_433 and place the 3 dlls there.  
+    - Important:Delete the 3 dlls if they are in bin.  
+    - Delete the key if it is in plugins.xml.  
+
+For older SDRSharp versions:  
+- Installation of SDRSharp (tested with version 1.0.0.1788)  
+  - Place the files from the install folder (SDRSharp.Rtl_433.dll rtl_433.dll and GraphLib.dll) in the SDRSharp folder.  
+  - Add the line <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> in the plugins file.xml  
+
+## Launch
+After configuring SDRSharp (see chapter configuration, this information is initially recalled in the plugin window).  
+The play button of SDR validates the start button of the sdr_433 plugin.  
+Enabled plugin button to activate the plugin.  
+Then start button(wait if radio is stopped)  
+Then wait for a recognized message.  
+For more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs.  
+
+# Display  
+    -3 types of window:
+        -List messages.
+            Display of each device in a different window containing the list of messages received.
+            -'Export data' button: saves the received messages in a text file (.txt).
+        -Graph.
+            Display of each device in a different window containing 3 IQ, AM or FM and pulse graphs.
+               with the data of the last 4 messages.
+            -'Record one shoot' button: saves IQ data to a 2-channel I and Q .wav file.
+        -List devices
+            Display of the list of devices received.
+                -Possibility to save the data in the devices.txt file when the window is closed.
+                -Possibility to reload the devices.txt file when the window opens.
+
+# Setting up sdrSharp  
+The plugin processes the raw IQ data.  
+Configure source button:  
+    - Sampling mode:quadrature sampling  
+    - Sample Rate:0.25 MSPS (value of rtl433)  
+    - RTL AGC:on.(not the AGC panel)  
+    - Tuner AGC:on.  
+    - Frequency.   
+
+# File Conversion  
+    - Convert .cu8 to .wav STEREO files to reload with SDRSharp.  
+    - The sampling rate is taken at the end of the file name between _ and k.  
+    - If it does not exist, 250,000 is taken by default.  
+
+# Frequency  
+    It is possible to select the different frequencies quoted on the site  
+    https://triq.org/rtl_433/#building-installation  
+The free selection allows to launch the plugin without changing the frequency.  
+
+## Previous versions  
 Version 1.5.7.0 May 8, 2024.  
     -Removing the console RTL_433.  
     -The information is transferred to the text box at the bottom of the plugin.  
@@ -55,34 +132,6 @@ Version 1.5.4.0 5 January 2022
            -Added 27 devices(default/default+disabled/all)(150/174/180)-->(177/202/208).  
      -Added a column number of messages received in the list devices window.  
 
-## Installation  
-For all versions, the location of the plugins is indicated in the SDRSharp.config or SDRSharp file.exe.config,
-under the key core.pluginsDirectory.Il is thus possible to have 1 single plugin folder for several SDRSharp versions.  
-
-​Warning:3 differents SDRSharp installations.  
-Since version 1830, there is no longer a bin folder, just put the 3 dll either in the plugins folder
-either in plugins/DLL_433 no need for key.
-For versions that have sdrsharp.exe in a bin folder.  
-In this case, position yourself in C:SDRSharp/plugins  
-    - Create a folder RTL_433 and place the 3 dlls there.  
-    - Important:Delete the 3 dlls if they are in bin.  
-    - Delete the key if it is in plugins.xml.  
-
-For older SDRSharp versions:  
-- Installation of SDRSharp (tested with version 1.0.0.1788)  
-  - Place the files from the install folder (SDRSharp.Rtl_433.dll rtl_433.dll and GraphLib.dll) in the SDRSharp folder.  
-  - Add the line <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> in the plugins file.xml  
-
-## Launch
-After configuring SDRSharp (see chapter configuration, this information is initially recalled in the plugin window).  
-The play button of SDR validates the start button of the sdr_433 plugin.  
-Start button to activate the plugin.  
-Then wait for a recognized message.  
-The -MLevel button just adds 4 information to the device window.  
-for more details on rtl_433 see https://triq.org/rtl_433/OPERATION.html#inputs  
-The plugin works correctly with SDRSharp versions 1788,1811 and the original version on github.  
-
-## Previous versions  
 Version 1.5.0.0 1 August 2021  
   - Modifications  
       -Add a third radio button under the start button to display a new window type:  
@@ -208,53 +257,7 @@ Version 1.10  April 2021
     - Add file test in install\Recordings for replay with input SDRSharp(Baseband Files(*))  
 
 Version 1.00  March 2021
-# Display  
-  - Display of each received device in a different window.  
-  - Verbose output display in the console window.  
-  - Frequency spectrum display in replay mode.  
-# Record  
-- Record data for each device in . wav file  
- - either in stereo mode for I and Q which makes it possible to replay this file by selecting it by the SDRSharp(Baseband Files(*.wav) source).
-To change the file, configure SDRSharp button.  
-  - either in mono mode for the IQ module which allows the signal to be displayed with Audacity or other third-party software.  
-    To start these recordings, select MONO STEREO at rtl433 interface, both are possible at the same time.  
-    Then launch "record one shoot" at the window of the device . 1 is only selectable, it is the last selected that is taken into account.  
-For these recordings, it is preferable to center the frequency on the device selected to have a frequency spectrum centered.  
-    If the Recordings folder of SDRSharp exists, the files will be saved in it otherwise in the SDRSharp folder.  
-    These files contain all the data entered at once(50,000 bytes) and are not limited to the device data.  
-    File name are:  
-    - Device name.  
-    - Device ID.  
-    - Channel if exist.  
-    - Frequency.  
-    - Sample.  
-    - Date.  
-    - Heure.  
-    - MONO or STEREO  
-# Setting up sdrSharp  
-The plugin processes the raw IQ data, so a priori, only the parameters located in the upper band changes its operation.  
-Configure source button:  
-    - Sampling mode:quadrature sampling  
-    - Sample Rate:0.25 MSPS (value of rtl433)  
-    - RTL AGC:on.(not the AGC panel)  
-    - Tuner AGC:on.  
-    - So is the frequency.   
 
-# File Conversion  
-    - Convert .cu8 to .wav STEREO files to reload with SDRSharp.  
-    - The file names are completed by STEREO or MONO, cu8 is replaced by wav.  
-    - The sampling rate is taken at the end of the file name between _ and k.  
-    - If it does not exist, 250,000 is taken by default.  
-
-# The options implemented in this first version:  
-    - The different verbose (to the console).  
-    - Metadata  
-      - Label(the fields are added to the device windows).  
-# Frequency  
-    It is possible to select the different frequencies quoted on the site  
-    https://triq.org/rtl_433/#building-installation  
-The free selection allows to launch the plugin without changing the frequency.  
-​
 # Test configuration  
     - Operating systeme:Windows 10.  
     - Clé DVB-T+FM+DAB 820T2 & SDR DV3 USB2.0  
@@ -271,6 +274,85 @@ The free selection allows to launch the plugin without changing the frequency.
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.8.0 20 Février 2025   
+    -Fenetre devices.  
+        -Synchronisation des 3 graphiques.Pulses,Am ou Fm et IQ.  
+        -Possibilité de valider l'enregistrement du prochain message sur toutes les fenetres devices
+            contre 1 seule precedemment.  
+    -Normalisation du nom des fichiers wav pour SDRSharp.  
+        -frequence et sample rate.  
+
+    -Suppression du choix MONO ou STEREO, les enregistrements a partir de la fenetre device sont des fichier
+        wav a 2 canaux I et Q.  
+    -Suppression du choix verbose.  
+    -Suppression du choix enabled devices disabled.  
+	-Supression de metadata:toujours affichées.  
+    -Decimation IQ de sampleRate/250000, preferer un sampleRate de 250000, moins de temps et moins de mémoire.
+        La limite theorique basse est de 200000.  
+    -Mise a jour des devices RTL433 version 24.10 (2024-10-30): 217--->238 devices.  
+	-Modification de RTL_433 pour 64bits.  
+
+## Installation  
+​Pour toutes les version, l'emplacement des plugins est indiqué dans le fichier SDRSharp.config ou SDRSharp.exe.config,
+sous la cle core.pluginsDirectory.Il est ainsi possible d'avoir 1 seul dossier plugin pour plusieurs version SDRSharp.
+ATTENTION:3 installations de SDRSharp différentes.  
+Depuis la version 1830, il n'y a plus de dossier bin, il suffit de mettre les 3 dll soit dans le dossier plugins
+soit dans plugins/DLL_433 pas besoin de cle.
+Pour les versions qui ont sdrsharp.exe dans un dossier bin.  
+Dans ce cas, se positionner dans C:\SDRSharp\plugins  
+    - Créer un dossier RTL_433 et y placer les 3 dll.  
+    - Important:Supprimer les 3 dll si elles sont dans bin.  
+    - Supprimer la cle si elle est dans plugins.xml.  
+
+Pour les version SDRSharp plus anciennes:  
+- Installation de SDRSharp(testé avec la version 1.0.0.1788)  
+  - Placer les fichiers du dossier install (SDRSharp.Rtl_433.dll rtl_433.dll et GraphLib.dll) dans le dossier SDRSharp.  
+  - Ajouter la ligne <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> dans le fichier plugins.xml  
+
+## Lancement
+Après avoir configuré SDRSharp (voir chapitre configuration, ces informations sont rappelées au départ dans la fenêtre du plugin).  
+    -Le bouton play de SDR valide le bouton start du plugin sdr_433.  
+    -Bouton enabled plugin pour activer le plugin.  
+    -Bouton start (wait si la radio est arretee).  
+Ensuite patienter en attendant un message reconnu.  
+Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATION.html#inputs.  
+
+
+# Affichage  
+    -3 types de fenêtre:  
+        -List messages.  
+            Affichage de chaque device dans une fenêtre differente contenant la liste des messages reçus.  
+            -bouton 'export data':enregistre les messages reçus dans un fichier texte(.txt).  
+        -Graph.  
+            Affichage de chaque device dans une fenêtre differente contenant 3 graphiques IQ,AM ou FM et pulses.
+                avec les données des 4 derniers messages.
+                -Bouton 'record one shoot':enregistre les données IQ dans un fichier .wav 2 canaux I et Q .  
+        -List devices  
+            Affichage de la liste des devices recus.  
+                -Possibilité d'enregistrer les données dans le fichier devices.txt à la fermeture de la fenêtre.  
+                -Possibilité de recharger le fichier devices.txt à l'ouverture de la fenêtre.  
+
+# Paramétrage de sdrSharp  
+    -Le plugin traite les données brutes IQ.  
+
+# Bouton configure source:  
+    -Sampling mode:quadrature sampling  
+    -Sample Rate:0.25 MSPS (valeur de rtl433)  
+    -RTL AGC:on.(pas le panel AGC)  
+    -Tuner AGC:on.  
+    -Fréquence.  
+
+# Conversion de fichier  
+    - Conversion de fichier .cu8 vers des fichiers .wav 2 canaux I et Q pour les recharger avec SDRSharp.  
+    - La vitesse d'échantillonnage est prélevée à la fin du nom du fichier entre _ et k.  
+    - Si celle-ci n'existe pas, 250000 est prise par défaut.  
+
+# Fréquences  
+    -Il est possible de sélectionner les différentes fréquences citées sur le site  
+    https://triq.org/rtl_433/#building-installation  
+    -La sélection free permet de lancer le plugin sans changer la fréquence.  
+
+## Versions précédentes
 Version 1.5.7.0 8 Mai 2024  
     -Supression de la console RTL_433.  
     -Les informations sont transférées dans la zone de texte en bas du plugin.  
@@ -322,35 +404,6 @@ Version 1.5.4.0  1 Janvier 2022
      -Mise a jour de la version RTL_433(V21.12 du 29 Décembre 2021, la précédente datait du 1 Mars 2021).  
            -Ajout de 27 devices(defaut/defaut+disabled/tous)(150/174/180)-->(177/202/208).  
      -Ajout d'une colonne nombre de message recus dans la fenetre list devices.  
-
-
-## Installation  
-​Pour toutes les version, l'emplacement des plugins est indiqué dans le fichier SDRSharp.config ou SDRSharp.exe.config,
-sous la cle core.pluginsDirectory.Il est ainsi possible d'avoir 1 seul dossier plugin pour plusieurs version SDRSharp.
-ATTENTION:3 installations de SDRSharp différentes.  
-Depuis la version 1830, il n'y a plus de dossier bin, il suffit de mettre les 3 dll soit dans le dossier plugins
-soit dans plugins/DLL_433 pas besoin de cle.
-Pour les versions qui ont sdrsharp.exe dans un dossier bin.  
-Dans ce cas, se positionner dans C:\SDRSharp\plugins  
-    - Créer un dossier RTL_433 et y placer les 3 dll.  
-    - Important:Supprimer les 3 dll si elles sont dans bin.  
-    - Supprimer la cle si elle est dans plugins.xml.  
-
-Pour les version SDRSharp plus anciennes:  
-- Installation de SDRSharp(testé avec la version 1.0.0.1788)  
-  - Placer les fichiers du dossier install (SDRSharp.Rtl_433.dll rtl_433.dll et GraphLib.dll) dans le dossier SDRSharp.  
-  - Ajouter la ligne <add key="RTL_433" value="SDRSharp.Rtl_433.Rtl_433_Plugin, SDRSharp .Rtl_433" /> dans le fichier plugins.xml  
-
-## Lancement
-Après avoir configuré SDRSharp (voir chapitre configuration, ces informations sont rappelées au départ dans la fenêtre du plugin).  
-Le bouton play de SDR valide le bouton start du plugin sdr_433.  
-Bouton start pour activer le plugin.  
-Ensuite patienter en attendant un message reconnu.  
-Le bouton -MLevel permet juste d'ajouter 4 informations dans la fenêtre device.  
-Pour davantage d'informations sur Rtl_433 voir https://triq.org/rtl_433/OPERATION.html#inputs.  
-Le plugin fonctionne correctement jusqu'à la versions SDRSharp  1811.  
-
-## Versions précédentes
 Version 1.5.0.0  1 Août 2021
   - Modifications  
       -Ajout d'un troisième bouton radio sous le bouton start pour afficher un nouveau type de fenêtre:  
@@ -479,56 +532,6 @@ Version 1.10  Avril 2021
 
 Version 1.00  Mars 2021
 
-# Affichage  
-    - Affichage de chaque appareil reçu dans une fenêtre différente.  
-    - Affichage des sorties verbose dans la fenêtre console.  
-    - Affichage du spectre de fréquence en mode rejeu.  
-# Enregistrement  
-- Enregistrement  des données pour chaque appareil en fichier .wav  
-        - soit en mode stéréo pour I et Q ce qui permet de rejouer ce fichier en le sélectionnant par la source SDRSharp(Baseband Files(*)).  
-    Pour changer de fichier, bouton configure de SDRSharp.  
-        - soit en mode mono pour le module de IQ ce qui permet d'afficher le signal avec un logiciel tiers Audacity ou autre.  
-    Pour lancer ces enregistrements, sélectionner MONO STEREO au niveau de l'interface rtl433 , les 2 sont possible en même temps.  
-    Puis lancer "record one shoot" au niveau de la fenêtre de l'appareil .1 seul est sélectionnable, c'est le dernier sélectionné qui est pris en compte.  
-    Pour ces enregistrements, il est préférable de centrer la fréquence sur l' appareil sélectionne pour avoir un spectre des fréquences centré.  
-    Si le dossier Recordings de SDRSharp existe, les fichier seront enregistrés dedans sinon dans le dossier SDRSharp.  
-    Ces fichier contiennent toutes les données saisies d'un coup(50000 octets) et ne sont pas limitées au données de l'appareil.  
-    Les noms des fichiers comprennent:  
-    - Le nom de l'appareil.  
-    - ID de l'appareil.  
-    - Le canal si présent.  
-    - La fréquence.  
-    - Le nombre d'échantillon par seconde.  
-    - Date.  
-    - Heure.  
-    - MONO ou STEREO  
-
-# Paramétrage de sdrSharp  
-Le plugin traite les données brutes IQ donc à priori, seul les paramètres situés dans le bandeau supérieur change son fonctionnement.  
-
-# Bouton configure source:  
-    - Sampling mode:quadrature sampling  
-    - Sample Rate:0.25 MSPS (valeur de rtl433)  
-    - RTL AGC:on.(pas le panel AGC)  
-    - Tuner AGC:on.  
-    - Ainsi que la fréquence.  
-
-# Conversion de fichier  
-    - Conversion de fichier .cu8 vers des fichiers .wav STEREO pour les recharger avec SDRSharp.  
-    - Les noms de fichiers sont complétés par STEREO ou MONO, cu8 est remplacé par wav.  
-    - La vitesse d'échantillonnage est prélevée à la fin du nom du fichier entre _ et k.  
-    - Si celle-ci n'existe pas, 250000 est prise par défaut.  
-
-# Les options  implémentées dans cette première version:  
-    - Les différents verbose(vers la console).  
-    - Metadata  
-      - Label(les champs s'ajoutent aux fenêtres des appareils).  
-
-# Fréquences  
-    Il est possible de sélectionner les différentes fréquences citées sur le site  
-	https://triq.org/rtl_433/#building-installation  
-La sélection free permet de lancer le plugin sans changer la fréquence.  
-​
 # Configuration de test  
 - Système d'exploitation :Windows 10.  
 - Clé DVB-T+FM+DAB 820T2 & SDR DV3 USB2.0  

@@ -17,6 +17,12 @@ namespace SDRSharp.Rtl_433
         {
             if (disposing && (components != null))
             {
+                if (str != null)
+                {
+                    str.Flush();
+                    str.Close();//close text file
+                    str.Dispose();
+                }
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -33,7 +39,6 @@ namespace SDRSharp.Rtl_433
             this.listViewListMessages = new System.Windows.Forms.ListView();
             this.statusStripExport = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelExport = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabelDevices = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStripExport.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -48,13 +53,12 @@ namespace SDRSharp.Rtl_433
             this.listViewListMessages.TabIndex = 0;
             this.listViewListMessages.UseCompatibleStateImageBehavior = false;
             this.listViewListMessages.View = System.Windows.Forms.View.List;
-            this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewListMessages_RetrieveVirtualItem);
+            this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListViewListMessages_RetrieveVirtualItem);
             // 
             // statusStripExport
             // 
             this.statusStripExport.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabelExport,
-            this.toolStripStatusLabelDevices});
+            this.toolStripStatusLabelExport});
             this.statusStripExport.Location = new System.Drawing.Point(0, 124);
             this.statusStripExport.Name = "statusStripExport";
             this.statusStripExport.Size = new System.Drawing.Size(1034, 22);
@@ -63,16 +67,9 @@ namespace SDRSharp.Rtl_433
             // toolStripStatusLabelExport
             // 
             this.toolStripStatusLabelExport.Name = "toolStripStatusLabelExport";
-            this.toolStripStatusLabelExport.Size = new System.Drawing.Size(67, 17);
-            this.toolStripStatusLabelExport.Text = "Export data";
-            this.toolStripStatusLabelExport.Click += new System.EventHandler(this.toolStripStatusLabelExport_Click);
-            // 
-            // toolStripStatusLabelDevices
-            // 
-            this.toolStripStatusLabelDevices.ForeColor = System.Drawing.Color.Red;
-            this.toolStripStatusLabelDevices.Name = "toolStripStatusLabelDevices";
-            this.toolStripStatusLabelDevices.Size = new System.Drawing.Size(210, 17);
-            this.toolStripStatusLabelDevices.Text = " (WARNING replaces the file if it exists)";
+            this.toolStripStatusLabelExport.Size = new System.Drawing.Size(92, 17);
+            this.toolStripStatusLabelExport.Text = "Export data(.txt)";
+            this.toolStripStatusLabelExport.Click += new System.EventHandler(this.ToolStripStatusLabelExport_Click);
             // 
             // FormDevicesListMessages
             // 
@@ -96,6 +93,5 @@ namespace SDRSharp.Rtl_433
         private System.Windows.Forms.ListView listViewListMessages;
         private System.Windows.Forms.StatusStrip statusStripExport;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelExport;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelDevices;
     }
 }

@@ -1,5 +1,5 @@
 ﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
-                                FormDevices.cs 
+                                FormListDevices.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
  **************************************************************************************
@@ -12,29 +12,26 @@
  **********************************************************************************/
 using System;
 using System.Collections.Generic;
-//using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 namespace SDRSharp.Rtl_433
 {
     internal partial class FormListDevices : Form
     {
-        private Int32 maxDevices = 0;
-        private Int32 maxColumns = 0;
-        private Dictionary<String, Int32> cacheListColumns;
-        private ListViewItem[] cacheListDevices;
+        private readonly Int32 maxDevices = 0;
+        private readonly Int32 maxColumns = 0;
+        private readonly Dictionary<String, Int32> cacheListColumns;
+        private readonly ListViewItem[] cacheListDevices;
         private Int32 nbDevice = 0;
-        private Rtl_433_Panel classParent;
+        private readonly ClassFormDevicesList myClassFormDevicesList;
         private Boolean firstToTop = false;
-        private Int32 maxColCurrent = 0;
-#region events form
-#endregion
-#region private functions
-        private void listDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        #region private functions
+        private void ListDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            try {
+            try
+            {
                 if (e.ItemIndex >= 0)
                 {
                     ListViewItem lvi = cacheListDevices[e.ItemIndex];
@@ -44,35 +41,22 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error fct(listDevices_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.WriteLine(ex.Message, "Error fct(listDevices_RetrieveVirtualItem)");
             }
         }
-        private Int32 FindIndexIfDeviceExist(String device)
-        {
-            for (Int32 row = 0; row < maxDevices; row++)
-            {
-                ListViewItem lvi = cacheListDevices[row];
-                if (lvi != null && lvi.Text == device)
-                    return row;
-            }
-            return -1;
-        }
-        private void EnsureVisible(Int32 item)
-        {
-            listViewDevices.Items[item].EnsureVisible();
-        }
+ 
         #endregion
         #region publics functions
-        internal FormListDevices(Rtl_433_Panel classParent, Int32 maxDevices, Int32 maxColumns)
+        internal FormListDevices(ClassFormDevicesList myClassFormDevicesList)
         {
             InitializeComponent();
-            this.classParent = classParent;
-            this.maxDevices = maxDevices;
-            this.maxColumns = maxColumns;
-            this.Font = this.classParent.Font;
-            this.BackColor = this.classParent.BackColor;
-            this.ForeColor = this.classParent.ForeColor;
-            this.Cursor = this.classParent.Cursor;
+            this.myClassFormDevicesList = myClassFormDevicesList;
+            this.maxDevices = ClassUtils.MaxDevicesWindows*10;
+            this.maxColumns = ClassConst.NBCOLUMN;
+            this.Font = ClassUtils.Font;
+            this.BackColor = ClassUtils.BackColor;
+            this.ForeColor = ClassUtils.ForeColor;
+            this.Cursor = ClassUtils.Cursor;
             listViewDevices.BackColor = this.BackColor;   //pb ambient property ???
             listViewDevices.ForeColor = this.ForeColor;
             listViewDevices.Font = this.Font;
@@ -80,152 +64,154 @@ namespace SDRSharp.Rtl_433
             this.SuspendLayout();
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewDevices, new object[] { true });
-            ClassFunctionsVirtualListView.initListView(listViewDevices);
+            ClassFunctionsVirtualListView.InitListView(listViewDevices);
 
             cacheListDevices = new ListViewItem[this.maxDevices];
             cacheListColumns = new Dictionary<String, Int32>();
             this.Text = "Devices received : 0";
             this.ResumeLayout(true);
-            //stopw = new Stopwatch();
         }
-        internal void refresh()
+        internal void RefreshListDevices()
         {
             if (nbDevice > 0)
                 listViewDevices.Items[nbDevice - 1].EnsureVisible();
             this.Refresh();
         }
-        internal void serializeText(String fileName)
+
+        internal void DeSerializeText(String fileName)
         {
-            ClassFunctionsVirtualListView.serializeText(fileName,cacheListColumns,cacheListDevices,false,nbDevice,true);
-        }
-        internal void deSerializeText(String fileName)
-        {
-                Cursor.Current = Cursors.WaitCursor;
-                firstToTop = !firstToTop;
-                this.SuspendLayout();
-                listViewDevices.BeginUpdate();
-                Dictionary<String, String> listData = new Dictionary<String, String>();
+            Cursor.Current = Cursors.WaitCursor;
+            firstToTop = !firstToTop;
+            this.SuspendLayout();
+            listViewDevices.BeginUpdate();
+            Dictionary<String, String> listData = new Dictionary<String, String>();
+            try
+            {
                 Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
-                try
+                using (StreamReader str = new StreamReader(stream))
                 {
-                    using (StreamReader str = new StreamReader(stream))
+                    //**************************init column title****************************
+                    String line = str.ReadLine();
+                    if (line == null)
                     {
-                        //**************************init column title****************************
-                        String line = str.ReadLine();
-                        if (line == null)
+                        MessageBox.Show("File " + ClassConst.FILELISTEDEVICES + " empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        listViewDevices.EndUpdate();
+                        this.ResumeLayout(true);
+                        firstToTop = !firstToTop;
+                        Cursor.Current = Cursors.Default;
+                        return;
+                    }
+                    String[] wordsTitleCol = line.Split('\t');
+                    for (Int32 i = 2; i < wordsTitleCol.Length - 1; i++)  //start=1 no device
+                        if (wordsTitleCol[i - 1].Length > 0)
+                            listData.Add(wordsTitleCol[i - 1], "");
+                    //***********************transfer devices*********************************
+                    String[] wordsData = line.Split('\t');
+                    while (str.Peek() >= 0)
+                    {
+                        listData.Clear();
+                        line = str.ReadLine();
+                        wordsData = line.Split('\t');
+                        Int32 indice = 0;
+                        foreach (String word in wordsTitleCol)
                         {
-                            MessageBox.Show("File devices.txt empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            listViewDevices.EndUpdate();
-                            this.ResumeLayout(true);
-                            firstToTop = !firstToTop;
-                            Cursor.Current = Cursors.Default;
-                            return;
+                            if (!wordsTitleCol[indice].Equals("device") && !wordsTitleCol[indice].Equals("Device") &&
+                                 !wordsTitleCol[indice].Equals("N mes.") && wordsTitleCol[indice].Length > 0)
+                                listData.Add(word, wordsData[indice]);
+                            indice ++;
                         }
-                        String[] wordsTitleCol = line.Split('\t');
-                        for (Int32 i = 2; i < wordsTitleCol.Length - 1; i++)  //start=1 no device
-                            if (wordsTitleCol[i - 1].Length > 0)
-                                listData.Add(wordsTitleCol[i - 1], "");
-                        //***********************transfer devices*********************************
-                        String[] wordsData = line.Split('\t');
-                        while (str.Peek() >= 0)
-                        {
-                            listData.Clear();
-                            line = str.ReadLine();
-                            wordsData = line.Split('\t');
-                            Int32 indice = 0;
-                            foreach (String word in wordsTitleCol)
-                            {
-                                if (!wordsTitleCol[indice].Equals("device") && !wordsTitleCol[indice].Equals("Device") &&
-                                     !wordsTitleCol[indice].Equals("N mes.") && wordsTitleCol[indice].Length > 0)
-                                    listData.Add(word, wordsData[indice]);
-                                indice += 1;
-                            }
-                            _setInfoDevice(listData);
-                        }
-                        //*****************************************************************************
-                        str.Close();
+                        SetInfoDevice(listData);
                     }
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message, "Error import devices fct(deSerializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                listViewDevices.EndUpdate();
-                this.ResumeLayout(true);
-                firstToTop = !firstToTop;
-                Cursor.Current = Cursors.Default;
-                listData.Clear();
-                listData = null;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error import devices fct(deSerializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            listViewDevices.EndUpdate();
+            this.ResumeLayout(true);
+            firstToTop = !firstToTop;
+            Cursor.Current = Cursors.Default;
+            listData.Clear();
         }
         /// <summary>
         /// for deserialize
         /// </summary>
         /// <param name="listData"></param>
-        internal void setInfoDevice(Dictionary<String, String> listData)
+        internal Boolean SetInfoDeviceListDevices(Dictionary<String, String> listData)
         {
-            this.SuspendLayout();
+             this.SuspendLayout();
             listViewDevices.BeginUpdate();
-            _setInfoDevice(listData);
+            this.SetInfoDevice(listData);
             listViewDevices.EndUpdate();
             this.ResumeLayout(true);
+            return true;
         }
-        internal void _setInfoDevice(Dictionary<String, String> listData)
+        private void SetInfoDevice(Dictionary<String, String> listData)
         {
             this.SuspendLayout();
             if (cacheListColumns == null)
                 return;
-            String deviceName = classParent.getDeviceName(listData);
+            String deviceName = ClassUtils.GetDeviceName(listData);
             if (deviceName == String.Empty)
             {
                 return;
             }
-            maxColCurrent = ClassFunctionsVirtualListView.addOneColumn("Device", cacheListColumns, listViewDevices, maxColCurrent);
+
+            ClassFunctionsVirtualListView.AddOneColumn("Device", cacheListColumns, listViewDevices, maxColumns);
             //**********************add column nb mes if necessary***********************************
-            maxColCurrent = ClassFunctionsVirtualListView.addOneColumn("N mes.", cacheListColumns, listViewDevices, maxColCurrent);
+            ClassFunctionsVirtualListView.AddOneColumn("N mes.", cacheListColumns, listViewDevices, maxColumns);
             //***********************add other column if necessary*************************************
-            maxColCurrent = ClassFunctionsVirtualListView.addColumn(listData, cacheListColumns, listViewDevices, maxColCurrent);
-            if (cacheListColumns.Count >= maxColumns)
-                 return; 
-             //**********************search device******************************
-            ListViewItem device =  ClassFunctionsVirtualListView.getItem(deviceName, cacheListDevices);
+            ClassFunctionsVirtualListView.AddColumn(listData, cacheListColumns, listViewDevices, maxColumns);
+            //if (cacheListColumns.Count >= maxColumns)
+            //    return;
+            //**********************search device******************************
+            ListViewItem device = ClassFunctionsVirtualListView.GetItem(deviceName, cacheListDevices);
             //**************************new device***************************
-            if (device==null)
+            if (device == null)
             {
                 if (nbDevice > maxDevices - 1)
-                       return;
+                    return;
                 device = new ListViewItem(deviceName);
-                ClassFunctionsVirtualListView.addNewLine(listData, cacheListColumns, device);
+                ClassFunctionsVirtualListView.AddNewLine(listData, cacheListColumns, device);
                 //**************add new line/device in cacheListMessages
-                ClassFunctionsVirtualListView.addElemToCache(cacheListDevices, firstToTop, nbDevice, device);
+                ClassFunctionsVirtualListView.AddElemToCache(cacheListDevices, firstToTop, nbDevice, device);
                 //**************complete subItems for all line in cacheListMessages**********************
-                ClassFunctionsVirtualListView.completeList(cacheListDevices, maxColCurrent);
+                ClassFunctionsVirtualListView.CompleteList(cacheListDevices, cacheListColumns.Count);
                 //************************************************
-                nbDevice += 1;
+                nbDevice ++;
                 device.SubItems[1].Text = "1";
             }
             //**************************refresh device***************************
             else
             {
-                ClassFunctionsVirtualListView.refreshLine(listData, cacheListColumns, device, maxColCurrent);
+                ClassFunctionsVirtualListView.RefreshLine(listData, cacheListColumns, device); //ajoute voir  ajoute des elements a une ligne existante
                 device.SubItems[1].Text = (Int32.Parse(device.SubItems[1].Text) + 1).ToString();
                 //**************complete subItems for all line in cacheListMessages**********************
-                ClassFunctionsVirtualListView.completeList(cacheListDevices, maxColCurrent);
+                ClassFunctionsVirtualListView.CompleteList(cacheListDevices, cacheListColumns.Count);
             }
- 
             //**************************************************************************************
-            this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() +"/" +maxColumns.ToString();
+            this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() + "/" + maxColumns.ToString();
             listViewDevices.VirtualListSize = nbDevice;
-            ClassFunctionsVirtualListView.resizeAllColumns(listViewDevices);
+            ClassFunctionsVirtualListView.ResizeAllColumns(listViewDevices);
             //**************************************************************************************
             this.ResumeLayout(true);
         }
         #endregion
-        private void FormListDevices_FormClosed(object sender, FormClosedEventArgs e)
+
+        private void FormListDevices_FormClosing(object sender, FormClosingEventArgs e)
         {
-            classParent.closingFormListDevice();
-            //cacheListColumns = null;    pb with framework 6.0
-            //cacheListDevices = null;
-            //nbDevice = 0;
+            if (myClassFormDevicesList.PluginIsRun && myClassFormDevicesList.ChooseFormListDevice)
+            {
+                MessageBox.Show("Stop plugin or change form type before close.", "Close form list devices ", MessageBoxButtons.OK);
+                e.Cancel = true;
+            }
+            else
+            {
+                if (MessageBox.Show("Do you want export devices list( " + ClassConst.FILELISTEDEVICES + " )", "Export devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    ClassFunctionsVirtualListView.SerializeText(myClassFormDevicesList.GetDirectoryForSaveDevicesList(), cacheListColumns, cacheListDevices, false, nbDevice, true);
+                myClassFormDevicesList.SetFormDevicesListCloseByUser=true;
+            }
         }
     }
 }

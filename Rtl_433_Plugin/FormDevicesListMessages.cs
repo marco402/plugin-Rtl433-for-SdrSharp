@@ -1,5 +1,5 @@
 ﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
-                                FormDevices.cs 
+                                FormDevicesListMessages.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
  **************************************************************************************
@@ -12,69 +12,72 @@
  **********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Drawing;
 namespace SDRSharp.Rtl_433
 {
     internal partial class FormDevicesListMessages : Form
     {
-        private ClassInterfaceWithRtl433 classInterfaceWithRtl433;
-        private String memoName = "";
-        private Int32 maxMessages = 0;
-        private Dictionary<String, Int32> cacheListColumns;
-        private ListViewItem[] cacheListMessages;
+        private readonly String NameForm = "";
+        private readonly Int32 maxMessages = 0;
+        private readonly Dictionary<String, Int32> cacheListColumns;
+        private readonly ListViewItem[] cacheListMessages;
         private Int32 nbMessage = 0;
-        private Rtl_433_Panel classParent;
-		private Boolean firstToTop = false;
-        private Boolean recordTxt = false;
-        internal FormDevicesListMessages(Rtl_433_Panel classParent, Int32 maxDevices,String name, ClassInterfaceWithRtl433 classInterfaceWithRtl433,Boolean recordTxt)
+        private readonly ClassFormListMessages classParent;
+        private readonly Boolean firstToTop = false;
+        //private Boolean recordTxt = false;
+        //private String directory = "";
+        private String PathAndNameFile = "";
+        internal FormDevicesListMessages(ClassFormListMessages classParent, String name)
         {
             InitializeComponent();
-            this.classInterfaceWithRtl433 = classInterfaceWithRtl433;
-            this.recordTxt = recordTxt;
+            //this.recordTxt = recordTxt;
             this.classParent = classParent;
-            this.Font = this.classParent.Font;
-            this.BackColor = this.classParent.BackColor;
-            this.ForeColor = this.classParent.ForeColor;
-            this.Cursor = this.classParent.Cursor;
-            this.maxMessages = maxDevices;
+            this.Font = ClassUtils.Font;
+            this.BackColor = ClassUtils.BackColor;
+            this.ForeColor = ClassUtils.ForeColor;
+            this.Cursor = ClassUtils.Cursor;
+            this.maxMessages = ClassUtils.MaxDevicesWindows;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
             this.SuspendLayout();
-            ClassFunctionsVirtualListView.initListView(listViewListMessages);
+            ClassFunctionsVirtualListView.InitListView(listViewListMessages);
             listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
             listViewListMessages.ForeColor = this.ForeColor;
+            statusStripExport.BackColor = this.BackColor;
+            statusStripExport.ForeColor = this.ForeColor;
+            statusStripExport.ShowItemToolTips = true;
             listViewListMessages.Font = this.Font;
             listViewListMessages.Cursor = this.Cursor;
-            cacheListMessages = new ListViewItem[this.maxMessages]; 
-            cacheListColumns = new Dictionary<String, Int32>();
-            cacheListColumns.Add("N° Mes.",  1);
+            cacheListMessages = new ListViewItem[this.maxMessages];
+            cacheListColumns = new Dictionary<String, Int32>
+            {
+                { "N° Mes.", 1 }
+            };
             listViewListMessages.Columns.Add("");
             listViewListMessages.Columns[0].Text = "N° Mes.";
-            memoName = name;
+            NameForm = name;
+            //PathAndNameFile = ClassUtils.GetDirectoryRecording().Replace(" ", "_") + ClassFunctionsVirtualListView.ValideNameFile(  NameForm + "_" + DateTime.Now.ToString() + ".txt", "_").Replace(" ", "_");
+            PathAndNameFile =ClassUtils.GetPathAndNameFileDateAndTxt(NameForm);
             this.Text = name + " (Messages received : 0)";
-            statusStripExport.ShowItemToolTips=true;
-            if (!this.recordTxt)
-            {
-                toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
-                " to directory Recordings if exist else in SdrSharp.exe directory \n" +
-                " You can reload file with Calc\n" +
-                " WARNING the file is replaced if it exists\n" +
-                " name file = title window";
-                toolStripStatusLabelExport.Visible = true;
-                toolStripStatusLabelDevices.Visible = true;
-            }
-            else
-            {
-                toolStripStatusLabelExport.Visible = false;
-                toolStripStatusLabelDevices.Visible = false;
-            }
+            toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
+            " to directory Recordings if it exist else in SdrSharp.exe directory \n" +
+            " if you create directory Recordings close this window before export" +
+            " You can reload file with Calc\n" +
+            " name file = title window+date.txt";
+
+            toolStripStatusLabelExport.ForeColor = this.ForeColor;
+            toolStripStatusLabelExport.BackColor = this.BackColor;
+            toolStripStatusLabelExport.Visible = true;
             this.ResumeLayout(true);
-         }
+        }
+
         #region private functions
-        private void listViewListMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private void ListViewListMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             try
             {
@@ -87,99 +90,106 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.WriteLine(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)");
             }
         }
-        private void EnsureVisible(Int32 item)
-        {
-            listViewListMessages.Items[item].EnsureVisible();
-        }
+        //private void EnsureVisible(Int32 item)
+        //{
+        //    listViewListMessages.Items[item].EnsureVisible();
+        //}
         #endregion
         #region publics functions
-        internal void refresh()
+        internal void RefreshListMessages()
         {
             if (nbMessage > 0)
                 listViewListMessages.Items[nbMessage - 1].EnsureVisible();
             this.Refresh();
         }
-        private Int32 maxColCurrent = 0;
-        internal void setMessages(Dictionary<String, String> listData)
+  
+        //private Int32 maxColCurrent = 0;
+        internal void SetMessages(Dictionary<String, String> listData)
         {
-            if (this.recordTxt)
-            {
-                if (nbMessage == 0)
-                {
-                    String directory = classParent.getDirectoryRecording().Replace(" ", "_");
-                    String fileName = ClassFunctionsVirtualListView.valideNameFile(DateTime.Now.ToString() + memoName + ".txt", "_").Replace(" ", "_");
-                    //entete dans cacheListColumns
-                    //disabled export button
-                    //init entete dans text file
-                    initSerializeOK = initSerialize(directory + fileName);
-                    if (initSerializeOK!="")
-                    {
-                        MessageBox.Show(initSerializeOK, "Error init export txt. File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
-                        " to directory Recordings if exist else in SdrSharp.exe directory \n" +
-                        " You can reload file with Calc\n" +
-                        " WARNING the file is replaced if it exists\n" +
-                        " name file = title window";
-                        toolStripStatusLabelExport.Visible = true;
-                        toolStripStatusLabelDevices.Visible =true;
-                         }
-                    else
-                    {
-                        addColumn(listData);
-                        addNewLine(listData, true);
-                    }
-                }
-                else
-                    addNewLine(listData, true);
-                //Save message listData
-            }
+            //if (this.recordTxt)
+            //{
+            //    //if(PathAndNameFile=="")
+            //    //{
+            //    //    //String directory = ClassUtils.GetDirectoryRecording().Replace(" ", "_");
+            //    //    PathAndNameFile = ClassFunctionsVirtualListView.ValideNameFile(DateTime.Now.ToString() + NameForm + ".txt", "_").Replace(" ", "_") + ".txt";
+
+            //    //}
+            //    if (nbMessage == 0)
+            //    {
+            //       //entete dans cacheListColumns
+            //        //disabled export button
+            //        //init entete dans text file
+            //        initSerializeOK = InitSerialize(PathAndNameFile);
+            //        if (initSerializeOK != "")
+            //        {
+            //            MessageBox.Show(initSerializeOK, "Error init export txt. File:" + PathAndNameFile.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
+            //            " to directory Recordings if exist else in SdrSharp.exe directory \n" +
+            //            " You can reload file with Calc\n" +
+            //            " WARNING the file is replaced if it exists\n" +
+            //            " name file = title window";
+            //            toolStripStatusLabelExport.Visible = true;
+            //            toolStripStatusLabelDevices.Visible = true;
+            //        }
+            //        else
+            //        {
+            //            AddColumn(listData);
+            //            AddNewLine(listData, true);
+            //        }
+            //    }
+            //    else
+            //        AddNewLine(listData, true);
+            //    //Save message listData
+            //}
             if (cacheListColumns == null)
                 return;
-            String deviceName = (nbMessage+1).ToString();
+            String deviceName = (nbMessage + 1).ToString();
             if (nbMessage > maxMessages - 1)
                 return;                    //message max row
             this.SuspendLayout();
             listViewListMessages.BeginUpdate();
             //*********add name column if necessary in listViewListMessages and in cacheListColumns****************
             //*********memorize maxColCurrent***************
-            maxColCurrent = ClassFunctionsVirtualListView.addColumn(listData, cacheListColumns, listViewListMessages, maxColCurrent);
-             //*************************Add new line*********************************
+            ClassFunctionsVirtualListView.AddColumn(listData, cacheListColumns, listViewListMessages, ClassConst.NBCOLUMN);
+            //*************************Add new line*********************************
             ListViewItem device = new ListViewItem(deviceName);
-            ClassFunctionsVirtualListView.addNewLine(listData, cacheListColumns, device);
+            ClassFunctionsVirtualListView.AddNewLine(listData, cacheListColumns, device);
             //**************add new line/device in cacheListMessages
-            ClassFunctionsVirtualListView.addElemToCache(cacheListMessages, firstToTop, nbMessage, device);
+            ClassFunctionsVirtualListView.AddElemToCache(cacheListMessages, firstToTop, nbMessage, device);
             //**************complete subItems for all line in cacheListMessages**********************
-            ClassFunctionsVirtualListView.completeList(cacheListMessages, maxColCurrent);
+            ClassFunctionsVirtualListView.CompleteList(cacheListMessages, cacheListColumns.Count);
             //************************************************
-            nbMessage += 1;
-            this.Text = memoName + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
+            nbMessage ++;
+            this.Text = NameForm + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
             try   //without try:Object reference not set to an instance of an object.
             {
                 listViewListMessages.VirtualListSize = nbMessage;
             }
             catch
             {
-            //if(withConsole)
-            //    Console.WriteLine(this.Text);
+                //if(withConsole)
+                //    Console.WriteLine(this.Text);
             }
-            ClassFunctionsVirtualListView.resizeAllColumns(listViewListMessages);
+            ClassFunctionsVirtualListView.ResizeAllColumns(listViewListMessages);
             //refresh();  // display last message when it is displayed at the bottom list
             listViewListMessages.EndUpdate();
             this.ResumeLayout(true);
         }
-#endregion
-#region Events Form
-        private void toolStripStatusLabelExport_Click(object sender, EventArgs e)
+        #endregion
+        #region Events Form
+        private void ToolStripStatusLabelExport_Click(object sender, EventArgs e)
         {
-            String directory = classParent.getDirectoryRecording();
-            String fileName = ClassFunctionsVirtualListView.valideNameFile(memoName,"_");
-           if( ClassFunctionsVirtualListView.serializeText(directory + fileName + ".txt", cacheListColumns, cacheListMessages,true, nbMessage,false))
-           {
-                MessageBox.Show("Export OK", "Export messages", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //String directory = ClassUtils.GetDirectoryRecording();
+            //String fileName = ClassFunctionsVirtualListView.ValideNameFile(memoName, "_");
+            if(nbMessage>0)
+            { 
+                if (ClassFunctionsVirtualListView.SerializeText(PathAndNameFile , cacheListColumns, cacheListMessages, true, nbMessage, false))
+                     MessageBox.Show("Export--> "+ NameForm , "Export messages OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
         }
         private Boolean closeByProgram = false;
         internal void CloseByProgram()
@@ -191,37 +201,38 @@ namespace SDRSharp.Rtl_433
         {
             //cacheListColumns = null;  pb with sdrsharp framework 6.0 listViewListMessages_RetrieveVirtualItem
             //cacheListMessages = null;    pb close window since framework 6 listViewListMessages_RetrieveVirtualItem
-            if (!closeByProgram)  //for foreach dictionary
-                classParent.closingOneFormDeviceListMessages(memoName);
-            if (str!=null)
-            {
-                str.Flush();
-                str.Close();//close text file
-            }
+            if (!closeByProgram && nbMessage > 0)  //for foreach dictionary
+                classParent.ClosingOneFormDeviceListMessages(NameForm);
+            //Dispose();
+            //if (str != null)
+            //{
+            //    str.Flush();
+            //    str.Close();//close text file
+            //}
             //GC.Collect();
         }
-#endregion
-#region SERIALIZE
-        String initSerializeOK = "";
-        StreamWriter str;
-        NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
-        private String initSerialize(String fileName)
+        #endregion
+        #region SERIALIZE
+        //private String initSerializeOK = "";
+        private StreamWriter str;
+        private NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
+        private String InitSerialize(String fileName)
         {
             try
             {
                 Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
-                    str = new StreamWriter(stream);
+                str = new StreamWriter(stream);
                 return "";
             }
             catch (Exception e)
             {
-                this.recordTxt = false;
+                //this.recordTxt = false;
                 nfi = null;
                 return e.Message;
             }
         }
-        
-        private void addColumn(Dictionary<String, String> listData)
+
+        private void AddColumn(Dictionary<String, String> listData)
         {
             String line = String.Empty;
             foreach (KeyValuePair<String, String> _data in listData)
@@ -233,11 +244,11 @@ namespace SDRSharp.Rtl_433
                 else
                 {
                     line += _data.Key.Replace(":", "");
-                    //for (int i = 0; i < _data.Value.Length - _data.Key.Length; i++)
+                    //for (Int32 i = 0; i < _data.Value.Length - _data.Key.Length; i++)
                     //    line += " ";
 
                     line = line.PadRight(line.Length + _data.Value.Length - _data.Key.Length);
-                    //int l = line.Length;
+                    //Int32 l = line.Length;
                     //if ((_data.Value.Length - _data.Key.Length) > 0)
                     //    line =  line.PadRight(_data.Value.Length); 
                     //else
@@ -247,11 +258,11 @@ namespace SDRSharp.Rtl_433
             }
             str.WriteLine(line);
         }
-         private void addNewLine(Dictionary<String, String> listData, Boolean formatNumber)
+        private void AddNewLine(Dictionary<String, String> listData, Boolean formatNumber)
         {
-            String line = ClassFunctionsVirtualListView.processLineTxt(listData, formatNumber, nfi, cacheListColumns.Count);
+            String line = ClassFunctionsVirtualListView.ProcessLineTxt(listData, formatNumber, nfi, cacheListColumns.Count);
             str.WriteLine(line);
         }
-#endregion
+        #endregion
     }
 }

@@ -28,13 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDevices));
             this.statusStripDevices = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelNbMessages = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelPeriodeCurrent = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelPeriodeMax = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripSplitLabelRecordOneShoot = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabelDisplayCurves = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelFreezeData = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanelDeviceData = new System.Windows.Forms.TableLayoutPanel();
             this.plotterDisplayExDevices = new GraphLib.PlotterDisplayEx();
@@ -49,11 +47,10 @@
             this.toolStripStatusLabelPeriodeCurrent,
             this.toolStripStatusLabelPeriodeMax,
             this.toolStripSplitLabelRecordOneShoot,
-            this.toolStripStatusLabelDisplayCurves,
             this.toolStripStatusLabelFreezeData});
-            this.statusStripDevices.Location = new System.Drawing.Point(0, 141);
+            this.statusStripDevices.Location = new System.Drawing.Point(0, 239);
             this.statusStripDevices.Name = "statusStripDevices";
-            this.statusStripDevices.Size = new System.Drawing.Size(1171, 22);
+            this.statusStripDevices.Size = new System.Drawing.Size(284, 22);
             this.statusStripDevices.TabIndex = 0;
             this.statusStripDevices.Text = "statusStrip1";
             // 
@@ -80,7 +77,6 @@
             this.toolStripSplitLabelRecordOneShoot.ActiveLinkColor = System.Drawing.Color.White;
             this.toolStripSplitLabelRecordOneShoot.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.toolStripSplitLabelRecordOneShoot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripSplitLabelRecordOneShoot.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSplitLabelRecordOneShoot.Image")));
             this.toolStripSplitLabelRecordOneShoot.ImageTransparentColor = System.Drawing.Color.White;
             this.toolStripSplitLabelRecordOneShoot.LinkColor = System.Drawing.Color.White;
             this.toolStripSplitLabelRecordOneShoot.Name = "toolStripSplitLabelRecordOneShoot";
@@ -88,27 +84,18 @@
             this.toolStripSplitLabelRecordOneShoot.Text = "Record one shoot";
             this.toolStripSplitLabelRecordOneShoot.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.toolStripSplitLabelRecordOneShoot.VisitedLinkColor = System.Drawing.Color.White;
-            this.toolStripSplitLabelRecordOneShoot.Click += new System.EventHandler(this.toolStripSplitLabelRecordOneShoot_Click);
-            // 
-            // toolStripStatusLabelDisplayCurves
-            // 
-            this.toolStripStatusLabelDisplayCurves.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripStatusLabelDisplayCurves.Name = "toolStripStatusLabelDisplayCurves";
-            this.toolStripStatusLabelDisplayCurves.Size = new System.Drawing.Size(100, 17);
-            this.toolStripStatusLabelDisplayCurves.Text = "No display curves";
-            this.toolStripStatusLabelDisplayCurves.Click += new System.EventHandler(this.toolStripStatusLabelDisplayCurves_Click);
+            this.toolStripSplitLabelRecordOneShoot.Click += new System.EventHandler(this.ToolStripSplitLabelRecordOneShoot_Click);
             // 
             // toolStripStatusLabelFreezeData
             // 
             this.toolStripStatusLabelFreezeData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripStatusLabelFreezeData.Name = "toolStripStatusLabelFreezeData";
-            this.toolStripStatusLabelFreezeData.Size = new System.Drawing.Size(105, 17);
-            this.toolStripStatusLabelFreezeData.Text = "Freeze data graphs";
-            this.toolStripStatusLabelFreezeData.Click += new System.EventHandler(this.toolStripStatusLabelFreezeData_Click);
+            this.toolStripStatusLabelFreezeData.Size = new System.Drawing.Size(79, 17);
+            this.toolStripStatusLabelFreezeData.Text = "Freeze graphs";
+            this.toolStripStatusLabelFreezeData.Click += new System.EventHandler(this.ToolStripStatusLabelFreezeData_Click);
             // 
             // tableLayoutPanelDeviceData
             // 
-            this.tableLayoutPanelDeviceData.AutoSize = true;
             this.tableLayoutPanelDeviceData.ColumnCount = 5;
             this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -121,21 +108,22 @@
             this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
             this.tableLayoutPanelDeviceData.RowCount = 1;
             this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 249F));
-            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(1171, 141);
+            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(284, 239);
             this.tableLayoutPanelDeviceData.TabIndex = 1;
             // 
             // plotterDisplayExDevices
             // 
+            this.plotterDisplayExDevices.BackColor = System.Drawing.Color.Transparent;
             this.plotterDisplayExDevices.BackgroundColorBot = System.Drawing.Color.White;
             this.plotterDisplayExDevices.BackgroundColorTop = System.Drawing.Color.White;
-            this.plotterDisplayExDevices.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.plotterDisplayExDevices.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.tableLayoutPanelDeviceData.SetColumnSpan(this.plotterDisplayExDevices, 5);
             this.plotterDisplayExDevices.DashedGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plotterDisplayExDevices.DoubleBuffering = true;
             this.plotterDisplayExDevices.Location = new System.Drawing.Point(3, 3);
             this.plotterDisplayExDevices.Name = "plotterDisplayExDevices";
-            this.plotterDisplayExDevices.Size = new System.Drawing.Size(1165, 243);
+            this.plotterDisplayExDevices.Size = new System.Drawing.Size(278, 243);
             this.plotterDisplayExDevices.SolidGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.TabIndex = 2;
             // 
@@ -144,9 +132,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1171, 163);
+            this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.tableLayoutPanelDeviceData);
             this.Controls.Add(this.statusStripDevices);
+            this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "FormDevices";
             this.Text = "FormDevices";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormDevices_FormClosed);
@@ -165,7 +154,6 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripSplitLabelRecordOneShoot;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelDeviceData;
         private GraphLib.PlotterDisplayEx plotterDisplayExDevices;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelDisplayCurves;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFreezeData;
     }
 }

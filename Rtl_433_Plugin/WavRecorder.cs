@@ -1,233 +1,94 @@
-﻿using System;
+﻿using SDRSharp.Radio;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SDRSharp.Radio;
 namespace SDRSharp.Rtl_433
 {
-    internal unsafe static class wavRecorder
+    internal unsafe static class WavRecorder
     {
-        internal enum recordType
+        internal enum RecordType : Int32
         {
-            MONO=0,    //baseBandForAudacity
-            STEREO      //IQ
+            RAW = 0,
+            WAV
         }
-        //internal static void WriteBufferToWav(String filePath, Byte[] buffer, Int32 lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
-        //{
-        //    WaveHeader header = new WaveHeader();
-        //    WaveFormatChunk<float> format;
-        //    WaveDataChunk<float> data;
-        //    float maxi = 0;
-        //    if (recordType == recordType.MONO)
-        //    {
-        //        Int32 nbChannel = 1;
-        //        format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-        //        data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel));
-        //        maxi = 0;
-        //        for (Int32 i = 0; i < lenBuffer; i+=2)
-        //        {
-        //            float modulus =(float) Math.Abs(Math.Sqrt(Math.Pow(buffer[i], 2) + Math.Pow(buffer[i + 1], 2)));
-        //            if (modulus > maxi)
-        //                  maxi = modulus;
-        //        }
-        //        if (maxi > 0)
-        //        {
-        //            for (Int32 i = 0; i < lenBuffer / 2; i++)
-        //            {
-        //                data.shortArray[i * 2 ] = buffer[i] / maxi;  //from -1 to +1
-        //                data.shortArray[(i * 2) + 1 ] = buffer[i+1] / maxi;  //from -1 to +1
-        //            }
-        //         }
-        //    }
-        //    else //if (recordType == recordType.STEREO)  data and format not assigned ??
-        //    {
-        //        Int32 nbChannel = 2;
-        //        format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-        //        data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel  / 2));
-        //        for (Int32 i = 0; i < lenBuffer; i += 2)
-        //        {
-        //            float modulus = (float)Math.Abs(Math.Sqrt(Math.Pow(buffer[i], 2) + Math.Pow(buffer[i + 1], 2)));
-        //            if (modulus > maxi)
-        //                maxi = modulus;
-        //        }
-        //        if (maxi > 0)
-        //        {
-        //            for (Int32 i = 0; i < lenBuffer / 2; i++)
-        //            {
-        //                data.shortArray[i * 2 ] = buffer[i] / maxi;  //from -1 to +1
-        //                data.shortArray[(i * 2) + 1 ] = buffer[i+1] / maxi;  //from -1 to +1
-        //            }
-        //        }
-        //    }
-        //    if (maxi > 0)
-        //        writeFile(filePath, header, format, data);
-        //    else
-        //        MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-        //}
-
-        internal static void WriteBufferToWav(String filePath, Complex*[] buffer, Int32 lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
+        internal static void WriteBufferToWav(String filePath, Complex[] buffer, double sampleRate)
         {
-            Int32 nbBuffer = buffer.Length;
             WaveHeader header = new WaveHeader();
             WaveFormatChunk<float> format;
             WaveDataChunk<float> data;
-            float maxi = 0;
-            if (recordType == recordType.MONO)
+            float coefficient = ClassUtils.GetMaxiTabComplex(buffer);
+            Int32 nbChannel = 2;
+            format = new WaveFormatChunk<float>((short)nbChannel, (UInt32)sampleRate);
+            data = new WaveDataChunk<float>((UInt32)(buffer.Length));
+            if (coefficient > 0)
             {
-                Int32 nbChannel = 1;
-                format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel * nbBuffer * 2));
-                maxi = 0;
-                for (Int32 i = 0; i < lenBuffer; i++)
+                for (Int32 i = 0; i < (buffer.Length ); i += 2)
                 {
-                    for (Int32 j = 0; j < nbBuffer; j++)
-                    {
-                        if (Math.Abs(buffer[j][i].Modulus()) > maxi)
-                            maxi = buffer[j][i].Modulus();
-                    }
-                }
-                if (maxi > 0)
-                {
-                    for (Int32 j = nbBuffer - 1; j > -1; j--)
-                    {
-                        Int32 indice = lenBuffer * (nbBuffer - 1 - j) * 2;
-                        for (Int32 i = 0; i < lenBuffer; i++)
-                        {
-                            data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
-                            data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
-                        }
-                    }
+                    data.shortArray[i] = buffer[i].Real / coefficient;  //  I    from -1 to +1
+                    data.shortArray[i + 1] = buffer[i].Imag / coefficient;  //  Q   from -1 to +1
                 }
             }
-            else //if (recordType == recordType.STEREO)  data and format not assigned ??
+            if (coefficient > 0.0)
             {
-                Int32 nbChannel = 2;
-                format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-                data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel * nbBuffer));
-                for (Int32 j = 0; j < nbBuffer; j++)
-                    maxi = Math.Max(maxi, wavRecorder.getMaxi(buffer[j], lenBuffer));
-                if (maxi > 0)
-                {
-                    for (Int32 j = nbBuffer - 1; j > -1; j--)
-                    {
-                        Int32 indice = lenBuffer * (nbBuffer - 1 - j) * 2;
-                        for (Int32 i = 0; i < lenBuffer; i++)
-                        {
-                            data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
-                            data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
-                        }
-                    }
-                }
-            }
-            if (maxi > 0)
-            {
-
-                FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-                try
-                {
-                    using (BinaryWriter writer = new BinaryWriter(fileStream))
-                    {
-                        writer.Write(header.sGroupID.ToCharArray());
-                        writer.Write(header.dwFileLength);
-                        writer.Write(header.sRiffType.ToCharArray());
-                        writer.Write(format.sChunkID.ToCharArray());
-                        writer.Write(format.dwChunkSize);
-                        writer.Write(format.wFormatTag);
-                        writer.Write(format.wChannels);
-                        writer.Write(format.dwSamplesPerSec);
-                        writer.Write(format.dwAvgBytesPerSec);
-                        writer.Write(format.wBlockAlign);
-                        writer.Write(format.wBitsPerSample);
-                        writer.Write(data.sChunkID.ToCharArray());
-                        writer.Write(data.dwChunkSize);
-                        foreach (float dataPoint in data.shortArray)
-                            writer.Write(dataPoint);
-                        writer.Seek(4, SeekOrigin.Begin);
-                        uint filesize = (uint)writer.BaseStream.Length;
-                        writer.Write(filesize - 8);
-                        writer.Close();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                //finally
-                //{
-                fileStream.Close();
-                //}
+                WriteFileWav(filePath, header, format, data);
             }
             else
                 MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        internal static void WriteBufferToWav(String filePath, float[] buffer,  double sampleRate)
+        {
+            WaveHeader header = new WaveHeader();
+            WaveFormatChunk<float> format;
+            WaveDataChunk<float> data;
+             Int32 nbChannel = 2;
+            format = new WaveFormatChunk<float>((short)nbChannel, (UInt32)sampleRate);
+            data = new WaveDataChunk<float>((UInt32)(buffer.Length)); //* nbChannel
+            double coefficient = ClassUtils.GetMaxiTabFloat(buffer);  //not ok with .Max() not abs value
+            if (coefficient > 0.0)
+            {
+                for (Int32 i = 0; i < (buffer.Length); i++)
+                    data.shortArray[i] = (float)(buffer[i] / coefficient);  //  I    from -1 to +1
+            }
+            if (coefficient > 0.0)
+            {
+                WriteFileWav(filePath, header, format, data);
+            }
+            else
+                MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        internal static void WriteBufferToWav(String filePath, byte[] buffer, double sampleRate)
+        {
+            WaveHeader header = new WaveHeader();
+            WaveFormatChunk<float> format;
+            WaveDataChunk<float> data;
+            Int32 nbChannel = 2;
+            format = new WaveFormatChunk<float>((short)nbChannel, (UInt32)sampleRate);
+            data = new WaveDataChunk<float>((UInt32)(buffer.Length));
+            if(buffer.Count()==0)
+                    MessageBox.Show("No record for:" + filePath, "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+            {
+                float[] tabFloat=new float[buffer.Length];
+                Boolean ret = ClassUtils.ConvertCu8ToFloat(buffer, tabFloat);
+                if (ret)
+                {
+                    data.shortArray = tabFloat; //------------------------->??? without readOnly
+                     WriteFileWav(filePath, header, format, data);
+                }
+                //float maxi = buffer.Max() / 2;  //Max() OK all > 0
+                //if (maxi > 0.0)
+                //{
+                //    for (Int32 i = 0; i < buffer.Length; i++)
+                //        data.shortArray[i] = (buffer[i] - 127) / maxi;  //from -1 to +1   0--->-1  255--->1   127--->0
+                //    writeFileWav(filePath, header, format, data);
+                //}
+                else
+                    MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
 
-
-        //internal static void WriteBufferToWav(String filePath, Complex* buffer,  Int32 lenBuffer, double _sampleRate, recordType recordType = recordType.STEREO)
-        //{
-        //    Int32 nbBuffer = 1;   // buffer.Length;
-        //    WaveHeader header = new WaveHeader();
-        //    WaveFormatChunk<float> format;
-        //    WaveDataChunk<float> data;
-        //    float maxi = 0;
-        //    if (recordType == recordType.MONO)
-        //    {
-        //        Int32 nbChannel = 1;
-        //        format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-        //        data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer));
-        //        maxi = 0;
-        //        for (Int32 i = 0; i < lenBuffer; i++)
-        //        {
-        //            if (Math.Abs(buffer[i].Modulus()) > maxi)
-        //                maxi = buffer[i].Modulus();
-        //            //for (Int32 j = 0; j < nbBuffer; j++)
-        //            //{
-        //            //    if (Math.Abs(buffer[j][i].Modulus()) > maxi)
-        //                   // maxi = buffer[j][i].Modulus();
-        //            //}
-        //        }
-        //        if (maxi > 0)
-        //        {
-        //            //for (Int32 j = nbBuffer-1; j > -1; j--)
-        //            //{
-        //            //    Int32 indice = lenBuffer * (nbBuffer-1 - j) * 2;
-        //                for (Int32 i = 0; i < lenBuffer/2; i++)
-        //                {
-        //                    //data.shortArray[i * 2 + indice] = buffer[j][i].Real / maxi;  //from -1 to +1
-        //                    //data.shortArray[(i * 2) + 1 + indice] = buffer[j][i].Imag / maxi;  //from -1 to +1
-        //                    data.shortArray[i * 2 ] = buffer[i].Real / maxi;  //from -1 to +1
-        //                    data.shortArray[(i * 2) + 1 ] = buffer[i].Imag / maxi;  //from -1 to +1
-        //                }
-        //            //}
-        //        }
-        //    }
-        //    else //if (recordType == recordType.STEREO)  data and format not assigned ??
-        //    {
-        //        Int32 nbChannel = 2;
-        //        format = new WaveFormatChunk<float>((short)nbChannel, (uint)_sampleRate);
-        //        data = new WaveDataChunk<float>((uint)(lenBuffer * nbChannel* nbBuffer/2));
-        //        for (Int32 j = 0; j < nbBuffer; j++)
-        //            maxi = Math.Max(maxi,wavRecorder.getMaxi(buffer, lenBuffer));
-        //        if (maxi > 0)
-        //        {
-        //            for (Int32 j = nbBuffer-1; j > -1; j--)
-        //            {
-        //                Int32 indice = lenBuffer * (nbBuffer-1 - j) * 2 ;
-        //                for (Int32 i = 0; i < lenBuffer/2; i++)
-        //                {
-        //                    data.shortArray[i * 2 + indice] = buffer[i].Real / maxi;  //from -1 to +1
-        //                    data.shortArray[(i * 2) + 1 + indice] = buffer[i].Imag / maxi;  //from -1 to +1
-        //                }
-        //            }
-        //        }
-        //    }
-        //    if (maxi > 0)
-        //         writeFileWav(filePath,header,format,data);
-        //    else
-        //        MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //}
-
-        private static void writeFileWav(String filePath, WaveHeader header, WaveFormatChunk<float> format,
+        private static void WriteFileWav(String filePath, WaveHeader header, WaveFormatChunk<float> format,
         WaveDataChunk<float> data)
         {
             FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
@@ -251,79 +112,18 @@ namespace SDRSharp.Rtl_433
                     foreach (float dataPoint in data.shortArray)
                         writer.Write(dataPoint);
                     writer.Seek(4, SeekOrigin.Begin);
-                    uint filesize = (uint)writer.BaseStream.Length;
+                    UInt32 filesize = (UInt32)writer.BaseStream.Length;
                     writer.Write(filesize - 8);
-                    writer.Close();
+                    writer.Flush();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            //finally
-            //{
-            fileStream.Close();
-            //}
-
         }
-        internal static float getMaxi(Complex * bufferPtr,Int32 length)
-        {
-            float maxi = float.MinValue;
-            for (var i = 0; i< length; i++)
-            {
-                if (Math.Abs(bufferPtr[i].Real) > maxi)
-                    maxi = Math.Abs(bufferPtr[i].Real);
-                if (Math.Abs(bufferPtr[i].Imag) > maxi)
-                    maxi = Math.Abs(bufferPtr[i].Imag);
-            }
-            return maxi;
-        }
-        //internal static void convertCu8ToWav(String fileName,Boolean mono,Boolean stereo,Int32 nbBuffer)
-        //{
-        //    //Complex*[] _dstWavPtr;
-        //    //UnsafeBuffer[] _dstWavBuffer;
-        //    byte[] dataCu8;
-        //    if (File.Exists(fileName))
-        //    {
-        //        using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
-        //        {
-        //            dataCu8 = new byte[reader.BaseStream.Length];
-        //            dataCu8 = reader.ReadBytes((Int32)reader.BaseStream.Length);
-        //        }
-        //        writeCu8ToWav(fileName,dataCu8,mono,stereo,false);
-                //_dstWavBuffer = new UnsafeBuffer[1];
-                //_dstWavBuffer[0] = UnsafeBuffer.Create((Int32)(dataCu8.Length), sizeof(Complex)); 
-                //_dstWavPtr = new Complex*[1];
-                //_dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
-                //Int32 maxi = dataCu8.Max();
-                //if (maxi != 0)
-                //{
-                //    for (Int32 i = 0; i < dataCu8.Length; i += 2)
-                //    {
-                //        _dstWavPtr[0][i / 2].Real = dataCu8[i] - 127;   // 0-->-127   255->128   / maxi * 255;    // float.MaxValue;
-                //        _dstWavPtr[0][i / 2].Imag = dataCu8[i + 1] - 127;    ///maxi*float.MaxValue;
-                //    }
-                //    Int32 sampleRate = getSampleRateFromName(fileName); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
-                //    String newName = "";
-                //    if (stereo)
-                //    { 
-                //    newName = fileName.Replace(".cu8", "_STEREO.wav");
-                //    WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length, sampleRate, wavRecorder.recordType.STEREO);
-                //    }
-                //    if(mono)
-                //    {
-                //    newName = fileName.Replace(".cu8", "_MONO.wav");
-                //    WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length,  sampleRate, wavRecorder.recordType.MONO);
-                //    }
-                //    //MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //}
-                //else
-                //    MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //_dstWavBuffer[0].Dispose();
-        //    }
-        //}
-
-        internal static void writeByte(String fileName, byte[] dataCu8)
+  
+        internal static void WriteByte(String fileName, byte[] dataCu8)
         {
             FileStream fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
             try
@@ -331,144 +131,93 @@ namespace SDRSharp.Rtl_433
                 using (BinaryWriter writer = new BinaryWriter(fileStream))
                 {
                     writer.Write(dataCu8);
-                    writer.Close();
+                    writer.Flush();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            //finally
-            //{
-            fileStream.Close();
-            //}
-
         }
-        internal static void convertCu8ToWav(String fileName, Boolean mono, Boolean stereo, Int32 nbBuffer)
+ 
+         internal static Int32 ConvertCu8ToWav(String fileName)
         {
-            Complex*[] _dstWavPtr;
-            UnsafeBuffer[] _dstWavBuffer;
+            Complex[] _dstWavPtr;
             byte[] dataCu8;
+            Int32 sampleRate = 0;
             if (File.Exists(fileName))
             {
+                sampleRate = GetSampleRateFromName(fileName);
+
+                if (sampleRate == -1)
+                {
+                    return -1;
+                }
                 using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
                 {
                     dataCu8 = new byte[reader.BaseStream.Length];
                     dataCu8 = reader.ReadBytes((Int32)reader.BaseStream.Length);
                 }
-                _dstWavBuffer = new UnsafeBuffer[1];
-                _dstWavBuffer[0] = UnsafeBuffer.Create((Int32)(dataCu8.Length), sizeof(Complex));
-                _dstWavPtr = new Complex*[1];
-                _dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
-                Int32 maxi = dataCu8.Max();
+                Int32 maxi = dataCu8.Max();  //Max() OK all > 0
                 if (maxi != 0)
                 {
-                    for (Int32 i = 0; i < dataCu8.Length; i += 2)
-                    {
-                        _dstWavPtr[0][i / 2].Real = dataCu8[i] - 127;   // 0-->-127   255->128   / maxi * 255;    // float.MaxValue;
-                        _dstWavPtr[0][i / 2].Imag = dataCu8[i + 1] - 127;    ///maxi*float.MaxValue;
-                    }
-                    Int32 sampleRate = getSampleRateFromName(fileName); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
-                    String newName = "";
-                    if (stereo)
-                    {
-                        newName = fileName.Replace(".cu8", "_STEREO.wav");
-                        WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length, sampleRate, wavRecorder.recordType.STEREO);
-                    }
-                    if (mono)
-                    {
-                        newName = fileName.Replace(".cu8", "_MONO.wav");
-                        WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length, sampleRate, wavRecorder.recordType.MONO);
-                    }
-                    //MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _dstWavPtr = ClassUtils.ConvertByteToComplexPtr(dataCu8);
+                    String newName = fileName.Remove(fileName.Length - 4) + ".wav";
+                    WriteBufferToWav(newName, _dstWavPtr, sampleRate); //dataCu8.Length / 2,
                 }
                 else
                     MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _dstWavBuffer[0].Dispose();
             }
+            return sampleRate;
         }
-        //internal static void writeCu8ToWav(String fileName, byte[] dataCu8, Boolean mono, Boolean stereo, Boolean raw)
-        //{
-        //    Complex* _dstWavPtr;
-        //    UnsafeBuffer[] _dstWavBuffer;
-        //    _dstWavBuffer = new UnsafeBuffer[1];
-        //    _dstWavBuffer[0] = UnsafeBuffer.Create((Int32)(dataCu8.Length), sizeof(Complex));
-        //    Complex[] _dstWav = new Complex[dataCu8.Length];
-        //    _dstWavPtr[0] = (Complex*)_dstWavBuffer[0];
-        //    Int32 maxi = dataCu8.Max();
-        //    if (maxi != 0)
-        //    {
-        //        Int32 sampleRate = 0;
-        //        if (mono || stereo)
-        //        {
-        //            for (Int32 i = 0; i < dataCu8.Length; i += 2)
-        //            {
-        //                _dstWav[0][i / 2].Real = dataCu8[i] - 127;   // 0-->-127   255->128   / maxi * 255;    // float.MaxValue;
-        //                _dstWavPtr[0][i / 2].Imag = dataCu8[i + 1] - 127;    ///maxi*float.MaxValue;
-        //            }
-        //            sampleRate = getSampleRateFromName(fileName); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
-        //        }
-        //        String newName = fileName.Replace(".cu8", "");
-        //        if (stereo)
-        //        {
-        //            newName += "_STEREO.wav";
-        //            WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length, sampleRate, wavRecorder.recordType.STEREO);
-        //        }
-        //        if (mono)
-        //        {
-        //            newName += "_MONO.wav";
-        //            WriteBufferToWav(newName, _dstWavPtr, dataCu8.Length, sampleRate, wavRecorder.recordType.MONO);
-        //        }
-        //       if (raw)
-        //        {
-        //            newName += ".raw";
-        //            writeByte(newName + ".raw", dataCu8);//for debug
-        //        }
-        //        //MessageBox.Show("Recording is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //    }
-        //    else
-        //        MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //    _dstWavBuffer[0].Dispose();
-        //}
-
-
-
-        private static Int32 getSampleRateFromName(String fileName)
+        internal static Int32 GetSampleRateFromName(String fileName)
         {
-            Int32 sampleRate = 250000;
-            String sampleRateStr = "";
-            Int32 end = fileName.Length - 5;
-            Int32 start = 0;
-            while (start == 0)
+            String sampleRateStr;
+            fileName = Path.GetFileName(fileName);
+            sampleRateStr = GetString(fileName, "k");
+            if (sampleRateStr != "" && Int32.TryParse(sampleRateStr, out Int32 sampleRate))
+                return sampleRate * 1000;
+            else
+                return -1;
+        }
+        internal static string GetFrequencyFromName(String fileName)
+        {
+            string[] units = { "M", "Khz", "Hz", "k", "m", "khz", "HZ", "K" };
+            String freqStr;
+            fileName = Path.GetFileName(fileName);
+            foreach (string unit in units)
             {
-                for (Int32 i = end; i > 0; i--)
+                freqStr = GetString(fileName, unit);
+                if (freqStr != "") 
+                    return freqStr + unit;
+            }
+            return "";
+        }
+        internal static string GetString(string fileName, string unit)
+        {
+            Int32 lastCar;
+            Int32 startCar;
+            Int32 end = fileName.Length - 3;
+            string retString = "";
+            for (Int32 i = end; i > 0; i--)
+            {
+                if (fileName.Substring(i, 1) == unit)
                 {
-                    if (fileName.Substring(i, 1) == "k")
+                    lastCar = i - 1;
+                    for (--i; i > 0; i--)
                     {
-                        for (i = i + 1; i > 0; i--)
+                        if (fileName.Substring(i, 1) == "_")
                         {
-                            if (fileName.Substring(i, 1) == "_")
-                            {
-                                start = i + 1;
-                                sampleRateStr = fileName.Substring(start, end - start);
-                                break;
-                            }
+                            startCar = i + 1;
+                            retString = fileName.Substring(startCar, lastCar - startCar + 1);
+                            break;
                         }
                     }
                 }
-                break;
+                if ( float.TryParse(retString, out float ret))   //found for another unit
+                    break;
             }
-            if (start > 0)
-            {
-                try
-                {
-                    sampleRate = Int32.Parse(sampleRateStr) * 1000;
-                }
-                catch
-                {
-                }
-            }
-            return sampleRate;
+            return retString;
         }
     }
 }

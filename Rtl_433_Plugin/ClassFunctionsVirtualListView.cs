@@ -19,7 +19,7 @@ namespace SDRSharp.Rtl_433
 {
     internal static class ClassFunctionsVirtualListView
     {
-        internal static void initListView(ListView lv)
+        internal static void InitListView(ListView lv)
         {
             lv.View = View.Details;
             lv.GridLines = true;
@@ -42,7 +42,7 @@ namespace SDRSharp.Rtl_433
         /// <param name="firstToTop">order place at the top or at the bottom</param>
         /// <param name="nb"></param>
         /// <param name="lv"></param>
-        internal static void addElemToCache(ListViewItem[] cacheLv,Boolean firstToTop,Int32 nb, ListViewItem lv)
+        internal static void AddElemToCache(ListViewItem[] cacheLv, Boolean firstToTop, Int32 nb, ListViewItem lv)
         {
             if (firstToTop)
             {
@@ -63,7 +63,7 @@ namespace SDRSharp.Rtl_433
         /// </summary>
         /// <param name="cacheLv"></param>
         /// <param name="maxColCurrent"></param>
-        internal static void completeList(ListViewItem[] cacheLv,Int32 maxColCurrent)
+        internal static void CompleteList(ListViewItem[] cacheLv, Int32 maxColCurrent)
         {
             foreach (ListViewItem lvi in cacheLv)
             {
@@ -81,12 +81,11 @@ namespace SDRSharp.Rtl_433
         /// <param name="listData">data in for one line</param>
         /// <param name="cacheListColumns">list colomn for virtual mode</param>
         /// <param name="lv">current item</param>
-        internal static void addNewLine(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListViewItem lv)
+        internal static void AddNewLine(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListViewItem lv)
         {
-            Int32 indexColonne = 0;
             foreach (KeyValuePair<String, String> _data in listData)
             {
-                if (cacheListColumns.TryGetValue(_data.Key, out indexColonne))          //get index column for _data.key found _data.Key
+                if (cacheListColumns.TryGetValue(_data.Key, out Int32 indexColonne))          //get index column for _data.key found _data.Key
                 {
                     //add subitems before item at indexColonne
                     for (Int32 i = lv.SubItems.Count; i < indexColonne; i++)
@@ -101,16 +100,15 @@ namespace SDRSharp.Rtl_433
         /// <param name="listData"></param>
         /// <param name="cacheListColumns"></param>
         /// <param name="lv"></param>
-        /// <param name="maxColCurrent"></param>
-        internal static void refreshLine(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListViewItem lv,Int32 maxColCurrent)
+
+        internal static void RefreshLine(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListViewItem lv)
         {
-            for (Int32 i = lv.SubItems.Count; i < maxColCurrent; i++)
+            for (Int32 i = lv.SubItems.Count; i < cacheListColumns.Count; i++)
                 lv.SubItems.Add("");
-            Int32 indexColonne = 0;
             foreach (KeyValuePair<String, String> _data in listData)
             {
-                if (cacheListColumns.TryGetValue(_data.Key, out indexColonne))
-                    lv.SubItems[indexColonne-1].Text = _data.Value;
+                if (cacheListColumns.TryGetValue(_data.Key, out Int32 indexColonne))
+                    lv.SubItems[indexColonne - 1].Text = _data.Value;
             }
 
         }
@@ -120,38 +118,36 @@ namespace SDRSharp.Rtl_433
         /// <param name="listData">data in</param>
         /// <param name="cacheListColumns">in no exist add item to cacheListColumns for virtual mode</param>
         /// <param name="listViewListMessages">listView</param>
-        /// <param name="maxColCurrent"> update maxColCurrent</param>
-        /// <returns>return maxColCurrent</returns>
-        internal static Int32 addColumn(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListView lv,Int32  maxColCurrent)
+        internal static void AddColumn(Dictionary<String, String> listData, Dictionary<String, Int32> cacheListColumns, ListView lv,Int32 maxColumn)
         {
             foreach (KeyValuePair<String, String> _data in listData)
             {
-                maxColCurrent = addOneColumn(_data.Key, cacheListColumns, lv, maxColCurrent);
+                Boolean ret = AddOneColumn(_data.Key, cacheListColumns, lv,maxColumn);
+                if (ret)
+                    return;
             }
-            return maxColCurrent;
+            return ;
         }
-        internal static Int32 addOneColumn(String _data, Dictionary<String, Int32> cacheListColumns, ListView lv, Int32 maxColCurrent)
+        internal static Boolean AddOneColumn(String _data, Dictionary<String, Int32> cacheListColumns, ListView lv,Int32 maxColumn)
         {
-                if (!cacheListColumns.ContainsKey(_data)) //new col
-                {
-                    cacheListColumns.Add(_data, cacheListColumns.Count + 1);
-                    lv.Columns.Add("");
-                    if (lv.Columns.Count > maxColCurrent)
-                    {
-                        maxColCurrent = lv.Columns.Count;
-                    }
-                    lv.Columns[cacheListColumns.Count - 1].Text = _data;
-                    //listViewListMessages.Columns[cacheListColumns.Count - 1].Width = -2;
+            if (!cacheListColumns.ContainsKey(_data)) //new col
+            {
+                if (cacheListColumns.Count >= maxColumn)
+                    return true;
+                cacheListColumns.Add(_data, cacheListColumns.Count + 1);
+                lv.Columns.Add("");
+                lv.Columns[cacheListColumns.Count - 1].Text = _data;
+                //listViewListMessages.Columns[cacheListColumns.Count - 1].Width = -2;
             }
-                return maxColCurrent;
+            return false;
         }
-        internal static void resizeAllColumns(ListView lv)
+        internal static void ResizeAllColumns(ListView lv)
         {
             ListView.ColumnHeaderCollection cc = lv.Columns;
             for (Int32 col = 0; col < cc.Count; col++)
             {
                 //Debug.WriteLine(col.ToString()+'\t'+cc[col].Text);
-                if(cc[col].Text!="")
+                if (cc[col].Text != "") 
                 {
                     Int32 colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
                     if (colWidth > cc[col].Width)
@@ -161,8 +157,8 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
- 
-        internal static Boolean serializeText(String fileName, Dictionary<String, Int32>  cacheListColumns, ListViewItem[] cacheLv,Boolean formatNumber,Int32 nbMessage,Boolean sensDirect)
+
+        internal static Boolean SerializeText(String fileName, Dictionary<String, Int32> cacheListColumns, ListViewItem[] cacheLv, Boolean formatNumber, Int32 nbMessage, Boolean sensDirect)
         {
             NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
             try
@@ -176,43 +172,40 @@ namespace SDRSharp.Rtl_433
                         if (_data.Key == String.Empty)
                             line += "\t\t";
                         else
-                            line +=(_data.Key+"\t");
-                     }
+                            line += (_data.Key + "\t");
+                    }
                     str.WriteLine(line);
                     ListViewItem it;
                     if (sensDirect)
                     {
-                       for(Int32 i=0;i<nbMessage;i++)
-                       {
+                        for (Int32 i = 0; i < nbMessage; i++)
+                        {
                             it = cacheLv[i];
-                            line = processLine(it, formatNumber,nfi, cacheListColumns.Count);
+                            line = ProcessLine(it, formatNumber, nfi, cacheListColumns.Count);
                             str.WriteLine(line);
-                       }
+                        }
                     }
                     else
                     {
-                        for (Int32 i = nbMessage-1; i > -1; i--)
+                        for (Int32 i = nbMessage - 1; i > -1; i--)
                         {
                             it = cacheLv[i];
-                            line = processLine(it, formatNumber, nfi, cacheListColumns.Count);
+                            line = ProcessLine(it, formatNumber, nfi, cacheListColumns.Count);
                             str.WriteLine(line);
                         }
                     }
                     str.Flush();
-                    str.Close();
                 }
-                nfi = null;
-                return true;
+                 return true;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error export item fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                nfi = null;
                 return false;
             }
 
         }
-        internal static String processLine(ListViewItem it, Boolean formatNumber, NumberFormatInfo nfi,Int32 nbColumn)
+        internal static String ProcessLine(ListViewItem it, Boolean formatNumber, NumberFormatInfo nfi, Int32 nbColumn)
         {
             String line = String.Empty;
             Int32 nColumn = 0;
@@ -224,19 +217,19 @@ namespace SDRSharp.Rtl_433
                 {
                     if (formatNumber)
                     {
-                        line += (deleteUnitForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
+                        line += (DeleteUnitForCalc(sit.Text)).Replace(".", nfi.CurrencyDecimalSeparator);
                     }
                     else
                         line += sit.Text;
                     line += "\t";
                 }
-                nbColumn += 1;
-                if (nColumn==nbColumn)
-                    return line;   
+                nbColumn ++;
+                if (nColumn == nbColumn)
+                    return line;
             }
             return line;
         }
-        internal static String processLineTxt(Dictionary<String, String> listData, Boolean formatNumber, NumberFormatInfo nfi, Int32 nbColumn)
+        internal static String ProcessLineTxt(Dictionary<String, String> listData, Boolean formatNumber, NumberFormatInfo nfi, Int32 nbColumn)
         {
             String line = String.Empty;
             Int32 nColumn = 0;
@@ -247,65 +240,67 @@ namespace SDRSharp.Rtl_433
                 else
                 {
                     if (formatNumber)
-                        line += (deleteUnitForCalc(_data.Value)).Replace(".", nfi.CurrencyDecimalSeparator);
+                        line += (DeleteUnitForCalc(_data.Value)).Replace(".", nfi.CurrencyDecimalSeparator);
                     else
                         line += _data.Value;
 
-                    line = line.PadRight(line.Length + _data.Key.Length - _data.Value.Length) + "\t";;
+                    line = line.PadRight(line.Length + _data.Key.Length - _data.Value.Length) + "\t"; ;
                 }
-                nbColumn += 1;
+                nbColumn ++;
                 if (nColumn == nbColumn)
                     return line;
             }
             return line;
         }
-        internal static String valideNameFile(String name, String replaceChar)
+        internal static String ValideNameFile(String name, String replaceChar)
         {
             List<char> badChars = new List<char>(Path.GetInvalidFileNameChars());
             foreach (char C in badChars)
             {
                 name = name.Replace(C.ToString(), replaceChar);
             }
-            badChars = null;
+            //badChars = null;
             return name;
         }
-        internal static String deleteUnitForCalc(String value)
+        internal static String DeleteUnitForCalc(String value)
         {
-            List<String> badChars = new List<String>();
-            badChars.Add(" F");
-            badChars.Add(" C");
-            badChars.Add(" mph");
-            badChars.Add(" kph");
-            badChars.Add(" mi/h");
-            badChars.Add(" km/h");
-            badChars.Add(" mi h");
-            badChars.Add(" km h");
-            badChars.Add(" inch");
-            badChars.Add(" in");
-            badChars.Add(" mm");
+            List<String> badChars = new List<String>
+            {
+                " F",
+                " C",
+                " mph",
+                " kph",
+                " mi/h",
+                " km/h",
+                " mi h",
+                " km h",
+                " inch",
+                " in",
+                " mm",
 
-            badChars.Add(" in h");
-            badChars.Add(" mm h");
-            badChars.Add(" in/h");
-            badChars.Add(" mm /h");
+                " in h",
+                " mm h",
+                " in/h",
+                " mm /h",
 
-            badChars.Add(" inHg");
-            badChars.Add(" hpa");
+                " inHg",
+                " hpa",
 
-            badChars.Add(" PSI");
-            badChars.Add(" kPa");
+                " PSI",
+                " kPa",
 
-            badChars.Add(" dB");
-            badChars.Add(" Mhz");
-            badChars.Add(" %");
+                " dB",
+                " Mhz",
+                " %"
+            };
             foreach (String C in badChars)
             {
-                value = value.Replace(C,"");
+                value = value.Replace(C, "");
             }
-            badChars = null;
+            //badChars = null;
             return value;
         }
-        internal static ListViewItem getItem(String name, ListViewItem[] cacheLv)
+        internal static ListViewItem GetItem(String name, ListViewItem[] cacheLv)
         {
             foreach (ListViewItem item in cacheLv)
             {

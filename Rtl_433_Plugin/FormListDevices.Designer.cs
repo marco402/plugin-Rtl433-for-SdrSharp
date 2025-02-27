@@ -42,7 +42,7 @@ namespace SDRSharp.Rtl_433
             this.listViewDevices.Size = new System.Drawing.Size(1166, 142);
             this.listViewDevices.TabIndex = 0;
             this.listViewDevices.UseCompatibleStateImageBehavior = false;
-            this.listViewDevices.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listDevices_RetrieveVirtualItem);
+            this.listViewDevices.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListDevices_RetrieveVirtualItem);
             // 
             // FormListDevices
             // 
@@ -53,7 +53,7 @@ namespace SDRSharp.Rtl_433
             this.DoubleBuffered = true;
             this.Name = "FormListDevices";
             this.Text = "FormListDevices";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormListDevices_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormListDevices_FormClosing);
             this.ResumeLayout(false);
 
         }
