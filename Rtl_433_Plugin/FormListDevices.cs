@@ -52,7 +52,7 @@ namespace SDRSharp.Rtl_433
             InitializeComponent();
             this.myClassFormDevicesList = myClassFormDevicesList;
             this.maxDevices = ClassUtils.MaxDevicesWindows*10;
-            this.maxColumns = ClassConst.NBCOLUMN;
+            this.maxColumns = ClassConst.NBMAXCOLUMN;
             this.Font = ClassUtils.Font;
             this.BackColor = ClassUtils.BackColor;
             this.ForeColor = ClassUtils.ForeColor;

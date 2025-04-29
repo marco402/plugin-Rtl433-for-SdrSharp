@@ -166,7 +166,7 @@ namespace SDRSharp.Rtl_433
             nbByteForRtl433AfterDecime = nbByteForRtl433;
             nbComplexForRtl433AfterDecime = nbComplexForRtl433;
             decimation = (Int32)(control.RFBandwidth / 250000);  //-------->pb with knx_rf_g001_1024k_868320000hz_27_12_2024_10_54_50.wav ok if decimation=1
-            //decimation = 1;    //no comment for supress decimation      no perfect with decimate???
+            decimation = 1;    //no comment for supress decimation      no perfect with decimate???
             nbByteForRtl433 *= (Int32)decimation;
             Thread.BeginCriticalRegion();
             nbComplexForRtl433 *= (Int32)decimation;
@@ -234,8 +234,9 @@ namespace SDRSharp.Rtl_433
                 if (terminated)
                     break;
 #endif
-                Int32 lenOut = 0;
+
 #if TESTDECIMATORSDRSharp
+                Int32 lenOut = 0;
                 ////****************************************ComplexDecimator not OK perhaps low pass filter ? **********************************
                 /// warning only pair decimation-->sample rate 1024k for 250k->4
                 if (_decimator == null)
@@ -243,12 +244,34 @@ namespace SDRSharp.Rtl_433
                 lenOut = _decimator.Process(IQPtr, total);
                 ClassInterfaceWithRtl433.send_data(IQPtr, lenOut); //len->total
                 ////*********************************************************************************
-#else
-
+#elif DECIM    //if DECIM add classDecimation.c sometime problem with 868Mhz and sample rate 1000k ex:bresser...
+                Int32 lenOut = 0;
                 Complex* dataIQdecimatePtr = ClassDecimation.DecimateMax(IQPtr, decimation, nbComplexForRtl433, ref lenOut);  //len->total
+
+//#if DEBUG
+               
+//              for (Int32 j = 0; j < nbComplexForRtl433; j++)  //for calc if 1--0.99 if -1-->-0.99 ???
+//                    if(IQPtr[j].Imag>0.9)
+//                    {
+//                       for (Int32 i=0; i < 1000; i++)
+//                            Debug.WriteLine($"{IQPtr[i + j].Imag} \t {IQPtr[i + j].Real}" );
+//                       for (Int32 i = 0; i < 250; i++)
+//                        { 
+//                            Debug.WriteLine($"{dataIQdecimatePtr[i + j].Imag} \t {dataIQdecimatePtr[i + j].Real}" );
+//                            Debug.WriteLine("");
+//                            Debug.WriteLine("");
+//                            Debug.WriteLine("");
+//                        }
+//                        break;
+//                    }
+//
+
                 //Trace.WriteLine("ok    " + lenOut.ToString() + "   " + total.ToString());
                 ClassInterfaceWithRtl433.Send_data(dataIQdecimatePtr, lenOut); //len->total
+#else
+                ClassInterfaceWithRtl433.Send_data(IQPtr, nbComplexForRtl433); //len->total
 #endif
+
                 Thread.EndCriticalRegion();
                 total = 0;
             }   //while

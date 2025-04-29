@@ -99,7 +99,10 @@ namespace SDRSharp.Rtl_433
             if ((decaleDst + len) > retourIQ.Length)
                 decaleDst = retourIQ.Length - len;
             if (decaleDst < 0)
+            {
                 decaleDst = 0;
+                len = retourIQ.Length;   //plantage nbrepeat=12 supression de nbrepeat->decoder_util.c->decoder_output_data
+            }
             if (decaleDst + len < 0)
                 return false;
             if ((decaleSrc + len) > ptrTabIQ.Length)

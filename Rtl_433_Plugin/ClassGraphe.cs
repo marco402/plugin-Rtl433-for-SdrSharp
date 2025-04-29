@@ -10,6 +10,7 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
+#define TESTFREQ
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,11 +23,11 @@ namespace SDRSharp.Rtl_433
     internal class ClassTraceGraphe
     {
         private Rtl_433_Panel panelRtl_433;
-        private  List<PointF>[] TreatOokOrFskCurves(NativeMethods.Pulse_data pulseData, short[] am_buf, short[] fm_buf, List<PointF>[] points, Int32 NumGraph, bool FSK, double sampleRate, byte[] dataIQDisplay, UInt32 lenToDisplay, Int32 startToDisplay)
+        private  List<PointF>[] TreatOokOrFskCurves(NativeMethods.Pulse_data pulseData, short[] am_buf, short[] fm_buf, List<PointF>[] points, Int32 NumGraph, bool FSK, double sampleRate, byte[] dataIQDisplay, NativeMethods.R_deviceToPlugin info, Dictionary<String, String> listData)
         {
             double samples_per_us = 1000000.0 / sampleRate;
             float x = 0;      //current point define last point for am & fm (µs)  
-            double lenToDisplayUs = lenToDisplay * samples_per_us;
+            double lenToDisplayUs = info.lenForDisplay * samples_per_us;
             Int32 deltaStart= 0;
             if (pulseData.pulse[0] > 1000 || pulseData.gap[0] > 1000)   //test with froggitwh1080Pass14c01gfile001_433000000hz_250k_18_02_2025_14_25_20.wav
                 deltaStart++;
@@ -46,6 +47,7 @@ namespace SDRSharp.Rtl_433
             }
             float xx = 0;      //current position (µs)  1° point >memoX last point < x
             if (NumGraph > 1)
+            {
                 if (!FSK)
                 {
                     for (Int32 bit = deltaStart; bit < am_buf.Length; bit++)
@@ -56,28 +58,142 @@ namespace SDRSharp.Rtl_433
                         points[1].Add(new PointF(xx, (Int32)(am_buf[bit])));
                      }
                 }
-            for (Int32 bit = deltaStart; bit < am_buf.Length; bit++)
-            {
-                xx = (float)(bit * samples_per_us);
-                if (xx > x)  //test with schreader
-                    break;
-                if (FSK)
-                    points[1].Add(new PointF(xx, (Int32)(fm_buf[bit])));
-                ////else
-                ////    points[2].Add(new PointF(xx, (Int32)(fm_buf[bit])));
-            }
-            for (Int32 bit = deltaStart; bit < dataIQDisplay.Length; bit+=2)
-            {
-                xx = (float)(bit * samples_per_us/2);
+                for (Int32 bit = deltaStart; bit < am_buf.Length; bit++)
+                {
+                    xx = (float)(bit * samples_per_us);
                     if (xx > x)  //test with schreader
                         break;
-                    ////if (FSK)
-                        points[2].Add(new PointF(xx, (Int32)(dataIQDisplay[bit])));
+                    if (FSK)
+                        points[1].Add(new PointF(xx, (Int32)(fm_buf[bit])));
                     ////else
-                    ////     points[3].Add(new PointF(xx, (Int32)(dataIQDisplay[bit])));
+                    ////    points[2].Add(new PointF(xx, (Int32)(fm_buf[bit])));10
+                }
+            }
+#if TESTFREQ
+            float[] numbers = new float[100];
+            Boolean inferieur = false;
+            float tref = -1;
+            Int32 delta = 0; ;
+#endif
+            if (NumGraph > 2)
+            {
+
+#if TESTFREQ
+                //for displayed 
+                for (Int32 bit = deltaStart; bit < dataIQDisplay.Length; bit+=2)
+                {
+                    xx = (float)(bit * samples_per_us/2);
+                    if (FSK)
+                    {
+                        if(tref==-1)
+                        {
+                            if (dataIQDisplay[bit] > 127)
+                                inferieur = true;
+                            tref = xx;
+                        }
+                        else
+                        {
+                            if(inferieur)
+                            {
+                                if (dataIQDisplay[bit] > 127)
+                                {
+                                    inferieur = false;
+                                    delta = (Int32) (xx - tref);
+                                    if (delta < 100)
+                                        numbers[delta]++;
+                                    else
+                                        numbers[0]++;
+                                    //Debug.WriteLine(delta);
+                                    tref = xx;
+                                }
+                            }
+                            else
+                            {
+                               if (dataIQDisplay[bit] <127)
+                                {
+                                    inferieur = true;
+                                    delta = (Int32)(xx - tref);
+                                    if (delta < 100)
+                                        numbers[delta]++;
+                                    else
+                                        numbers[0]++;
+                                    //Debug.WriteLine(delta);
+                                    tref = xx;
+                                }
+                            }
+
+                        }
+                    }
+                    if (xx > x)  //test with schreader
+                        break;
+
+                    //calcul period signal 
+
+                   
+                    points[2].Add(new PointF(xx, (Int32)(dataIQDisplay[bit])));
+                }
+                //for (Int32 i = 0; i < 100; i++)
+                //    Debug.WriteLine($"{i} \t {numbers[i]}");
+                if (FSK)
+                {
+                    //found 2 max
+                    float max1 = 0;
+                    float max2 = 0;
+                    Int32 indiceMax1 = 0;
+                    Int32 indiceMax2 = 0;
+                    for (Int32 i = 0; i < 100; i++)
+                        if (numbers[i] > max1)
+                        {
+                            max1 = numbers[i];
+                            indiceMax1 = i;
+                        }
+                    for (Int32 i = 0; i < 100; i++)
+                        if (Math.Abs(i - indiceMax1) > 10)
+                            if (numbers[i] > max2)
+                            {
+                                max2 = numbers[i];
+                                indiceMax2 = i;
+                            }
+                    if (indiceMax1 > 0)
+                    {
+                        float period1 = 0f;
+                        period1 = 2f * ((float)indiceMax1 - (numbers[indiceMax1 - 1] / (numbers[indiceMax1] + numbers[indiceMax1 - 1])));
+                        period1 = (period1 + (numbers[indiceMax1 + 1] / (numbers[indiceMax1] + numbers[indiceMax1 + 1])));
+                        listData.Add("Period1(µs):", period1.ToString());
+                    }
+                    else
+                        listData.Add("Period1(µs):", (2f *  numbers[indiceMax1]).ToString());
+                    if (indiceMax2 > 0)
+                    {
+                        float period2 = 0f;
+                        period2 = ((float)indiceMax2 - (numbers[indiceMax2 - 1] / (numbers[indiceMax2] + numbers[indiceMax2 - 1])));
+                        period2 = 2f * (period2 + (numbers[indiceMax2 + 1] / (numbers[indiceMax2] + numbers[indiceMax2 + 1])));
+                        listData.Add("Period2(µs):", period2.ToString());
+                    }
+                    else
+                        listData.Add("Period2(µs):", (2f *  numbers[indiceMax2]).ToString());
+                }
+                //var sortedNumbers = numbers.OrderBy(num => num);
+                //for (Int32 i = 0; i < 100; i++)
+                //foreach (var num in sortedNumbers)
+                //{
+                //    Debug.WriteLine(num);
+                //}
+
+#else
+                for (Int32 bit = deltaStart; bit < dataIQDisplay.Length; bit+=2)
+                {
+                    xx = (float)(bit * samples_per_us/2);
+                        if (xx > x)  //test with schreader
+                            break;
+                    points[2].Add(new PointF(xx, (Int32)(dataIQDisplay[bit])));
+                }
+#endif
+
             }
             return points;
         }
+
         private unsafe float[] GetTabIQ(Int32 start, Int32 len,Int32 sizeBufferIQ, float[] ptrTabIQ,Int32 ptrMemoDataForRs433)
         {
             float[] retourIQ=new float[len];
@@ -108,7 +224,7 @@ namespace SDRSharp.Rtl_433
             {
                 //panelRtl_433.SetMessage("GetTabIQ case 2 \n");
                 Int32 startToEnd = sizeBufferIQ + startUsefullData;
-                Int32 partToEnd = -startUsefullData;
+                Int32 partToEnd = -startUsefullData-1;
                 Int32 partToStart = len - partToEnd;
                 ClassUtils.CopyMem(retourIQ, ptrTabIQ, startToEnd, 0, partToEnd);
                 ClassUtils.CopyMem(retourIQ, ptrTabIQ, 0, partToEnd, partToStart);
@@ -215,6 +331,89 @@ namespace SDRSharp.Rtl_433
                                 pulseDetect.data_counter = 0;
                                 pulseDetect.pulse_length = 0;
                                 NativeMethods.pulse_detect_package(ref pulseDetect, am_buf, fm_buf, (Int32)info.lenForDisplay, (UInt32)SampleRateDecime, sampleOffset, ref pulseData, ref pulseDataFsk, fpdmPdp, ref _startPlugin, ref _startFsk);
+
+#if ANALYZE
+                                NativeMethods.histogram_t hist_pulses=new NativeMethods.histogram_t(); //= { 0 }
+                                NativeMethods.histogram_t hist_gaps = new NativeMethods.histogram_t(); // = { 0 };
+                                NativeMethods.histogram_t hist_periods = new NativeMethods.histogram_t(); // = { 0 };
+                                NativeMethods.histogram_t hist_timings = new NativeMethods.histogram_t(); // = { 0 };
+
+                                //Int32 hist_pulses_bins_count = 0;
+                                //Int32 hist_gap_bins_count = 0;
+                                //Int32 hist_periods_bins_count = 0;
+                                //NativeMethods.Dm_state struct_demod = new NativeMethods.Dm_state();//1.5.4.4 add this line
+                                //try
+                                //{
+                                //    struct_demod = (NativeMethods.Dm_state)Marshal.PtrToStructure(ptrDemod, typeof(NativeMethods.Dm_state));
+                                //}
+                                //catch (Exception e)
+                                //{
+                                //    Debug.WriteLine(e.Message + "  ClassInterfaceWithRtl433->treatGraph_2");
+                                //}struct_demod.pulse_data
+
+                                //option compile ANALYZER et rtl433 _DEBUG
+
+                                if(pulseData.num_pulses>pulseDataFsk.num_pulses)
+                                    NativeMethods.pulse_analyzerPlugin(ref pulseData, ref hist_pulses, ref hist_gaps, ref hist_periods, ref hist_timings);
+                                    //NativeMethods.pulse_analyzerPlugin(ref pulseData, ref hist_pulses_bins_count, ref hist_gap_bins_count, ref hist_periods_bins_count);
+                                else
+                                    NativeMethods.pulse_analyzerPlugin(ref pulseDataFsk, ref hist_pulses, ref hist_gaps, ref hist_periods, ref hist_timings);
+                                    //NativeMethods.pulse_analyzerPlugin(ref pulseDataFsk, ref hist_pulses_bins_count, ref hist_gap_bins_count, ref hist_periods_bins_count);
+
+                                listData.Add("hist_pulses.bins_count:", hist_pulses.bins_count.ToString());
+                                listData.Add("hist_gaps.bins_count:", hist_gaps.bins_count.ToString());
+                                listData.Add("hist_periods.bins_count:", hist_periods.bins_count.ToString());
+                                listData.Add("hist_timings.bins_count:", hist_timings.bins_count.ToString());
+                                UInt32 max = hist_pulses.bins[0].count;
+                                Int32 n = 0;
+                                for (Int32 i = 1; i < hist_pulses.bins_count; i++)
+                                {
+                                    if (hist_pulses.bins[i].count>max)
+                                    { 
+                                        max = hist_pulses.bins[0].count;
+                                        n = i;
+                                    }
+                                }
+                                listData.Add($"hist pulses max:",n.ToString());
+                                listData.Add($"hist pulses mean(max)",(hist_pulses.bins[n].mean * 4.0).ToString());
+                                listData.Add($"hist pulses count(max)",hist_pulses.bins[n].count.ToString());
+                                max = hist_gaps.bins[0].count;
+                                n = 0;
+                                for (Int32 i = 1; i < hist_gaps.bins_count; i++)
+                                {
+                                    if (hist_gaps.bins[i].count > max)
+                                    {
+                                        max = hist_gaps.bins[0].count;
+                                        n = i;
+                                    }
+                                }
+                                listData.Add($"hist_gaps max:",n.ToString());
+                                listData.Add($"hist_gaps_mean(max)",(hist_gaps.bins[n].mean * 4.0).ToString());
+                                listData.Add($"hist_gaps_count(max)",hist_gaps.bins[n].count.ToString());
+
+                                  // for (Int32 i=0;i<hist_pulses.bins_count;i++)
+                                // {
+                                //     listData.Add($"hist_pulses[{i}].count:", hist_pulses.bins[i].count.ToString());
+                                //     listData.Add($"hist_pulses[{i}].mean:", (hist_pulses.bins[i].mean*4.0).ToString());  //4.0 if sample rate=250k
+                                // }
+                                //for (Int32 i=0;i< hist_gaps.bins_count;i++)
+                                // {
+                                //     listData.Add($"hist_gaps[{i}].count:", hist_gaps.bins[i].count.ToString());
+                                //     listData.Add($"hist_gaps[{i}].mean:", (hist_gaps.bins[i].mean * 4.0).ToString());
+                                // }
+                                // for (Int32 i=0;i< hist_periods.bins_count;i++)
+                                // {
+                                //     listData.Add($"hist_periods[{i}].count:", hist_periods.bins[i].count.ToString());
+                                //     listData.Add($"hist_periods[{i}].mean:", (hist_periods.bins[i].mean * 4.0).ToString());
+                                // }
+                                //for (Int32 i=0;i< hist_timings.bins_count;i++)
+                                // {
+                                //     listData.Add($"hist_timings[{i}].count:", hist_timings.bins[i].count.ToString());
+                                //     listData.Add($"hist_timingss[{i}].mean:", (hist_timings.bins[i].mean * 4.0).ToString());
+                                // }
+
+#endif
+
                             }
                             else
                                 Debug.WriteLine("**********************struct_demod_samp_grab.sg_size=0");
@@ -229,14 +428,19 @@ namespace SDRSharp.Rtl_433
                 }
                 else
                     Debug.WriteLine("**********************struct_demod.ptr_samp_grab=0");
+                Boolean graphIQ = true;
                 if (pulseData.num_pulses > 0 && info.package_type == (ushort)Package_types.PULSE_DATA_OOK)
                 {
-                    nameGraph = new string[] { "Pulses", "Am", "IQ" };
+                    if(graphIQ)
+                        nameGraph = new string[] { "Pulses", "Am", "IQ" };
+                    else
+                        nameGraph = new string[] { "Pulses", "Am"};
                     Int32 NumGraph = nameGraph.Count();
+
                     points = new List<PointF>[NumGraph];
                     for (Int32 i = 0; i < NumGraph; i++)
                         points[i] = new List<PointF>();
-                    points = TreatOokOrFskCurves(pulseData, am_buf, fm_buf, points, NumGraph, false, SampleRateDecime, dataByteForRs433, info.lenForDisplay, info.startForDisplay);
+                    points = TreatOokOrFskCurves(pulseData, am_buf, fm_buf, points, NumGraph, false, SampleRateDecime, dataByteForRs433, info, listData);
                     dataByteForRs433 = null;
                     if (points != null && points[0].Count > 0)
                         return points;
@@ -245,12 +449,15 @@ namespace SDRSharp.Rtl_433
                 }
                 else if (pulseDataFsk.num_pulses > 0 && info.package_type == (ushort)Package_types.PULSE_DATA_FSK)
                 {
-                    nameGraph = new string[] { "Pulses", "Fm", "IQ" };
+                    if (graphIQ)
+                        nameGraph = new string[] { "Pulses", "Fm", "IQ" };
+                    else
+                        nameGraph = new string[] { "Pulses", "Fm" };
                     Int32 NumGraph = nameGraph.Count();
                     points = new List<PointF>[NumGraph];
                     for (Int32 i = 0; i < NumGraph; i++)
                         points[i] = new List<PointF>();
-                    points = TreatOokOrFskCurves(pulseDataFsk, am_buf, fm_buf, points, NumGraph, true, SampleRateDecime, dataByteForRs433, info.lenForDisplay, info.startForDisplay);
+                    points = TreatOokOrFskCurves(pulseDataFsk, am_buf, fm_buf, points, NumGraph, true, SampleRateDecime, dataByteForRs433, info, listData);
                     dataByteForRs433 = null;
                     if (points != null && points[0].Count > 0)
                         return points;

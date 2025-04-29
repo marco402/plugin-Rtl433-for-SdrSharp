@@ -228,9 +228,9 @@ namespace SDRSharp.Rtl_433
             ToolTip ttlabelFrequency = new ToolTip();
             ttlabelFrequency.SetToolTip(labelFrequency, "If Orange:F<300Mhz or F>1000Mhz.");
             ttlabelFrequency.AutoPopDelay = 10000;
-            ToolTip ttlabelSampleRate = new ToolTip();
-            ttlabelSampleRate.SetToolTip(labelSampleRate, "If Orange:Sample rate is not at 250000.");
-            ttlabelSampleRate.AutoPopDelay = 10000;
+            //ToolTip ttlabelSampleRate = new ToolTip();
+            //ttlabelSampleRate.SetToolTip(labelSampleRate, "If Orange:Sample rate is not at 250000.");
+            //ttlabelSampleRate.AutoPopDelay = 10000;
 
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
@@ -536,10 +536,10 @@ namespace SDRSharp.Rtl_433
             {
                 labelSampleRate.Text = SampleRate.ToString();
 
-                if (SampleRate > 250000)
-                    labelSampleRate.ForeColor = Color.Orange;
-                else
-                    labelSampleRate.ForeColor = labelSampleRateTxt.ForeColor;
+                //if (SampleRate > 250000)
+                //    labelSampleRate.ForeColor = Color.Orange;
+                //else
+                //    labelSampleRate.ForeColor = labelSampleRateTxt.ForeColor;
             }
         }
         internal void SetMessage(String message)
@@ -590,7 +590,7 @@ namespace SDRSharp.Rtl_433
         {
             listInfos = "Parameters configure source\n" +
             "   -Sampling mode->quadrature sampling\n" +
-            "   -Sufficient Sample Rate->0.25 MSPS\n" +
+            "   -Sample Rate->0.25 MSPS or more for certain devices FSK or f > 433Mhz...\n" +
             "   -AGC:on(corresponds to auto gain with rtl433) can be manually->off.\n" +
             "   -RTL AGC:on.(not the AGC panel) can be set off if good signals.\n" +
             "   -Check frequency\n\n" ;

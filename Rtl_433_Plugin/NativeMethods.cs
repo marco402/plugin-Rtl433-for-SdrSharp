@@ -20,8 +20,33 @@ namespace SDRSharp.Rtl_433
         internal delegate void ptrReceiveMessagesCallback([In, MarshalAs(UnmanagedType.LPStr)] String message);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         internal delegate void ptrReceiveRecordOrder([In] char[] text, [In] Int32 len);
+#if ANALYZE
+
+        private const Int32 MAX_HIST_BINS = 16;
+
+        /// Histogram data for single bin
+        internal struct hist_bin_t{
+            internal UInt32 count;
+            internal Int32 sum;
+            internal Int32 mean;
+            internal Int32 min;
+            internal Int32 max;
+        }
+
+        /// Histogram data for all bins
+        internal struct histogram_t{
+            internal UInt32 bins_count;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_HIST_BINS)]
+            internal hist_bin_t[] bins;
+        } 
+ 
+        [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "pulse_analyzerPlugin")]
+        internal static extern void pulse_analyzerPlugin([In, Out] ref Pulse_data pulsesData, [In, Out] ref histogram_t hist_pulse_bins, [In, Out] ref histogram_t hist_gap_bins, [In, Out] ref histogram_t hist_periods_bins, [In, Out] ref histogram_t hist_timings_bins);
+
+        //internal static extern void pulse_analyzerPlugin([In, Out] ref Pulse_data pulsesData, [In, Out] ref Int32 hist_pulses_bins_count, [In, Out] ref Int32 hist_gap_bins_count, [In, Out] ref Int32 hist_periods_bins_count);
+#endif
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "baseband_low_pass_filter")]
-        internal static extern void baseband_low_pass_filter([In, Out, MarshalAs(UnmanagedType.LPArray)] ushort[] x_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] short[] y_buf, [Out] Int32 len, [In, Out] ref Filter_state state);
+        internal static extern void baseband_low_pass_filter([In, Out, MarshalAs(UnmanagedType.LPArray)] ushort[] x_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] short[] y_buf, [Out] Int32 len, [In] ref Filter_state state);
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "envelope_detect")]
         internal static extern float envelope_detect([In, Out, MarshalAs(UnmanagedType.LPArray)] Byte[] iq_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] ushort[] y_buf, [Out] Int32 len);
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "baseband_demod_FM")]
@@ -441,9 +466,10 @@ namespace SDRSharp.Rtl_433
             internal UInt16 package_type;   //pulse_detect_package called by classInterfaceWithRtl433 return always 0 (Out of data)
                                             //https://stackoverflow.com/questions/1498931/marshalling-array-of-strings-to-char-in-c-sharp
                                             //c to c# marshaling string array
-
- 
-
+#if ANALYZE
+            internal String row_bits;
+            internal String row_bitsBarre; 
+#endif
             ////[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
             ////internal String[] Key_Device;
             ////[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]

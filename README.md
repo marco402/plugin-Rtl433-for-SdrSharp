@@ -1,4 +1,10 @@
 ## New Version  
+Version 1.5.8.3 April 29, 2025.  
+-A user told me a problem with the Bresser device at 868Mhz and sample rate 1000k.  
+    -With the replay he gave me, one of the 2 carriers has a minimum period of 5.74μs which
+requires a minimum sample rate of 350k.  
+To solve this problem, I removed the decimation which systematically decimated at 250k.  
+
 Version 1.5.8.0 February 27, 2025.  
     -Devices window.  
         -Synchronization of the 3 graphs. Pulses, Am or Fm and IQ.  
@@ -274,7 +280,13 @@ Version 1.00  March 2021
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.5.8.0 20 Février 2025   
+Version 1.5.8.3 29 Avril 2025  
+    -Un utilisateur m'a indiqué un problème avec le device Bresser à 868Mhz et sample rate 1000k.  
+       -Avec le replay qu'il m'a procuré, une des 2 porteuses à une périod minimum de 5.74µs ce qui
+demande un sample rate minimum de 350k.  
+    Pour regler ce problème, j'ai supprimé la décimation qui décimait systématiquement à 250k.  
+
+Version 1.5.8.0 20 Février 2025  
     -Fenetre devices.  
         -Synchronisation des 3 graphiques.Pulses,Am ou Fm et IQ.  
         -Possibilité de valider l'enregistrement du prochain message sur toutes les fenetres devices

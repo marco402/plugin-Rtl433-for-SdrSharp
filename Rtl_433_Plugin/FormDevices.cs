@@ -44,6 +44,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace SDRSharp.Rtl_433
@@ -69,6 +70,7 @@ namespace SDRSharp.Rtl_433
         private Int32 activeColumnForData = 1;
         #endregion
         #region constructor load close form
+        Label theLabelModel;
         internal FormDevices(ClassFormDevices classParent)
         {
             InitializeComponent();
@@ -106,6 +108,14 @@ namespace SDRSharp.Rtl_433
             plotterDisplayExDevices.SetAmbiantProperty(this.BackColor, this.ForeColor, this.Font);
             this.MinimumSize = new System.Drawing.Size(660, 100);   //width=660 else no display end graph why? todo
             this.Size = new System.Drawing.Size(660, 600);
+
+            theLabelModel = new Label();
+            theLabelModel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
+            theLabelModel.AutoSize = true;
+            theLabelModel.BackColor = this.BackColor;  // System.Drawing.SystemColors.Control;
+            theLabelModel.ForeColor = this.ForeColor;  // System.Drawing.SystemColors.ControlText;
+            theLabelModel.Font = this.Font;
+            listRow=new Dictionary<String, Int32>() ;
             this.ResumeLayout(true);
         }
         private Label labelWaitMessage;
@@ -147,6 +157,7 @@ namespace SDRSharp.Rtl_433
         #region publics functions
         private const Int32 NBCOL = 5;
         private Int32 InitialisedCol = 1;
+        private Dictionary<String, Int32> listRow;
         internal void SetInfoDevice(Dictionary<String, String> listData)
         {
             this.SuspendLayout();
@@ -155,6 +166,7 @@ namespace SDRSharp.Rtl_433
                 tableLayoutPanelDeviceData.RowStyles[0].Height = 0;   //50
                 tableLayoutPanelDeviceData.Padding = new Padding(0, 3, 0, 0);
             }
+            tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle() { Height = 20 });
             foreach (KeyValuePair<String, String> _data in listData)
             {
                 if (_data.Key.ToUpper().Contains("TIME"))
@@ -177,32 +189,33 @@ namespace SDRSharp.Rtl_433
                 if (!listLabelKey.ContainsKey(_data.Key))
                 {
                     tableLayoutPanelDeviceData.RowCount++;
-                    tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle(){Height = 20 });   // new System.Windows.Forms.RowStyle());
-                    Label theLabelKey = new Label();
-                    theLabelKey.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
-                    theLabelKey.AutoSize = true;
-                    theLabelKey.BackColor = this.BackColor;  // System.Drawing.SystemColors.Control;
-                    theLabelKey.ForeColor = this.ForeColor;  // System.Drawing.SystemColors.ControlText;
-                    theLabelKey.Font = this.Font;
+                    Label theLabelKey = theLabelModel.Clone();
                     listLabelKey.Add(_data.Key, theLabelKey);
-                    tableLayoutPanelDeviceData.Controls.Add(theLabelKey, 0, tableLayoutPanelDeviceData.RowCount - 1);
+                    listRow.Add(_data.Key, tableLayoutPanelDeviceData.RowCount - 1);
+                    tableLayoutPanelDeviceData.Controls.Add(theLabelKey, 0, listRow[_data.Key]);
+                    
                     theLabelKey.Text = _data.Key;
-                    for (Int32 col = 1; col < NBCOL; col++)
+                    if (InitialisedCol == 1)
+                        AddCol(1, listRow[_data.Key], _data.Key);
+                    else
                     {
-                        AddCol(col, _data.Key);
+                        for (Int32 col = 1; col < InitialisedCol+1; col++)
+                        {
+                            AddCol(col, listRow[_data.Key], _data.Key);
+                        }
                     }
                 }
                 else
                 {
-                    if (InitialisedCol< activeColumnForData)
+                    if (InitialisedCol < activeColumnForData+1)
                     {
-                        AddCol(InitialisedCol, _data.Key);
+                        AddCol(activeColumnForData, listRow[_data.Key], _data.Key);
                     }
                 }
                 listLabelValue[_data.Key + activeColumnForData.ToString()].Text = _data.Value;
             }
-
-            InitialisedCol += 1;
+            if(InitialisedCol<NBCOL+1)
+                InitialisedCol += 1;
             nbMessages++;
             toolStripStatusLabelNbMessages.Text = "NB messages: " + nbMessages.ToString();
             activeColumnForData ++;
@@ -210,16 +223,13 @@ namespace SDRSharp.Rtl_433
                 activeColumnForData = 1;
             this.ResumeLayout(true);
         }
-        internal void AddCol(Int32 col,String Key)
+
+        internal void AddCol(Int32 col,Int32 row,String Key)
         {
-            Label theLabelValue = new Label();
-            theLabelValue.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
-            theLabelValue.AutoSize = true;
-            theLabelValue.BackColor = this.BackColor;
-            theLabelValue.ForeColor = this.ForeColor;
-            theLabelValue.Font = this.Font;
+            Label theLabelValue = theLabelModel.Clone();
             listLabelValue.Add(Key + col.ToString(), theLabelValue);
-            tableLayoutPanelDeviceData.Controls.Add(theLabelValue, col, tableLayoutPanelDeviceData.RowCount - 1);
+            tableLayoutPanelDeviceData.Controls.Add(theLabelValue, col,row );  //tableLayoutPanelDeviceData.RowCount - 1
+            theLabelValue.Text = Key;
 
         }
         internal void ResetLabelRecord()
@@ -463,5 +473,26 @@ namespace SDRSharp.Rtl_433
             this.ResumeLayout(true);
         }
         #endregion
+    }
+    public static class ControlExtensions
+    {
+        public static T Clone<T>(this T controlToClone)
+            where T : Control
+        {
+            PropertyInfo[] controlProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            T instance = Activator.CreateInstance<T>();
+
+            foreach (PropertyInfo propInfo in controlProperties)
+            {
+                if (propInfo.CanWrite)
+                {
+                    if (propInfo.Name != "WindowTarget")
+                        propInfo.SetValue(instance, propInfo.GetValue(controlToClone, null), null);
+                }
+            }
+
+            return instance;
+        }
     }
 }

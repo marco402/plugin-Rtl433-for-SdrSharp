@@ -153,7 +153,7 @@ namespace SDRSharp.Rtl_433
             listViewListMessages.BeginUpdate();
             //*********add name column if necessary in listViewListMessages and in cacheListColumns****************
             //*********memorize maxColCurrent***************
-            ClassFunctionsVirtualListView.AddColumn(listData, cacheListColumns, listViewListMessages, ClassConst.NBCOLUMN);
+            ClassFunctionsVirtualListView.AddColumn(listData, cacheListColumns, listViewListMessages, ClassConst.NBMAXCOLUMN);
             //*************************Add new line*********************************
             ListViewItem device = new ListViewItem(deviceName);
             ClassFunctionsVirtualListView.AddNewLine(listData, cacheListColumns, device);

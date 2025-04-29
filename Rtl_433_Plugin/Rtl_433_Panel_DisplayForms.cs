@@ -54,6 +54,7 @@ namespace SDRSharp.Rtl_433
 #if TESTBOUCLEREPLAYMARC
         String lastName = ""; 
  #endif
+
         internal void TreatForms(Dictionary<String, String> listData, List<PointF>[] points = null,String[] nameGraph = null, float[] dataIQForRecord = null, Int32 sampleRate = 0, string frequencyStr = "")
         {
             if (InvokeRequired)
@@ -65,6 +66,10 @@ namespace SDRSharp.Rtl_433
             }
             else
             {
+                bool analyze = false;
+#if ANALYZE
+                analyze = true;
+#endif
                 if (ClassInterfaceWithRtl433 == null)
                     return;
                 stopwDisplay.Restart();
@@ -75,7 +80,7 @@ namespace SDRSharp.Rtl_433
 #if TESTWINDOWS
                     cptDevicesForTest ++;                //test device windows
 #endif
-                if (selectFormGraph)
+                if (selectFormGraph && !analyze)
                 {
                     if (myClassFormDevices == null)
                     {
@@ -85,7 +90,7 @@ namespace SDRSharp.Rtl_433
                     }
                     myClassFormDevices.TreatFormDevices(sourceIsFile, points, nameGraph,  dataIQForRecord,  sampleRate, control, frequencyStr, deviceName, listData);
                 }
-                else if (selectFormListDevice)
+                else if (selectFormListDevice || analyze)
                 {
                             if (myClassFormDevicesList == null && !shownFormDeviceList)
                             {
@@ -109,8 +114,8 @@ namespace SDRSharp.Rtl_433
                 TimeDisplay = stopwDisplay.ElapsedMilliseconds;
             }
         }
-        #region formListMessages
- #endregion
+#region formListMessages
+#endregion
 
 #region formDevicesList
         private Boolean selectFormListDevice;

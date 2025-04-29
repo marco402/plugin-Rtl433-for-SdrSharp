@@ -127,5 +127,5 @@ namespace SDRSharp.Rtl_433
             }
             return arrayOut;
         }
-    }
+     }
 }

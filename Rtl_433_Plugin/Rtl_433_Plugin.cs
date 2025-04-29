@@ -76,12 +76,8 @@ namespace SDRSharp.Rtl_433
         {
             get { return controlPanel; }
         }
-
-        public String DisplayName  //ISharpPlugin    call by SDRSharp.MainForm
-        {
-            get { return "RTL_433"; } //+ controlPanel.VERSION  without version as others plugins
-        }
-
+        public string DisplayName => "RTL_433";
+ 
         public void Close()    //ISharpPlugin  call by SDRSharp.MainForm
         {
             //Console.WriteLine("Close plugin");

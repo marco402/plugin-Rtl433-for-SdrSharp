@@ -10,7 +10,7 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
-//#define noV1632   //Real and Imag inversed    two case ok with 1632 and file _Protocol_1_Model__Silvercrest-Remote_433920000hz_250k_08_02_2025_10_47_38.wav
+//#define noV1632   two case ok with 1632 and file _Protocol_1_Model__Silvercrest-Remote_433920000hz_250k_08_02_2025_10_47_38.wav
 using SDRSharp.Radio;
 using System;
 using System.Collections.Generic;
@@ -152,7 +152,9 @@ namespace SDRSharp.Rtl_433
                 NativeMethods.stop_sdr(ptrCtx);
             if (!initListDevice)     //need reload list devices
                 panelRtl_433.SetOptionVerboseInit();
-
+//#if DEBUG
+//            SetOption("analyze", "-A", true);
+//#endif
             threadCallMainRTL_433 = null;
 
             threadCallMainRTL_433 = new Thread(ThreadCallMainRtl433)
@@ -397,29 +399,116 @@ namespace SDRSharp.Rtl_433
             Dictionary<String, String> listData = new Dictionary<String, String>();
             String Key;
             String Value;
-            Int32 tiret = 1;
+#if ANALYZE
+            String memoModulation ="";
+            Boolean Analyz = false;
+#endif
+            //Int32 tiret = 1;
+            //
             for (Int32 i = 0; i < info.nbInfosDevice; i++)
             {
                 IntPtr strPtrKey = (IntPtr)Marshal.PtrToStructure(info.Key_Device, typeof(IntPtr));
                 Key = ClassUtils.FirstCharToUpper(Marshal.PtrToStringAnsi(strPtrKey));    //mainly for channel or Channel...limit nb column
                 info.Key_Device = new IntPtr(info.Key_Device.ToInt64() + IntPtr.Size);
-
-                IntPtr strPtrValue = (IntPtr)Marshal.PtrToStructure(info.Value_Device, typeof(IntPtr));
+                //add : to end and delete spaces before it
+                Key = Key.TrimEnd(' ');
+                Key = Key.TrimEnd(':');
+                Key = Key.TrimEnd(' ');
+                Key = Key.Insert(Key.Length, ":");
+ 
+                 IntPtr strPtrValue = (IntPtr)Marshal.PtrToStructure(info.Value_Device, typeof(IntPtr));
                 Value = (Marshal.PtrToStringAnsi(strPtrValue));
+#if ANALYZE
+                if (Key == "Channel:" && Value == "9999")
+                {
+                    Analyz = true;
+                    //continue;
+                }
+                if (Key == "Modulation:")
+                {
+                    memoModulation = Value;
+                    //continue;
+                }
+#endif
                 info.Value_Device = new IntPtr(info.Value_Device.ToInt64() + IntPtr.Size);
+                if (Key == "Modulation:")
+                    Value = getModulation(Value);
+               
                 try
                 {
-                listData.Add(Key, Value);
+                    listData.Add(Key, Value);
                 }
                 catch
                 {
-                    Key = Key.PadRight(tiret+Key.Length, '-');
-                    listData.Add(Key, Value);
-                    tiret += 1;
+                    //Key = Key.PadRight(tiret+Key.Length, '-');
+                    //listData.Add(Key, Value);
+                    //tiret += 1;
                 }
+
             }
-            return listData;
+#if ANALYZE
+            listData.Add("Raw Message:", info.row_bits);
+
+            //if (Analyz)
+            //{
+                listData["Channel:"] = memoModulation;  // listData["Period:"];
+                listData.Add("Raw Message\\:", info.row_bitsBarre);
+            //}
+#endif
+                //else
+                //{ }
+                //    listData["Modulation:"] = getModulation(listData["Modulation:"]);
+                return listData;
         }
+
+        private String getModulation(String modulation)
+        {
+            String Modulation = "";
+            switch(modulation)
+            {
+                case "3":
+                    Modulation = "OOK_PULSE_MANCHESTER_ZEROBIT";
+                    break;
+                case "4":
+                    Modulation = "OOK_PULSE_PCM or OOK_PULSE_RZ";
+                    break;
+                case "5":
+                    Modulation = "OOK_PULSE_PPM";
+                    break;
+                case "6":
+                    Modulation = "OOK_PULSE_PWM";
+                    break;
+                case "8":
+                    Modulation = "OOK_PULSE_PIWM_RAW";
+                    break;
+                case "9":
+                    Modulation = "OOK_PULSE_DMC";
+                    break;
+                case "10":
+                    Modulation = "OOK_PULSE_PWM_OSV1";
+                    break;
+                case "11":
+                    Modulation = "OOK_PULSE_PIWM_DC";
+                    break;
+                case "12":
+                    Modulation = "OOK_PULSE_NRZS";
+                    break;
+                case "16":
+                    Modulation = "FSK_PULSE_PCM";
+                    break;
+                case "17":
+                    Modulation = "FSK_PULSE_PWM";
+                    break;
+                case "18":
+                    Modulation = "FSK_PULSE_MANCHESTER_ZEROBIT";
+                    break;
+                default:
+                    Modulation = "unknown modulation";
+                    break;
+            }
+            return Modulation;
+        }
+
         private Boolean selectFormGraph;
         internal Boolean SetSelectFormGraph
         {
@@ -469,7 +558,11 @@ namespace SDRSharp.Rtl_433
                 points = myClassTraceGraphe.TreatGraph(info, listData, SampleRateDecime, ptrDemod, frequencyStr,out string[] nameGraph, memoDataIQForRs433, ptrMemoDataForRs433, out float[] dataIQForRecord, panelRtl_433);
                 if (points!=null)
                 {
+#if ANALYZE
+                    panelRtl_433.TreatForms(listData);
+#else
                     panelRtl_433.TreatForms(listData, points,nameGraph, dataIQForRecord, (Int32)SampleRateDecime, FrequencyStr);
+#endif
                 }
                 else
                 {
