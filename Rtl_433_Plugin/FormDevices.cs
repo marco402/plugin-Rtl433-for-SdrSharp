@@ -1,7 +1,7 @@
 ﻿
 /* Written by Marc Prieur (marco40_github@sfr.fr)
                                 FormDevices.cs 
-                            project Rtl_433_Plugin
+                            project Rtl_433_Plugin 
 						         Plugin for SdrSharp
  **************************************************************************************
  Creative Commons Attrib Share-Alike License
@@ -41,6 +41,7 @@ using GraphLib;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -67,7 +68,16 @@ namespace SDRSharp.Rtl_433
         private readonly Color memoForeColortoolStripStatusLabelFreezeData;
         private readonly String memoTexttoolStripSplitLabelFreezeData;
         private float memoHeightPlotterDisplayExDevices = 0;
-        private Int32 activeColumnForData = 1;
+        private Boolean firstToTop = true;
+        private readonly Dictionary<String, Int32> cacheListColumns;
+        private readonly ListViewItem[] cacheListInfosMessages;
+        private Dictionary<String, Int32> listRow;
+        private Int32 activColumn = 1;
+        private bool WidthInit = false;
+        private readonly Int32 maxColumns = 0;
+        private readonly Int32 maxInfoDevices = 0;
+        private Int32 nbInfoDevice = 0;
+        private readonly Int32[] MaxInfoWidth;
         #endregion
         #region constructor load close form
         Label theLabelModel;
@@ -112,10 +122,29 @@ namespace SDRSharp.Rtl_433
             theLabelModel = new Label();
             theLabelModel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
             theLabelModel.AutoSize = true;
-            theLabelModel.BackColor = this.BackColor;  // System.Drawing.SystemColors.Control;
-            theLabelModel.ForeColor = this.ForeColor;  // System.Drawing.SystemColors.ControlText;
+            theLabelModel.BackColor = this.BackColor;
+            theLabelModel.ForeColor = this.ForeColor;
             theLabelModel.Font = this.Font;
             listRow=new Dictionary<String, Int32>() ;
+
+
+            ClassFunctionsVirtualListView.InitListView(listViewListMessages);
+            listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
+            listViewListMessages.ForeColor = this.ForeColor;
+            listViewListMessages.Font = this.Font;
+            listViewListMessages.Cursor = this.Cursor;
+
+            maxInfoDevices = ClassConst.MAXROWCODE;
+            maxColumns = ClassConst.NBMAXCOLUMNDEVICES;
+            cacheListInfosMessages = new ListViewItem[this.maxInfoDevices];
+            cacheListColumns = new Dictionary<String, Int32>();
+            MaxInfoWidth = new Int32[maxColumns];
+            for (Int32 i = 0; i < maxColumns; i++)
+                MaxInfoWidth[i] = 0;
+            plotterDisplayExDevices.Width = this.Width-1000;    //why?
+            listViewListMessages.Width = this.Width-100;        //why?
+ 
+
             this.ResumeLayout(true);
         }
         private Label labelWaitMessage;
@@ -130,7 +159,9 @@ namespace SDRSharp.Rtl_433
             labelWaitMessage.Font = this.Font;
             labelWaitMessage.BackColor = this.BackColor;
             labelWaitMessage.ForeColor = this.ForeColor;
-            labelWaitMessage.Text = "Wait to receive new data \n max devices with graph:" + ClassUtils.MaxDevicesWithGraph + "\n You can click on display curves \n" + "or change nbDevicesWithGraph in exe.config";
+            labelWaitMessage.Text = $"Wait to receive new data \n max devices with graph: {ClassUtils.MaxDevicesWithGraph}\n You can click on display curves" +
+                $" \n or change nbDevicesWithGraph in exe.config \n or sample rate highest for memory.";
+            tableLayoutPanelDeviceData.RowStyles[0].Height = 100;
         }
         private Boolean closeByProgram = false;
         internal void CloseByProgram()
@@ -155,82 +186,14 @@ namespace SDRSharp.Rtl_433
         }
         #endregion
         #region publics functions
-        private const Int32 NBCOL = 5;
-        private Int32 InitialisedCol = 1;
-        private Dictionary<String, Int32> listRow;
-        internal void SetInfoDevice(Dictionary<String, String> listData)
+        internal Boolean SetInfoDevice(Dictionary<String, String> listData)
         {
             this.SuspendLayout();
-            if (NumGraphs == 0)
-            {
-                tableLayoutPanelDeviceData.RowStyles[0].Height = 0;   //50
-                tableLayoutPanelDeviceData.Padding = new Padding(0, 3, 0, 0);
-            }
-            tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle() { Height = 20 });
-            foreach (KeyValuePair<String, String> _data in listData)
-            {
-                if (_data.Key.ToUpper().Contains("TIME"))
-                {
-                    if (DateTime.TryParse(_data.Value, out DateTime maDate))
-                    {
-                        Int64 currentTime = maDate.ToFileTime() / 10000000;
-                        if (memoTime > 0)
-                        {
-                            Int64 dtTime = (currentTime - memoTime);
-                            if (dtTime > memoTimeMax)
-                                memoTimeMax = dtTime;
-                            toolStripStatusLabelPeriodeCurrent.Text = "Period: " + dtTime.ToString() + "s.";
-                            toolStripStatusLabelPeriodeMax.Text = "Period max: " + memoTimeMax.ToString() + "s.";
-                        }
-                        memoTime = currentTime;
-                    }
-                }
-
-                if (!listLabelKey.ContainsKey(_data.Key))
-                {
-                    tableLayoutPanelDeviceData.RowCount++;
-                    Label theLabelKey = theLabelModel.Clone();
-                    listLabelKey.Add(_data.Key, theLabelKey);
-                    listRow.Add(_data.Key, tableLayoutPanelDeviceData.RowCount - 1);
-                    tableLayoutPanelDeviceData.Controls.Add(theLabelKey, 0, listRow[_data.Key]);
-                    
-                    theLabelKey.Text = _data.Key;
-                    if (InitialisedCol == 1)
-                        AddCol(1, listRow[_data.Key], _data.Key);
-                    else
-                    {
-                        for (Int32 col = 1; col < InitialisedCol+1; col++)
-                        {
-                            AddCol(col, listRow[_data.Key], _data.Key);
-                        }
-                    }
-                }
-                else
-                {
-                    if (InitialisedCol < activeColumnForData+1)
-                    {
-                        AddCol(activeColumnForData, listRow[_data.Key], _data.Key);
-                    }
-                }
-                listLabelValue[_data.Key + activeColumnForData.ToString()].Text = _data.Value;
-            }
-            if(InitialisedCol<NBCOL+1)
-                InitialisedCol += 1;
-            nbMessages++;
-            toolStripStatusLabelNbMessages.Text = "NB messages: " + nbMessages.ToString();
-            activeColumnForData ++;
-            if (activeColumnForData == NBCOL)
-                activeColumnForData = 1;
+            listViewListMessages.BeginUpdate();
+            this.SetInfoDevicePrivate(listData);
+            listViewListMessages.EndUpdate();
             this.ResumeLayout(true);
-        }
-
-        internal void AddCol(Int32 col,Int32 row,String Key)
-        {
-            Label theLabelValue = theLabelModel.Clone();
-            listLabelValue.Add(Key + col.ToString(), theLabelValue);
-            tableLayoutPanelDeviceData.Controls.Add(theLabelValue, col,row );  //tableLayoutPanelDeviceData.RowCount - 1
-            theLabelValue.Text = Key;
-
+            return true;
         }
         internal void ResetLabelRecord()
         {
@@ -308,30 +271,23 @@ namespace SDRSharp.Rtl_433
             {
                 if (!_dataFrozen)
                 {
-                    Int32 indexGraph = 0;
-                    this.SuspendLayout();
-                    foreach (DataSource source in plotterDisplayExDevices.DataSources)
-                    {
-                        plotterDisplayExDevices.DataSources[indexGraph].Length = 0;
-                        indexGraph ++;
-                    }
-                    plotterDisplayExDevices.SetMaxXAllData(0, true);
+                    plotterDisplayExDevices.Height = 70;
+                    tableLayoutPanelDeviceData.RowStyles[0].Height = 70;
                     this.ResumeLayout();
                 }
                 return;
             }
+            tableLayoutPanelDeviceData.RowStyles[0].Height = memoHeightPlotterDisplayExDevices;
             float MaxXAllData = float.MinValue;
             foreach (List<PointF> lpt in points)
             {
                 if (lpt.Count > 0)
                     MaxXAllData = Math.Max(lpt.Max(point => point.X), MaxXAllData);
             }
-            //if (MaxXAllData == float.MinValue)  comment for erase curve if 0 point
-            //    return;
-
+ 
             this.SuspendLayout();
             Boolean foundGraph = false;
-            for (Int32 i = 0; i < points.Length; i++)
+            for (Int32 i = 0; i < points.Length; i++) 
             {
                 foundGraph = false;
                 Int32 indexGraph = 0;
@@ -356,19 +312,6 @@ namespace SDRSharp.Rtl_433
             }
             this.ResumeLayout(true);
         }
-
-        private Boolean _displayGraph = false;
-        internal Boolean DisplayGraph
-        {
-            get { return _displayGraph; }
-            set
-            {
-                _displayGraph = value;
-                HideShowAllGraphs(value);
-            }
-        }
-        #endregion
-        #region privates functions
         internal void RefreshPoints(List<PointF> tabPoints, float MaxXAllData, Int32 indexGraph)
         {
             if (plotterDisplayExDevices.GetEndDrawGraphEvent())
@@ -400,6 +343,123 @@ namespace SDRSharp.Rtl_433
 
             }
         }
+        internal Boolean DisplayGraph
+        {
+            get { return _displayGraph; }
+            set
+            {
+                _displayGraph = value;
+                HideShowAllGraphs(value);
+            }
+        }
+        #endregion
+        #region privates functions
+        private void endSetInfoDevice()
+        {
+            if (!WidthInit)
+            {
+                listViewListMessages.Columns[0].Width = MaxInfoWidth[0];
+                WidthInit = true;
+            }
+            listViewListMessages.Columns[activColumn].Width = MaxInfoWidth[activColumn];
+            listViewListMessages.VirtualListSize = nbInfoDevice;
+            activColumn++;
+            if (activColumn > maxColumns - 1)
+                activColumn = 1;
+            nbMessages++;
+            toolStripStatusLabelNbMessages.Text = $"NB messages: {nbMessages.ToString()}";
+
+        }
+        private void SetInfoDevicePrivate(Dictionary<String, String> listData)
+        {
+            if (cacheListColumns == null)
+                return;
+
+
+            //**********************add column***********************************
+            //change listViewDevices.HeaderStyle = ColumnHeaderStyle.None; for display column name
+            ClassFunctionsVirtualListView.AddOneColumnDevices("Info", cacheListColumns, listViewListMessages, maxColumns);
+            //***********************add other column if necessary*************************************
+            for (Int32 i = 1; i < maxColumns; i++)
+                ClassFunctionsVirtualListView.AddOneColumnDevices($"Data {i}", cacheListColumns, listViewListMessages, maxColumns);
+
+            Int32 colWidth = 0;
+            foreach (KeyValuePair<string, string> _data in listData)
+            {
+                if (_data.Key.ToUpper().Contains("TIME"))
+                {
+                    if (DateTime.TryParse(_data.Value, out DateTime maDate))
+                    {
+                        Int64 currentTime = maDate.ToFileTime() / 10000000;
+                        if (memoTime > 0)
+                        {
+                            Int64 dtTime = (currentTime - memoTime);
+                            if (dtTime > memoTimeMax)
+                                memoTimeMax = dtTime;
+                            toolStripStatusLabelPeriodeCurrent.Text = $"Period:{dtTime.ToString()}s.";
+                            toolStripStatusLabelPeriodeMax.Text = $"Period max:{memoTimeMax.ToString()}s.";
+                        }
+                        memoTime = currentTime;
+                    }
+                }
+                //**********************search if info name exist******************************
+                ListViewItem NameInfoDevice = ClassFunctionsVirtualListView.GetItem(_data.Key, cacheListInfosMessages);
+                //**************************new info name***************************
+                if (NameInfoDevice == null)
+                {
+                    WidthInit = false;
+                    if (nbInfoDevice > maxInfoDevices - 1)
+                    {
+                        endSetInfoDevice();
+                        return;
+                    }
+
+                    NameInfoDevice = new ListViewItem(_data.Key);
+                    colWidth = TextRenderer.MeasureText(_data.Key, listViewListMessages.Font).Width + 10;
+                    if (colWidth > MaxInfoWidth[0])
+                        MaxInfoWidth[0] = colWidth;
+                    colWidth = TextRenderer.MeasureText(_data.Value, listViewListMessages.Font).Width + 10;
+                    if (colWidth > MaxInfoWidth[activColumn])
+                        MaxInfoWidth[activColumn] = colWidth;
+                    for (Int32 i = 1; i < maxColumns; i++)
+                    {
+                        NameInfoDevice.SubItems.Add("");
+                    }
+                    NameInfoDevice.SubItems[activColumn].Text = _data.Value;
+                    //**************add new line in cacheListMessages
+                    ClassFunctionsVirtualListView.AddElemToCache(cacheListInfosMessages, firstToTop, nbInfoDevice, NameInfoDevice);
+                    //************************************************
+                    nbInfoDevice++;
+                }
+                //**************************refresh info***************************
+                else
+                {
+                    NameInfoDevice.SubItems[activColumn].Text = _data.Value;
+                    colWidth = TextRenderer.MeasureText(_data.Value, listViewListMessages.Font).Width + 10;
+                    if (colWidth > MaxInfoWidth[activColumn])
+                        MaxInfoWidth[activColumn] = colWidth;
+                }
+                //**************************************************************************************
+            }
+            endSetInfoDevice();
+        }
+        private void listViewListMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            try
+            {
+                if (e.ItemIndex >= 0)
+                {
+                    ListViewItem lvi = cacheListInfosMessages[e.ItemIndex];
+                    if (lvi != null)
+                        e.Item = lvi;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)");
+            }
+        }
+        private Boolean _displayGraph = false;
         private String RenderXLabel(Int32 value)
         {
             if (value > 1000000)
@@ -472,27 +532,11 @@ namespace SDRSharp.Rtl_433
             }
             this.ResumeLayout(true);
         }
-        #endregion
-    }
-    public static class ControlExtensions
-    {
-        public static T Clone<T>(this T controlToClone)
-            where T : Control
+        private void FormDevices_ResizeEnd(object sender, EventArgs e)
         {
-            PropertyInfo[] controlProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            T instance = Activator.CreateInstance<T>();
-
-            foreach (PropertyInfo propInfo in controlProperties)
-            {
-                if (propInfo.CanWrite)
-                {
-                    if (propInfo.Name != "WindowTarget")
-                        propInfo.SetValue(instance, propInfo.GetValue(controlToClone, null), null);
-                }
-            }
-
-            return instance;
+            plotterDisplayExDevices.Width = this.Width-1000;  //why?
+            listViewListMessages.Width = this.Width-100;  //why?
         }
+        #endregion
     }
 }

@@ -61,7 +61,7 @@ namespace SDRSharp.Rtl_433
                 controlPanel.SetFrequency(Utils.GetLongSetting("RTL_433_plugin.Frequency", 433920000));
                 ClassUtils.MaxDevicesWindows=Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", 100);
                 ClassUtils.MaxDevicesWithGraph=Utils.GetIntSetting("RTL_433_plugin.nbDevicesWithGraph", 100);
-                if(ClassUtils.MaxDevicesWithGraph<100)
+                if (ClassUtils.MaxDevicesWithGraph < 100)
                     ClassUtils.MaxDevicesWithGraph = 100;
                 ClassUtils.MaxLinesConsole=Utils.GetIntSetting("RTL_433_plugin.maxLinesConsole", 3000);
                 //controlPanel.Dock = DockStyle.Left; sans effet //egal version 1920 no docking-->il faut:prefered docking position. where ?

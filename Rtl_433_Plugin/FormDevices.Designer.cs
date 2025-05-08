@@ -35,6 +35,7 @@
             this.toolStripSplitLabelRecordOneShoot = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelFreezeData = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanelDeviceData = new System.Windows.Forms.TableLayoutPanel();
+            this.listViewListMessages = new System.Windows.Forms.ListView();
             this.plotterDisplayExDevices = new GraphLib.PlotterDisplayEx();
             this.statusStripDevices.SuspendLayout();
             this.tableLayoutPanelDeviceData.SuspendLayout();
@@ -50,7 +51,7 @@
             this.toolStripStatusLabelFreezeData});
             this.statusStripDevices.Location = new System.Drawing.Point(0, 239);
             this.statusStripDevices.Name = "statusStripDevices";
-            this.statusStripDevices.Size = new System.Drawing.Size(284, 22);
+            this.statusStripDevices.Size = new System.Drawing.Size(750, 22);
             this.statusStripDevices.TabIndex = 0;
             this.statusStripDevices.Text = "statusStrip1";
             // 
@@ -96,20 +97,31 @@
             // 
             // tableLayoutPanelDeviceData
             // 
-            this.tableLayoutPanelDeviceData.ColumnCount = 5;
+            this.tableLayoutPanelDeviceData.ColumnCount = 1;
             this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelDeviceData.Controls.Add(this.listViewListMessages, 0, 1);
             this.tableLayoutPanelDeviceData.Controls.Add(this.plotterDisplayExDevices, 0, 0);
             this.tableLayoutPanelDeviceData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelDeviceData.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
-            this.tableLayoutPanelDeviceData.RowCount = 1;
-            this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 249F));
-            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(284, 239);
+            this.tableLayoutPanelDeviceData.RowCount = 2;
+            this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 300F));
+            this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(750, 239);
             this.tableLayoutPanelDeviceData.TabIndex = 1;
+            // 
+            // listViewListMessages
+            // 
+            this.listViewListMessages.Dock = System.Windows.Forms.DockStyle.Top;
+            this.listViewListMessages.GridLines = true;
+            this.listViewListMessages.HideSelection = false;
+            this.listViewListMessages.Location = new System.Drawing.Point(3, 303);
+            this.listViewListMessages.Name = "listViewListMessages";
+            this.listViewListMessages.Size = new System.Drawing.Size(1034, 114);
+            this.listViewListMessages.TabIndex = 3;
+            this.listViewListMessages.UseCompatibleStateImageBehavior = false;
+            this.listViewListMessages.View = System.Windows.Forms.View.List;
+            this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewListMessages_RetrieveVirtualItem);
             // 
             // plotterDisplayExDevices
             // 
@@ -117,13 +129,12 @@
             this.plotterDisplayExDevices.BackgroundColorBot = System.Drawing.Color.White;
             this.plotterDisplayExDevices.BackgroundColorTop = System.Drawing.Color.White;
             this.plotterDisplayExDevices.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.tableLayoutPanelDeviceData.SetColumnSpan(this.plotterDisplayExDevices, 5);
             this.plotterDisplayExDevices.DashedGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plotterDisplayExDevices.DoubleBuffering = true;
             this.plotterDisplayExDevices.Location = new System.Drawing.Point(3, 3);
             this.plotterDisplayExDevices.Name = "plotterDisplayExDevices";
-            this.plotterDisplayExDevices.Size = new System.Drawing.Size(278, 243);
+            this.plotterDisplayExDevices.Size = new System.Drawing.Size(1034, 294);
             this.plotterDisplayExDevices.SolidGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.TabIndex = 2;
             // 
@@ -132,13 +143,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(750, 261);
             this.Controls.Add(this.tableLayoutPanelDeviceData);
             this.Controls.Add(this.statusStripDevices);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "FormDevices";
             this.Text = "FormDevices";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormDevices_FormClosed);
+            this.ResizeEnd += new System.EventHandler(this.FormDevices_ResizeEnd);
             this.statusStripDevices.ResumeLayout(false);
             this.statusStripDevices.PerformLayout();
             this.tableLayoutPanelDeviceData.ResumeLayout(false);
@@ -155,5 +167,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelDeviceData;
         private GraphLib.PlotterDisplayEx plotterDisplayExDevices;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFreezeData;
+        private System.Windows.Forms.ListView listViewListMessages;
     }
 }

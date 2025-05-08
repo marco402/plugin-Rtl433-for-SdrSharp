@@ -137,7 +137,17 @@ namespace SDRSharp.Rtl_433
                 cacheListColumns.Add(_data, cacheListColumns.Count + 1);
                 lv.Columns.Add("");
                 lv.Columns[cacheListColumns.Count - 1].Text = _data;
-                //listViewListMessages.Columns[cacheListColumns.Count - 1].Width = -2;
+            }
+            return false;
+        }
+        internal static Boolean AddOneColumnDevices(String _data, Dictionary<String, Int32> cacheListColumns, ListView lv, Int32 maxColumn)
+        {
+            if (!cacheListColumns.ContainsKey(_data)) //new col
+            {
+                if (cacheListColumns.Count >= maxColumn)
+                    return true;
+                cacheListColumns.Add(_data, cacheListColumns.Count + 1);
+                lv.Columns.Add(_data);
             }
             return false;
         }
@@ -146,7 +156,6 @@ namespace SDRSharp.Rtl_433
             ListView.ColumnHeaderCollection cc = lv.Columns;
             for (Int32 col = 0; col < cc.Count; col++)
             {
-                //Debug.WriteLine(col.ToString()+'\t'+cc[col].Text);
                 if (cc[col].Text != "") 
                 {
                     Int32 colWidth = TextRenderer.MeasureText(cc[col].Text, lv.Font).Width + 10;
@@ -297,7 +306,6 @@ namespace SDRSharp.Rtl_433
             {
                 value = value.Replace(C, "");
             }
-            //badChars = null;
             return value;
         }
         internal static ListViewItem GetItem(String name, ListViewItem[] cacheLv)

@@ -467,40 +467,40 @@ namespace SDRSharp.Rtl_433
             switch(modulation)
             {
                 case "3":
-                    Modulation = "OOK_PULSE_MANCHESTER_ZEROBIT";
+                    Modulation = "OOK_MANCHESTER";
                     break;
                 case "4":
-                    Modulation = "OOK_PULSE_PCM or OOK_PULSE_RZ";
+                    Modulation = "OOK_PCM or RZ";
                     break;
                 case "5":
-                    Modulation = "OOK_PULSE_PPM";
+                    Modulation = "OOK_PPM";
                     break;
                 case "6":
-                    Modulation = "OOK_PULSE_PWM";
+                    Modulation = "OOK_PWM";
                     break;
                 case "8":
-                    Modulation = "OOK_PULSE_PIWM_RAW";
+                    Modulation = "OOK_PIWM_RAW";
                     break;
                 case "9":
-                    Modulation = "OOK_PULSE_DMC";
+                    Modulation = "OOK_DMC";
                     break;
                 case "10":
-                    Modulation = "OOK_PULSE_PWM_OSV1";
+                    Modulation = "OOK_PWM_OSV1";
                     break;
                 case "11":
-                    Modulation = "OOK_PULSE_PIWM_DC";
+                    Modulation = "OOK_PIWM_DC";
                     break;
                 case "12":
-                    Modulation = "OOK_PULSE_NRZS";
+                    Modulation = "OOK_NRZS";
                     break;
                 case "16":
                     Modulation = "FSK_PULSE_PCM";
                     break;
                 case "17":
-                    Modulation = "FSK_PULSE_PWM";
+                    Modulation = "FSK_PWM";
                     break;
                 case "18":
-                    Modulation = "FSK_PULSE_MANCHESTER_ZEROBIT";
+                    Modulation = "FSK_MANCHESTER";
                     break;
                 default:
                     Modulation = "unknown modulation";
