@@ -92,10 +92,12 @@
     <Reference Include="GraphLib, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SDRSharp\bin\Release\GraphLib.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SDRSharp, Version=1.0.0.1632, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SDRSharp\bin\Debug\SDRSharp.exe</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SDRSharp.Common">
       <HintPath>..\SDRSharp\bin\Debug\SDRSharp.Common.dll</HintPath>

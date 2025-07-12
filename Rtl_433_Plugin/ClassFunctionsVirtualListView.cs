@@ -306,7 +306,7 @@ namespace SDRSharp.Rtl_433
             {
                 value = value.Replace(C, "");
             }
-            return value;
+             return value;
         }
         internal static ListViewItem GetItem(String name, ListViewItem[] cacheLv)
         {

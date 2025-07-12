@@ -1,4 +1,7 @@
 ## New Version  
+Version 1.5.8.5 July 12, 2025.  
+	-Rtl433 version 30_10_2024(24.10) to 19_02_2025(25.2)  
+	-2 devices more.  
 Version 1.5.8.4 May 25, 2025.  
     -Acceleration of the loading of the graphic window.  
 Version 1.5.8.3 April 29, 2025.  
@@ -282,7 +285,10 @@ Version 1.00  March 2021
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
-Version 1.5.8.4 25 Mai 2025  
+Version 1.5.8.5 12 Juillet 2025.  
+	-Rtl433 version 30_10_2024(24.10) to 19_02_2025(25.2)  
+	-Ajout de 2 devices  
+Version 1.5.8.4 25 Mai 2025.  
     -Accéleration du chargement de la fenetre graph.  
 Version 1.5.8.3 29 Avril 2025  
     -Un utilisateur m'a indiqué un problème avec le device Bresser à 868Mhz et sample rate 1000k.  

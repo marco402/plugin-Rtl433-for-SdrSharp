@@ -46,11 +46,17 @@ namespace SDRSharp.Rtl_433
         //internal static extern void pulse_analyzerPlugin([In, Out] ref Pulse_data pulsesData, [In, Out] ref Int32 hist_pulses_bins_count, [In, Out] ref Int32 hist_gap_bins_count, [In, Out] ref Int32 hist_periods_bins_count);
 #endif
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "baseband_low_pass_filter")]
-        internal static extern void baseband_low_pass_filter([In, Out, MarshalAs(UnmanagedType.LPArray)] ushort[] x_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] short[] y_buf, [Out] Int32 len, [In] ref Filter_state state);
+
+        internal static extern void baseband_low_pass_filter( [In] ref Filter_state state,[In, Out, MarshalAs(UnmanagedType.LPArray)] ushort[] x_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] short[] y_buf, [Out] Int32 len);
+                                  //baseband_low_pass_filter(filter_state_t* state,              uint16_t const * x_buf,                                            int16_t *y_buf,    uint32_t len);
+
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "envelope_detect")]
         internal static extern float envelope_detect([In, Out, MarshalAs(UnmanagedType.LPArray)] Byte[] iq_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] ushort[] y_buf, [Out] Int32 len);
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "baseband_demod_FM")]
-        internal static extern void baseband_demod_FM([In, Out, MarshalAs(UnmanagedType.LPArray)] Byte[] x_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] short[] y_buf, [Out] UInt64 num_samples, [Out] UInt32 samp_rate, [Out] float low_pass, [In, Out] ref Demodfm_state state);
+
+        internal static extern void baseband_demod_FM( [In, Out] ref Demodfm_state state,[In, Out, MarshalAs(UnmanagedType.LPArray)] Byte[] x_buf, [In, Out, MarshalAs(UnmanagedType.LPArray)] short[] y_buf, [Out] UInt64 num_samples, [Out] UInt32 samp_rate, [Out] float low_pass);
+                                  //baseband_demod_FM(                                   uint8_t const * x_buf,                                            int16_t *y_buf,     uint64_t num_samples,     uint32_t samp_rate,       float low_pass,               demodfm_state_t *state);
+
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "pulse_detect_package")]
         internal static extern Int32 pulse_detect_package([In, Out] ref Pulse_detect pulsesDetect, [In, Out, MarshalAs(UnmanagedType.LPArray)] Int16[] envelope_data, [In, Out, MarshalAs(UnmanagedType.LPArray)] Int16[] fm_data, Int32 len, UInt32 samp_rate, UInt64 sample_offset, [In, Out] ref Pulse_data pulsesData, [In, Out] ref Pulse_data fskPulses, UInt32 fpdm, [In, Out] ref Int32 start, [In, Out] ref Int32 startFsk);
         [DllImport("rtl_433", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "test_dll_get_version")]

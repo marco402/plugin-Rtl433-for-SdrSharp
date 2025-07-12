@@ -308,14 +308,14 @@ namespace SDRSharp.Rtl_433
                                 //stateAm.x[0] = 23;
                                 //stateAm.y[0] = 144;
                                 am_buf = new short[info.lenForDisplay];
-                                NativeMethods.baseband_low_pass_filter(bufTemp, am_buf, (Int32)info.lenForDisplay, ref stateAm);
+                                NativeMethods.baseband_low_pass_filter( ref stateAm, bufTemp, am_buf, (Int32)info.lenForDisplay);
                                 NativeMethods.Demodfm_state stateFm = new NativeMethods.Demodfm_state();
 
                                 stateFm = struct_demod.demod_FM_state;
                                 bool fpdm =  false;   //always FSK_PULSE_DETECT_OLD
                                 fm_buf = new short[info.lenForDisplay];
                                 float low_pass = struct_demod.low_pass != 0.0f ? struct_demod.low_pass : fpdm ? 0.2f : 0.1f;
-                                NativeMethods.baseband_demod_FM(dataByteForRs433, fm_buf, (UInt32)info.lenForDisplay, (UInt32)SampleRateDecime, low_pass, ref stateFm);
+                                NativeMethods.baseband_demod_FM( ref stateFm, dataByteForRs433, fm_buf, (UInt32)info.lenForDisplay, (UInt32)SampleRateDecime, low_pass);
 
                                 pulseData.pulse = new Int32[info.lenForDisplay];
                                 pulseData.gap = new Int32[info.lenForDisplay];
