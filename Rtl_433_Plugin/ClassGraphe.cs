@@ -245,7 +245,7 @@ namespace SDRSharp.Rtl_433
             }
             return retourIQ;
         }
-        internal List<PointF>[] TreatGraph(NativeMethods.R_deviceToPlugin info, Dictionary<String, String> listData, double SampleRateDecime, IntPtr ptrDemod, String FrequencyStr,out String[] nameGraph, float[] memoDataIQForRs433,Int32 ptrMemoDataForRs433, out float[] DataIQForRecord, Rtl_433_Panel owner)
+        internal List<PointF>[] TreatGraph(NativeMethods.R_deviceToPlugin info, Dictionary<String, String> listData, double SampleRateDecime, IntPtr ptrDemod, Int64 Frequency,out String[] nameGraph, float[] memoDataIQForRs433,Int32 ptrMemoDataForRs433, out float[] DataIQForRecord, Rtl_433_Panel owner)
         {
             this.panelRtl_433 = owner;
             List<PointF>[] points = null;
@@ -312,15 +312,24 @@ namespace SDRSharp.Rtl_433
                                 NativeMethods.Demodfm_state stateFm = new NativeMethods.Demodfm_state();
 
                                 stateFm = struct_demod.demod_FM_state;
-                                bool fpdm =  false;   //always FSK_PULSE_DETECT_OLD
+                                bool fpdm = false;   //always FSK_PULSE_DETECT_OLD
                                 fm_buf = new short[info.lenForDisplay];
+
+                                UInt32 fpdmPdp = 1;   //1 for apator
+                                if (Frequency > NativeMethods.FSK_PULSE_DETECTOR_LIMIT)
+                                    {
+                                    fpdmPdp = NativeMethods.FSK_PULSE_DETECT_NEW;
+                                    fpdm = true;
+                                    }
+                                else
+                                    fpdmPdp = NativeMethods.FSK_PULSE_DETECT_OLD;                             
+
                                 float low_pass = struct_demod.low_pass != 0.0f ? struct_demod.low_pass : fpdm ? 0.2f : 0.1f;
                                 NativeMethods.baseband_demod_FM( ref stateFm, dataByteForRs433, fm_buf, (UInt32)info.lenForDisplay, (UInt32)SampleRateDecime, low_pass);
 
                                 pulseData.pulse = new Int32[info.lenForDisplay];
                                 pulseData.gap = new Int32[info.lenForDisplay];
-                                UInt32 fpdmPdp = 0;  //1 idem....always FSK_PULSE_DETECT_OLD
-                                UInt64 sampleOffset = 0;
+                                 UInt64 sampleOffset = 0;
                                 NativeMethods.Pulse_detect PulseDetectBefore = new NativeMethods.Pulse_detect();
                                 PulseDetectBefore = (NativeMethods.Pulse_detect)Marshal.PtrToStructure(struct_demod.pulse_detect, typeof(NativeMethods.Pulse_detect));
                                 pulseDetect = new NativeMethods.Pulse_detect();

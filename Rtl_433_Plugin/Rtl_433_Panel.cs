@@ -11,7 +11,7 @@
  All text above must be included in any redistribution.
   **********************************************************************************/
 #define noTESTWINDOWS    //for test memory
-#define noTESTRECURSIF                  //used for copy one file for each srcFolder to dstFolder   used for zip download on RTL433 and convert CU8 to Wav and test with TESTBOUCLEREPLAYMARC
+#define noTESTRECURSIF                  //used for copy one file(or all file if comment memoDirectory) for each srcFolder to dstFolder   used for zip download on RTL433 and convert CU8 to Wav and test with TESTBOUCLEREPLAYMARC
 #define noTESTBATCH                     //genere file batch
 using SDRSharp.Common;
 using System;
@@ -20,6 +20,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
+
+#if TESTRECURSIF
+using System.IO;
+using System.Linq;
+#endif
+
 namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl  //no internal for this partial vs2017? 
@@ -640,8 +646,8 @@ namespace SDRSharp.Rtl_433
             try
             {
                 //Set a variable to the My Documents path.
-                string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\tests";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string dstPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\rtl_433_tests-master";
+                string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\apator_metra";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string dstPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\regroupes_apator_metra";
                 Int32 lenPath = srcPath.Length+1;
                 var files = from file in Directory.EnumerateFiles(srcPath, "*.cu8", SearchOption.AllDirectories)
                             //from line in File.ReadLines(file)
@@ -651,24 +657,24 @@ namespace SDRSharp.Rtl_433
                                 File = file,
                                 //Line = line
                             };
-                String memoDirectory = "";
+                //String memoDirectory = "";
                 Int32 cptFile = 0;
                 foreach (var f in files)
                 {
                     try
                     {
                         String directory = Path.GetDirectoryName(f.File);
-                        if (!(memoDirectory == directory))
-                        {
+                        //if (!(memoDirectory == directory))
+                        //{
 
-                            String newFile = directory.Substring(lenPath).Replace("\\", "_") + "_" + Path.GetFileName($"{f.File}");
+                            String newFile = directory.Substring(lenPath).Replace("\\", "_") + "_" + cptFile.ToString() + "_" + Path.GetFileName($"{f.File}");
                             Debug.WriteLine(newFile);
                             Debug.WriteLine(dstPath + "\\" + newFile);
 
                             File.Copy($"{f.File}", dstPath + "\\" + newFile);
-                            memoDirectory = directory;
+                            //memoDirectory = directory;
                             cptFile ++;
-                        }
+                        //}
                     }
                     catch (Exception ex)
                     {

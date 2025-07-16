@@ -6,6 +6,16 @@ namespace SDRSharp.Rtl_433
     {
         //private const Int32 MINIMAL_BUF_LENGTH = 512;
         //private const Int32 MAXIMAL_BUF_LENGTH = (256 * 16384);
+        public const Int32 FSK_PULSE_DETECTOR_LIMIT = 800000000;
+        public const Int32 FSK_PULSE_DETECT_OLD = 0;
+        public const Int32 FSK_PULSE_DETECT_NEW = 1;
+        //public enum FSK_PULSE_DETECT
+        //{
+        //    FSK_PULSE_DETECT_OLD,
+        //    FSK_PULSE_DETECT_NEW,
+        //    FSK_PULSE_DETECT_AUTO,
+        //    FSK_PULSE_DETECT_END,
+        //};
         private const Int32 DEFAULT_BUF_LENGTH = (16 * 32 * 512); // librtlsdr default
         private const Int32 SIGNAL_GRABBER_BUFFER = (12 * DEFAULT_BUF_LENGTH);
         //1 complex = 2 IQ--->  /2

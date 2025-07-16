@@ -555,7 +555,7 @@ namespace SDRSharp.Rtl_433
                 List<PointF>[] points = null;
                 double SampleRateDecime = SampleRateDbl / Rtl_433_Processor.decimation;
 
-                points = myClassTraceGraphe.TreatGraph(info, listData, SampleRateDecime, ptrDemod, frequencyStr,out string[] nameGraph, memoDataIQForRs433, ptrMemoDataForRs433, out float[] dataIQForRecord, panelRtl_433);
+                points = myClassTraceGraphe.TreatGraph(info, listData, SampleRateDecime, ptrDemod, frequencyLng, out string[] nameGraph, memoDataIQForRs433, ptrMemoDataForRs433, out float[] dataIQForRecord, panelRtl_433);
                 if (points!=null)
                 {
 #if ANALYZE
