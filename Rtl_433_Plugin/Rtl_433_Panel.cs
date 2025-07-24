@@ -645,9 +645,10 @@ namespace SDRSharp.Rtl_433
 #elif TESTRECURSIF && !TESTBATCH
             try
             {
+                //from https://github.com/merbanan/rtl_433_tests/tree/master
                 //Set a variable to the My Documents path.
-                string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\apator_metra";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string dstPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\regroupes_apator_metra";
+                string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\tests";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string dstPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\regroupes_rtl_433_tests-master"; //create folder
                 Int32 lenPath = srcPath.Length+1;
                 var files = from file in Directory.EnumerateFiles(srcPath, "*.cu8", SearchOption.AllDirectories)
                             //from line in File.ReadLines(file)

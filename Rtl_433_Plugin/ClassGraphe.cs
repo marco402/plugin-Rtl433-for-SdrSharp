@@ -314,7 +314,8 @@ namespace SDRSharp.Rtl_433
                                 stateFm = struct_demod.demod_FM_state;
                                 bool fpdm = false;   //always FSK_PULSE_DETECT_OLD
                                 fm_buf = new short[info.lenForDisplay];
-
+                                //rtl_433 uses 2 filters if the frequency is below or above 800MHz.
+                                //There may be a graphical issue if we receive a signal < 800MHz on a harmonic > 800MHz.
                                 UInt32 fpdmPdp = 1;   //1 for apator
                                 if (Frequency > NativeMethods.FSK_PULSE_DETECTOR_LIMIT)
                                     {
@@ -340,6 +341,19 @@ namespace SDRSharp.Rtl_433
                                 pulseDetect.data_counter = 0;
                                 pulseDetect.pulse_length = 0;
                                 NativeMethods.pulse_detect_package(ref pulseDetect, am_buf, fm_buf, (Int32)info.lenForDisplay, (UInt32)SampleRateDecime, sampleOffset, ref pulseData, ref pulseDataFsk, fpdmPdp, ref _startPlugin, ref _startFsk);
+                                 if ((pulseData.num_pulses == 0 && info.package_type == (ushort)Package_types.PULSE_DATA_OOK) || (pulseDataFsk.num_pulses == 0 && info.package_type == (ushort)Package_types.PULSE_DATA_FSK))
+                               // if (pulseData.num_pulses == 0 && pulseDataFsk.num_pulses == 0)
+                                {
+                                    if (fpdmPdp == NativeMethods.FSK_PULSE_DETECT_NEW)
+                                        fpdmPdp = NativeMethods.FSK_PULSE_DETECT_OLD;
+                                    else
+                                        fpdmPdp = NativeMethods.FSK_PULSE_DETECT_NEW;
+
+                                    low_pass = struct_demod.low_pass != 0.0f ? struct_demod.low_pass : fpdm ? 0.2f : 0.1f;
+                                    NativeMethods.baseband_demod_FM(ref stateFm, dataByteForRs433, fm_buf, (UInt32)info.lenForDisplay, (UInt32)SampleRateDecime, low_pass);
+                                    NativeMethods.pulse_detect_package(ref pulseDetect, am_buf, fm_buf, (Int32)info.lenForDisplay, (UInt32)SampleRateDecime, sampleOffset, ref pulseData, ref pulseDataFsk, fpdmPdp, ref _startPlugin, ref _startFsk);
+                                }
+
 
 #if ANALYZE
                                 NativeMethods.histogram_t hist_pulses=new NativeMethods.histogram_t(); //= { 0 }
