@@ -29,6 +29,8 @@ namespace SDRSharp.Rtl_433
         private void InitializeComponent()
         {
             this.mainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.listViewConsole = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxDataConv = new System.Windows.Forms.GroupBox();
             this.radioButtonDataConvCustomary = new System.Windows.Forms.RadioButton();
             this.radioButtonDataConvSI = new System.Windows.Forms.RadioButton();
@@ -75,8 +77,6 @@ namespace SDRSharp.Rtl_433
             this.labelCycleTime = new System.Windows.Forms.Label();
             this.labelTime433 = new System.Windows.Forms.Label();
             this.labelTimeRtl433 = new System.Windows.Forms.Label();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.listViewConsole = new System.Windows.Forms.ListView();
             this.mainTableLayoutPanel.SuspendLayout();
             this.groupBoxDataConv.SuspendLayout();
             this.groupBoxFrequency.SuspendLayout();
@@ -129,6 +129,25 @@ namespace SDRSharp.Rtl_433
             this.mainTableLayoutPanel.Size = new System.Drawing.Size(316, 1337);
             this.mainTableLayoutPanel.TabIndex = 1;
             this.mainTableLayoutPanel.SizeChanged += new System.EventHandler(this.MainTableLayoutPanel_SizeChanged);
+            // 
+            // listViewConsole
+            // 
+            this.listViewConsole.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listViewConsole.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.mainTableLayoutPanel.SetColumnSpan(this.listViewConsole, 2);
+            this.listViewConsole.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewConsole.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listViewConsole.HideSelection = false;
+            this.listViewConsole.Location = new System.Drawing.Point(3, 604);
+            this.listViewConsole.Name = "listViewConsole";
+            this.listViewConsole.Size = new System.Drawing.Size(310, 730);
+            this.listViewConsole.TabIndex = 33;
+            this.listViewConsole.UseCompatibleStateImageBehavior = false;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "RTL_433 messages ";
             // 
             // groupBoxDataConv
             // 
@@ -679,25 +698,6 @@ namespace SDRSharp.Rtl_433
             this.labelTimeRtl433.TabIndex = 16;
             this.labelTimeRtl433.Text = "0";
             this.labelTimeRtl433.Visible = false;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "RTL_433 messages ";
-            // 
-            // listViewConsole
-            // 
-            this.listViewConsole.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listViewConsole.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
-            this.mainTableLayoutPanel.SetColumnSpan(this.listViewConsole, 2);
-            this.listViewConsole.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewConsole.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listViewConsole.HideSelection = false;
-            this.listViewConsole.Location = new System.Drawing.Point(3, 604);
-            this.listViewConsole.Name = "listViewConsole";
-            this.listViewConsole.Size = new System.Drawing.Size(310, 730);
-            this.listViewConsole.TabIndex = 33;
-            this.listViewConsole.UseCompatibleStateImageBehavior = false;
             // 
             // Rtl_433_Panel
             // 

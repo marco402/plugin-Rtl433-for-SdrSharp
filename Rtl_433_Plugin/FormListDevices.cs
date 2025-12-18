@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -50,6 +51,7 @@ namespace SDRSharp.Rtl_433
         internal FormListDevices(ClassFormDevicesList myClassFormDevicesList)
         {
             InitializeComponent();
+            ResetAllControlsBackColor(this);
             this.myClassFormDevicesList = myClassFormDevicesList;
             this.maxDevices = ClassUtils.MaxDevicesWindows*10;
             this.maxColumns = ClassConst.NBMAXCOLUMN;
@@ -211,6 +213,20 @@ namespace SDRSharp.Rtl_433
                 if (MessageBox.Show("Do you want export devices list( " + ClassConst.FILELISTEDEVICES + " )", "Export devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     ClassFunctionsVirtualListView.SerializeText(myClassFormDevicesList.GetDirectoryForSaveDevicesList(), cacheListColumns, cacheListDevices, false, nbDevice, true);
                 myClassFormDevicesList.SetFormDevicesListCloseByUser=true;
+            }
+        }
+        // Reset all the controls to the user's default Control color. 
+        private void ResetAllControlsBackColor(Control control)
+        {
+            control.BackColor = SystemColors.Control;
+            control.ForeColor = SystemColors.ControlText;
+            if (control.HasChildren)
+            {
+                // Recursively call this method for each child control.
+                foreach (Control childControl in control.Controls)
+                {
+                    ResetAllControlsBackColor(childControl);
+                }
             }
         }
     }

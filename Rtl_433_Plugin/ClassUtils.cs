@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Globalization;
 
 namespace SDRSharp.Rtl_433
 {
@@ -255,7 +256,8 @@ namespace SDRSharp.Rtl_433
                 {
                     if (frequencyFromFileName.EndsWith("M"))  //for cu8 download issue13   M not ok for SDRSharp 1632
                     {
-                        frequencyFromFileName = frequencyFromFileName.Replace(".", ",");
+                        //NumberFormatInfo nfi = new CultureInfo(CultureInfo.CurrentUICulture.Name, false).NumberFormat;
+                        frequencyFromFileName = frequencyFromFileName.Replace(".", ",");    //".", ","".", nfi.CurrencyDecimalSeparator
                         double.TryParse(frequencyFromFileName.Substring(0,frequencyFromFileName.Length-1), out double freq);
                         Int32 IntFrequencyFromFileName = (Int32)(freq * 1000000.0);
                         frequencyFromFileName = IntFrequencyFromFileName.ToString("D") + "hz";
@@ -412,16 +414,21 @@ namespace SDRSharp.Rtl_433
             String key = "";
             String model = "";
             String protocol = "";
+#if WithChannel
             String channel = "";
+#endif
             String idDEvice = "";
             foreach (KeyValuePair<String, String> _line in listData)
             {
+#if WithChannel
                 if (_line.Key.ToUpper().Contains("CHANNEL") && channel == "" && _line.Value != "")
                 {
                     channel = _line.Value.Replace(" ", "");
                     key += (" Channel:" + channel);
                 }
-                else if (_line.Key.ToUpper().Contains("PROTOCOL") && protocol == "" && _line.Value != "")  //protect humidity contain id
+                else 
+#endif
+                if (_line.Key.ToUpper().Contains("PROTOCOL") && protocol == "" && _line.Value != "")  //protect humidity contain id
                 {
                     protocol = _line.Value;
                     key += " Protocol:" + _line.Value.Replace(" ", ""); ;

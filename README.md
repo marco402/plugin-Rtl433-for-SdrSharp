@@ -1,4 +1,8 @@
+French version after English version.  
 ## New Version  
+Version 1.5.8.8 December 18, 2025.  
+	-Rtl433 version Release 25.12 (2025-12-12)  
+	-9 devices more.  
 Version 1.5.8.6 July 16, 2025.  
 	-Rtl433 version 30_10_2024(24.10) to 19_02_2025(25.2)  
 	-2 devices more.  
@@ -92,8 +96,7 @@ Version 1.5.7.0 May 8, 2024.
     -The information is transferred to the text box at the bottom of the plugin.  
     -Modification to accommodate theme changes (SDRSharp 1920).  
   
-French version after English version.  
-    You can display dump windows on https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433?lang=en  
+You can display dump windows on https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433?lang=en  
 Version Francaise après la version Anglaise.  
     Vous pouvez visualiser des dump fenêtres sur https://marco40github.wixsite.com/website/plugin-sdrsharp-pour-rtl-433  
 	
@@ -285,6 +288,9 @@ Version 1.00  March 2021
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.8.8 18 Decembre 2025.  
+	-Rtl433 version Release 25.12 (2025-12-12)  
+	-Ajout de 9 devices.  
 Version 1.5.8.6 16 Juillet 2025.  
 	-Rtl433 version 30_10_2024(24.10) to 19_02_2025(25.2)  
 	-Ajout de 2 devices  

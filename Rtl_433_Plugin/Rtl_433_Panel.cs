@@ -11,8 +11,6 @@
  All text above must be included in any redistribution.
   **********************************************************************************/
 #define noTESTWINDOWS    //for test memory
-#define noTESTRECURSIF                  //used for copy one file(or all file if comment memoDirectory) for each srcFolder to dstFolder   used for zip download on RTL433 and convert CU8 to Wav and test with TESTBOUCLEREPLAYMARC
-#define noTESTBATCH                     //genere file batch
 using SDRSharp.Common;
 using System;
 using System.Collections.Generic;
@@ -21,11 +19,6 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
-#if TESTRECURSIF
-using System.IO;
-using System.Linq;
-#endif
-
 namespace SDRSharp.Rtl_433
 {
     public partial class Rtl_433_Panel : UserControl  //no internal for this partial vs2017? 
@@ -33,7 +26,7 @@ namespace SDRSharp.Rtl_433
         #region declaration
         private Boolean listViewConsoleFull = false;
         internal String VERSION = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;          // Assembly.GetEntryAssembly().GetName().Version.ToString();  //"1.5.6.3";  //update also project property version and file version
-        List<ListViewItem> cacheLignes;
+        private List<ListViewItem> cacheLignes;
         private Boolean radioIsStarted = false;
 #if TESTWINDOWS
         private Int32 cptDevicesForTest = 0;   //test device windows always ok until 143 ~ 1.3G of memory
@@ -182,7 +175,8 @@ namespace SDRSharp.Rtl_433
         private void MainTableLayoutPanel_SizeChanged(object sender, EventArgs e)
         {
             listViewConsole.Columns[0].Width = listViewConsole.Width;
-            listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //Put here Too early in initcontrols.
+            if(mainTableLayoutPanel.BackColor!=Color.Transparent)
+                listBoxHideShowDevices.BackColor = mainTableLayoutPanel.BackColor;  //Put here Too early in initcontrols.
             listBoxHideShowDevices.ForeColor = mainTableLayoutPanel.ForeColor;  //
         }
         private void ButtonClearMessages_Click(object sender, EventArgs e)
@@ -617,7 +611,6 @@ namespace SDRSharp.Rtl_433
         private void ButtonCu8ToWav_Click(object sender, EventArgs e)
         {
             Int32 cptPb = 0;
-#if !TESTRECURSIF && !TESTBATCH
             using (OpenFileDialog openCu8 = new OpenFileDialog())
             {
                 openCu8.DefaultExt = "cu8";
@@ -642,120 +635,6 @@ namespace SDRSharp.Rtl_433
                 }
                 openCu8.Dispose();
             }
-#elif TESTRECURSIF && !TESTBATCH
-            try
-            {
-                //from https://github.com/merbanan/rtl_433_tests/tree/master
-                //Set a variable to the My Documents path.
-                string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\tests";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string dstPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\regroupes_rtl_433_tests-master"; //create folder
-                Int32 lenPath = srcPath.Length+1;
-                var files = from file in Directory.EnumerateFiles(srcPath, "*.cu8", SearchOption.AllDirectories)
-                            //from line in File.ReadLines(file)
-                            //where line.Contains(".cu8")
-                            select new
-                            {
-                                File = file,
-                                //Line = line
-                            };
-                //String memoDirectory = "";
-                Int32 cptFile = 0;
-                foreach (var f in files)
-                {
-                    try
-                    {
-                        String directory = Path.GetDirectoryName(f.File);
-                        //if (!(memoDirectory == directory))
-                        //{
-
-                            String newFile = directory.Substring(lenPath).Replace("\\", "_") + "_" + cptFile.ToString() + "_" + Path.GetFileName($"{f.File}");
-                            Debug.WriteLine(newFile);
-                            Debug.WriteLine(dstPath + "\\" + newFile);
-
-                            File.Copy($"{f.File}", dstPath + "\\" + newFile);
-                            //memoDirectory = directory;
-                            cptFile ++;
-                        //}
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
-                }
-                Debug.WriteLine(cptFile.ToString());
-
-
-            }
-            catch (UnauthorizedAccessException uAEx)
-            {
-                Debug.WriteLine(uAEx.Message);
-            }
-            catch (PathTooLongException pathEx)
-            {
-                Debug.WriteLine(pathEx.Message);
-            }
-            if (cptPb == 0)
-                MessageBox.Show("Translate is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            else
-                MessageBox.Show("Translate is NOT completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-#elif TESTBATCH
-
-            //generate batch file for replay with RTL_433 console mode->dstFile
-            //put srcPath,dstFile 
-            //and PathRtl433_EXE where you are compiled RTL_433
-            //run SDRSharp, enabled plugin and cu8 to Wav
-            //open Console to PathRtl433_EXE
-            //run AllFiles.bat
-
-            string srcPath = "C:\\marc\\tnt\\fichiers_cu8_et_wav\\fichiers_cu8\\rtl_433_tests-master\\rtl_433_tests-master";   // Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string dstFile = "C:\\marc\\tnt\\rtl_433\\rtl_433-master_06052024\\vs17_32\\Debug\\FilesRTL433AllOK.bat ";
-            var files = from file in Directory.EnumerateFiles(srcPath, "*.cu8", SearchOption.AllDirectories)
-                        select new
-                        {
-                            File = file,
-                        };
-            Int32 cptFile = 0;
-            try
-            {
-                using (Stream stream = new FileStream(dstFile, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    String Line = "";
-                    String PathRtl433_EXE = "C:\\marc\\tnt\\rtl_433\\rtl_433-master_06052024\\vs17_32\\Debug\\rtl_433";
-                    
-                            StreamWriter str = new StreamWriter(stream);
-                    str.WriteLine("cls");
-                    str.WriteLine("REM: "+DateTime.Now);
-                    foreach (var file in files)
-                    {
-                        Int32 sampleRate = 0;
-                        Int32 sampleRateFromFileName = wavRecorder.getSampleRateFromName(file.File); //lacrosse_g2750_915M_1000k.cu8,9_ford-unlock002.cu8
-                        if (sampleRateFromFileName == -1)
-                        {
-                            sampleRateFromFileName = 250;
-                            sampleRate = 250000;
-                            //MessageBox.Show("No sample rate detected in the file name", "Cancel", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            //return -1;
-                        }
-                        else
-                            sampleRate = sampleRateFromFileName;
-
-                        String Option = " -s " + sampleRate.ToString() + " -C si -r ";
-
-                        Line = PathRtl433_EXE + Option + file.File;
-                        str.WriteLine(Line);
-                        cptFile ++;
-                        if(cptFile%20==0)
-                            str.WriteLine("Pause");
-                    }
-                    str.Flush();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            MessageBox.Show("Copyfile is completed for "+ cptFile.ToString() + " files", "Translate cu8 nameFile with options to batch file", MessageBoxButtons.OK, MessageBoxIcon.Information);
-#endif
         }
 
         private void RadioButtonTypeWindow_CheckedChanged(object sender, EventArgs e)
@@ -799,6 +678,6 @@ namespace SDRSharp.Rtl_433
         //{
         //    SetRecordText = checkBoxRecordTxtFile.Checked;
         //}
-#endregion
+        #endregion
     }
 }
