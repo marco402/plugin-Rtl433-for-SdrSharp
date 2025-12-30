@@ -21,6 +21,7 @@ namespace SDRSharp.Rtl_433
 {
     internal partial class FormListDevices : Form
     {
+        #region declare
         private readonly Int32 maxDevices = 0;
         private readonly Int32 maxColumns = 0;
         private readonly Dictionary<String, Int32> cacheListColumns;
@@ -28,6 +29,16 @@ namespace SDRSharp.Rtl_433
         private Int32 nbDevice = 0;
         private readonly ClassFormDevicesList myClassFormDevicesList;
         private Boolean firstToTop = false;
+#if TOPMOST
+        private Boolean topMost = false;
+        private Panel titleBar;
+        private Label customTxt;
+        private Button btnMax;
+        private Button btnMin;
+        private Button btnClose;
+        private Button customBtn;
+#endif
+        #endregion
         #region private functions
         private void ListDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
@@ -71,6 +82,21 @@ namespace SDRSharp.Rtl_433
             cacheListDevices = new ListViewItem[this.maxDevices];
             cacheListColumns = new Dictionary<String, Int32>();
             this.Text = "Devices received : 0";
+#if TOPMOST
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.DoubleBuffered = true;
+            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
+            this.ResizeEnd += new System.EventHandler(this.FormListDevices_ResizeEnd);
+            this.Load += new System.EventHandler(this.FormListDevices_Load);
+            titleBar = new Panel();
+            titleBar.Height = 32;
+            titleBar.Dock = DockStyle.Top;
+            titleBar.BackColor = Color.White;  // Color.FromArgb(45, 45, 48);
+            titleBar.MouseDown += TitleBar_MouseDown;
+            // this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea; //move if maximized
+            this.Controls.Add(titleBar);
+            CreateButtons();
+#endif
             this.ResumeLayout(true);
         }
         internal void RefreshListDevices()
@@ -193,7 +219,12 @@ namespace SDRSharp.Rtl_433
                 ClassFunctionsVirtualListView.CompleteList(cacheListDevices, cacheListColumns.Count);
             }
             //**************************************************************************************
+#if !TOPMOST
             this.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() + "/" + maxColumns.ToString();
+#else
+            customTxt.Text = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() + "/" + maxColumns.ToString();
+#endif
+
             listViewDevices.VirtualListSize = nbDevice;
             ClassFunctionsVirtualListView.ResizeAllColumns(listViewDevices);
             //**************************************************************************************
@@ -229,6 +260,154 @@ namespace SDRSharp.Rtl_433
                 }
             }
         }
+        #region TOPMOST
+#if TOPMOST
+        private void FormListDevices_Load(object sender, EventArgs e)
+        {
+            ClassTopMost.moveButtons(ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.Width);
+        }
+        private void FormListDevices_ResizeEnd(object sender, EventArgs e)
+        {
+            ClassTopMost.moveButtons(ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.Width);
+        }
+
+        private void TitleBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ClassWin32ForTopMost.ReleaseCapture();
+                ClassWin32ForTopMost.SendMessage(this.Handle, 0xA1, 0x2, 0);
+            }
+        }
+        private void customTxt_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ClassWin32ForTopMost.ReleaseCapture();
+                ClassWin32ForTopMost.SendMessage(this.Handle, 0xA1, 0x2, 0);
+            }
+        }
+        private void CreateButtons()
+        {
+            //window text 
+            customTxt = new Label();
+            customTxt.MouseDown += customTxt_MouseDown;
+
+            // Button topMost
+            customBtn = new Button();
+            customBtn.Click += (s, e) =>
+            {
+                if (!topMost)
+                {
+                    setTopMost(ClassWin32ForTopMost.HWND_TOPMOST);
+                    customBtn.BackColor = Color.Cyan;
+                }
+                else
+                {
+                    setTopMost(ClassWin32ForTopMost.HWND_NOTOPMOST);
+                    customBtn.BackColor = Color.Transparent;  // Color.FromArgb(70, 70, 72);
+                }
+                topMost = !topMost;
+            };
+            // Minimize
+            btnMin = new Button();
+            btnMin.Click += (s, e) =>
+            {
+                ClassWin32ForTopMost.ShowWindow(this.Handle, ClassWin32ForTopMost.SW_MINIMIZE);
+            };
+            // Close
+            btnClose = new Button();
+            btnClose.Click += (s, e) => this.Close();
+            btnClose.MouseEnter += (s, e) => btnClose.BackColor = Color.FromArgb(232, 17, 35);
+            btnClose.MouseLeave += (s, e) => btnClose.BackColor = Color.Transparent;
+            // Maximize
+            btnMax = new Button();
+            btnMax.Click += (s, e) =>
+            {
+                if (this.WindowState == FormWindowState.Maximized)
+                    ClassWin32ForTopMost.ShowWindow(this.Handle, ClassWin32ForTopMost.SW_RESTORE);
+                else
+                    ClassWin32ForTopMost.ShowWindow(this.Handle, ClassWin32ForTopMost.SW_MAXIMIZE);
+                ClassTopMost.moveButtons(ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.Width);
+            };
+            ClassTopMost.CreateButtons(ref titleBar, ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.WindowState, this.Width);
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCHITTEST = 0x84;
+            const int HTLEFT = 10;
+            const int HTRIGHT = 11;
+            const int HTTOP = 12;
+            const int HTTOPLEFT = 13;
+            const int HTTOPRIGHT = 14;
+            const int HTBOTTOM = 15;
+            const int HTBOTTOMLEFT = 16;
+            const int HTBOTTOMRIGHT = 17;
+            const int RESIZE_HANDLE_SIZE = 8;
+            if (m.Msg == WM_NCHITTEST)
+            {
+                base.WndProc(ref m);
+                Point cursor = PointToClient(new Point(m.LParam.ToInt32()));
+                bool left = cursor.X <= RESIZE_HANDLE_SIZE;
+                bool right = cursor.X >= this.ClientSize.Width - RESIZE_HANDLE_SIZE;
+                bool top = cursor.Y <= RESIZE_HANDLE_SIZE;
+                bool bottom = cursor.Y >= this.ClientSize.Height - RESIZE_HANDLE_SIZE;
+                if (left && top)
+                {
+                    m.Result = (IntPtr)HTTOPLEFT;
+                    return;
+                }
+                else if (right && top)
+                {
+                    m.Result = (IntPtr)HTTOPRIGHT;
+                    return;
+                }
+                else if (left && bottom)
+                {
+                    m.Result = (IntPtr)HTBOTTOMLEFT;
+                    return;
+                }
+                else if (right && bottom)
+                {
+                    m.Result = (IntPtr)HTBOTTOMRIGHT;
+                    return;
+                }
+                else if (left)
+                {
+                    m.Result = (IntPtr)HTLEFT;
+                    return;
+                }
+                else if (right)
+                {
+                    m.Result = (IntPtr)HTRIGHT;
+                    return;
+                }
+                else if (top)
+                {
+                    m.Result = (IntPtr)HTTOP;
+                    return;
+                }
+                else if (bottom)
+                {
+                    m.Result = (IntPtr)HTBOTTOM;
+                    return;
+                }
+                return;
+            }
+            base.WndProc(ref m);
+        }
+        private void setTopMost(IntPtr choose)
+        {
+            IntPtr hwnd = this.Handle;
+            ClassWin32ForTopMost.SetWindowPos(
+                hwnd,
+                choose,
+            0, 0, 0, 0,
+            ClassWin32ForTopMost.SWP_NOMOVE | ClassWin32ForTopMost.SWP_NOSIZE);
+        }
+#endif
+        #endregion
     }
 }
 

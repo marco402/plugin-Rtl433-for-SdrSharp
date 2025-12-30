@@ -1,4 +1,5 @@
-﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+﻿//mettre backcolor  list des devices quand display theme light en white
+/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 Rtl_433_Panel.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -473,7 +474,7 @@ namespace SDRSharp.Rtl_433
 #if (DEBUG && TESTSTARTWITHOUTRADIO)
             return;
 #else
-            if (ClassInterfaceWithRtl433 != null)
+             if (ClassInterfaceWithRtl433 != null)
                 ClassInterfaceWithRtl433.StopSendDataToRtl433();
             //if (myClassFormDevices != null)
             //    myClassFormDevices.Stop();

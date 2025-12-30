@@ -20,7 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_x64|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\SDRSHarp\sdrsharp-x64-next\Plugins\RTL_433\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
+    <DefineConstants>TRACE;DEBUG;TOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
@@ -32,7 +32,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x64|AnyCPU'">
     <OutputPath>..\..\..\SDRSHarp\sdrsharp-x64-next\Plugins\RTL_433\</OutputPath>
-    <DefineConstants>TRACE;noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
+    <DefineConstants>TRACE;TOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DebugType>none</DebugType>
@@ -42,7 +42,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_x32|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
+    <DefineConstants>TRACE;DEBUG;TOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>..\..\..\SDRSHarp\sdrsharp-x86-next_7\Plugins\RTL_433\</OutputPath>
@@ -52,14 +52,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x32|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>..\..\..\SDRSHarp\sdrsharp-x86-next_7\Plugins\RTL_433\</OutputPath>
-    <DefineConstants>TRACE;noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
+    <DefineConstants>TRACE;TOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'debug_V1632|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\SDRSharp\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;noANALYZE noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
+    <DefineConstants>TRACE;DEBUG;TOPMOST noANALYZE noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -121,7 +121,9 @@
     <Compile Include="ClassFormDevices.cs" />
     <Compile Include="ClassFormDevicesList.cs" />
     <Compile Include="ClassFormListMessages.cs" />
+    <Compile Include="ClassTopMost.cs" />
     <Compile Include="ClassUtils.cs" />
+    <Compile Include="ClassWin32ForTopMost.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
