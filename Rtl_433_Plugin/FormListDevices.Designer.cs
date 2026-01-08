@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace SDRSharp.Rtl_433
 {
@@ -31,7 +32,33 @@ namespace SDRSharp.Rtl_433
         private void InitializeComponent()
         {
             this.listViewDevices = new System.Windows.Forms.ListView();
+            this.titleBar.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // titleBar
+            // 
+            this.titleBar.Size = new System.Drawing.Size(1166, 25);
+            this.titleBar.BackColor = Color.FromArgb(45, 45, 48);
+            // 
+            // btnMin
+            // 
+            this.btnMin.FlatAppearance.BorderSize = 0;
+            this.btnMin.Location = new System.Drawing.Point(1892, 0);
+            // 
+            // btnMax
+            // 
+            this.btnMax.FlatAppearance.BorderSize = 0;
+            this.btnMax.Location = new System.Drawing.Point(1937, 0);
+            // 
+            // btnClose
+            // 
+            this.btnClose.FlatAppearance.BorderSize = 0;
+            this.btnClose.Location = new System.Drawing.Point(1982, 0);
+            // 
+            // btnTopMost
+            // 
+            this.btnTopMost.FlatAppearance.BorderSize = 0;
+            this.btnTopMost.Location = new System.Drawing.Point(1847, 0);
             // 
             // listViewDevices
             // 
@@ -50,10 +77,13 @@ namespace SDRSharp.Rtl_433
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1166, 142);
             this.Controls.Add(this.listViewDevices);
-            this.DoubleBuffered = true;
             this.Name = "FormListDevices";
             this.Text = "FormListDevices";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormListDevices_FormClosing);
+            this.Controls.SetChildIndex(this.listViewDevices, 0);
+            this.Controls.SetChildIndex(this.titleBar, 0);
+            this.titleBar.ResumeLayout(false);
+            this.titleBar.PerformLayout();
             this.ResumeLayout(false);
 
         }

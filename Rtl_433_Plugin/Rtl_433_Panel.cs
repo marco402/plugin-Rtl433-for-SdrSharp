@@ -1,5 +1,4 @@
-﻿//mettre backcolor  list des devices quand display theme light en white
-/* Written by Marc Prieur (marco40_github@sfr.fr)
+﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 Rtl_433_Panel.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -17,7 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SDRSharp.Rtl_433
@@ -54,7 +55,10 @@ namespace SDRSharp.Rtl_433
             //with 1920 version move scrollbarre at the first click when the plugin is anchored ???
             //same if disabled with the designer
            radioButtonSnone.Enabled = true;
-
+            //for test 
+            //"ru-RU"   no ressource-->US
+            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("es-ES");  //"en-US"
+            //Thread.CurrentThread.CurrentCulture = new CultureInfo("es-ES");  //"en-US"
 #if TESTWINDOWS
             MessageBox.Show("Version de test");
 #endif
