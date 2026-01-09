@@ -353,14 +353,14 @@ namespace SDRSharp.Rtl_433
            float[] dataIQ = new float[256];
                 //for (Int32 i = -127; i < 129; i++)
                 //    dataIQ[i+127] = System.Convert.ToSingle(i);
-                //wavRecorder.WriteBufferToWav(@"C:\marc\tnt\sources\SDRSharp\SDRSharp\bin\Debug\Recordings\testFichierWav.wav", dataIQ, 250000);
+                //wavRecorder.WriteBufferToWav("C:\\marc\\tnt\\sources\\SDRSharp\\SDRSharp\\bin\\Debug\\Recordings\\testFichierWav.wav", dataIQ, 250000);
 
            Byte[] tabByte = new Byte[256];
            for (Int32 i = 0; i < 256; i++)
                     tabByte[i] = System.Convert.ToByte(i);
            ClassUtils.convertCu8ToFloat(tabByte, dataIQ);
            //tabByte = null;
-           //wavRecorder.WriteBufferToWav(@"C:\marc\tnt\sources\SDRSharp\SDRSharp\bin\Debug\Recordings\testFichierWav.wav", dataIQ, 250000);
+           //wavRecorder.WriteBufferToWav("C:\\marc\\tnt\\sources\\SDRSharp\\SDRSharp\\bin\\Debug\\Recordings\\testFichierWav.wav", dataIQ, 250000);
            Byte[] tabByteOut = new byte[dataIQ.Length];
            Boolean ret=ClassUtils.convertFloatToByte1(dataIQ, tabByteOut);
            //tabByteOut = null;          //62=63 et 191=192 precision...

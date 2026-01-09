@@ -34,7 +34,6 @@ namespace SDRSharp.Rtl_433
             lv.VirtualMode = true;
             lv.VirtualListSize = 0;
             lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            lv.Margin = new System.Windows.Forms.Padding(20);
         }
         /// <summary>
         /// add one item to cache for virtual mode
@@ -272,7 +271,7 @@ namespace SDRSharp.Rtl_433
             //badChars = null;
             return name;
         }
-        private static String DeleteUnitForCalc(String value)
+        internal static String DeleteUnitForCalc(String value)
         {
             List<String> badChars = new List<String>
             {

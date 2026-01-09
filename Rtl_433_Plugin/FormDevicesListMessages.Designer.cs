@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 namespace SDRSharp.Rtl_433
 {
@@ -40,34 +39,8 @@ namespace SDRSharp.Rtl_433
             this.listViewListMessages = new System.Windows.Forms.ListView();
             this.statusStripExport = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelExport = new System.Windows.Forms.ToolStripStatusLabel();
-            this.titleBar.SuspendLayout();
             this.statusStripExport.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // titleBar
-            // 
-            this.titleBar.Size = new System.Drawing.Size(1034, 25);
-            this.titleBar.BackColor = Color.FromArgb(45, 45, 48);
-            // 
-            // btnMin
-            // 
-            this.btnMin.FlatAppearance.BorderSize = 0;
-            this.btnMin.Location = new System.Drawing.Point(1628, 0);
-            // 
-            // btnMax
-            // 
-            this.btnMax.FlatAppearance.BorderSize = 0;
-            this.btnMax.Location = new System.Drawing.Point(1673, 0);
-            // 
-            // btnClose
-            // 
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.Location = new System.Drawing.Point(1718, 0);
-            // 
-            // btnTopMost
-            // 
-            this.btnTopMost.FlatAppearance.BorderSize = 0;
-            this.btnTopMost.Location = new System.Drawing.Point(1583, 0);
             // 
             // listViewListMessages
             // 
@@ -108,11 +81,6 @@ namespace SDRSharp.Rtl_433
             this.Name = "FormDevicesListMessages";
             this.Text = "FormDevicesListMessages";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormDevicesListMessages_FormClosed);
-            this.Controls.SetChildIndex(this.statusStripExport, 0);
-            this.Controls.SetChildIndex(this.listViewListMessages, 0);
-            this.Controls.SetChildIndex(this.titleBar, 0);
-            this.titleBar.ResumeLayout(false);
-            this.titleBar.PerformLayout();
             this.statusStripExport.ResumeLayout(false);
             this.statusStripExport.PerformLayout();
             this.ResumeLayout(false);

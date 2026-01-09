@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SDRSharp.Rtl_433
+﻿namespace SDRSharp.Rtl_433
 {
     partial class FormDevices
     {
@@ -39,34 +37,9 @@ namespace SDRSharp.Rtl_433
             this.tableLayoutPanelDeviceData = new System.Windows.Forms.TableLayoutPanel();
             this.listViewListMessages = new System.Windows.Forms.ListView();
             this.plotterDisplayExDevices = new GraphLib.PlotterDisplayEx();
-            this.titleBar.SuspendLayout();
             this.statusStripDevices.SuspendLayout();
             this.tableLayoutPanelDeviceData.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // titleBar
-            // 
-            this.titleBar.Size = new System.Drawing.Size(750, 25);
-            // 
-            // btnMin
-            // 
-            this.btnMin.FlatAppearance.BorderSize = 0;
-            this.btnMin.Location = new System.Drawing.Point(1060, 0);
-            // 
-            // btnMax
-            // 
-            this.btnMax.FlatAppearance.BorderSize = 0;
-            this.btnMax.Location = new System.Drawing.Point(1105, 0);
-            // 
-            // btnClose
-            // 
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.Location = new System.Drawing.Point(1150, 0);
-            // 
-            // btnTopMost
-            // 
-            this.btnTopMost.FlatAppearance.BorderSize = 0;
-            this.btnTopMost.Location = new System.Drawing.Point(1015, 0);
             // 
             // statusStripDevices
             // 
@@ -144,7 +117,7 @@ namespace SDRSharp.Rtl_433
             this.listViewListMessages.HideSelection = false;
             this.listViewListMessages.Location = new System.Drawing.Point(3, 303);
             this.listViewListMessages.Name = "listViewListMessages";
-            this.listViewListMessages.Size = new System.Drawing.Size(1068, 114);
+            this.listViewListMessages.Size = new System.Drawing.Size(1034, 114);
             this.listViewListMessages.TabIndex = 3;
             this.listViewListMessages.UseCompatibleStateImageBehavior = false;
             this.listViewListMessages.View = System.Windows.Forms.View.List;
@@ -157,10 +130,11 @@ namespace SDRSharp.Rtl_433
             this.plotterDisplayExDevices.BackgroundColorTop = System.Drawing.Color.White;
             this.plotterDisplayExDevices.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.plotterDisplayExDevices.DashedGridColor = System.Drawing.Color.DarkGray;
+            this.plotterDisplayExDevices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plotterDisplayExDevices.DoubleBuffering = true;
             this.plotterDisplayExDevices.Location = new System.Drawing.Point(3, 3);
             this.plotterDisplayExDevices.Name = "plotterDisplayExDevices";
-            this.plotterDisplayExDevices.Size = new System.Drawing.Size(1068, 294);
+            this.plotterDisplayExDevices.Size = new System.Drawing.Size(1034, 294);
             this.plotterDisplayExDevices.SolidGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.TabIndex = 2;
             // 
@@ -176,11 +150,7 @@ namespace SDRSharp.Rtl_433
             this.Name = "FormDevices";
             this.Text = "FormDevices";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormDevices_FormClosed);
-            this.Controls.SetChildIndex(this.statusStripDevices, 0);
-            this.Controls.SetChildIndex(this.tableLayoutPanelDeviceData, 0);
-            this.Controls.SetChildIndex(this.titleBar, 0);
-            this.titleBar.ResumeLayout(false);
-            this.titleBar.PerformLayout();
+            this.ResizeEnd += new System.EventHandler(this.FormDevices_ResizeEnd);
             this.statusStripDevices.ResumeLayout(false);
             this.statusStripDevices.PerformLayout();
             this.tableLayoutPanelDeviceData.ResumeLayout(false);
