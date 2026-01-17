@@ -25,8 +25,25 @@ using System.Globalization;
 
 namespace SDRSharp.Rtl_433
 {
+
+    //replace public record LayoutRow(Control Control, SizeType SizeType, float Size); --> C#10
+    public class LayoutRow
+    {
+        public Control Control { get; }
+        public SizeType SizeType { get; }
+        public float Size { get; }
+
+        public LayoutRow(Control control, SizeType sizeType, float size)
+        {
+            Control = control;
+            SizeType = sizeType;
+            Size = size;
+        }
+    }
     internal class ClassUtils
     {
+
+
         internal static string FirstCharToUpper(String s)
         {
             if (String.IsNullOrEmpty(s))

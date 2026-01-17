@@ -59,5 +59,14 @@ namespace SDRSharp.Rtl_433.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à toujours au-dessus.
+        /// </summary>
+        internal static string Tooltip_AlwaysOnTop {
+            get {
+                return ResourceManager.GetString("Tooltip_AlwaysOnTop", resourceCulture);
+            }
+        }
     }
 }

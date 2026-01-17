@@ -34,6 +34,18 @@ namespace SDRSharp.Rtl_433
             lv.VirtualMode = true;
             lv.VirtualListSize = 0;
             lv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            //lv.Location = new System.Drawing.Point(0, 0);
+            lv.Name = "listViewDevices";
+            //lv.Size = new System.Drawing.Size(1166, 142);
+            //lv.TabIndex = 0;
+            lv.UseCompatibleStateImageBehavior = false;
+            //lv.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListDevices_RetrieveVirtualItem);
+            //this.Controls.Add(this.listViewDevices);
+
+            //lv.BackColor = this.BackColor;   //pb ambient property ???
+            //lv.ForeColor = this.ForeColor;
+            //lv.Font = this.Font;
+            //lv.Cursor = this.Cursor;
         }
         /// <summary>
         /// add one item to cache for virtual mode

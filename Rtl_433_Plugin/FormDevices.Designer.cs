@@ -1,6 +1,6 @@
 ﻿namespace SDRSharp.Rtl_433
 {
-    partial class FormDevices
+    public partial class FormDevices
     {
         /// <summary>
         /// Required designer variable.
@@ -28,18 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.SuspendLayout();
             this.statusStripDevices = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelNbMessages = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelPeriodeCurrent = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelPeriodeMax = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripSplitLabelRecordOneShoot = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelFreezeData = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tableLayoutPanelDeviceData = new System.Windows.Forms.TableLayoutPanel();
-            this.listViewListMessages = new System.Windows.Forms.ListView();
             this.plotterDisplayExDevices = new GraphLib.PlotterDisplayEx();
             this.statusStripDevices.SuspendLayout();
-            this.tableLayoutPanelDeviceData.SuspendLayout();
-            this.SuspendLayout();
             // 
             // statusStripDevices
             // 
@@ -95,34 +92,6 @@
             this.toolStripStatusLabelFreezeData.Text = "Freeze graphs";
             this.toolStripStatusLabelFreezeData.Click += new System.EventHandler(this.ToolStripStatusLabelFreezeData_Click);
             // 
-            // tableLayoutPanelDeviceData
-            // 
-            this.tableLayoutPanelDeviceData.ColumnCount = 1;
-            this.tableLayoutPanelDeviceData.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelDeviceData.Controls.Add(this.listViewListMessages, 0, 1);
-            this.tableLayoutPanelDeviceData.Controls.Add(this.plotterDisplayExDevices, 0, 0);
-            this.tableLayoutPanelDeviceData.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelDeviceData.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
-            this.tableLayoutPanelDeviceData.RowCount = 2;
-            this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 300F));
-            this.tableLayoutPanelDeviceData.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelDeviceData.Size = new System.Drawing.Size(750, 239);
-            this.tableLayoutPanelDeviceData.TabIndex = 1;
-            // 
-            // listViewListMessages
-            // 
-            this.listViewListMessages.Dock = System.Windows.Forms.DockStyle.Top;
-            this.listViewListMessages.GridLines = true;
-            this.listViewListMessages.HideSelection = false;
-            this.listViewListMessages.Location = new System.Drawing.Point(3, 303);
-            this.listViewListMessages.Name = "listViewListMessages";
-            this.listViewListMessages.Size = new System.Drawing.Size(1034, 114);
-            this.listViewListMessages.TabIndex = 3;
-            this.listViewListMessages.UseCompatibleStateImageBehavior = false;
-            this.listViewListMessages.View = System.Windows.Forms.View.List;
-            this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewListMessages_RetrieveVirtualItem);
-            // 
             // plotterDisplayExDevices
             // 
             this.plotterDisplayExDevices.BackColor = System.Drawing.Color.Transparent;
@@ -144,19 +113,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(750, 261);
-            this.Controls.Add(this.tableLayoutPanelDeviceData);
             this.Controls.Add(this.statusStripDevices);
+            this.Controls.Add(this.plotterDisplayExDevices);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "FormDevices";
             this.Text = "FormDevices";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormDevices_FormClosed);
-            this.ResizeEnd += new System.EventHandler(this.FormDevices_ResizeEnd);
             this.statusStripDevices.ResumeLayout(false);
             this.statusStripDevices.PerformLayout();
-            this.tableLayoutPanelDeviceData.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
         #endregion
         private System.Windows.Forms.StatusStrip statusStripDevices;
@@ -164,9 +130,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelPeriodeCurrent;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelPeriodeMax;
         private System.Windows.Forms.ToolStripStatusLabel toolStripSplitLabelRecordOneShoot;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelDeviceData;
         private GraphLib.PlotterDisplayEx plotterDisplayExDevices;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFreezeData;
-        private System.Windows.Forms.ListView listViewListMessages;
     }
 }

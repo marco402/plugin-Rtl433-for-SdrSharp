@@ -49,7 +49,7 @@ using System.Windows.Forms;
 
 namespace SDRSharp.Rtl_433
 {
-    internal partial class FormDevices : Form
+    public partial class FormDevices : BaseFormWithTopMost
     {
         #region declare
         private Int32 NumGraphs = 0;
@@ -77,71 +77,32 @@ namespace SDRSharp.Rtl_433
         private readonly Int32 maxInfoDevices = 0;
         private Int32 nbInfoDevice = 0;
         private readonly Int32[] MaxInfoWidth;
-#if TOPMOST
-        private Boolean topMost = false;
-        private Panel titleBar;
-        private Label customTxt;
-        private Button btnMax;
-        private Button btnMin;
-        private Button btnClose;
-        private Button customBtn;
-#endif
+        private System.Windows.Forms.ListView listViewListMessages;
         #endregion
         #region constructor load close form
-        Label theLabelModel;
-        internal FormDevices(ClassFormDevices classParent)
+         internal FormDevices(ClassFormDevices classParent) : base(100, false)
         {
             InitializeComponent();
             this.SuspendLayout();
+
             NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
             nfi.NumberDecimalDigits = 3;
+
+
+            // -------------------------------
+            //  THIS FORM
+            // -------------------------------
             this.classParent = classParent;
             this.Font = ClassUtils.Font;
             this.BackColor = ClassUtils.BackColor;
             this.ForeColor = ClassUtils.ForeColor;
             this.Cursor = ClassUtils.Cursor;
-            listLabelKey = new Dictionary<String, Label>();
-            listLabelValue = new Dictionary<String, Label>();
-            this.tableLayoutPanelDeviceData.Name = "tableLayoutPanelDeviceData";
-            this.tableLayoutPanelDeviceData.TabIndex = 1;
-            toolStripStatusLabelPeriodeCurrent.Text = "Period: 0";
-            toolStripStatusLabelPeriodeMax.Text = "Period max: 0";
-            toolStripStatusLabelNbMessages.Text = "NB messages: 0";
-            statusStripDevices.BackColor = this.BackColor;
-            statusStripDevices.ForeColor = this.ForeColor;
-            statusStripDevices.ShowItemToolTips = true;
-            toolStripSplitLabelRecordOneShoot.ToolTipText = "Record data buffer Wav (checkbox on panel) \n" +
-                " to directory Recordings if exist else in SdrSharp.exe directory \n" +
-                " You can replay Stereo file with SdrSharp Source=Baseband File player\n";
-            //this.Width = 540;      //left small in designer else no resize if width<540(if 540 in designer)
-            memoBackColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.BackColor;
-            memoForeColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.ForeColor;
-            memoTexttoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.Text;
-            memoBackColortoolStripStatusLabelFreezeData = toolStripStatusLabelFreezeData.BackColor;
-            memoForeColortoolStripStatusLabelFreezeData = toolStripStatusLabelFreezeData.ForeColor;
-            memoTexttoolStripSplitLabelFreezeData = toolStripStatusLabelFreezeData.Text;
-            memoHeightPlotterDisplayExDevices = plotterDisplayExDevices.Height;
-            HideShowAllGraphs(false);
-            DisplayWaitMessage();
-            plotterDisplayExDevices.SetAmbiantProperty(this.BackColor, this.ForeColor, this.Font);
+            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.MinimumSize = new System.Drawing.Size(660, 100);   //width=660 else no display end graph why? todo
             this.Size = new System.Drawing.Size(660, 600);
 
-            theLabelModel = new Label();
-            theLabelModel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top;
-            theLabelModel.AutoSize = true;
-            theLabelModel.BackColor = this.BackColor;
-            theLabelModel.ForeColor = this.ForeColor;
-            theLabelModel.Font = this.Font;
-            listRow=new Dictionary<String, Int32>() ;
-
-
-            ClassFunctionsVirtualListView.InitListView(listViewListMessages);
-            listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
-            listViewListMessages.ForeColor = this.ForeColor;
-            listViewListMessages.Font = this.Font;
-            listViewListMessages.Cursor = this.Cursor;
-
+            listLabelKey = new Dictionary<String, Label>();
+            listLabelValue = new Dictionary<String, Label>();
             maxInfoDevices = ClassConst.MAXROWCODE;
             maxColumns = ClassConst.NBMAXCOLUMNDEVICES;
             cacheListInfosMessages = new ListViewItem[this.maxInfoDevices];
@@ -149,24 +110,70 @@ namespace SDRSharp.Rtl_433
             MaxInfoWidth = new Int32[maxColumns];
             for (Int32 i = 0; i < maxColumns; i++)
                 MaxInfoWidth[i] = 0;
-            plotterDisplayExDevices.Width = this.Width-1000;    //why?
-            listViewListMessages.Width = this.Width-100;        //why?
-#if TOPMOST
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.DoubleBuffered = true;
-            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
-            this.ResizeEnd += new System.EventHandler(this.FormDevices_ResizeEnd);
-            this.Load += new System.EventHandler(this.FormDevices_FormLoad);
-            titleBar = new Panel();
-            titleBar.Height = 32;
-            titleBar.Dock = DockStyle.Top;
-            titleBar.BackColor = Color.White;  // Color.FromArgb(45, 45, 48);
-            titleBar.MouseDown += TitleBar_MouseDown;
-            // this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea; //move if maximized
-            this.Controls.Add(titleBar);
-            CreateButtons();
-#endif
-            this.ResumeLayout(true);
+            listRow = new Dictionary<String, Int32>();
+            HideShowAllGraphs(false);
+            DisplayWaitMessage();
+            // -------------------------------
+            //  toolStripStatusLabelPeriodeCurrent
+            // -------------------------------
+            toolStripStatusLabelPeriodeCurrent.Text = "Period: 0";
+            toolStripStatusLabelPeriodeMax.Text = "Period max: 0";
+            toolStripStatusLabelNbMessages.Text = "NB messages: 0";
+
+            // -------------------------------
+            //  toolStripStatusLabelPeriodeCurrent
+            // -------------------------------
+            statusStripDevices.BackColor = this.BackColor;
+            statusStripDevices.ForeColor = this.ForeColor;
+            statusStripDevices.ShowItemToolTips = true;
+
+            // -------------------------------
+            //  toolStripSplitLabelRecordOneShoot
+            // -------------------------------
+            toolStripSplitLabelRecordOneShoot.ToolTipText = "Record data buffer Wav (checkbox on panel) \n" +
+                " to directory Recordings if exist else in SdrSharp.exe directory \n" +
+                " You can replay Stereo file with SdrSharp Source=Baseband File player\n";
+
+
+            //this.Width = 540;      //left small in designer else no resize if width<540(if 540 in designer)
+            // -------------------------------
+            //  memo contexte
+            // -------------------------------
+            memoBackColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.BackColor;
+            memoForeColortoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.ForeColor;
+            memoTexttoolStripSplitLabelRecordOneShoot = toolStripSplitLabelRecordOneShoot.Text;
+            memoBackColortoolStripStatusLabelFreezeData = toolStripStatusLabelFreezeData.BackColor;
+            memoForeColortoolStripStatusLabelFreezeData = toolStripStatusLabelFreezeData.ForeColor;
+            memoTexttoolStripSplitLabelFreezeData = toolStripStatusLabelFreezeData.Text;
+            memoHeightPlotterDisplayExDevices = plotterDisplayExDevices.Height;
+ 
+            // -------------------------------
+            //  plotterDisplayExDevices
+            // -------------------------------
+            plotterDisplayExDevices.SetAmbiantProperty(this.BackColor, this.ForeColor, this.Font);
+
+            // -------------------------------
+            //  LIST VIEW MESSAGES
+            // -------------------------------
+            listViewListMessages = new System.Windows.Forms.ListView();
+            ClassFunctionsVirtualListView.InitListView(listViewListMessages);
+            listViewListMessages.BackColor = this.BackColor;   //pb ambient property ???
+            listViewListMessages.ForeColor = this.ForeColor;
+            listViewListMessages.Font = this.Font;
+            listViewListMessages.Cursor = this.Cursor;
+            this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewListMessages_RetrieveVirtualItem);
+
+            // -------------------------------
+            //  LAYOUT CONTENEUR
+            // -------------------------------
+            //row 0 title barre
+            //row 1 graph
+            //row 2 messages
+                  InitLayout(
+            (plotterDisplayExDevices, SizeType.Percent, 65f),
+            (listViewListMessages, SizeType.Percent, 35f)
+            );
+        this.ResumeLayout(true);
         }
         private Label labelWaitMessage;
         private void DisplayWaitMessage()
@@ -176,13 +183,11 @@ namespace SDRSharp.Rtl_433
                 Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top,
                 AutoSize = true
             };
-            tableLayoutPanelDeviceData.Controls.Add(labelWaitMessage, 0, 0);
             labelWaitMessage.Font = this.Font;
             labelWaitMessage.BackColor = this.BackColor;
             labelWaitMessage.ForeColor = this.ForeColor;
             labelWaitMessage.Text = $"Wait to receive new data \n max devices with graph: {ClassUtils.MaxDevicesWithGraph}\n You can click on display curves" +
                 $" \n or change nbDevicesWithGraph in exe.config \n or sample rate highest for memory.";
-            tableLayoutPanelDeviceData.RowStyles[0].Height = 100;
         }
         private Boolean closeByProgram = false;
         internal void CloseByProgram()
@@ -193,7 +198,7 @@ namespace SDRSharp.Rtl_433
         private void FormDevices_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (!closeByProgram)
-                classParent.ClosingOneFormDevice(this.Text);
+                classParent.ClosingOneFormDevice(base.TitleText);
         }
         protected override void OnClosed(EventArgs e)
         {
@@ -228,12 +233,9 @@ namespace SDRSharp.Rtl_433
             if (visible)
             {
                 plotterDisplayExDevices.Visible = true;
-                tableLayoutPanelDeviceData.RowStyles[0].Height = memoHeightPlotterDisplayExDevices;
             }
             else
             {
-                memoHeightPlotterDisplayExDevices = tableLayoutPanelDeviceData.RowStyles[0].Height;
-                tableLayoutPanelDeviceData.RowStyles[0].Height = 0;
                 plotterDisplayExDevices.Visible = false;
             }
             _displayGraph = visible;  //no call property
@@ -262,21 +264,12 @@ namespace SDRSharp.Rtl_433
                 miniY[NumGraphs] = tabPoints.Min(point => point.Y);
                 maxiY[NumGraphs] = tabPoints.Max(point => point.Y);
             }
-            //}
-            //catch (Exception ex)
-            //{
-            //MessageBox.Show(ex.Message, "Error  ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-            //}
-
-
             plotterDisplayExDevices.DataSources[NumGraphs].SetDisplayRangeY(miniY[NumGraphs], maxiY[NumGraphs]);    //to see why flip y ?
             plotterDisplayExDevices.DataSources[NumGraphs].SetGridDistanceY((maxiY[NumGraphs] - miniY[NumGraphs]) / 5); //(maxiY- miniY)/5.0fno grid with Graphlib with OPTION
             plotterDisplayExDevices.DataSources[NumGraphs].Samples = tabPoints;
             plotterDisplayExDevices.DataSources[NumGraphs].OnRenderYAxisLabel = RenderYLabel;
             ApplyColorSchema(NumGraphs);
             plotterDisplayExDevices.Height = 100 + ((NumGraphs + 1) * 90);
-            tableLayoutPanelDeviceData.RowStyles[0].Height = 100 + ((NumGraphs + 1) * 90);
             if (NumGraphs == 0)
                 plotterDisplayExDevices.SetDisplayRangeX(0, MaxXAllData);
             plotterDisplayExDevices.SetGridDistanceX(0);
@@ -293,12 +286,10 @@ namespace SDRSharp.Rtl_433
                 if (!_dataFrozen)
                 {
                     plotterDisplayExDevices.Height = 70;
-                    tableLayoutPanelDeviceData.RowStyles[0].Height = 70;
                     this.ResumeLayout();
                 }
                 return;
             }
-            tableLayoutPanelDeviceData.RowStyles[0].Height = memoHeightPlotterDisplayExDevices;
             float MaxXAllData = float.MinValue;
             foreach (List<PointF> lpt in points)
             {
@@ -388,11 +379,7 @@ namespace SDRSharp.Rtl_433
             if (activColumn > maxColumns - 1)
                 activColumn = 1;
             nbMessages++;
-#if TOPMOST
-//            this.Text = NameForm + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
-//#else
-            customTxt.Text = this.Text ;
-#endif
+            base.TitleText = this.Text;
             toolStripStatusLabelNbMessages.Text = $"NB messages: {nbMessages.ToString()}";
 
         }
@@ -525,12 +512,12 @@ namespace SDRSharp.Rtl_433
             this.SuspendLayout();
             if (toolStripSplitLabelRecordOneShoot.BackColor != memoBackColortoolStripSplitLabelRecordOneShoot)
             {
-                classParent.SetRecordDevice(this.Text, false);
+                classParent.SetRecordDevice(base.TitleText, false);
                 ResetLabelRecord();
             }
             else
             {
-                if (classParent.SetRecordDevice(this.Text, true) == true)
+                if (classParent.SetRecordDevice(base.TitleText, true) == true)
                 {
                     toolStripSplitLabelRecordOneShoot.BackColor = Color.Green;
                     toolStripSplitLabelRecordOneShoot.ForeColor = Color.White;
@@ -558,159 +545,6 @@ namespace SDRSharp.Rtl_433
             }
             this.ResumeLayout(true);
         }
-#if TOPMOST
-        private void FormDevices_FormLoad(object sender, EventArgs e)
-        {
-            ClassTopMost.moveButtons(ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.Width);
-        }
-#endif
-        private void FormDevices_ResizeEnd(object sender, EventArgs e)
-        {
-            plotterDisplayExDevices.Width = this.Width-1000;  //why?
-            listViewListMessages.Width = this.Width-100;  //why?
-#if TOPMOST
-            ClassTopMost.moveButtons(ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.Width);
-#endif
-        }
-        #endregion
-        #region TOPMOST
-#if TOPMOST
-        private void TitleBar_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                ClassWin32ForTopMost.ReleaseCapture();
-                ClassWin32ForTopMost.SendMessage(this.Handle, 0xA1, 0x2, 0);
-            }
-        }
-        private void customTxt_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                ClassWin32ForTopMost.ReleaseCapture();
-                ClassWin32ForTopMost.SendMessage(this.Handle, 0xA1, 0x2, 0);
-            }
-        }
-        private void CreateButtons()
-        {
-            //window text 
-            customTxt = new Label();
-            customTxt.MouseDown += customTxt_MouseDown;
-
-            // Button topMost
-            customBtn = new Button();
-            customBtn.Click += (s, e) =>
-            {
-                if (!topMost)
-                {
-                    setTopMost(ClassWin32ForTopMost.HWND_TOPMOST);
-                    customBtn.BackColor = Color.Cyan;
-                }
-                else
-                {
-                    setTopMost(ClassWin32ForTopMost.HWND_NOTOPMOST);
-                    customBtn.BackColor = Color.Transparent;  // Color.FromArgb(70, 70, 72);
-                }
-                topMost = !topMost;
-            };
-            // Minimize
-            btnMin = new Button();
-            btnMin.Click += (s, e) =>
-            {
-                ClassWin32ForTopMost.ShowWindow(this.Handle, ClassWin32ForTopMost.SW_MINIMIZE);
-            };
-            // Close
-            btnClose = new Button();
-            btnClose.Click += (s, e) => this.Close();
-            btnClose.MouseEnter += (s, e) => btnClose.BackColor = Color.FromArgb(232, 17, 35);
-            btnClose.MouseLeave += (s, e) => btnClose.BackColor = Color.Transparent;
-            // Maximize
-            btnMax = new Button();
-            btnMax.Click += (s, e) =>
-            {
-                if (this.WindowState == FormWindowState.Maximized)
-                    ClassWin32ForTopMost.ShowWindow(this.Handle, ClassWin32ForTopMost.SW_RESTORE);
-                else
-                    ClassWin32ForTopMost.ShowWindow(this.Handle, ClassWin32ForTopMost.SW_MAXIMIZE);
-                ClassTopMost.moveButtons(ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.Width);
-            };
-            ClassTopMost.CreateButtons(ref titleBar, ref customTxt, ref customBtn, ref btnMin, ref btnMax, ref btnClose, this.WindowState, this.Width);
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            const int WM_NCHITTEST = 0x84;
-            const int HTLEFT = 10;
-            const int HTRIGHT = 11;
-            const int HTTOP = 12;
-            const int HTTOPLEFT = 13;
-            const int HTTOPRIGHT = 14;
-            const int HTBOTTOM = 15;
-            const int HTBOTTOMLEFT = 16;
-            const int HTBOTTOMRIGHT = 17;
-            const int RESIZE_HANDLE_SIZE = 8;
-            if (m.Msg == WM_NCHITTEST)
-            {
-                base.WndProc(ref m);
-                Point cursor = PointToClient(new Point(m.LParam.ToInt32()));
-                bool left = cursor.X <= RESIZE_HANDLE_SIZE;
-                bool right = cursor.X >= this.ClientSize.Width - RESIZE_HANDLE_SIZE;
-                bool top = cursor.Y <= RESIZE_HANDLE_SIZE;
-                bool bottom = cursor.Y >= this.ClientSize.Height - RESIZE_HANDLE_SIZE;
-                if (left && top)
-                {
-                    m.Result = (IntPtr)HTTOPLEFT;
-                    return;
-                }
-                else if (right && top)
-                {
-                    m.Result = (IntPtr)HTTOPRIGHT;
-                    return;
-                }
-                else if (left && bottom)
-                {
-                    m.Result = (IntPtr)HTBOTTOMLEFT;
-                    return;
-                }
-                else if (right && bottom)
-                {
-                    m.Result = (IntPtr)HTBOTTOMRIGHT;
-                    return;
-                }
-                else if (left)
-                {
-                    m.Result = (IntPtr)HTLEFT;
-                    return;
-                }
-                else if (right)
-                {
-                    m.Result = (IntPtr)HTRIGHT;
-                    return;
-                }
-                else if (top)
-                {
-                    m.Result = (IntPtr)HTTOP;
-                    return;
-                }
-                else if (bottom)
-                {
-                    m.Result = (IntPtr)HTBOTTOM;
-                    return;
-                }
-                return;
-            }
-            base.WndProc(ref m);
-        }
-        private void setTopMost(IntPtr choose)
-        {
-            IntPtr hwnd = this.Handle;
-            ClassWin32ForTopMost.SetWindowPos(
-                hwnd,
-                choose,
-            0, 0, 0, 0,
-            ClassWin32ForTopMost.SWP_NOMOVE | ClassWin32ForTopMost.SWP_NOSIZE);
-        }
-#endif
         #endregion
     }
 }
