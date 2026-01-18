@@ -103,7 +103,7 @@
             this.plotterDisplayExDevices.DoubleBuffering = true;
             this.plotterDisplayExDevices.Location = new System.Drawing.Point(3, 3);
             this.plotterDisplayExDevices.Name = "plotterDisplayExDevices";
-            this.plotterDisplayExDevices.Size = new System.Drawing.Size(1034, 294);
+            this.plotterDisplayExDevices.Size = new System.Drawing.Size(600, 294);
             this.plotterDisplayExDevices.SolidGridColor = System.Drawing.Color.DarkGray;
             this.plotterDisplayExDevices.TabIndex = 2;
             // 
