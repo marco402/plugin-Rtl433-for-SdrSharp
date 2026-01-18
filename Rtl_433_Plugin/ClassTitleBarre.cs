@@ -70,54 +70,16 @@ namespace SDRSharp.Rtl_433
             this.MainMenuStrip = menu;
             this.Controls.Add(menu);
             menu.Dock = DockStyle.Top;
-#endif
+#endif 
         }
-#region ROUNDANGLES 
-        //protected override void OnHandleCreated(EventArgs e)
-        //{
-        //    base.OnHandleCreated(e);
-        //    ApplyWindowCorners();
-        //}
-        //protected virtual bool UseRoundedCorners => true;
-
-        //private void ApplyWindowCorners()
-        //{
-        //    if (!UseRoundedCorners)
-        //        return;
-
-        //    // Windows 11 = build >= 22000
-        //    if (Environment.OSVersion.Version.Build < 22000)
-        //        return;
-
-        //    const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
-        //    const int DWMWCP_ROUND = 2;
-
-        //    int preference = DWMWCP_ROUND;
-
-        //    DwmSetWindowAttribute(
-        //        this.Handle,
-        //        DWMWA_WINDOW_CORNER_PREFERENCE,
-        //        ref preference,
-        //        sizeof(int)
-        //    );
-        //}
-
-        //[DllImport("dwmapi.dll")]
-        //private static extern int DwmSetWindowAttribute(
-        //    IntPtr hwnd,
-        //    int attr,
-        //    ref int attrValue,
-        //    int attrSize
-        //);
-#endregion
-
         protected TableLayoutPanel layout;
         protected void InitLayout(params (Control control, SizeType sizeType, float size)[] rows)
         {
-            layout = new TableLayoutPanel();
-            layout.Dock = DockStyle.Fill;
-            layout.ColumnCount = 1;
-
+            layout = new TableLayoutPanel()
+            {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1
+            };
             AddRow(titleBar, SizeType.Absolute, 30f);
 
             foreach (var row in rows)
@@ -135,29 +97,30 @@ namespace SDRSharp.Rtl_433
             {
                 Height = 30,
                 Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(45, 45, 48)
+                BackColor = ClassUtils.BackColor,    //Color.FromArgb(45, 45, 48)
+                //ForeColor=ClassUtils.ForeColor,
+                //Font = ClassUtils.Font,
+                Cursor = ClassUtils.Cursor
             };
-            titleLabel = new Label();
-            titleLabel.AutoSize = true;
-            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-            titleLabel.Dock = DockStyle.Left;
-            titleLabel.ForeColor = Color.White;
-            titleLabel.Font = new Font("Segoe UI", 10);
+            titleLabel = new Label()
+            {
+                AutoSize = true,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Dock = DockStyle.Left,
+                ForeColor = ClassUtils.ForeColor,
+                Font = ClassUtils.Font
+            }; 
             titleBar.Controls.Add(titleLabel);
             titleBar.MouseDown += TitleBar_MouseDown;
-            titleLabel.MouseDown += TitleBar_MouseDown;
+            titleBar.MouseDown += TitleBar_MouseDown;
             return titleBar;
         }
         public int AddRow(Control control, SizeType sizeType = SizeType.Absolute, float size = 30f)
         {
             int row = layout.RowCount;
-
             layout.RowCount++;
-
             layout.RowStyles.Add(new RowStyle(sizeType, size));
-
             layout.Controls.Add(control, 0, row);
-
             return row;
         }
         // -------------------------------
@@ -175,14 +138,15 @@ namespace SDRSharp.Rtl_433
             btnTopMost = CreateButton("\uF156", ToggleTopMost, -1);
             var rm = new ResourceManager("SDRSharp.Rtl_433.Properties.Resources", typeof(BaseFormWithTopMost).Assembly);
             string txt = rm.GetString("Tooltip_AlwaysOnTop");
-
-
-            toolTip = new ToolTip();
-            toolTip.ShowAlways = true;
-            toolTip.InitialDelay = 300;
-            toolTip.ReshowDelay = 100;
-            toolTip.AutoPopDelay = 5000;
+            toolTip = new ToolTip()
+            {
+                ShowAlways = true,
+                InitialDelay = 300,
+                ReshowDelay = 100,
+                AutoPopDelay = 5000
+            };
             toolTip.SetToolTip(btnTopMost, txt);
+
             btnMin = CreateButton("\uE921", () => ShowWindow(this.Handle, SW_MINIMIZE),900);
             btnMax = CreateButton("\uE922", ToggleMaximize,901);
             btnClose = CreateButton("\uE8BB", () => this.Close(),905);
@@ -196,28 +160,35 @@ namespace SDRSharp.Rtl_433
 
         private Button CreateButton(string text, Action onClick,int codeTxt)
         {
-            var b = new Button();
-            b.Text = text;
-            b.Font = new Font("Segoe MDL2 Assets", 10);
-            b.Width = 45;
-            b.Height = 32;
-            b.FlatStyle = FlatStyle.Flat;
-            b.FlatAppearance.BorderSize = 0;
-            b.BackColor = Color.Transparent;
-            b.ForeColor = Color.White;
-            b.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            var btn = new Button()
+            {
+                Text = text,
+                Font = new Font("Segoe MDL2 Assets", 10),
+                Width = 45,
+                Height = 32,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = ClassUtils.ForeColor,
+                BackColor = ClassUtils.BackColor,
+                //Font = ClassUtils.Font,
+                //BackColor = Color.Transparent,
+                //ForeColor = Color.White,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            btn.FlatAppearance.BorderSize = 0;
+
             if(codeTxt>=0)
             {
-            toolTip = new ToolTip();
-            toolTip.ShowAlways = true;
-            toolTip.InitialDelay = 300;
-            toolTip.ReshowDelay = 100;
-            toolTip.AutoPopDelay = 5000;
-
-            toolTip.SetToolTip(b, LoadSystemString((uint)codeTxt));
+                toolTip = new ToolTip()
+                {
+                    ShowAlways = true,
+                    InitialDelay = 300,
+                    ReshowDelay = 100,
+                    AutoPopDelay = 5000
+                };
+            toolTip.SetToolTip(btn, LoadSystemString((uint)codeTxt));
             }
-            b.Click += (s, e) => onClick();
-            return b;
+            btn.Click += (s, e) => onClick();
+            return btn;
         }
 
         public void PositionButtons()
