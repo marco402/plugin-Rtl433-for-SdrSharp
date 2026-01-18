@@ -62,13 +62,8 @@ namespace SDRSharp.Rtl_433
             //  THIS FORM
             // -------------------------------
             this.myClassFormDevicesList = myClassFormDevicesList;
-            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.maxDevices = ClassUtils.MaxDevicesWindows*10;
             this.maxColumns = ClassConst.NBMAXCOLUMN;
-            this.Font = ClassUtils.Font;
-            this.BackColor = ClassUtils.BackColor;
-            this.ForeColor = ClassUtils.ForeColor;
-            this.Cursor = ClassUtils.Cursor;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
             base.TitleText = "Devices received : 0";
 

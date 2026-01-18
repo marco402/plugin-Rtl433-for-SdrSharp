@@ -38,18 +38,14 @@ namespace SDRSharp.Rtl_433
         internal FormDevicesListMessages(ClassFormListMessages classParent, String name) : base(100, false)
         {
             InitializeComponent();
+            this.SuspendLayout();
+
             // -------------------------------
             //  THIS FORM
             // -------------------------------
             this.classParent = classParent;
-            this.Font = ClassUtils.Font;
-            this.BackColor = ClassUtils.BackColor;
-            this.ForeColor = ClassUtils.ForeColor;
-            this.Cursor = ClassUtils.Cursor;
             this.maxMessages = ClassUtils.MaxDevicesWindows;
-            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
-            this.SuspendLayout();
 
             // -------------------------------
             //  LIST VIEW MESSAGES

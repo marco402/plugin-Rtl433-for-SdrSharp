@@ -37,7 +37,6 @@ namespace SDRSharp.Rtl_433
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1166, 142);
-            this.DoubleBuffered = true;
             this.Name = "FormListDevices";
             this.Text = "FormListDevices";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormListDevices_FormClosing);

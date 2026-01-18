@@ -45,6 +45,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace SDRSharp.Rtl_433
@@ -87,17 +88,10 @@ namespace SDRSharp.Rtl_433
 
             NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
             nfi.NumberDecimalDigits = 3;
-
-
             // -------------------------------
             //  THIS FORM
             // -------------------------------
             this.classParent = classParent;
-            this.Font = ClassUtils.Font;
-            this.BackColor = ClassUtils.BackColor;
-            this.ForeColor = ClassUtils.ForeColor;
-            this.Cursor = ClassUtils.Cursor;
-            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.MinimumSize = new System.Drawing.Size(660, 100);   //width=660 else no display end graph why? todo
             this.Size = new System.Drawing.Size(660, 600);
 
@@ -162,6 +156,7 @@ namespace SDRSharp.Rtl_433
             listViewListMessages.Font = this.Font;
             listViewListMessages.Cursor = this.Cursor;
             this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewListMessages_RetrieveVirtualItem);
+            typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
 
             // -------------------------------
             //  LAYOUT CONTENEUR
@@ -169,11 +164,12 @@ namespace SDRSharp.Rtl_433
             //row 0 title barre
             //row 1 graph
             //row 2 messages
-                  InitLayout(
+            InitLayout(
             (plotterDisplayExDevices, SizeType.Percent, 65f),
-            (listViewListMessages, SizeType.Percent, 35f)
+            (listViewListMessages, SizeType.Percent, 35f),
+            (statusStripDevices, SizeType.Absolute, 20f)
             );
-        this.ResumeLayout(true);
+            this.ResumeLayout(true);
         }
         private Label labelWaitMessage;
         private void DisplayWaitMessage()

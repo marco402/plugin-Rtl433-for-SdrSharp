@@ -30,7 +30,12 @@ namespace SDRSharp.Rtl_433
         public BaseFormWithTopMost( int maxMessages = 100, bool firstToTop = false)
         {
             this.FormBorderStyle = FormBorderStyle.None;
+            this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.DoubleBuffered = true;
+            this.Font = ClassUtils.Font;
+            this.BackColor = ClassUtils.BackColor;
+            this.ForeColor = ClassUtils.ForeColor;
+            this.Cursor = ClassUtils.Cursor;
             ApplyDefaultLanguage();
             BuildTitleBar();
             BuildButtons();
