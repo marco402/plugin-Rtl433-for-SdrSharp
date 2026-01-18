@@ -70,7 +70,8 @@ namespace SDRSharp.Rtl_433
             //  LAYOUT CONTENEUR
             // -------------------------------
             InitLayout(
-            (listViewListMessages, SizeType.Percent, 100f)
+            (listViewListMessages, SizeType.Percent, 100f),
+            (statusStripExport, SizeType.Absolute, 20f)
             );
             // -------------------------------
             //  STATUS BARRE
