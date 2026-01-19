@@ -30,9 +30,11 @@ namespace SDRSharp.Rtl_433
         private readonly ListViewItem[] cacheListDevices;
         private Int32 nbDevice = 0;
         private readonly ClassFormDevicesList myClassFormDevicesList;
+        #if !ABSTRACTVIRTUALLISTVIEW
         private Boolean firstToTop = false;
+#endif
         private System.Windows.Forms.ListView listViewDevices;
-        #endregion
+#endregion
         #region private functions
         private void ListDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {

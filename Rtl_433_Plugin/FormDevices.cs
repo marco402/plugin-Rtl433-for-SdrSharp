@@ -60,7 +60,10 @@ namespace SDRSharp.Rtl_433
         private readonly Dictionary<String, Label> listLabelValue;
         private Int64 memoTimeMax;
         private Int64 memoTime;
+#if !ABSTRACTVIRTUALLISTVIEW
         private Int64 nbMessages;
+        private Boolean firstToTop = true;
+#endif
         private readonly Color memoBackColortoolStripSplitLabelRecordOneShoot;
         private readonly Color memoForeColortoolStripSplitLabelRecordOneShoot;
         private readonly String memoTexttoolStripSplitLabelRecordOneShoot;
@@ -68,7 +71,6 @@ namespace SDRSharp.Rtl_433
         private readonly Color memoForeColortoolStripStatusLabelFreezeData;
         private readonly String memoTexttoolStripSplitLabelFreezeData;
         private float memoHeightPlotterDisplayExDevices = 0;
-        private Boolean firstToTop = true;
         private readonly Dictionary<String, Int32> cacheListColumns;
         private readonly ListViewItem[] cacheListInfosMessages;
         private Dictionary<String, Int32> listRow;

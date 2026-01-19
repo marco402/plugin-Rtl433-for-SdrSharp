@@ -198,31 +198,29 @@ namespace SDRSharp.Rtl_433
 
         internal static String GetDirectoryRecording()
         {
-            String directory = ClassConst.FOLDERRECORD;   //SDRSHARP.exe to SDRSHARP
+            String directory = ClassConst.FOLDERRECORD; 
             if (!Directory.Exists(directory))
             {
-                directory = "." + ClassConst.FOLDERRECORD;  //SDRSHARP.exe to bin
-                if (!Directory.Exists(directory))
-                    directory = "";
+                 CreateFolderRecord();
             }
-            return directory; //+ ClassConst.FILELISTEDEVICES;
+            return directory;
         }
-        //internal static Boolean CreateFolderRecord()
-        //{
-        //    if (!Directory.Exists(ClassConst.FOLDERRECORD))
-        //    {
-        //        try
-        //        {
-        //            Directory.CreateDirectory(ClassConst.FOLDERRECORD);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            MessageBox.Show(e.Message, "Error create folder " + ClassConst.FOLDERRECORD, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
+        internal static Boolean CreateFolderRecord()
+        {
+            if (!Directory.Exists(ClassConst.FOLDERRECORD))
+            {
+                try
+                {
+                    Directory.CreateDirectory(ClassConst.FOLDERRECORD);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Error create folder " + ClassConst.FOLDERRECORD, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
+        }
         internal static Int32 RecordDevice(String name, byte[] dataIQ,Int32 sampleRate, String frequency = "", Boolean Wav = true)
         {
 

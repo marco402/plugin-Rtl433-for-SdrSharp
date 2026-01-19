@@ -25,16 +25,18 @@ namespace SDRSharp.Rtl_433
     public partial class FormDevicesListMessages : BaseFormWithTopMost
     {
         #region declare
+#if !ABSTRACTVIRTUALLISTVIEW
         private readonly String NameForm = "";
         private readonly Int32 maxMessages = 0;
+        private readonly Boolean firstToTop = false;
+#endif
         private readonly Dictionary<String, Int32> cacheListColumns;
         private readonly ListViewItem[] cacheListMessages;
         private Int32 nbMessage = 0;
         private readonly ClassFormListMessages classParent;
-        private readonly Boolean firstToTop = false;
         private String PathAndNameFile = "";
         private System.Windows.Forms.ListView listViewListMessages;
-        #endregion
+#endregion
         internal FormDevicesListMessages(ClassFormListMessages classParent, String name) : base(100, false)
         {
             InitializeComponent();
@@ -44,7 +46,9 @@ namespace SDRSharp.Rtl_433
             //  THIS FORM
             // -------------------------------
             this.classParent = classParent;
-            this.maxMessages = ClassUtils.MaxDevicesWindows;
+            #if !ABSTRACTVIRTUALLISTVIEW
+                this.maxMessages = ClassUtils.MaxDevicesWindows;
+            #endif
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
 
             // -------------------------------
@@ -77,8 +81,7 @@ namespace SDRSharp.Rtl_433
             //  STATUS BARRE
             // -------------------------------
             statusStripExport.BackColor = this.BackColor;
-            statusStripExport.ForeColor = this.ForeColor;
-            statusStripExport.ShowItemToolTips = true;
+            statusStripExport.ForeColor = this.ForeColor;statusStripExport.ShowItemToolTips = true;
 
             NameForm = name;
             PathAndNameFile = ClassUtils.GetPathAndNameFileDateAndTxt(NameForm);
