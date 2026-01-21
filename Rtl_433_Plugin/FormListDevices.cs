@@ -30,10 +30,10 @@ namespace SDRSharp.Rtl_433
         private readonly ListViewItem[] cacheListDevices;
         private Int32 nbDevice = 0;
         private readonly ClassFormDevicesList myClassFormDevicesList;
-        #if !ABSTRACTVIRTUALLISTVIEW
-        private Boolean firstToTop = false;
-#endif
+        private Boolean firstDeviceToTop = false;
+#if !ABSTRACTVIRTUALLISTVIEW
         private System.Windows.Forms.ListView listViewDevices;
+#endif
 #endregion
         #region private functions
         private void ListDevices_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -68,7 +68,7 @@ namespace SDRSharp.Rtl_433
             this.maxColumns = ClassConst.NBMAXCOLUMN;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
             base.TitleText = "Devices received : 0";
-
+#if !ABSTRACTVIRTUALLISTVIEW
             // -------------------------------
             //  LIST VIEW DEVICES
             // -------------------------------
@@ -79,16 +79,19 @@ namespace SDRSharp.Rtl_433
             listViewDevices.Font = this.Font;
             listViewDevices.Cursor = this.Cursor;
             this.listViewDevices.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListDevices_RetrieveVirtualItem);
+#endif
             // -------------------------------
             //  LIST VIEW DEVICES LAYOUT CONTENEUR
             // -------------------------------
             InitLayout(
             (listViewDevices, SizeType.Percent, 100f)
             );
+#if !ABSTRACTVIRTUALLISTVIEW
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewDevices, new object[] { true });
             ClassFunctionsVirtualListView.InitListView(listViewDevices);
             cacheListDevices = new ListViewItem[this.maxDevices];
             cacheListColumns = new Dictionary<String, Int32>();
+#endif
             this.ResumeLayout(true);
         }
         internal void RefreshListDevices()
@@ -100,7 +103,7 @@ namespace SDRSharp.Rtl_433
         internal void DeSerializeText(String fileName)
         {
             Cursor.Current = Cursors.WaitCursor;
-            firstToTop = !firstToTop;
+            firstDeviceToTop = !firstDeviceToTop;
             this.SuspendLayout();
             listViewDevices.BeginUpdate();
             Dictionary<String, String> listData = new Dictionary<String, String>();
@@ -116,7 +119,7 @@ namespace SDRSharp.Rtl_433
                         MessageBox.Show("File " + ClassConst.FILELISTEDEVICES + " empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         listViewDevices.EndUpdate();
                         this.ResumeLayout(true);
-                        firstToTop = !firstToTop;
+                        firstDeviceToTop = !firstDeviceToTop;
                         Cursor.Current = Cursors.Default;
                         return;
                     }
@@ -149,7 +152,7 @@ namespace SDRSharp.Rtl_433
             }
             listViewDevices.EndUpdate();
             this.ResumeLayout(true);
-            firstToTop = !firstToTop;
+            firstDeviceToTop = !firstDeviceToTop;
             Cursor.Current = Cursors.Default;
             listData.Clear();
         }
@@ -192,7 +195,7 @@ namespace SDRSharp.Rtl_433
                 device = new ListViewItem(deviceName);
                 ClassFunctionsVirtualListView.AddNewLine(listData, cacheListColumns, device);
                 //**************add new line/device in cacheListMessages
-                ClassFunctionsVirtualListView.AddElemToCache(cacheListDevices, firstToTop, nbDevice, device);
+                ClassFunctionsVirtualListView.AddElemToCache(cacheListDevices, firstDeviceToTop, nbDevice, device);
                 //**************complete subItems for all line in cacheListMessages**********************
                 ClassFunctionsVirtualListView.CompleteList(cacheListDevices, cacheListColumns.Count);
                 //************************************************
@@ -214,7 +217,7 @@ namespace SDRSharp.Rtl_433
             //**************************************************************************************
             this.ResumeLayout(true);
         }
-        #endregion
+#endregion
 
         private void FormListDevices_FormClosing(object sender, FormClosingEventArgs e)
         {

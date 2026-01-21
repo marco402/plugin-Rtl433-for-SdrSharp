@@ -26,7 +26,7 @@ namespace SDRSharp.Rtl_433
         protected ListViewItem[] cacheItems;
         protected int nbMessages = 0;
 
-        protected BaseVirtualListForm(Color BackColor, Color ForeColor,Font font,Cursor cursor,int maxMessages = 100, bool firstToTop = false)
+        protected BaseVirtualListForm(Color BackColor, Color ForeColor,Font font,Cursor cursor,int maxMessages = 1000, bool firstToTop = false)
         {
             this.maxMessages = maxMessages;
             this.firstToTop = firstToTop;

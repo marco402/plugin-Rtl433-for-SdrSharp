@@ -167,7 +167,7 @@ namespace SDRSharp.Rtl_433
             //row 1 graph
             //row 2 messages
             InitLayout(
-            (plotterDisplayExDevices, SizeType.Percent, 65f),
+            (plotterDisplayExDevices, SizeType.Absolute, 350f),
             (listViewListMessages, SizeType.Percent, 35f),
             (statusStripDevices, SizeType.Absolute, 20f)
             );

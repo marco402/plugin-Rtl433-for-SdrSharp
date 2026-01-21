@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Threading;
+using System.Drawing.Drawing2D;
 
 namespace SDRSharp.Rtl_433
 {
@@ -27,14 +28,20 @@ namespace SDRSharp.Rtl_433
         private MenuStrip menu ;
         private ToolStripMenuItem langMenu ;
 #endif
-        public BaseFormWithTopMost( int maxMessages = 100, bool firstToTop = false)
+#if !ABSTRACTVIRTUALLISTVIEW
+        public BaseFormWithTopMost(int maxMessages = 100, bool firstToTop = false)
+#else
+        public BaseFormWithTopMost(int maxMessages = 100, bool firstToTop = false):base(ClassUtils.BackColor, ClassUtils.ForeColor, ClassUtils.Font, ClassUtils.Cursor)
+#endif
         {
             this.FormBorderStyle = FormBorderStyle.None;
             this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.DoubleBuffered = true;
             this.Font = ClassUtils.Font;
+            #if !ABSTRACTVIRTUALLISTVIEW
             this.BackColor = ClassUtils.BackColor;
             this.ForeColor = ClassUtils.ForeColor;
+#endif
             this.Cursor = ClassUtils.Cursor;
             ApplyDefaultLanguage();
             BuildTitleBar();
@@ -70,8 +77,46 @@ namespace SDRSharp.Rtl_433
             this.MainMenuStrip = menu;
             this.Controls.Add(menu);
             menu.Dock = DockStyle.Top;
-#endif 
+#endif
         }
+        #region ROUNDANGLES 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            ApplyWindowCorners();
+        }
+        protected virtual bool UseRoundedCorners => true;
+
+        private void ApplyWindowCorners()
+        {
+            if (!UseRoundedCorners)
+                return;
+
+            // Windows 11 = build >= 22000
+            if (Environment.OSVersion.Version.Build < 22000)
+                return;
+
+            const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+            const int DWMWCP_ROUND = 2;
+
+            int preference = DWMWCP_ROUND;
+
+            DwmSetWindowAttribute(
+                this.Handle,
+                DWMWA_WINDOW_CORNER_PREFERENCE,
+                ref preference,
+                sizeof(int)
+            );
+        }
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(
+            IntPtr hwnd,
+            int attr,
+            ref int attrValue,
+            int attrSize
+        );
+        #endregion
         protected TableLayoutPanel layout;
         protected void InitLayout(params (Control control, SizeType sizeType, float size)[] rows)
         {
@@ -97,9 +142,7 @@ namespace SDRSharp.Rtl_433
             {
                 Height = 30,
                 Dock = DockStyle.Fill,
-                BackColor = ClassUtils.BackColor,    //Color.FromArgb(45, 45, 48)
-                //ForeColor=ClassUtils.ForeColor,
-                //Font = ClassUtils.Font,
+                BackColor = ClassUtils.BackColor,
                 Cursor = ClassUtils.Cursor
             };
             titleLabel = new Label()
@@ -112,7 +155,7 @@ namespace SDRSharp.Rtl_433
             }; 
             titleBar.Controls.Add(titleLabel);
             titleBar.MouseDown += TitleBar_MouseDown;
-            titleBar.MouseDown += TitleBar_MouseDown;
+            titleLabel.MouseDown += TitleBar_MouseDown;
             return titleBar;
         }
         public int AddRow(Control control, SizeType sizeType = SizeType.Absolute, float size = 30f)
@@ -126,7 +169,7 @@ namespace SDRSharp.Rtl_433
         // -------------------------------
         //  BUTTONS
         // -------------------------------
-        // ID 900: Réduire
+        //ID 900: Réduire
         //ID 901: Agrandir
         //ID 902: Niveau sup.
         //ID 903: Niveau inf.
@@ -169,9 +212,6 @@ namespace SDRSharp.Rtl_433
                 FlatStyle = FlatStyle.Flat,
                 ForeColor = ClassUtils.ForeColor,
                 BackColor = ClassUtils.BackColor,
-                //Font = ClassUtils.Font,
-                //BackColor = Color.Transparent,
-                //ForeColor = Color.White,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             btn.FlatAppearance.BorderSize = 0;
