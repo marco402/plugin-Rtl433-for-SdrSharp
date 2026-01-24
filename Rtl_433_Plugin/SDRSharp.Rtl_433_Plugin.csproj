@@ -233,6 +233,37 @@
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug-V1732|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\debug-V1732\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;noABSTRACTVIRTUALLISTVIEW  noANALYZE noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <LangVersion>7.3</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug-V1732|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\debug-V1732\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;noANALYZE noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug-V1732|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\debug-V1732\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;TOPMOST noANALYZE noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
     <Reference Include="GraphLib, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">

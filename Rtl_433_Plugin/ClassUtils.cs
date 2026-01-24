@@ -42,8 +42,6 @@ namespace SDRSharp.Rtl_433
     }
     internal class ClassUtils
     {
-
-
         internal static string FirstCharToUpper(String s)
         {
             if (String.IsNullOrEmpty(s))
@@ -52,8 +50,6 @@ namespace SDRSharp.Rtl_433
             }
             return s[0].ToString().ToUpper() + s.Substring(1);
         }
-
-
         internal static double GetMaxiTabFloat(float[] bufferPtr)
         {
             double maxi = float.MinValue;

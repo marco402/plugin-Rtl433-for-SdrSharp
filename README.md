@@ -1,5 +1,9 @@
 French version after English version.  
 ## New Version  
+Version 1.5.8.9 January 24, 2026.  
+	Add TopMost button for 3 windows.  
+	For test 20 languages for tooltip TopMost button.  
+	Create the Recordings folder in the SdrSharp.exe folder if recording .txt or .wav files.  
 Version 1.5.8.8 December 18, 2025.  
 	-Rtl433 version Release 25.12 (2025-12-12)  
 	-9 devices more.  
@@ -288,6 +292,10 @@ Version 1.00  March 2021
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 1.5.8.9 24 Janvier 2026.  
+	Ajout d'un bouton premier plan pour les 3 fenetres.  
+	Pour test ajout d'une infobulle en 20 langues pour le bouton premier plan.  
+	Creation du dossier Recordings dans le dosssier de SdrSharp.exe si enregistrement de .txt ou .wav.  
 Version 1.5.8.8 18 Decembre 2025.  
 	-Rtl433 version Release 25.12 (2025-12-12)  
 	-Ajout de 9 devices.  
