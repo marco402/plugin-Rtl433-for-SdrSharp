@@ -167,7 +167,7 @@ namespace SDRSharp.Rtl_433
             //row 1 graph
             //row 2 messages
             InitLayout(
-            (plotterDisplayExDevices, SizeType.Absolute, 350f),
+            (plotterDisplayExDevices, SizeType.Percent, 65f),
             (listViewListMessages, SizeType.Percent, 35f),
             (statusStripDevices, SizeType.Absolute, 20f)
             );
@@ -337,7 +337,6 @@ namespace SDRSharp.Rtl_433
                     {
                         tabPoints.Add(new PointF(x, 0));
                     }
-
                 }
                 this.SuspendLayout();
                 plotterDisplayExDevices.DataSources[indexGraph].SetDisplayRangeY(miniY[indexGraph], maxiY[indexGraph]);    //(-250, 250);

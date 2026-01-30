@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Globalization;
 using System.Threading;
 using System.Drawing.Drawing2D;
+using System.Diagnostics.Eventing.Reader;
 
 namespace SDRSharp.Rtl_433
 {
@@ -38,8 +39,11 @@ namespace SDRSharp.Rtl_433
             this.Padding = new System.Windows.Forms.Padding(2);  //else no resize form no cursor
             this.DoubleBuffered = true;
             this.Font = ClassUtils.Font;
-            #if !ABSTRACTVIRTUALLISTVIEW
-            this.BackColor = ClassUtils.BackColor;
+#if !ABSTRACTVIRTUALLISTVIEW
+            if (ClassUtils.BackColor == Color.Transparent)
+                this.BackColor = Color.White;
+            else
+                this.BackColor = ClassUtils.BackColor;
             this.ForeColor = ClassUtils.ForeColor;
 #endif
             this.Cursor = ClassUtils.Cursor;
@@ -169,6 +173,7 @@ namespace SDRSharp.Rtl_433
         // -------------------------------
         //  BUTTONS
         // -------------------------------
+        //"\uE921"... found police Segoe MDL2 Assets
         //ID 900: Réduire
         //ID 901: Agrandir
         //ID 902: Niveau sup.
