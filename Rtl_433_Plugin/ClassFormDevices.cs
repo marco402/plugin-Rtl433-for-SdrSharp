@@ -14,9 +14,6 @@ using SDRSharp.Common;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
-
 namespace SDRSharp.Rtl_433
 {
     internal class ClassFormDevices
@@ -39,7 +36,7 @@ namespace SDRSharp.Rtl_433
                 listformDevice[deviceName].Show();
             }
             listformDevice[deviceName].SetInfoDevice(listData);
-            if (listformDevice[deviceName].DisplayGraph)
+            if ((listformDevice[deviceName].DisplayGraph) && (points!=null))
                 listformDevice[deviceName].SetDataGraph(points, nameGraph);
 #if DEBUG
             Boolean recordAllOnce = true;
@@ -104,19 +101,11 @@ namespace SDRSharp.Rtl_433
         {
             if (choice)
             {
-                //if ((!ClassUtils.Wav && !ClassUtils.Raw)) //|| labelSampleRate.Text != "250000"
-                //{
-                //    MessageBox.Show("Choice WAV or RAW", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //    return false;
-                //}
-                //else
-                //{
-                    if (choice)
-                        listNamesToRecord.Add(name);
-                    else
-                        listNamesToRecord.Remove(name);
-                    return true;
-                //}
+                if (choice)
+                    listNamesToRecord.Add(name);
+                else
+                    listNamesToRecord.Remove(name);
+                return true;
             }
             else
             {

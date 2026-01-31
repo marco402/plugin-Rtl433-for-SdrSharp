@@ -152,9 +152,6 @@ namespace SDRSharp.Rtl_433
                 NativeMethods.stop_sdr(ptrCtx);
             if (!initListDevice)     //need reload list devices
                 panelRtl_433.SetOptionVerboseInit();
-//#if DEBUG
-//            SetOption("analyze", "-A", true);
-//#endif
             threadCallMainRTL_433 = null;
 
             threadCallMainRTL_433 = new Thread(ThreadCallMainRtl433)
@@ -170,11 +167,6 @@ namespace SDRSharp.Rtl_433
 #endif
         internal unsafe void Send_data(Complex* _IQPtr, Int32 len)
         {
-////#if DEBUG
-////            int deb = 0;
-////            if (Math.Abs(_IQPtr[0].Real + 0.7165354)<0.00001)
-////                deb = deb;
-////#endif
 #if TESTBOUCLEREPLAYMARC
             cptBoucle--;
             if (cptBoucle == 0)
@@ -193,10 +185,6 @@ namespace SDRSharp.Rtl_433
             if (ptrCtx != IntPtr.Zero && sendDataToRtl433)
             {
                 float coefficient = ClassUtils.GetMaxiPtrComplex(_IQPtr, len);
-//#if DEBUG
-//                if (coefficient != 1f)
-//                    Debug.WriteLine("coefficient!=1-->" + coefficient.ToString());
-//#endif
                 if (coefficient > 0.0)
                 {
                     Thread.BeginCriticalRegion();
@@ -219,74 +207,16 @@ namespace SDRSharp.Rtl_433
                     {
                         Int32 lenEnd = (NativeMethods.SIZE_BUFFER_MEMO_COMPLEX_IQ - ptrMemoDataForRs433)/2;
                         ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, ptrMemoDataForRs433, lenEnd);
-
-                        ////for (int p = 0;p < lenEnd;p++)
-                        ////{
-                        ////    memoDataIQForRs433[pp++] = _IQPtr[p].Imag;
-                        ////    memoDataIQForRs433[pp++] = _IQPtr[p].Real;
-                        ////}
                         Int32 lenStart = len - lenEnd;
-                        ////for (int p = 0;p < lenStart; p++)
-                        ////{
-                        ////    memoDataIQForRs433[p++] = _IQPtr[p].Imag;
-                        ////    memoDataIQForRs433[p++] = _IQPtr[p].Real;
-                        ////}
                         ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, 0, lenStart);
                     }
                     else
-                        ////for (int p = 0;p < len; p++)
-                        ////{
-                        ////     memoDataIQForRs433[pp++] = _IQPtr[p].Imag;
-                        ////     memoDataIQForRs433[pp++] = _IQPtr[p].Real;
-                        //// }
                         ClassUtils.ComplexToFloatArray(_IQPtr, memoDataIQForRs433, ptrMemoDataForRs433, len2);
-
-#if DEBUG
-//if(ptrMemoDataForRs433>127000*2)
-//                    {
-//                        String message = "";
-//                        for (int i = 0; i < 100; i++)
-//                            message += ($"buffer[{i}]={memoDataIQForRs433[i]}\n");
-
-//                        //panelRtl_433.SetMessage(($"buffer[{900}].Real={buffer[900].Real}  buffer[{900}].Imag={buffer[900].Imag}\n"));
-//                        for (int i = 126800*2; i < 126900*2; i++)
-//                            message += ($"buffer[{i}]={memoDataIQForRs433[i]}\n");
-//                        Debug.WriteLine(message);
-//                    }
-
 #endif
-
-#endif
-                    //Int32 j = 0;
-                    //Int32 i = 0;
-                    //coefficient = (coefficient * 2f) ;  //val for 1
-                    //for (i = 0; i < len; i++)
-                    //{
-                    //    j = i * 2;
-
-                    //    try
-                    //    {
-                    //        dataForRs433[j] = Convert.ToByte(127+memoDataIQForRs433[ptrMemoDataForRs433] * coefficient);
-                    //        dataForRs433[j + 1] = Convert.ToByte(127 + memoDataIQForRs433[ptrMemoDataForRs433 + 1] * coefficient);
-                    //    }
-                    //    catch
-                    //    {
-                    //        dataForRs433[j] = 0;
-                    //        dataForRs433[j + 1] = 0;
-                    //        Debug.WriteLine("classInterface-> " + (127 + memoDataIQForRs433[ptrMemoDataForRs433] * coefficient));
-                    //        Debug.WriteLine("classInterface-> " + (127 + memoDataIQForRs433[ptrMemoDataForRs433 + 1] * coefficient));
-                    //    }
-                    //    ptrMemoDataForRs433 += 2;
-                    //    if (ptrMemoDataForRs433 > maxiBuffer)
-                    //        ptrMemoDataForRs433 = 0;
-                    //    }
-
-
                     for (int j = 0; j < len2;)
                     {
                         try
                         {
-                            //Debug.WriteLine(j+" "+ptrMemoDataForRs433);
                             dataForRs433[j++] = System.Convert.ToByte(ClassConst.FLOATTOBYTE + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * ClassConst.FLOATTOBYTE);
                         }
                         catch
@@ -298,22 +228,9 @@ namespace SDRSharp.Rtl_433
 
                             Debug.WriteLine("classInterface-> " + (ClassConst.FLOATTOBYTE + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * ClassConst.FLOATTOBYTE));
                         }
-               //try
-               //         {
-               //             dataForRs433[j++] = System.Convert.ToByte(127.5f + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * 127.5f);
-               //         }
-               //         catch
-               //         {
-               //             dataForRs433[j++] = 0;
-               //             Debug.WriteLine("classInterface-> " + (127.5f + (memoDataIQForRs433[ptrMemoDataForRs433++] / coefficient) * 127.5f));
-               //         }
-                        //ptrMemoDataForRs433 += 2;
-                            if (ptrMemoDataForRs433 > maxiBuffer)
-                                ptrMemoDataForRs433 = 0;
+                        if (ptrMemoDataForRs433 > maxiBuffer)
+                            ptrMemoDataForRs433 = 0;
                     }
-                    //if (i != len)
-                    //        Debug.WriteLine("  ClassInterfaceWithRtl433->i != len");
-
                     Thread.EndCriticalRegion();
 #if DEBUG
                     stopw.Stop();
@@ -554,7 +471,6 @@ namespace SDRSharp.Rtl_433
                 //util for treatGraph with one parameter
                 List<PointF>[] points = null;
                 double SampleRateDecime = SampleRateDbl / Rtl_433_Processor.decimation;
-
                 points = myClassTraceGraphe.TreatGraph(info, listData, SampleRateDecime, ptrDemod, frequencyLng, out string[] nameGraph, memoDataIQForRs433, ptrMemoDataForRs433, out float[] dataIQForRecord, panelRtl_433);
                 if (points!=null)
                 {

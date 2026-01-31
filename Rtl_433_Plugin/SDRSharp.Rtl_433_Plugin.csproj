@@ -256,7 +256,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug-V1732|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\debug-V1732\</OutputPath>
+    <OutputPath>..\..\..\SDRSharp\SDRSharp_v1732\</OutputPath>
     <DefineConstants>TRACE;DEBUG;TOPMOST noANALYZE noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>pdbonly</DebugType>

@@ -82,8 +82,12 @@ namespace SDRSharp.Rtl_433
         private readonly Int32[] MaxInfoWidth;
         private System.Windows.Forms.ListView listViewListMessages;
         #endregion
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            // vide
+        }
         #region constructor load close form
-         internal FormDevices(ClassFormDevices classParent) : base(100, false)
+        internal FormDevices(ClassFormDevices classParent) : base(100, false)
         {
             InitializeComponent();
             this.SuspendLayout();
@@ -283,7 +287,7 @@ namespace SDRSharp.Rtl_433
             {
                 if (!_dataFrozen)
                 {
-                    plotterDisplayExDevices.Height = 70;
+                    //plotterDisplayExDevices.Height = 70;
                     this.ResumeLayout();
                 }
                 return;
@@ -294,7 +298,6 @@ namespace SDRSharp.Rtl_433
                 if (lpt.Count > 0)
                     MaxXAllData = Math.Max(lpt.Max(point => point.X), MaxXAllData);
             }
- 
             this.SuspendLayout();
             Boolean foundGraph = false;
             for (Int32 i = 0; i < points.Length; i++) 
