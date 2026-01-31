@@ -240,8 +240,8 @@ namespace SDRSharp.Rtl_433
             this.radioButtonFreq43392.Size = new System.Drawing.Size(81, 17);
             this.radioButtonFreq43392.TabIndex = 3;
             this.radioButtonFreq43392.TabStop = true;
-            this.radioButtonFreq43392.Tag = "433920000";
-            this.radioButtonFreq43392.Text = "433.92 Mhz";
+            this.radioButtonFreq43392.Tag = ClassConst.DEFAULTFREQUENCY;
+            this.radioButtonFreq43392.Text = (ClassConst.DEFAULTFREQUENCY/1000000).ToString() + " Mhz";
             this.radioButtonFreq43392.UseVisualStyleBackColor = true;
             // 
             // radioButtonFreq345

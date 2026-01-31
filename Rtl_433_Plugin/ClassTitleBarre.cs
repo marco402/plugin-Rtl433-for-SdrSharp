@@ -30,9 +30,9 @@ namespace SDRSharp.Rtl_433
         private ToolStripMenuItem langMenu ;
 #endif
 #if !ABSTRACTVIRTUALLISTVIEW
-        public BaseFormWithTopMost(int maxMessages = 100, bool firstToTop = false)
+        public BaseFormWithTopMost(int maxMessages = ClassConst.NBMAXMESSAGES, bool firstToTop = false)
 #else
-        public BaseFormWithTopMost(int maxMessages = 100, bool firstToTop = false):base(ClassUtils.BackColor, ClassUtils.ForeColor, ClassUtils.Font, ClassUtils.Cursor)
+        public BaseFormWithTopMost(int maxMessages = ClassConst.NBMAXMESSAGES, bool firstToTop = false):base(ClassUtils.BackColor, ClassUtils.ForeColor, ClassUtils.Font, ClassUtils.Cursor)
 #endif
         {
             this.FormBorderStyle = FormBorderStyle.None;

@@ -58,12 +58,14 @@ namespace SDRSharp.Rtl_433
                 controlPanel = new Rtl_433_Panel(control);
                 //****WARNING****if add control, add to checkBoxEnabledPlugin_CheckedChanged to panel
                 controlPanel.SetDataConv(Utils.GetIntSetting("RTL_433_plugin.DataConv", 1));
-                controlPanel.SetFrequency(Utils.GetLongSetting("RTL_433_plugin.Frequency", 433920000));
-                ClassUtils.MaxDevicesWindows=Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", 100);
-                ClassUtils.MaxDevicesWithGraph=Utils.GetIntSetting("RTL_433_plugin.nbDevicesWithGraph", 100);
-                if (ClassUtils.MaxDevicesWithGraph < 100)
-                    ClassUtils.MaxDevicesWithGraph = 100;
-                ClassUtils.MaxLinesConsole=Utils.GetIntSetting("RTL_433_plugin.maxLinesConsole", 3000);
+                controlPanel.SetFrequency(Utils.GetLongSetting("RTL_433_plugin.Frequency",ClassConst.DEFAULTFREQUENCY));
+                ClassUtils.MaxDevicesWindows=Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", ClassConst.NBMAXDEVICES);
+                if (ClassUtils.MaxDevicesWindows < ClassConst.NBMAXDEVICES)
+                    ClassUtils.MaxDevicesWindows = ClassConst.NBMAXDEVICES;
+                ClassUtils.MaxDevicesWithGraph=Utils.GetIntSetting("RTL_433_plugin.nbDevicesWithGraph", ClassConst.NBMAXMESSAGES);
+                if (ClassUtils.MaxDevicesWithGraph < ClassConst.NBMAXMESSAGES)
+                    ClassUtils.MaxDevicesWithGraph = ClassConst.NBMAXMESSAGES;
+                ClassUtils.MaxLinesConsole=Utils.GetIntSetting("RTL_433_plugin.maxLinesConsole", ClassConst.MAXLINESCONSOLE);
                 //controlPanel.Dock = DockStyle.Left; sans effet //egal version 1920 no docking-->il faut:prefered docking position. where ?
             }
             catch (Exception e)
@@ -85,9 +87,9 @@ namespace SDRSharp.Rtl_433
             {
                 Utils.SaveSetting("RTL_433_plugin.DataConv", controlPanel.GetDataConv());
                 Utils.SaveSetting("RTL_433_plugin.Frequency", controlPanel.GetFrequency());
-                Utils.SaveSetting("RTL_433_plugin.maxDevicesWindows", ClassUtils.MaxDevicesWindows);     //fixe
-                Utils.SaveSetting("RTL_433_plugin.nbDevicesWithGraph", ClassUtils.MaxDevicesWithGraph);  //fixe
-                Utils.SaveSetting("RTL_433_plugin.maxLinesConsole", ClassUtils.MaxLinesConsole);         //fixe
+                //Utils.SaveSetting("RTL_433_plugin.maxDevicesWindows", ClassUtils.MaxDevicesWindows);     //fixe
+                //Utils.SaveSetting("RTL_433_plugin.nbDevicesWithGraph", ClassUtils.MaxDevicesWithGraph);  //fixe
+                Utils.SaveSetting("RTL_433_plugin.maxLinesConsole", ClassUtils.MaxLinesConsole);
                 controlPanel.Stop(true);
             }
         }
