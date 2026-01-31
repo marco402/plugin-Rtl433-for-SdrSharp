@@ -1,14 +1,15 @@
 ﻿#define noTESTLANGUAGE
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
-using System.Globalization;
 using System.Threading;
-using System.Drawing.Drawing2D;
-using System.Diagnostics.Eventing.Reader;
+using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SDRSharp.Rtl_433
 {
@@ -18,6 +19,9 @@ namespace SDRSharp.Rtl_433
     public class BaseFormWithTopMost : Form    //no abstract for designer
 #endif 
     {
+        private const Int32 HEIGHTITLEBARRE= 30;
+        private const Int32 HEIGHBUTTON= 24;
+        private const Int32 MARGIN= 1;
         private Panel titleBar;
         private Label titleLabel;
         private Button btnMin;
@@ -80,7 +84,7 @@ namespace SDRSharp.Rtl_433
             menu.Items.Add(langMenu);
             this.MainMenuStrip = menu;
             this.Controls.Add(menu);
-            menu.Dock = DockStyle.Top;
+            menu.Dock = DockStyle.Bottom;
 #endif
         }
         #region ROUNDANGLES 
@@ -129,7 +133,7 @@ namespace SDRSharp.Rtl_433
             Dock = DockStyle.Fill,
             ColumnCount = 1
             };
-            AddRow(titleBar, SizeType.Absolute, 30f);
+            AddRow(titleBar, SizeType.Absolute, HEIGHTITLEBARRE);
 
             foreach (var row in rows)
                 AddRow(row.control, row.sizeType, row.size);
@@ -141,10 +145,10 @@ namespace SDRSharp.Rtl_433
         // -------------------------------
         private Panel BuildTitleBar()
         {
-
             titleBar = new Panel
             {
-                Height = 30,
+                Height = HEIGHTITLEBARRE,
+                Top=2,
                 Dock = DockStyle.Fill,
                 BackColor = ClassUtils.BackColor,
                 Cursor = ClassUtils.Cursor
@@ -152,7 +156,7 @@ namespace SDRSharp.Rtl_433
             titleLabel = new Label()
             {
                 AutoSize = true,
-                TextAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.TopCenter,
                 Dock = DockStyle.Left,
                 ForeColor = ClassUtils.ForeColor,
                 Font = ClassUtils.Font
@@ -184,6 +188,13 @@ namespace SDRSharp.Rtl_433
         private void BuildButtons()
         {
             btnTopMost = CreateButton("\uF156", ToggleTopMost, -1);
+            btnTopMost.Height = HEIGHBUTTON;
+            btnTopMost.Width = HEIGHBUTTON;
+            btnTopMost.ForeColor = ClassUtils.ForeColor;
+            btnTopMost.BackColor = ClassUtils.BackColor;
+            btnTopMost.FlatStyle = FlatStyle.Flat;
+            btnTopMost.FlatAppearance.BorderSize = 0;
+            btnTopMost.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             var rm = new ResourceManager("SDRSharp.Rtl_433.Properties.Resources", typeof(BaseFormWithTopMost).Assembly);
             string txt = rm.GetString("Tooltip_AlwaysOnTop");
             toolTip = new ToolTip()
@@ -212,9 +223,9 @@ namespace SDRSharp.Rtl_433
             {
                 Text = text,
                 Font = new Font("Segoe MDL2 Assets", 10),
-                Width = 45,
-                Height = 32,
-                FlatStyle = FlatStyle.Flat,
+                Width = HEIGHBUTTON, 
+                Height = HEIGHBUTTON,
+                FlatStyle=FlatStyle.Flat,
                 ForeColor = ClassUtils.ForeColor,
                 BackColor = ClassUtils.BackColor,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
@@ -238,12 +249,11 @@ namespace SDRSharp.Rtl_433
 
         public void PositionButtons()
         {
-            int right = this.Width;
-
-            btnClose.Left = right - 50;
-            btnMax.Left = right - 95;
-            btnMin.Left = right - 140;
-            btnTopMost.Left = right - 185;
+            int right = this.Width-10;
+            btnClose.Left = right - HEIGHBUTTON;
+            btnMax.Left = btnClose.Left - HEIGHBUTTON-2;
+            btnMin.Left = btnMax.Left - HEIGHBUTTON-2;
+            btnTopMost.Left = btnMin.Left - HEIGHBUTTON-2;
         }
 
         // -------------------------------
@@ -411,10 +421,10 @@ namespace SDRSharp.Rtl_433
         }
         private void RebuildBaseUI()
         {
-            //Controls.Clear();--->clear all
-            BuildTitleBar();
-            BuildButtons();
-            PositionButtons();
+            toolTip.SetToolTip(btnTopMost, null);
+            var rm = new ResourceManager("SDRSharp.Rtl_433.Properties.Resources", typeof(BaseFormWithTopMost).Assembly);
+            string txt = rm.GetString("Tooltip_AlwaysOnTop");
+            toolTip.SetToolTip(btnTopMost, txt);
         }
 #endif
     }
