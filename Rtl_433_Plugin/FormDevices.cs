@@ -100,7 +100,7 @@ namespace SDRSharp.Rtl_433
             this.classParent = classParent;
             this.MinimumSize = new System.Drawing.Size(660, 100);   //width=660 else no display end graph why? todo
             this.Size = new System.Drawing.Size(660, 600);
-
+            DisplayWaitMessage();
             listLabelKey = new Dictionary<String, Label>();
             listLabelValue = new Dictionary<String, Label>();
             maxInfoDevices = ClassConst.MAXROWCODE;
@@ -111,8 +111,6 @@ namespace SDRSharp.Rtl_433
             for (Int32 i = 0; i < maxColumns; i++)
                 MaxInfoWidth[i] = 0;
             listRow = new Dictionary<String, Int32>();
-            HideShowAllGraphs(false);
-            DisplayWaitMessage();
             // -------------------------------
             //  toolStripStatusLabelPeriodeCurrent
             // -------------------------------
@@ -134,8 +132,6 @@ namespace SDRSharp.Rtl_433
                 " to directory Recordings if exist else in SdrSharp.exe directory \n" +
                 " You can replay Stereo file with SdrSharp Source=Baseband File player\n";
 
-
-            //this.Width = 540;      //left small in designer else no resize if width<540(if 540 in designer)
             // -------------------------------
             //  memo contexte
             // -------------------------------
@@ -151,7 +147,6 @@ namespace SDRSharp.Rtl_433
             //  plotterDisplayExDevices
             // -------------------------------
             plotterDisplayExDevices.SetAmbiantProperty(this.BackColor, this.ForeColor, this.Font);
-
             // -------------------------------
             //  LIST VIEW MESSAGES
             // -------------------------------
@@ -163,17 +158,17 @@ namespace SDRSharp.Rtl_433
             listViewListMessages.Cursor = this.Cursor;
             this.listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewListMessages_RetrieveVirtualItem);
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
-
             // -------------------------------
             //  LAYOUT CONTENEUR
             // -------------------------------
             //row 0 title barre
-            //row 1 graph
+            //row 1 graph via GraphCell for message display when no data
             //row 2 messages
+            //sow 3 statusStripDevices
             InitLayout(
-            (plotterDisplayExDevices, SizeType.Percent, 65f),
-            (listViewListMessages, SizeType.Percent, 35f),
-            (statusStripDevices, SizeType.Absolute, 20f)
+                (plotterDisplayExDevices, SizeType.Percent, 65f, "No data for the graph"),
+            (listViewListMessages, SizeType.Percent, 35f,null),
+            (statusStripDevices, SizeType.Absolute, 20f,null)
             );
             this.ResumeLayout(true);
         }
@@ -185,11 +180,13 @@ namespace SDRSharp.Rtl_433
                 Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top,
                 AutoSize = true
             };
+            labelWaitMessage.Dock = DockStyle.Fill;
             labelWaitMessage.Font = this.Font;
             labelWaitMessage.BackColor = this.BackColor;
+            labelWaitMessage.TextAlign = ContentAlignment.MiddleCenter;
             labelWaitMessage.ForeColor = this.ForeColor;
-            labelWaitMessage.Text = $"Wait to receive new data \n max devices with graph: {ClassUtils.MaxDevicesWithGraph}\n You can click on display curves" +
-                $" \n or change nbDevicesWithGraph in exe.config \n or sample rate highest for memory.";
+            labelWaitMessage.Text = $"Wait to receive new data \n ";
+            //plotterDisplayExDevices.BringToFront();
         }
         private Boolean closeByProgram = false;
         internal void CloseByProgram()
@@ -229,20 +226,20 @@ namespace SDRSharp.Rtl_433
             toolStripSplitLabelRecordOneShoot.ForeColor = memoForeColortoolStripSplitLabelRecordOneShoot;
             toolStripSplitLabelRecordOneShoot.Text = memoTexttoolStripSplitLabelRecordOneShoot;
         }
-        internal void HideShowAllGraphs(Boolean visible)
-        {
-            this.SuspendLayout();
-            if (visible)
-            {
-                plotterDisplayExDevices.Visible = true;
-            }
-            else
-            {
-                plotterDisplayExDevices.Visible = false;
-            }
-            _displayGraph = visible;  //no call property
-            this.ResumeLayout(true);
-        }
+        //internal void HideShowAllGraphs(Boolean visible)
+        //{
+        //    this.SuspendLayout();
+        //    if (visible)
+        //    {
+        //        plotterDisplayExDevices.Visible = true;
+        //    }
+        //    else
+        //    {
+        //        plotterDisplayExDevices.Visible = false;
+        //    }
+        //    _displayGraph = visible;  //no call property
+        //    this.ResumeLayout(true);
+        //}
         internal float[] miniY = { 0, 0, 0, 0, 0 };
         internal float[] maxiY = { 1, 1, 1, 1, 1 };
         internal void AddGraph(List<PointF> tabPoints, String nameGraph, float MaxXAllData)
@@ -250,7 +247,7 @@ namespace SDRSharp.Rtl_433
             this.SuspendLayout();
             if (NumGraphs == 0)
             {
-                labelWaitMessage.Dispose();  //     Visible = false;
+                //labelWaitMessage.Dispose();  //     Visible = false;
                 plotterDisplayExDevices.Smoothing = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
                 plotterDisplayExDevices.DataSources.Clear();
                 plotterDisplayExDevices.PanelLayout = PlotterGraphPaneEx.LayoutMode.VerticalArranged;  //only mode with modified Graphlib
@@ -287,11 +284,16 @@ namespace SDRSharp.Rtl_433
             {
                 if (!_dataFrozen)
                 {
-                    //plotterDisplayExDevices.Height = 70;
+                    plotterDisplayExDevices.Visible = false;
                     this.ResumeLayout();
                 }
                 return;
             }
+            if (plotterDisplayExDevices.Visible == false)
+                plotterDisplayExDevices.Visible = true;
+            plotterDisplayExDevices.Visible = true;
+
+
             float MaxXAllData = float.MinValue;
             foreach (List<PointF> lpt in points)
             {
@@ -355,15 +357,7 @@ namespace SDRSharp.Rtl_433
 
             }
         }
-        internal Boolean DisplayGraph
-        {
-            get { return _displayGraph; }
-            set
-            {
-                _displayGraph = value;
-                HideShowAllGraphs(value);
-            }
-        }
+
         #endregion
         #region privates functions
         private void endSetInfoDevice()
@@ -472,7 +466,7 @@ namespace SDRSharp.Rtl_433
                 Debug.WriteLine(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)");
             }
         }
-        private Boolean _displayGraph = false;
+        //private Boolean _displayGraph = false;
         private String RenderXLabel(Int32 value)
         {
             if (value > 1000000)

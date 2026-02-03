@@ -21,23 +21,23 @@ namespace SDRSharp.Rtl_433
         private Dictionary<String, FormDevices> listformDevice;
         private List<String> listNamesToRecord;
         private List<String> listNamesAlreadyRecorded;
+#if TESTGRAPH
+        private Boolean test = false;
+#endif
         internal void TreatFormDevices(Boolean sourceIsFile,List<PointF>[] points,String[] nameGraph, float[] dataIQForRecord, Int32 sampleRate, ISharpControl control, String frequencyStr,String deviceName, Dictionary<String, String> listData)
         {
             if (!listformDevice.ContainsKey(deviceName))
             {
-                if (listformDevice.Count > ClassUtils.MaxDevicesWindows - 1)
-                    return;
+                //if (listformDevice.Count > ClassUtils.MaxDevicesWindows - 1)
+                //    return;
                 listformDevice.Add(deviceName, new FormDevices(this));
-                if (listformDevice.Count < ClassUtils.MaxDevicesWithGraph)
-                    listformDevice[deviceName].DisplayGraph = true;
                 listformDevice[deviceName].Text = deviceName;
                 listformDevice[deviceName].ResetLabelRecord();  //after le load for memo...
                                                                 //if (listformDevice.Count < _nbDevicesWithGraph
                 listformDevice[deviceName].Show();
             }
             listformDevice[deviceName].SetInfoDevice(listData);
-            if ((listformDevice[deviceName].DisplayGraph) && (points!=null))
-                listformDevice[deviceName].SetDataGraph(points, nameGraph);
+            listformDevice[deviceName].SetDataGraph(points, nameGraph);
 #if DEBUG
             Boolean recordAllOnce = true;
 #else

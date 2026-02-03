@@ -500,8 +500,8 @@ namespace SDRSharp.Rtl_433
             return sampleRate;
         }
         //init by RTL_433_Plugin when start SDRSharp
-        internal static Int32 MaxDevicesWindows { get; set; }
-        internal static Int32 MaxDevicesWithGraph { get; set; }
+        //internal static Int32 MaxDevicesWindows { get; set; }
+        //internal static Int32 MaxDevicesWithGraph { get; set; }
         internal static Int32 MaxLinesConsole { get; set; }
 //init by checkBox enabled plugin if change theme
         internal static Color BackColor { get; set; }

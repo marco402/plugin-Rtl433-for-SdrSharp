@@ -27,8 +27,8 @@ namespace SDRSharp.Rtl_433
         {
             if (!listFormDeviceListMessages.ContainsKey(deviceName))
             {
-                if (listFormDeviceListMessages.Count > ClassUtils.MaxDevicesWindows - 1)
-                    return;
+                //if (listFormDeviceListMessages.Count > ClassUtils.MaxDevicesWindows - 1)
+                //    return;
                 listFormDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, deviceName)); //+2 for debug
                 listFormDeviceListMessages[deviceName].Text = deviceName;
                 listFormDeviceListMessages[deviceName].Visible = true;

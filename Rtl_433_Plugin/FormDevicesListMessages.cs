@@ -46,8 +46,8 @@ namespace SDRSharp.Rtl_433
             //  THIS FORM
             // -------------------------------
             this.classParent = classParent;
-            #if !ABSTRACTVIRTUALLISTVIEW
-                this.maxMessages = ClassUtils.MaxDevicesWindows;
+#if !ABSTRACTVIRTUALLISTVIEW
+            this.maxMessages = 1000;  // ClassUtils.MaxDevicesWindows;
             #endif
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewListMessages.VirtualListSize = nbMessage;
 
@@ -74,8 +74,8 @@ namespace SDRSharp.Rtl_433
             //  LAYOUT CONTENEUR
             // -------------------------------
             InitLayout(
-            (listViewListMessages, SizeType.Percent, 100f),
-            (statusStripExport, SizeType.Absolute, 20f)
+            (listViewListMessages, SizeType.Percent, 100f,null),
+            (statusStripExport, SizeType.Absolute, 20f,null)
             );
             // -------------------------------
             //  STATUS BARRE

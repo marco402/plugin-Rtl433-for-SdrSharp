@@ -59,12 +59,9 @@ namespace SDRSharp.Rtl_433
                 //****WARNING****if add control, add to checkBoxEnabledPlugin_CheckedChanged to panel
                 controlPanel.SetDataConv(Utils.GetIntSetting("RTL_433_plugin.DataConv", 1));
                 controlPanel.SetFrequency(Utils.GetLongSetting("RTL_433_plugin.Frequency",ClassConst.DEFAULTFREQUENCY));
-                ClassUtils.MaxDevicesWindows=Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", ClassConst.NBMAXDEVICES);
-                if (ClassUtils.MaxDevicesWindows < ClassConst.NBMAXDEVICES)
-                    ClassUtils.MaxDevicesWindows = ClassConst.NBMAXDEVICES;
-                ClassUtils.MaxDevicesWithGraph=Utils.GetIntSetting("RTL_433_plugin.nbDevicesWithGraph", ClassConst.NBMAXMESSAGES);
-                if (ClassUtils.MaxDevicesWithGraph < ClassConst.NBMAXMESSAGES)
-                    ClassUtils.MaxDevicesWithGraph = ClassConst.NBMAXMESSAGES;
+                //ClassUtils.MaxDevicesWindows=Utils.GetIntSetting("RTL_433_plugin.maxDevicesWindows", ClassConst.NBMAXDEVICES);
+                //if (ClassUtils.MaxDevicesWindows < ClassConst.NBMAXDEVICES)
+                    //ClassUtils.MaxDevicesWindows = ClassConst.NBMAXDEVICES;
                 ClassUtils.MaxLinesConsole=Utils.GetIntSetting("RTL_433_plugin.maxLinesConsole", ClassConst.MAXLINESCONSOLE);
                 //controlPanel.Dock = DockStyle.Left; sans effet //egal version 1920 no docking-->il faut:prefered docking position. where ?
             }
@@ -82,13 +79,10 @@ namespace SDRSharp.Rtl_433
  
         public void Close()    //ISharpPlugin  call by SDRSharp.MainForm
         {
-            //Console.WriteLine("Close plugin");
             if (controlPanel is Rtl_433_Panel)
             {
                 Utils.SaveSetting("RTL_433_plugin.DataConv", controlPanel.GetDataConv());
                 Utils.SaveSetting("RTL_433_plugin.Frequency", controlPanel.GetFrequency());
-                //Utils.SaveSetting("RTL_433_plugin.maxDevicesWindows", ClassUtils.MaxDevicesWindows);     //fixe
-                //Utils.SaveSetting("RTL_433_plugin.nbDevicesWithGraph", ClassUtils.MaxDevicesWithGraph);  //fixe
                 Utils.SaveSetting("RTL_433_plugin.maxLinesConsole", ClassUtils.MaxLinesConsole);
                 controlPanel.Stop(true);
             }

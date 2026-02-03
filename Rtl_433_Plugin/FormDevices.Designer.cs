@@ -1,4 +1,6 @@
-﻿namespace SDRSharp.Rtl_433
+﻿using System.Windows.Forms;
+
+namespace SDRSharp.Rtl_433
 {
     public partial class FormDevices
     {
@@ -51,6 +53,7 @@
             this.statusStripDevices.Size = new System.Drawing.Size(750, 22);
             this.statusStripDevices.TabIndex = 0;
             this.statusStripDevices.Text = "statusStrip1";
+            this.statusStripDevices.Dock = DockStyle.Bottom;
             // 
             // toolStripStatusLabelNbMessages
             // 
@@ -113,7 +116,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(750, 261);
-            this.Controls.Add(this.statusStripDevices);
             this.Controls.Add(this.plotterDisplayExDevices);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "FormDevices";

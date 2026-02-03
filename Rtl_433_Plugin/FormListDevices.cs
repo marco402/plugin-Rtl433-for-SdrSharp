@@ -64,7 +64,7 @@ namespace SDRSharp.Rtl_433
             //  THIS FORM
             // -------------------------------
             this.myClassFormDevicesList = myClassFormDevicesList;
-            this.maxDevices = ClassUtils.MaxDevicesWindows*10;
+            this.maxDevices = 1000;  // ClassUtils.MaxDevicesWindows*10;
             this.maxColumns = ClassConst.NBMAXCOLUMN;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
             base.TitleText = "Devices received : 0";
@@ -84,7 +84,7 @@ namespace SDRSharp.Rtl_433
             //  LIST VIEW DEVICES LAYOUT CONTENEUR
             // -------------------------------
             InitLayout(
-            (listViewDevices, SizeType.Percent, 100f)
+            (listViewDevices, SizeType.Percent, 100f,null)
             );
 #if !ABSTRACTVIRTUALLISTVIEW
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewDevices, new object[] { true });

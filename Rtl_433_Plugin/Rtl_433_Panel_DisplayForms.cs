@@ -89,7 +89,7 @@ namespace SDRSharp.Rtl_433
                         myClassFormDevices.Start();
                     }
                     myClassFormDevices.TreatFormDevices(sourceIsFile, points, nameGraph,  dataIQForRecord,  sampleRate, control, frequencyStr, deviceName, listData);
-                }
+                 }
                 else if (selectFormListDevice || analyze)
                 {
                             if (myClassFormDevicesList == null && !shownFormDeviceList)

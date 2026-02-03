@@ -438,6 +438,10 @@ namespace SDRSharp.Rtl_433
 #endif
             }
         }
+#if TESTGRAPH
+        private List<PointF>[] meemopoints = null;
+        private Int32 cpt = 0;
+#endif
         internal void CallBackDevices(IntPtr ptrInfosToPlugin)
         {
             if (panelRtl_433 == null)
@@ -470,26 +474,31 @@ namespace SDRSharp.Rtl_433
             {
                 //util for treatGraph with one parameter
                 List<PointF>[] points = null;
+                
                 double SampleRateDecime = SampleRateDbl / Rtl_433_Processor.decimation;
                 points = myClassTraceGraphe.TreatGraph(info, listData, SampleRateDecime, ptrDemod, frequencyLng, out string[] nameGraph, memoDataIQForRs433, ptrMemoDataForRs433, out float[] dataIQForRecord, panelRtl_433);
-                if (points!=null)
-                {
+                //if (points!=null)
+                //{
 #if ANALYZE
                     panelRtl_433.TreatForms(listData);
 #else
-                    panelRtl_433.TreatForms(listData, points,nameGraph, dataIQForRecord, (Int32)SampleRateDecime, FrequencyStr);
+#if TESTGRAPH
+                    if (meemopoints==null)
+                        meemopoints = points;
+                    cpt += 1;
+                    
+                    points = meemopoints;
+                    if (cpt > 10 && cpt < 20)  //test message without data behind graph
+                        points = null;
 #endif
-                }
-                else
-                {
-#if DEBUG
-                    panelRtl_433.SetMessage("(points[0].Count = 0 for " + GetProtocol(listData) + "\n");
+                    panelRtl_433.TreatForms(listData, points, nameGraph, dataIQForRecord, (Int32)SampleRateDecime, FrequencyStr);
 #endif
-                    panelRtl_433.TreatForms(listData);
-                }
+                   // panelRtl_433.TreatForms(listData);
+                //}
             }
             else
             {
+                //panelRtl_433.SetMessage("(points[0].Count = 0 for " + GetProtocol(listData) + "\n");
                 panelRtl_433.TreatForms(listData);
             }
 #if DEBUG

@@ -1,22 +1,20 @@
 ﻿#define noTESTLANGUAGE
 using System;
-using System.Diagnostics.Eventing.Reader;
+using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SDRSharp.Rtl_433
 {
 #if ABSTRACTVIRTUALLISTVIEW
     public class BaseFormWithTopMost : BaseVirtualListForm
 #else
-    public class BaseFormWithTopMost : Form    //no abstract for designer
+    public class BaseFormWithTopMost : BaseForm    //no abstract for designer
 #endif 
     {
         private const Int32 HEIGHTITLEBARRE= 30;
@@ -125,20 +123,44 @@ namespace SDRSharp.Rtl_433
             int attrSize
         );
         #endregion
-        protected TableLayoutPanel layout;
-        protected void InitLayout(params (Control control, SizeType sizeType, float size)[] rows)
+        private  TableLayoutPanel layout;
+        protected void InitLayout(params (Control control, SizeType sizeType, float size, string placeholder)[] rows)
         {
+            GraphCell GC = null;
             layout = new TableLayoutPanel()
             {
-            Dock = DockStyle.Fill,
-            ColumnCount = 1
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 1 + rows.Length
             };
-            AddRow(titleBar, SizeType.Absolute, HEIGHTITLEBARRE);
+            Controls.Add(layout);
+ 
+            // 1) Créer toutes les lignes AVANT d’ajouter les contrôles
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, HEIGHTITLEBARRE));
 
             foreach (var row in rows)
-                AddRow(row.control, row.sizeType, row.size);
+                layout.RowStyles.Add(new RowStyle(row.sizeType, row.size));
+            // 2) Ajouter le titre
+            layout.Controls.Add(titleBar, 0, 0);
 
+            // 3) Ajouter les contrôles
+            int rowIndex = 1;
+            
+            foreach (var row in rows)
+            {
+                Control cell = row.placeholder != null
+                    ?GC=new GraphCell(row.control, row.placeholder)
+                    : row.control;
+                  layout.Controls.Add(cell, 0, rowIndex);
+                layout.RowStyles.Add(new RowStyle(row.sizeType, row.size));
+                rowIndex++;
+            }
+            if (GC != null)
+            {
+                GC.Dock = DockStyle.Fill;
+            }
             Controls.Add(layout);
+            layout.Dock = DockStyle.Fill;
         }
         // -------------------------------
         //  TITLE BAR
@@ -427,6 +449,39 @@ namespace SDRSharp.Rtl_433
             toolTip.SetToolTip(btnTopMost, txt);
         }
 #endif
+    }
+    public class GraphCell : Control
+    {
+        public Control Graph { get; }
+        public string PlaceholderText { get; set; } = "No data for the graph";
+
+        public GraphCell(Control graph, string placeholder = null)
+        {
+            this.Visible = true;
+            Graph = graph;
+            Graph.Parent = this;
+            //Graph.Dock = DockStyle.Fill; //never to GraphCell
+            Graph.AutoSize = false;
+            if (placeholder != null)
+                PlaceholderText = placeholder;
+        }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if (!Graph.Visible)
+            {
+                using var brush = new SolidBrush(Color.Red);
+                var format = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                };
+                    Font drawFont = new Font("Arial", 16);
+
+                e.Graphics.DrawString(PlaceholderText, drawFont, brush, ClientRectangle, format);
+            }
+        }
     }
 }
 
