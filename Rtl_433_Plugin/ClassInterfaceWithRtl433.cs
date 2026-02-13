@@ -438,10 +438,6 @@ namespace SDRSharp.Rtl_433
 #endif
             }
         }
-#if TESTGRAPH
-        private List<PointF>[] meemopoints = null;
-        private Int32 cpt = 0;
-#endif
         internal void CallBackDevices(IntPtr ptrInfosToPlugin)
         {
             if (panelRtl_433 == null)
@@ -482,15 +478,6 @@ namespace SDRSharp.Rtl_433
 #if ANALYZE
                     panelRtl_433.TreatForms(listData);
 #else
-#if TESTGRAPH
-                    if (meemopoints==null)
-                        meemopoints = points;
-                    cpt += 1;
-                    
-                    points = meemopoints;
-                    if (cpt > 10 && cpt < 20)  //test message without data behind graph
-                        points = null;
-#endif
                     panelRtl_433.TreatForms(listData, points, nameGraph, dataIQForRecord, (Int32)SampleRateDecime, FrequencyStr);
 #endif
                    // panelRtl_433.TreatForms(listData);

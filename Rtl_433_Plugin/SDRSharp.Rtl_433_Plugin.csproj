@@ -184,7 +184,7 @@
     <DefineConstants>TRACE;DEBUG;TOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC </DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x32|x64'">
@@ -192,7 +192,7 @@
     <DefineConstants>TRACE;TOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug_V1632|x64'">
@@ -256,26 +256,39 @@
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CI_x86|x86'">
+    <OutputPath>bin\x86\CI_x86\</OutputPath>
+    <DefineConstants>noTOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CI_x64|x64'">
+    <OutputPath>bin\x64\CI_x64\</OutputPath>
+    <DefineConstants>noTOPMOST noTESTSTARTWITHOUTRADIO  noTESTBOUCLEREPLAYMARC</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="GraphLib, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GraphLib, Version=1.5.8.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SDRSharp\bin\Release\GraphLib.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>references\GraphLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="SDRSharp, Version=1.0.0.1632, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.exe</HintPath>
-      <Private>False</Private>
+    <Reference Include="SDRSharp">
+      <HintPath>references\SDRSharp.exe</HintPath>
     </Reference>
     <Reference Include="SDRSharp.Common">
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.Common.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>references\SDRSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SDRSharp.Radio">
-      <HintPath>..\SDRSharp\bin\Debug\SDRSharp.Radio.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>references\SDRSharp.Radio.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -346,7 +359,6 @@
     <Compile Include="WaveFormatChunk.cs" />
     <Compile Include="WaveHeader.cs" />
     <Compile Include="WavRecorder.cs" />
-    <Compile Include="WindowBudgetManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FormDevices.resx">

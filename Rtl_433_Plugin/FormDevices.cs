@@ -91,7 +91,6 @@ namespace SDRSharp.Rtl_433
         {
             InitializeComponent();
             this.SuspendLayout();
-
             NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
             nfi.NumberDecimalDigits = 3;
             // -------------------------------
@@ -166,9 +165,9 @@ namespace SDRSharp.Rtl_433
             //row 2 messages
             //sow 3 statusStripDevices
             InitLayout(
-                (plotterDisplayExDevices, SizeType.Percent, 65f, "No data for the graph"),
-            (listViewListMessages, SizeType.Percent, 35f,null),
-            (statusStripDevices, SizeType.Absolute, 20f,null)
+            (plotterDisplayExDevices, SizeType.Percent, 65f, $"No data for the graph"),
+            (listViewListMessages, SizeType.Percent, 35f, null),
+            (statusStripDevices, SizeType.Absolute, 20f, null)
             );
             this.ResumeLayout(true);
         }
@@ -186,7 +185,6 @@ namespace SDRSharp.Rtl_433
             labelWaitMessage.TextAlign = ContentAlignment.MiddleCenter;
             labelWaitMessage.ForeColor = this.ForeColor;
             labelWaitMessage.Text = $"Wait to receive new data \n ";
-            //plotterDisplayExDevices.BringToFront();
         }
         private Boolean closeByProgram = false;
         internal void CloseByProgram()
@@ -201,12 +199,10 @@ namespace SDRSharp.Rtl_433
         }
         protected override void OnClosed(EventArgs e)
         {
-            plotterDisplayExDevices.Dispose();
             base.OnClosed(e);
         }
         protected override void OnClosing(CancelEventArgs e)
         {
-            plotterDisplayExDevices.Dispose();
             base.OnClosing(e);
         }
         #endregion
@@ -226,20 +222,6 @@ namespace SDRSharp.Rtl_433
             toolStripSplitLabelRecordOneShoot.ForeColor = memoForeColortoolStripSplitLabelRecordOneShoot;
             toolStripSplitLabelRecordOneShoot.Text = memoTexttoolStripSplitLabelRecordOneShoot;
         }
-        //internal void HideShowAllGraphs(Boolean visible)
-        //{
-        //    this.SuspendLayout();
-        //    if (visible)
-        //    {
-        //        plotterDisplayExDevices.Visible = true;
-        //    }
-        //    else
-        //    {
-        //        plotterDisplayExDevices.Visible = false;
-        //    }
-        //    _displayGraph = visible;  //no call property
-        //    this.ResumeLayout(true);
-        //}
         internal float[] miniY = { 0, 0, 0, 0, 0 };
         internal float[] maxiY = { 1, 1, 1, 1, 1 };
         internal void AddGraph(List<PointF> tabPoints, String nameGraph, float MaxXAllData)
@@ -247,7 +229,6 @@ namespace SDRSharp.Rtl_433
             this.SuspendLayout();
             if (NumGraphs == 0)
             {
-                //labelWaitMessage.Dispose();  //     Visible = false;
                 plotterDisplayExDevices.Smoothing = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
                 plotterDisplayExDevices.DataSources.Clear();
                 plotterDisplayExDevices.PanelLayout = PlotterGraphPaneEx.LayoutMode.VerticalArranged;  //only mode with modified Graphlib
@@ -257,7 +238,6 @@ namespace SDRSharp.Rtl_433
             plotterDisplayExDevices.DataSources[NumGraphs].OnRenderXAxisLabel += RenderXLabel;
             plotterDisplayExDevices.DataSources[NumGraphs].Length = (Int32)_nbPointX;
             plotterDisplayExDevices.DataSources[NumGraphs].AutoScaleY = false;  //keep false with modified Graphlib
-            //try {
             if (tabPoints.Count > 0)
             {
                 miniY[NumGraphs] = tabPoints.Min(point => point.Y);
@@ -539,6 +519,15 @@ namespace SDRSharp.Rtl_433
             }
             this.ResumeLayout(true);
         }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        plotterDisplayExDevices.Dispose();
+        //    }
+
+        //    base.Dispose(disposing);
+        //}
         #endregion
     }
 }

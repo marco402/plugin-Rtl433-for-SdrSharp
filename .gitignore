@@ -2,8 +2,11 @@
 .*
 .vs/**
 #/rtl_433_dll/
-#/GraphDisplay/
+GraphDisplay/**
+rtl_433_dll/**
 libusb/**
+Release_x32/**
+CI_x64/**
 test_rtl_433_dll/**
 debug/**
 release/**
@@ -20,6 +23,7 @@ GeneratedFiles/**
 rtl-sdr/**
 packages/**
 !/.gitignore
+!/.github
 !/README.md
 captures/**
 UpgradeLog*

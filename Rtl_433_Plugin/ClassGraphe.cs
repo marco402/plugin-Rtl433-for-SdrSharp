@@ -278,7 +278,7 @@ namespace SDRSharp.Rtl_433
                     try
                     {
                         struct_demod_samp_grab = (NativeMethods.Samp_grab)Marshal.PtrToStructure(struct_demod.ptr_samp_grab, typeof(NativeMethods.Samp_grab));
-                        if (struct_demod_samp_grab.sg_buf != null)
+                        if (struct_demod_samp_grab.sg_buf != IntPtr.Zero)
                         {
 #if DEBUG
                             if (ptrMemoDataForRs433 != struct_demod_samp_grab.sg_index)

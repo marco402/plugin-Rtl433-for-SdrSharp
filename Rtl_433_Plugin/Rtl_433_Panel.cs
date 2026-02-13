@@ -192,6 +192,8 @@ namespace SDRSharp.Rtl_433
             listViewConsoleFull = false;
         }
         #endregion
+        ToolTip ttlabelTimeCycle = new ToolTip();
+        ToolTip ttlabelFrequency = new ToolTip();
         private void InitControls()
         {
 #if DEBUG
@@ -202,7 +204,6 @@ namespace SDRSharp.Rtl_433
             labelTime433.Visible = true;
             labelTimeRtl433.Visible = true;
             labelTimeDisplayWindows.Visible = true;
-            ToolTip ttlabelTimeCycle = new ToolTip();
             ttlabelTimeCycle.SetToolTip(labelTimeCycle, "Red if Time cycle > 1000ms., you risk losing messages(not if source=file)");
 #else
             labelCycleTime.Visible = false;
@@ -225,14 +226,8 @@ namespace SDRSharp.Rtl_433
             buttonStartStop.Text = "Wait";  //normal case
             buttonStartStop.Enabled = false;
 #endif
-            //radioButtonWav.Checked = true;
-            ToolTip ttlabelFrequency = new ToolTip();
             ttlabelFrequency.SetToolTip(labelFrequency, "If Orange:F<300Mhz or F>1000Mhz.");
             ttlabelFrequency.AutoPopDelay = 10000;
-            //ToolTip ttlabelSampleRate = new ToolTip();
-            //ttlabelSampleRate.SetToolTip(labelSampleRate, "If Orange:Sample rate is not at 250000.");
-            //ttlabelSampleRate.AutoPopDelay = 10000;
-
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
             labelSampleRate.Text = control.RFBandwidth.ToString();
@@ -314,16 +309,13 @@ namespace SDRSharp.Rtl_433
                 {
                     buttonStartStop.Text = "Start";
                     buttonStartStop.Enabled = true;
-                    //pluginStarted = false;
                 }
                 checkBoxEnabledPlugin.Text = "Disabled plugin";
                 ClassUtils.BackColor = this.BackColor;
                 ClassUtils.ForeColor = this.ForeColor;
                 ClassUtils.Cursor = this.Cursor;
                 ClassUtils.Font = this.Font;
-                //ClassUtils.Wav = true;
-                //ClassUtils.Raw = false;
-            }
+             }
         }
 #endregion
 #region start

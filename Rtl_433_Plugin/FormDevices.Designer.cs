@@ -19,6 +19,10 @@ namespace SDRSharp.Rtl_433
             {
                 components.Dispose();
             }
+            try {
+            plotterDisplayExDevices.Dispose();
+            }
+            catch { }
             base.Dispose(disposing);
         }
 

@@ -10,9 +10,12 @@
 
  All text above must be included in any redistribution.
   **********************************************************************************/
+#define noTESTGRAPH
 using SDRSharp.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 namespace SDRSharp.Rtl_433
 {
@@ -21,25 +24,32 @@ namespace SDRSharp.Rtl_433
         private Dictionary<String, FormDevices> listformDevice;
         private List<String> listNamesToRecord;
         private List<String> listNamesAlreadyRecorded;
-#if TESTGRAPH
-        private Boolean test = false;
-#endif
         internal void TreatFormDevices(Boolean sourceIsFile,List<PointF>[] points,String[] nameGraph, float[] dataIQForRecord, Int32 sampleRate, ISharpControl control, String frequencyStr,String deviceName, Dictionary<String, String> listData)
         {
-            if (!listformDevice.ContainsKey(deviceName))
+#if TESTGRAPH
+            deviceName += ($"  N {listformDevice.Count}");
+#endif
+        if (!listformDevice.ContainsKey(deviceName))
+        {
+            if (listformDevice.Count >= ClassConst.NBMAXWindows) //plantage a 384 fenêtres graph pb createHandle limit système
+                return;
+            try
             {
-                //if (listformDevice.Count > ClassUtils.MaxDevicesWindows - 1)
-                //    return;
-                listformDevice.Add(deviceName, new FormDevices(this));
-                listformDevice[deviceName].Text = deviceName;
-                listformDevice[deviceName].ResetLabelRecord();  //after le load for memo...
-                                                                //if (listformDevice.Count < _nbDevicesWithGraph
-                listformDevice[deviceName].Show();
+            listformDevice.Add(deviceName, new FormDevices(this));
+            listformDevice[deviceName].Text = deviceName;
+            listformDevice[deviceName].ResetLabelRecord();  //after le load for memo...
+            listformDevice[deviceName].Show();
             }
-            listformDevice[deviceName].SetInfoDevice(listData);
-            listformDevice[deviceName].SetDataGraph(points, nameGraph);
+            catch (Win32Exception ex)
+            {
+                Debug.WriteLine($"...Win32Exception: {ex.Message}, Code={ex.NativeErrorCode}");
+                throw;
+            }
+        }
+        listformDevice[deviceName].SetInfoDevice(listData);
+        listformDevice[deviceName].SetDataGraph(points, nameGraph);
 #if DEBUG
-            Boolean recordAllOnce = true;
+            Boolean recordAllOnce = false;  //put true for record
 #else
             Boolean recordAllOnce = false;
 #endif

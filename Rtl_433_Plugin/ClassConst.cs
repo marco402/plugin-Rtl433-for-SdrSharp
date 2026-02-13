@@ -4,6 +4,7 @@ namespace SDRSharp.Rtl_433
 {
     class ClassConst
     {
+        internal const Int32 NBMAXWindows = 150;
         internal const Int32 NBMAXCOLUMN = 1000;
         internal const Int32 NBMAXMESSAGES = 1000;
         internal const Int32 NBMAXDEVICES = 1000;

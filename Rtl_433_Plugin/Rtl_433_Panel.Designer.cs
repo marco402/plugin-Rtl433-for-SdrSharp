@@ -17,6 +17,19 @@ namespace SDRSharp.Rtl_433
         protected override void Dispose(Boolean disposing)   //
         {
             Debug.WriteLine("designer->FreeRessources");
+            if (disposing)
+            {
+                try { ttlabelFrequency.Dispose();
+                }
+                catch { }
+                try
+                {
+                    ttlabelFrequency.Dispose();
+                }
+                catch { }
+            }
+
+            base.Dispose(disposing);
             FreeRessources();
         }
 

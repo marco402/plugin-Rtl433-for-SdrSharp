@@ -1,5 +1,6 @@
 ﻿#define noTESTLANGUAGE
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -27,6 +28,8 @@ namespace SDRSharp.Rtl_433
         private Button btnClose;
         private Button btnTopMost;
         private bool isTopMost = false;
+  
+
 #if TESTLANGUAGE
         private MenuStrip menu ;
         private ToolStripMenuItem langMenu ;
@@ -148,18 +151,26 @@ namespace SDRSharp.Rtl_433
             
             foreach (var row in rows)
             {
-                Control cell = row.placeholder != null
+                if (row.placeholder != null)
+                {
+                    Control cell = row.placeholder != null
                     ?GC=new GraphCell(row.control, row.placeholder)
                     : row.control;
-                  layout.Controls.Add(cell, 0, rowIndex);
-                layout.RowStyles.Add(new RowStyle(row.sizeType, row.size));
+                    layout.Controls.Add(cell, 0, rowIndex);
+                    layout.RowStyles.Add(new RowStyle(row.sizeType, row.size));
+                }
+                else
+                {
+                    layout.Controls.Add(row.control, 0, rowIndex);
+                    layout.RowStyles.Add(new RowStyle(row.sizeType, row.size));
+                }
                 rowIndex++;
+
             }
             if (GC != null)
             {
                 GC.Dock = DockStyle.Fill;
             }
-            Controls.Add(layout);
             layout.Dock = DockStyle.Fill;
         }
         // -------------------------------
@@ -227,8 +238,7 @@ namespace SDRSharp.Rtl_433
                 AutoPopDelay = 5000
             };
             toolTip.SetToolTip(btnTopMost, txt);
-
-            btnMin = CreateButton("\uE921", () => ShowWindow(this.Handle, SW_MINIMIZE),900);
+             btnMin = CreateButton("\uE921", () => ShowWindow(this.Handle, SW_MINIMIZE),900);
             btnMax = CreateButton("\uE922", ToggleMaximize,901);
             btnClose = CreateButton("\uE8BB", () => this.Close(),905);
             btnClose.MouseEnter += (s, e) => btnClose.BackColor = Color.FromArgb(232, 17, 35);
@@ -238,37 +248,28 @@ namespace SDRSharp.Rtl_433
             titleBar.Controls.Add(btnMax);
             titleBar.Controls.Add(btnClose);
         }
-
-        private Button CreateButton(string text, Action onClick,int codeTxt)
+        private Button CreateButton(string text, Action onClick, int codeTxt)
         {
             var btn = new Button()
             {
                 Text = text,
                 Font = new Font("Segoe MDL2 Assets", 10),
-                Width = HEIGHBUTTON, 
+                Width = HEIGHBUTTON,
                 Height = HEIGHBUTTON,
-                FlatStyle=FlatStyle.Flat,
+                FlatStyle = FlatStyle.Flat,
                 ForeColor = ClassUtils.ForeColor,
                 BackColor = ClassUtils.BackColor,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             btn.FlatAppearance.BorderSize = 0;
 
-            if(codeTxt>=0)
-            {
-                toolTip = new ToolTip()
-                {
-                    ShowAlways = true,
-                    InitialDelay = 300,
-                    ReshowDelay = 100,
-                    AutoPopDelay = 5000
-                };
-            toolTip.SetToolTip(btn, LoadSystemString((uint)codeTxt));
-            }
+            if (codeTxt >= 0 && toolTip != null)
+                toolTip.SetToolTip(btn, LoadSystemString((uint)codeTxt));
+
             btn.Click += (s, e) => onClick();
             return btn;
         }
-
+  
         public void PositionButtons()
         {
             int right = this.Width-10;
@@ -347,7 +348,18 @@ namespace SDRSharp.Rtl_433
                 return;
             }
 
-            base.WndProc(ref m);
+            base.WndProc(ref m);  //plantage ici a 384 fenêtres graph pb createHandle
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                try { toolTip.Dispose(); }
+                catch { }
+            }
+
+            base.Dispose(disposing);
         }
 
         // -------------------------------
@@ -406,11 +418,12 @@ namespace SDRSharp.Rtl_433
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         static extern IntPtr LoadLibrary(string lpFileName);
 
+        private static readonly IntPtr hUser32 = LoadLibrary("user32.dll");
+
         string LoadSystemString(uint id)
         {
-            IntPtr h = LoadLibrary("user32.dll");
             StringBuilder sb = new StringBuilder(256);
-            LoadString(h, id, sb, sb.Capacity);
+            LoadString(hUser32, id, sb, sb.Capacity);
             return sb.ToString();
         }
 
@@ -453,7 +466,7 @@ namespace SDRSharp.Rtl_433
     public class GraphCell : Control
     {
         public Control Graph { get; }
-        public string PlaceholderText { get; set; } = "No data for the graph";
+        public string PlaceholderText { get; set; } = "";  //if here modified code test placeholder
 
         public GraphCell(Control graph, string placeholder = null)
         {
@@ -465,10 +478,10 @@ namespace SDRSharp.Rtl_433
             if (placeholder != null)
                 PlaceholderText = placeholder;
         }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
             if (!Graph.Visible)
             {
                 using var brush = new SolidBrush(Color.Red);
@@ -477,8 +490,7 @@ namespace SDRSharp.Rtl_433
                     Alignment = StringAlignment.Center,
                     LineAlignment = StringAlignment.Center
                 };
-                    Font drawFont = new Font("Arial", 16);
-
+                Font drawFont = new Font("Arial", 16);
                 e.Graphics.DrawString(PlaceholderText, drawFont, brush, ClientRectangle, format);
             }
         }
