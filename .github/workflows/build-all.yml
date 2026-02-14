@@ -15,6 +15,17 @@ jobs:
       ############################################################
       # 1. Déclencher les builds dans les 2 autres dépôts
       ############################################################
+      - name: Trigger RTL_433 build
+        run: |
+          START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "$START_TIME" > rtl433_start_time.txt
+
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
+            -d '{"ref":"rtl_433forSDRSharp"}'
+
       - name: Trigger GraphLib build
         run: |
              RUN=$(curl -s -X POST \
@@ -27,23 +38,7 @@ jobs:
              
              # On enregistre l’ID dans un fichier
              echo "$RUN_ID" > graphlib_run_id.txt
-            
-      - name: Trigger RTL_433 build
-        run: |
-          RUN=$(curl -s -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
-            -d '{"ref":"rtl_433forSDRSharp"}')
-            
-          RUN_ID=$(echo "$RUN" | jq -r '.id')
-          echo "Triggered run ID: $RUN_ID"
-
-          # On enregistre l’ID dans un fichier
-          echo "$RUN_ID" > rtl433_run_id.txt
-      
-         
-
+             
       ############################################################
       # 2. Attendre la fin des builds
       ############################################################
