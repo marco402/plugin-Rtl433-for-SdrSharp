@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
+
   orchestrate:
     runs-on: ubuntu-latest
 
@@ -11,6 +12,9 @@ jobs:
       - name: Checkout plugin repo
         uses: actions/checkout@v4
 
+      ############################################################
+      # 1. Trigger RTL_433 build
+      ############################################################
       - name: Trigger RTL_433 build
         run: |
           START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -22,45 +26,21 @@ jobs:
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"rtl_433forSDRSharp"}'
 
-      ############################################################
-      # 🔍 DEBUG ICI
-      ############################################################
-      - name: DEBUG – Show START_TIME
-        run: cat rtl433_start_time.txt
-
-      - name: DEBUG – List RTL_433 runs (filtered)
-        run: |
-          curl -s \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/runs?branch=rtl_433forSDRSharp&per_page=5" \
-            | jq .
-
-      - name: DEBUG – List ALL runs
-        run: |
-          curl -s \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?per_page=10" \
-            | jq .
-
-      ############################################################
-      # script d’attente
-      ############################################################
       - name: Wait for RTL_433 build
         run: |
           START_TIME=$(cat rtl433_start_time.txt)
-          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp build.yml rtl_433forSDRSharp "$START_TIME"
-
-      - name: Wait for RTL_433 build
-        run: |
-          START_TIME=$(cat rtl433_start_time.txt)
-          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp build.yml rtl_433forSDRSharp "$START_TIME"
+          bash .github/scripts/wait_for_workflow.sh \
+            marco402 \
+            Rtl_433_dll-for-plugin-SdrSharp \
+            build.yml \
+            rtl_433forSDRSharp \
+            "$START_TIME"
 
       ############################################################
-      # 2. Trigger GraphLib build
+      # 2. Trigger GraphLib ONLY IF RTL_433 SUCCEEDED
       ############################################################
       - name: Trigger GraphLib build
+        if: success()
         run: |
           START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "$START_TIME" > graphlib_start_time.txt
@@ -72,22 +52,34 @@ jobs:
             -d '{"ref":"main"}'
 
       - name: Wait for GraphLib build
+        if: success()
         run: |
           START_TIME=$(cat graphlib_start_time.txt)
-          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific build.yml main "$START_TIME"
+          bash .github/scripts/wait_for_workflow.sh \
+            marco402 \
+            GraphLibSpecific \
+            build.yml \
+            main \
+            "$START_TIME"
 
       ############################################################
       # 3. Download artifacts
       ############################################################
       - name: Download RTL_433 artifacts
+        if: success()
         run: |
-          bash .github/scripts/download_artifacts.sh marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x86
-          bash .github/scripts/download_artifacts.sh marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x64
+          bash .github/scripts/download_artifacts.sh \
+            marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x86
+          bash .github/scripts/download_artifacts.sh \
+            marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x64
 
       - name: Download GraphLib artifacts
+        if: success()
         run: |
-          bash .github/scripts/download_artifacts.sh marco402 GraphLibSpecific GraphLib_x86
-          bash .github/scripts/download_artifacts.sh marco402 GraphLibSpecific GraphLib_x64
+          bash .github/scripts/download_artifacts.sh \
+            marco402 GraphLibSpecific GraphLib_x86
+          bash .github/scripts/download_artifacts.sh \
+            marco402 GraphLibSpecific GraphLib_x64
 
   ############################################################
   # 4. Build plugin (Windows)
