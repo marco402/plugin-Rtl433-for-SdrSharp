@@ -21,7 +21,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.PAT }}" \
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
-            -d '{"ref":"master"}'
+            -d '{"ref":"rtl_433forSDRSharp"}'
 
       - name: Trigger GraphLib build
         run: |
