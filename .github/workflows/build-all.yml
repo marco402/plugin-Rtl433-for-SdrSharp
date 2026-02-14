@@ -17,10 +17,10 @@ jobs:
       ############################################################
       - name: Trigger RTL_433 build
         run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
+          RUN=$(curl -s \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/build.yml/runs?branch=rtl_433forSDRSharp&per_page=1")
             -d '{"ref":"rtl_433forSDRSharp"}'
 
       - name: Trigger GraphLib build
