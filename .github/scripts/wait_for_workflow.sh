@@ -8,6 +8,7 @@ START_TIME=$5
 
 echo "Waiting for workflow in $OWNER/$REPO on branch $BRANCH..."
 
+# 1. Attendre que le run apparaisse
 while true; do
   RUNS=$(curl -s \
     -H "Accept: application/vnd.github+json" \
@@ -25,7 +26,7 @@ while true; do
   sleep 5
 done
 
-# Maintenant on attend la fin du run
+# 2. Attendre la fin du run
 while true; do
   RUN=$(curl -s \
     -H "Accept: application/vnd.github+json" \
@@ -38,7 +39,13 @@ while true; do
   echo "Status: $STATUS, Conclusion: $CONCLUSION"
 
   if [[ "$STATUS" == "completed" ]]; then
-    [[ "$CONCLUSION" == "success" ]] && exit 0 || exit 1
+    if [[ "$CONCLUSION" == "success" ]]; then
+      echo "Workflow completed successfully."
+      exit 0
+    else
+      echo "Workflow failed."
+      exit 1
+    fi
   fi
 
   sleep 10
