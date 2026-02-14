@@ -402,11 +402,19 @@
     <None Include="Properties\DataSources\Rtl_433_Panel.datasource" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CI_x64|x64'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <OutputPath>bin\x64\CI_x64\</OutputPath>
+  </PropertyGroup>  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
+ <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CI_x86|x86'">
+  <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+  <OutputPath>bin\x86\CI_x86\</OutputPath>
+</PropertyGroup>
+-->
 </Project>

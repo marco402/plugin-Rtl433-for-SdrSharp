@@ -1,0 +1,104 @@
+name: Build All SDRSharp Components
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-all:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout plugin repo
+        uses: actions/checkout@v4
+
+      ############################################################
+      # 1. Déclencher les builds dans les 2 autres dépôts
+      ############################################################
+      - name: Trigger RTL_433 build
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
+            -d '{"ref":"master"}'
+
+      - name: Trigger GraphLib build
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
+            -d '{"ref":"main"}'
+
+      ############################################################
+      # 2. Attendre la fin des builds
+      ############################################################
+      - name: Wait for RTL_433 build
+        run: |
+          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp "Build RTL_433 DLL"
+
+      - name: Wait for GraphLib build
+        run: |
+          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific "Build GraphLib DLL"
+
+      ############################################################
+      # 3. Télécharger les artefacts via API GitHub
+      ############################################################
+      - name: Download RTL_433 artifacts
+        run: |
+          bash .github/scripts/download_artifacts.sh marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x86
+          bash .github/scripts/download_artifacts.sh marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x64
+
+      - name: Download GraphLib artifacts
+        run: |
+          bash .github/scripts/download_artifacts.sh marco402 GraphLibSpecific GraphLib_x86
+          bash .github/scripts/download_artifacts.sh marco402 GraphLibSpecific GraphLib_x64
+
+      ############################################################
+      # 4. Build plugin (Windows)
+      ############################################################
+      - name: Build plugin
+        runs-on: windows-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - uses: microsoft/setup-msbuild@v2
+
+          - name: Build x86
+            run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x86 /p:Platform=x86
+
+          - name: Build x64
+            run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x64 /p:Platform=x64
+
+      ############################################################
+      # 5. Assemblage final
+      ############################################################
+      - name: Assemble x86
+        run: |
+          mkdir plugin_x86
+          cp Rtl_433_Plugin/bin/x86/CI_x86/*.dll plugin_x86/
+          cp RTL_433_x86/*.dll plugin_x86/
+          cp GraphLib_x86/*.dll plugin_x86/
+
+      - name: Assemble x64
+        run: |
+          mkdir plugin_x64
+          cp Rtl_433_Plugin/bin/x64/CI_x64/*.dll plugin_x64/
+          cp RTL_433_x64/*.dll plugin_x64/
+          cp GraphLib_x64/*.dll plugin_x64/
+
+      ############################################################
+      # 6. ZIP + Upload
+      ############################################################
+      - name: Create ZIPs
+        run: |
+          zip -r plugin_rtl433_x86.zip plugin_x86
+          zip -r plugin_rtl433_x64.zip plugin_x64
+
+      - name: Upload ZIPs
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin_rtl433_packages
+          path: |
+            plugin_rtl433_x86.zip
+            plugin_rtl433_x64.zip
