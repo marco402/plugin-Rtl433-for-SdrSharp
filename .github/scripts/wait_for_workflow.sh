@@ -13,13 +13,12 @@ while true; do
   RUNS=$(curl -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_TOKEN" \
-    "https://api.github.com/repos/$OWNER/$REPO/"actions/workflows/$WORKFLOW_FILE/runs?per_page=5"")
+    "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/$WORKFLOW_FILE/runs?per_page=10")
 
   RUN_ID=$(echo "$RUNS" | jq -r ".workflow_runs[] 
-  | select(.head_branch == \"$BRANCH\") 
-  | select(.created_at > \"$START_TIME\") 
-  | .id" | head -n 1)
-
+    | select(.head_branch == \"$BRANCH\") 
+    | select(.created_at > \"$START_TIME\") 
+    | .id" | head -n 1)
 
   if [[ -n "$RUN_ID" ]]; then
     echo "Detected run ID: $RUN_ID"
@@ -42,6 +41,20 @@ while true; do
 
   echo "Status: $STATUS, Conclusion: $CONCLUSION"
 
+  # Le run est en file d'attente → on attend
+  if [[ "$STATUS" == "queued" ]]; then
+    echo "Run is queued, waiting for runner..."
+    sleep 10
+    continue
+  fi
+
+  # Le run a démarré → on attend la fin
+  if [[ "$STATUS" == "in_progress" ]]; then
+    sleep 10
+    continue
+  fi
+
+  # Le run est terminé
   if [[ "$STATUS" == "completed" ]]; then
     if [[ "$CONCLUSION" == "success" ]]; then
       echo "Workflow completed successfully."
