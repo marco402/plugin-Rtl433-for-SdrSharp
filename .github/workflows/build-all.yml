@@ -48,7 +48,6 @@ jobs:
         run: |
           bash .github/scripts/download_artifacts.sh marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x86
           bash .github/scripts/download_artifacts.sh marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x64
-
       - name: Download GraphLib artifacts
         run: |
           bash .github/scripts/download_artifacts.sh marco402 GraphLibSpecific GraphLib_x86
