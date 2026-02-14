@@ -4,10 +4,28 @@ OWNER=$1
 REPO=$2
 WORKFLOW_FILE=$3
 BRANCH=$4
-RUN_ID=$5
+START_TIME=$5
 
-echo "Waiting for workflow run $RUN_ID in $OWNER/$REPO..."
+echo "Waiting for workflow in $OWNER/$REPO on branch $BRANCH..."
 
+while true; do
+  RUNS=$(curl -s \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer $GITHUB_TOKEN" \
+    "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/$WORKFLOW_FILE/runs?branch=$BRANCH&per_page=5")
+
+  RUN_ID=$(echo "$RUNS" | jq -r ".workflow_runs[] | select(.created_at > \"$START_TIME\") | .id" | head -n 1)
+
+  if [[ -n "$RUN_ID" ]]; then
+    echo "Detected run ID: $RUN_ID"
+    break
+  fi
+
+  echo "Waiting for run to appear..."
+  sleep 5
+done
+
+# Maintenant on attend la fin du run
 while true; do
   RUN=$(curl -s \
     -H "Accept: application/vnd.github+json" \
@@ -20,13 +38,7 @@ while true; do
   echo "Status: $STATUS, Conclusion: $CONCLUSION"
 
   if [[ "$STATUS" == "completed" ]]; then
-    if [[ "$CONCLUSION" == "success" ]]; then
-      echo "Workflow completed successfully."
-      exit 0
-    else
-      echo "Workflow failed."
-      exit 1
-    fi
+    [[ "$CONCLUSION" == "success" ]] && exit 0 || exit 1
   fi
 
   sleep 10
