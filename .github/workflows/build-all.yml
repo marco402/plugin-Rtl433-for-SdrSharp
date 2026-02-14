@@ -17,10 +17,10 @@ jobs:
       ############################################################
       - name: Trigger RTL_433 build
         run: |
-          RUN=$(curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/build.yml/runs?branch=rtl_433forSDRSharp&per_page=1")
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"rtl_433forSDRSharp"}'
 
       - name: Trigger GraphLib build
@@ -36,11 +36,12 @@ jobs:
       ############################################################
       - name: Wait for RTL_433 build
         run: |
-          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp "Build RTL_433 DLL"
+          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp "Build RTL_433 DLL" rtl_433forSDRSharp
 
       - name: Wait for GraphLib build
         run: |
-          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific "Build GraphLib DLL"
+          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific "Build GraphLib DLL" main
+
 
       ############################################################
       # 3. Télécharger les artefacts via API GitHub
