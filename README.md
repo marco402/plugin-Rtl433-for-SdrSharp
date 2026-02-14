@@ -1,5 +1,13 @@
 French version after English version.  
 ## New Version  
+Version 0.25.12.0 February 25, 2026  
+	Added a button to the title bar of the three window types to keep them in the foreground.  
+	For testing purposes, the tooltip for this button is translated into 20 languages.  
+	Deployed the release on GitHub in a "standard" configuration.  
+	The zip files include a SHA key that can be verified with cosign.  
+	I modified the version number; fields 2(year) and 3(month) correspond to the reference RTL_433 version.  
+	The commits of Graphlib and Rtl_433_dll-for-plugin-SdrSharp used in this release are referenced.  
+
 Version 1.5.8.9 January 24, 2026.  
 	Add TopMost button for 3 windows.  
 	For test 20 languages for tooltip TopMost button.  
@@ -292,6 +300,13 @@ Version 1.00  March 2021
     2. - SDRSharp.sln: In addition to the light version, download the original SDRSharp project on Github: https://github.com/SDRSharpR/SDRSharp  
 ________________________________________________________________________________________________________________________________________________  
 ## Nouvelle version  
+Version 0.25.12.0 25 Février 2026.  
+	Ajout d'un bouton à la barre de titre des trois types de fenêtres pour les maintenir au premier plan.  
+	À des fins de test, l'infobulle de ce bouton est traduite en 20 langues.  
+	Déploiement de la version sur GitHub en configuration « standard ».  
+	Les fichiers ZIP contiennent une clé SHA vérifiable avec cosign.
+	Modification du numéro de version : les champs 2(année) et 3(mois) correspondent à la version de référence RTL_433.  
+	Les commits de Graphlib et Rtl_433_dll-for-plugin-SdrSharp utilisés dans cette version sont référencés.  
 Version 1.5.8.9 24 Janvier 2026.  
 	Ajout d'un bouton premier plan pour les 3 fenetres.  
 	Pour test ajout d'une infobulle en 20 langues pour le bouton premier plan.  
