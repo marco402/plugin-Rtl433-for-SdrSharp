@@ -42,15 +42,15 @@ jobs:
       ############################################################
       # 2. Attendre la fin des builds
       ############################################################
-      - name: Wait for GraphLib build
-        run: |
-          RUN_ID=$(cat graphlib_run_id.txt)
-          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific build.yml main $RUN_ID
-     
       - name: Wait for RTL_433 build
         run: |
           RUN_ID=$(cat rtl433_run_id.txt)
           bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp build.yml rtl_433forSDRSharp $RUN_ID
+
+      - name: Wait for GraphLib build
+        run: |
+          RUN_ID=$(cat graphlib_run_id.txt)
+          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific build.yml main $RUN_ID
 
       ############################################################
       # 3. Télécharger les artefacts via API GitHub
