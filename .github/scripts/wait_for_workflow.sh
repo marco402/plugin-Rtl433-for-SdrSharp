@@ -13,9 +13,13 @@ while true; do
   RUNS=$(curl -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_TOKEN" \
-    "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/$WORKFLOW_FILE/runs?branch=$BRANCH&per_page=5")
+    "https://api.github.com/repos/$OWNER/$REPO/"actions/workflows/$WORKFLOW_FILE/runs?per_page=5"")
 
-  RUN_ID=$(echo "$RUNS" | jq -r ".workflow_runs[] | select(.created_at > \"$START_TIME\") | .id" | head -n 1)
+  RUN_ID=$(echo "$RUNS" | jq -r ".workflow_runs[] 
+  | select(.head_branch == \"$BRANCH\") 
+  | select(.created_at > \"$START_TIME\") 
+  | .id" | head -n 1)
+
 
   if [[ -n "$RUN_ID" ]]; then
     echo "Detected run ID: $RUN_ID"
