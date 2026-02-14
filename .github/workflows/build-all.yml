@@ -18,7 +18,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            -H "Authorization: Bearer ${{ secrets.build-all-token }}" \
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"master"}'
 
@@ -26,7 +26,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            -H "Authorization: Bearer ${{ secrets.build-all-token }}" \
             https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
             -d '{"ref":"main"}'
 
@@ -57,18 +57,19 @@ jobs:
       ############################################################
       # 4. Build plugin (Windows)
       ############################################################
-      - name: Build plugin
-        runs-on: windows-latest
-        steps:
-          - uses: actions/checkout@v4
+          build-plugin:
+          runs-on: windows-latest
+          needs: build-all   # dépend du job précédent
+          steps:
+            - uses: actions/checkout@v4
 
-          - uses: microsoft/setup-msbuild@v2
+            - uses: microsoft/setup-msbuild@v2
 
-          - name: Build x86
-            run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x86 /p:Platform=x86
+            - name: Build x86
+              run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x86 /p:Platform=x86
 
-          - name: Build x64
-            run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x64 /p:Platform=x64
+            - name: Build x64
+              run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x64 /p:Platform=x64
 
       ############################################################
       # 5. Assemblage final
