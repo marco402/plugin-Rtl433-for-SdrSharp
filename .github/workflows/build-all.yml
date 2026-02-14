@@ -19,7 +19,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.build-all-tokenT }}" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"master"}'
 
@@ -27,7 +27,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.build-all-token }}" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
             https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
             -d '{"ref":"main"}'
 
