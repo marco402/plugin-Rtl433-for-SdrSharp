@@ -1,0 +1,750 @@
+name: Build All
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version manuelle (a.b.c.d) (laisser vide pour auto-incrément(que d))"
+        required: false
+      #notes:
+      #  description: "Notes de release"
+      #  required: false
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  # ---------------------------------------------------------
+  # build part 1 runs-on: windows-latest
+  # ---------------------------------------------------------
+  build:
+    outputs:
+      VERSION: ${{ steps.set_version.outputs.VERSION }}
+      TAG: ${{ steps.set_tag.outputs.TAG }}
+      #LAST_TAG: ${{ steps.set_last_tag.outputs.LAST_TAG }}
+      NOTES: ${{ steps.changelog.outputs.NOTES }}
+      GRAPHLIB_SHA: ${{ steps.get_graphlib_commit.outputs.GRAPHLIB_SHA }}
+      RTL_433_SHA: ${{ steps.get_rtl_433_commit.outputs.RTL_433_SHA }}
+    runs-on: windows-latest
+    steps:
+      # ---------------------------------------------------------
+      # Checkout
+      # ---------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+           # ---------------------------------------------------------
+      # Read input
+      # ---------------------------------------------------------
+      - name: Read input
+        shell: pwsh
+        run: |
+          if ("${{ github.event.inputs.version }}" -ne "") {
+              echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+              echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+          }
+ 
+      # ---------------------------------------------------------
+      #  notes
+      # ---------------------------------------------------------   
+      #- name:  notes
+      #  id: notes
+      #  shell: pwsh
+      #   run: |
+      #     $notes = "${{ github.event.inputs.notes }}"
+      #    Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+      #    Add-Content -Path $env:GITHUB_ENV -Value $notes
+      #    Add-Content -Path $env:GITHUB_ENV -Value "EOF"
+      # ---------------------------------------------------------
+      # Get latest valid tag
+      # ---------------------------------------------------------          
+      - name: Get latest valid tag
+        shell: pwsh
+        run: |
+          $allTags = git tag --sort=-v:refname
+          $validTags = @($allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' })
+          
+          #Write-Host ("validTags = '{0}'" -f ($validTags -join ", "))
+          #Write-Host ("validTags[0] = '{0}'" -f $validTags[0])
+          
+          if ($validTags.Count -gt 0) {
+              $tag = $validTags[0]
+          } else {
+              $tag = "0.0.0.0"
+          }
+          
+          Write-Host ("LATEST_TAG = '{0}'" -f $tag)
+          
+          # Écriture fiable dans GITHUB_ENV
+          "LAST_TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          #Write-Host "DEBUG: LAST_TAG from env = >>>$env:LAST_TAG<<<"
+
+          #$test=$env:LAST_TAG
+          #Write-Host "DEBUG: LAST_TAG from $test = $test"
+          
+      - name:  TEST LAST_TAG
+        id: test_last_tag
+        shell: pwsh
+        run: |
+          Write-Host "DEBUG: LAST_TAG from env = >>>$env:LAST_TAG<<<"
+          $test=$env:LAST_TAG
+          Write-Host "DEBUG: LAST_TAG from $test = $test"
+      # ---------------------------------------------------------
+      # Export NOTES
+      # ---------------------------------------------------------            
+      - name: Export NOTES
+        id: setnotes
+        shell: pwsh
+        run: echo "::set-output name=NOTES::$env:NOTES"
+
+      # ---------------------------------------------------------
+      # Auto-increment BUILD
+      # ---------------------------------------------------------    
+      - name: Auto-increment BUILD
+        if: ${{ github.event.inputs.version == '' }}
+        shell: pwsh
+        run: |
+          $parts = $env:LAST_TAG.Split(".")
+          $new = "$($parts[0]).$($parts[1]).$($parts[2]).$([int]$parts[3] + 1)"
+          echo "VERSION=$new" >> $env:GITHUB_ENV
+          echo "TAG=$new" >> $env:GITHUB_ENV
+
+      # ---------------------------------------------------------
+      # Set VERSION
+      # ---------------------------------------------------------    
+      - name: Set VERSION
+        id: set_version
+        shell: pwsh
+        run: |
+          $version = "${{ env.TAG }}"
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+
+      # ---------------------------------------------------------
+      # Set TAG
+      # ---------------------------------------------------------  
+      - name: Set TAG
+        id: set_tag
+        shell: pwsh
+        run: |
+          $tag = "${{ env.TAG }}"
+          echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+
+      # ---------------------------------------------------------
+      # Save START_TIME
+      # ---------------------------------------------------------
+      - name: Save START_TIME
+        shell: pwsh
+        run: |
+          $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          echo "START_TIME=$t" >> $env:GITHUB_ENV
+          Write-Host "START_TIME=$t"
+          
+      # ---------------------------------------------------------
+      # Setup .NET
+      # ---------------------------------------------------------
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          
+      # ---------------------------------------------------------
+      # Setup MSBuild
+      # ---------------------------------------------------------         
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+          
+      # ---------------------------------------------------------
+      # Trigger GraphLib build
+      # ---------------------------------------------------------
+      - name: Trigger GraphLib build
+        shell: pwsh
+        run: |
+          $url = "https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches"
+          $body = '{"ref":"main"}'
+    
+          $response = curl.exe -s -o $null -w "%{http_code}" `
+            -X POST `
+            -H "Authorization: Bearer ${{ secrets.PAT }}" `
+            -H "Accept: application/vnd.github+json" `
+            -d $body `
+            $url
+    
+          Write-Host "response='$response'"
+    
+          if ($response -eq "204" -or $null -eq $response) {
+              Write-Host "Workflow GraphLib déclenché avec succès."
+              exit 0
+          }
+    
+          Write-Error "Échec du déclenchement du workflow GraphLib (HTTP $response)"
+          exit 1
+          
+      # ---------------------------------------------------------
+      # Trigger RTL_433 build
+      # ---------------------------------------------------------
+      - name: Trigger RTL_433 build
+        shell: pwsh
+        run: |
+          $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
+          $body = '{"ref":"rtl_433forSDRSharp"}'
+    
+          $response = curl.exe -s -o $null -w "%{http_code}" `
+            -X POST `
+            -H "Authorization: Bearer ${{ secrets.PAT }}" `
+            -H "Accept: application/vnd.github+json" `
+            -d $body `
+            $url
+    
+          Write-Host "response='$response'"
+    
+          if ($response -eq "204" -or $null -eq $response) {
+              Write-Host "Workflow RTL_433 déclenché avec succès."
+              exit 0
+          }
+    
+          Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
+          exit 1
+  
+      # ---------------------------------------------------------
+      # Build plugin x86 (.NET Framework 4.8)
+      # ---------------------------------------------------------
+      - name: Build plugin x86
+        shell: pwsh
+        run: |
+          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
+            /p:Configuration=CI_x86 /p:Platform=x86
+            
+      # ---------------------------------------------------------
+      # Build plugin x64 (.NET Framework 4.8)
+      # ---------------------------------------------------------  
+      - name: Build plugin x64
+        shell: pwsh
+        run: |
+          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
+            /p:Configuration=CI_x64 /p:Platform=x64
+
+      # ---------------------------------------------------------
+      # Debug plugin-Rtl433-for-SdrSharp folder
+      # ---------------------------------------------------------  
+      #- name: Debug plugin-Rtl433-for-SdrSharp folder
+      #  shell: pwsh
+      #  run: |
+      #    Write-Host "Contenu du dossier plugin-Rtl433-for-SdrSharp :"
+      #    Get-ChildItem -Recurse -Path artifacts
+
+      # ---------------------------------------------------------
+      # Wait for GraphLib artifacts
+      # ---------------------------------------------------------
+      - name: Wait for GraphLib artifacts
+        id: wait_graphlib
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{
+              "Accept" = "application/vnd.github+json"
+              "Authorization" = "Bearer $env:GH_TOKEN"
+          }
+
+          $repo = "marco402/GraphLibSpecific"
+          $workflow = "build.yml"
+          $branch = "main"
+          $start = [DateTime]::Parse($env:START_TIME)
+
+          Write-Host "Waiting for GraphLibSpecific workflow created after $start..."
+
+          $targetRun = $null
+
+          # --- Trouver le run déclenché après START_TIME ---
+          while (-not $targetRun) {
+              $runs = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
+                  -Method GET
+
+              $candidates = $runs.workflow_runs |
+                Where-Object {
+                    $_.event -eq "workflow_dispatch" -and
+                    $_.head_branch -eq $branch -and
+                    [DateTime]::Parse($_.created_at) -gt $start
+                } |
+                Sort-Object created_at -Descending
+
+
+              if ($candidates.Count -eq 0) {
+                  Write-Host "No new run yet. Retrying in 10 seconds..."
+                  Start-Sleep -Seconds 10
+                  continue
+              }
+
+              $targetRun = $candidates[0]
+              Write-Host "Tracking run id=$($targetRun.id) created_at=$($targetRun.created_at)"
+          }
+
+          # --- Attendre la fin du workflow ---
+          while ($true) {
+              $run = Invoke-RestMethod -Headers $headers -Uri $targetRun.url -Method GET
+
+              $conc = if ($run.conclusion) { $run.conclusion } else { "<pending>" }
+              Write-Host "Status: $($run.status) - Conclusion: $conc"
+
+              if ($run.status -eq "completed" -and $run.conclusion) {
+                  if ($run.conclusion -eq "success") {
+                      Write-Host "GraphLibSpecific workflow completed successfully."
+                      break
+                  } else {
+                      Write-Error "GraphLibSpecific workflow failed with conclusion: $($run.conclusion)"
+                      exit 1
+                  }
+              }
+
+              Start-Sleep -Seconds 10
+          }
+
+          # --- Attendre que les artifacts soient disponibles ---
+          while ($true) {
+              $arts = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/runs/$($targetRun.id)/artifacts" `
+                  -Method GET
+
+              if ($arts.total_count -ge 1) {
+                  Write-Host "Artifacts are now available."
+                  echo "run_id=$($targetRun.id)" >> $env:GITHUB_OUTPUT
+                  break
+              }
+
+              Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
+              Start-Sleep -Seconds 5
+          }
+
+      # ---------------------------------------------------------
+      # Debug WAIT GraphLib
+      # ---------------------------------------------------------                   
+      #- name: Debug WAIT GraphLib
+      #  shell: pwsh
+      #  run: |
+      #    Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
+      #    
+      # ---------------------------------------------------------
+      # Download GraphLib artifacts
+      # ---------------------------------------------------------
+      - name: Download GraphLib artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          gh run download $env:RUN_ID_GRAPHLIB `
+            --repo marco402/GraphLibSpecific `
+            --dir graphlib
+      
+          Write-Host "Artefacts GraphLib téléchargés."
+                 
+      # ---------------------------------------------------------
+      # Get GraphLib commit
+      # ---------------------------------------------------------
+      - name: Get GraphLib commit
+        id: get_graphlib_commit
+        env:
+            GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $sha = (gh api repos/marco402/GraphLibSpecific/commits/main --jq ".sha")
+          echo "GRAPHLIB_SHA=$sha" >> $env:GITHUB_OUTPUT
+          #Write-Host "DEBUG: GRAPHLIB_SHA = $sha"
+      # ---------------------------------------------------------
+      # Debug GraphLib folder
+      # ---------------------------------------------------------  
+      #- name: Debug GraphLib folder
+      #  shell: pwsh
+      #  run: |
+      #    Write-Host "Contenu du dossier GraphLib :"
+      #    Get-ChildItem -Recurse -Path GraphLib
+      #    
+      # ---------------------------------------------------------
+      # Wait for RTL_433 artifacts
+      # ---------------------------------------------------------
+      - name: Wait for RTL_433 artifacts
+        id: wait_rtl433
+
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{
+              "Accept" = "application/vnd.github+json"
+              "Authorization" = "Bearer $env:GH_TOKEN"
+          }
+
+          $repo = "marco402/Rtl_433_dll-for-plugin-SdrSharp"
+          $workflow = "build.yml"
+          $branch = "rtl_433forSDRSharp"
+          $start = [DateTime]::Parse($env:START_TIME)
+
+          Write-Host "Waiting for RTL_433 workflow created after $start..."
+
+          $targetRun = $null
+
+          # --- Trouver le run déclenché après START_TIME ---
+          while (-not $targetRun) {
+              $runs = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
+                  -Method GET
+
+              $candidates = $runs.workflow_runs |
+                Where-Object {
+                    $_.event -eq "workflow_dispatch" -and
+                    $_.head_branch -eq $branch -and
+                    [DateTime]::Parse($_.created_at) -gt $start
+                } |
+                Sort-Object created_at -Descending
+
+              if ($candidates.Count -eq 0) {
+                  Write-Host "No new run yet. Retrying in 10 seconds..."
+                  Start-Sleep -Seconds 10
+                  continue
+              }
+
+              $targetRun = $candidates[0]
+              Write-Host "Tracking run id=$($targetRun.id) created_at=$($targetRun.created_at)"
+          }
+
+          # --- Attendre la fin du workflow ---
+          while ($true) {
+              $run = Invoke-RestMethod -Headers $headers -Uri $targetRun.url -Method GET
+
+              $conc = if ($run.conclusion) { $run.conclusion } else { "<pending>" }
+              Write-Host "Status: $($run.status) - Conclusion: $conc"
+
+              if ($run.status -eq "completed" -and $run.conclusion) {
+                  if ($run.conclusion -eq "success") {
+                      Write-Host "RTL_433 workflow completed successfully."
+                      break
+                  } else {
+                      Write-Error "RTL_433 workflow failed with conclusion: $($run.conclusion)"
+                      exit 1
+                  }
+              }
+
+              Start-Sleep -Seconds 10
+          }
+
+          # --- Attendre que les artifacts soient disponibles ---
+          while ($true) {
+              $arts = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/runs/$($targetRun.id)/artifacts" `
+                  -Method GET
+
+              if ($arts.total_count -ge 1) {
+                  Write-Host "Artifacts are now available."
+                  break
+              }
+
+              Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
+              Start-Sleep -Seconds 5
+          }
+   
+      # ---------------------------------------------------------
+      # Debug WAIT RTL_433
+      # ---------------------------------------------------------  
+      #- name: Debug WAIT RTL_433
+      #  shell: pwsh
+      #  run: |
+      #    Write-Host "WAIT returned run_id = ${{ steps.wait_rtl433.outputs.run_id }}"
+   
+      # ---------------------------------------------------------
+      # Download RTL_433 artifacts
+      # ---------------------------------------------------------
+      - name: Download RTL_433 artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          gh run download $env:RUN_ID `
+            --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
+            --dir artifacts
+  
+          Write-Host "Artefacts RTL_433 téléchargés."
+          
+      # ---------------------------------------------------------
+      # Get RTL_433 DLL commit
+      # ---------------------------------------------------------           
+      - name: Get RTL_433 commit
+        id: get_rtl_433_commit
+        shell: pwsh
+        env:
+            GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $sha = (gh api repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/commits/rtl_433forSDRSharp --jq ".sha")
+          echo "RTL_433_SHA=$sha" >> $env:GITHUB_OUTPUT 
+          #Write-Host "DEBUG: RTL_433_SHA = $sha"
+      # ---------------------------------------------------------
+      # Debug Rtl_433_Plugin folder
+      # ---------------------------------------------------------  
+      #- name: Debug Rtl_433_Plugin folder
+      #  shell: pwsh
+      #  run: |
+      #    Write-Host "Contenu du dossier Rtl_433_Plugin :"
+      #    Get-ChildItem -Recurse -Path Rtl_433_Plugin
+
+      # ---------------------------------------------------------
+      # Generate CHANGELOG
+      # ---------------------------------------------------------  
+      - name: Generate CHANGELOG
+        id: changelog
+        shell: pwsh
+        run: |
+          if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
+              # Première release : on prend tout l’historique
+              $pluginLog = git log --pretty=format:"* %s"
+          }
+          else {
+              # Releases suivantes : diff entre les deux tags
+              $pluginLog = git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"* %s"
+          }
+
+          $full = @"
+          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+               
+          ###  GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+          Commit: ${{ env.GRAPHLIB_VERSION }}
+          
+          ###  RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+          Commit: ${{ env.RTL433_VERSION }}
+          "@
+      
+          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
+          $full >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+  
+      # ---------------------------------------------------------
+      # Build plugin ZIPs
+      # --------------------------------------------------------
+      - name: Build plugin ZIPs
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
+          New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
+
+          Copy-Item "Rtl_433_Plugin/bin/x86/CI_x86/SDRSharp.Rtl_433.dll" "out_x86/"
+          Copy-Item "Rtl_433_Plugin/bin/x64/CI_x64/SDRSharp.Rtl_433.dll" "out_x64/"
+ 
+          Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
+          Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
+
+          Copy-Item "graphlib/CI_x86/GraphLib.dll" "out_x86/" -Force
+          Copy-Item "graphlib/CI_x64/GraphLib.dll" "out_x64/" -Force
+
+          Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
+          Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+
+      # ---------------------------------------------------------
+      # Upload plugin ZIPs artifact
+      # ---------------------------------------------------------    
+      - name: Upload plugin ZIPs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-zips
+          path: |
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
+
+  # ---------------------------------------------------------
+  # sign_and_release: part 2 runs-on: ubuntu-latest
+  # ---------------------------------------------------------
+  sign_and_release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    env:
+      VERSION: ${{ needs.build.outputs.VERSION }}
+      TAG: ${{ needs.build.outputs.TAG }}
+      NOTES: ${{ needs.build.outputs.NOTES }}
+      GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
+      RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
+      #LAST_TAG: ${{ needs.build_plugin.outputs.LAST_TAG }}
+      GRAPHLIB_SHA: ${{ needs.build.outputs.GRAPHLIB_SHA }}
+      RTL_433_SHA: ${{ needs.build.outputs.RTL_433_SHA }}
+
+    steps:
+      # ---------------------------------------------------------
+      # Download plugin ZIPs
+      # ---------------------------------------------------------  
+      - name: Download plugin ZIPs
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-zips
+          
+      # ---------------------------------------------------------
+      # Install Cosign v2.2.4
+      # ---------------------------------------------------------  
+      - name: Install Cosign v2.2.4
+        run: |
+          sudo curl -sSL https://github.com/sigstore/cosign/releases/download/v2.2.4/cosign-linux-amd64 \
+            -o /usr/bin/cosign
+          sudo chmod +x /usr/bin/cosign
+
+      # ---------------------------------------------------------
+      # Check Cosign version
+      # ---------------------------------------------------------            
+      #- name: Check Cosign version
+      #  run: cosign version
+
+      # ---------------------------------------------------------
+      # Debug VERSION
+      # ---------------------------------------------------------          
+      #- name: Debug VERSION
+      #  shell: pwsh
+      #  run: |
+      #    Write-Host "TAG = $env:TAG"
+      #    Write-Host "VERSION = $env:VERSION"
+          
+      # ---------------------------------------------------------
+      # Request OIDC token
+      # ---------------------------------------------------------            
+      - name: Request OIDC token
+        id: oidc
+        shell: pwsh
+        run: |
+          $token = curl -H "Authorization: bearer $env:ACTIONS_ID_TOKEN_REQUEST_TOKEN" `
+            "$env:ACTIONS_ID_TOKEN_REQUEST_URL&audience=sigstore" | jq -r '.value'
+          echo "TOKEN=$token" >> $env:GITHUB_OUTPUT
+
+      # ---------------------------------------------------------
+      # Sign ZIP files with Cosign (keyless)
+      # ---------------------------------------------------------            
+      - name: Sign ZIP files with Cosign (keyless)
+        shell: pwsh
+        run: |
+          Get-ChildItem -Filter *.zip | ForEach-Object {
+            $file = $_.FullName
+            Write-Host "Signing $file"
+            cosign sign-blob `
+              --yes `
+              --output-signature "$file.sig" `
+              --output-certificate "$file.cert" `
+              $file `
+              --bundle "$file.bundle"
+          }
+          
+      # ---------------------------------------------------------
+      # Generate SHA256SUMS
+      # ---------------------------------------------------------  
+      - name: Generate SHA256SUMS
+        run: |
+          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
+          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
+          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
+          
+      # ---------------------------------------------------------
+      # Generate VERIFY.txt
+      # ---------------------------------------------------------  
+      - name: Generate VERIFY.txt
+        shell: bash
+        run: |
+          TAG="${{ env.TAG }}"
+          FILE="plugin_rtl433_x64-${TAG}.zip"
+      
+          echo "===========================================================" > VERIFY.txt
+          echo " File Integrity and Authenticity Verification (Windows)" >> VERIFY.txt
+          echo "===========================================================" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "This file explains how to verify that the archive" >> VERIFY.txt
+          echo "\"${FILE}\" is authentic and has not been modified after being published." >> VERIFY.txt
+          echo "" >> VERIFY.txt
+      
+          echo "-----------------------------------------------------------" >> VERIFY.txt
+          echo " 1) Verify file integrity (SHA-256) you can change x64 for x86" >> VERIFY.txt
+          echo "-----------------------------------------------------------" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "Open PowerShell in the folder containing the ZIP file and run:" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "    CertUtil -hashfile ${FILE} SHA256" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "Compare the output with the value inside the \"SHA256SUMS\"" >> VERIFY.txt
+          echo "file included in this release. Both values must match." >> VERIFY.txt
+          echo "" >> VERIFY.txt
+      
+          echo "-----------------------------------------------------------" >> VERIFY.txt
+          echo " 2) Installing Cosign on Windows" >> VERIFY.txt
+          echo "-----------------------------------------------------------" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo " - Download cosign-windows-amd64.exe from:" >> VERIFY.txt
+          echo "     https://github.com/sigstore/cosign/releases" >> VERIFY.txt
+          echo " - Rename cosign-windows-amd64.exe to cosign.exe" >> VERIFY.txt
+          echo " - Place it in the folder with the downloaded files" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+      
+          echo "-----------------------------------------------------------" >> VERIFY.txt
+          echo " 3) Verify authenticity (Cosign keyless signature) you can change x64 for x86" >> VERIFY.txt
+          echo "-----------------------------------------------------------" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "Download the following files from the release:" >> VERIFY.txt
+          echo " - ${FILE}" >> VERIFY.txt
+          echo " - ${FILE}.sig" >> VERIFY.txt
+          echo " - ${FILE}.cert" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+      
+          echo "Then run the following command in PowerShell:" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "    cosign verify-blob \\" >> VERIFY.txt
+          echo "      --certificate ${FILE}.cert  \\" >> VERIFY.txt
+          echo "      --signature ${FILE}.sig  \\" >> VERIFY.txt
+          echo "      --certificate-identity-regexp \"github.com/marco402/plugin-Rtl433-for-SdrSharp\"  \\" >> VERIFY.txt
+          echo "      --certificate-oidc-issuer \"https://token.actions.githubusercontent.com\"  \\" >> VERIFY.txt
+          echo "      ${FILE}" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+      
+          echo "If everything is correct, Cosign will display:" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "    Verified OK" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "===========================================================" >> VERIFY.txt
+
+      # ---------------------------------------------------------
+      # Create GitHub Release
+      # ---------------------------------------------------------  
+      - name: Build release notes
+        shell: pwsh
+        run: |
+          $notes = @'
+          ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
+          
+          #### External dependencies
+          - RTL_433_dll-for-plugin-SdrSharp
+            Commit: ${{ env.RTL_433_SHA }}
+            
+          - GraphLibSpecific
+            Commit: ${{ env.GRAPHLIB_SHA }}
+          ### Changelog
+          ${{ env.CHANGELOG }}
+          '@
+
+          "NOTES<<EOF" >> $env:GITHUB_ENV
+          $notes >> $env:GITHUB_ENV
+          "EOF" >> $env:GITHUB_ENV
+
+      # ---------------------------------------------------------
+      #  Create GitHub Release
+      # ---------------------------------------------------------  
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}
+          name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
+          body: ${{ env.NOTES }}
+          files: |
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
+            plugin_rtl433_x86-${{ env.VERSION }}.zip.sig
+            plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
+            plugin_rtl433_x86-${{ env.VERSION }}.zip.cert
+            plugin_rtl433_x64-${{ env.VERSION }}.zip.cert
+            plugin_rtl433_x86-${{ env.VERSION }}.zip.bundle
+            plugin_rtl433_x64-${{ env.VERSION }}.zip.bundle
+            SHA256SUMS
+            VERIFY.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
