@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       ############################################################
-      # 1. Déclencher les builds dans les 2 autres dépôts
+      # 1. Trigger RTL_433 build
       ############################################################
       - name: Trigger RTL_433 build
         run: |
@@ -26,34 +26,32 @@ jobs:
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"rtl_433forSDRSharp"}'
 
-      - name: Trigger GraphLib build
-        run: |
-             RUN=$(curl -s -X POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${{ secrets.PAT }}" \
-                https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
-               -d '{"ref":"main"}')
-             RUN_ID=$(echo "$RUN" | jq -r '.id')
-             echo "Triggered GraphLib run ID: $RUN_ID"
-             
-             # On enregistre l’ID dans un fichier
-             echo "$RUN_ID" > graphlib_run_id.txt
-             
-      ############################################################
-      # 2. Attendre la fin des builds
-      ############################################################
       - name: Wait for RTL_433 build
         run: |
-          RUN_ID=$(cat rtl433_run_id.txt)
-          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp build.yml rtl_433forSDRSharp $RUN_ID
+          START_TIME=$(cat rtl433_start_time.txt)
+          bash .github/scripts/wait_for_workflow.sh marco402 Rtl_433_dll-for-plugin-SdrSharp build.yml rtl_433forSDRSharp "$START_TIME"
+
+      ############################################################
+      # 2. Trigger GraphLib build
+      ############################################################
+      - name: Trigger GraphLib build
+        run: |
+          START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "$START_TIME" > graphlib_start_time.txt
+
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
+            https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
+            -d '{"ref":"main"}'
 
       - name: Wait for GraphLib build
         run: |
-          RUN_ID=$(cat graphlib_run_id.txt)
-          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific build.yml main $RUN_ID
+          START_TIME=$(cat graphlib_start_time.txt)
+          bash .github/scripts/wait_for_workflow.sh marco402 GraphLibSpecific build.yml main "$START_TIME"
 
       ############################################################
-      # 3. Télécharger les artefacts via API GitHub
+      # 3. Download artifacts
       ############################################################
       - name: Download RTL_433 artifacts
         run: |
@@ -84,7 +82,7 @@ jobs:
         run: msbuild Rtl_433_Plugin/SDRSharp.Rtl_433.csproj /p:Configuration=CI_x64 /p:Platform=x64
 
       ############################################################
-      # 5. Assemblage final
+      # 5. Assemble final packages
       ############################################################
       - name: Assemble x86
         run: |
