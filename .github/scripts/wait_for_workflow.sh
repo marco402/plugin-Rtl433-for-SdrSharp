@@ -3,14 +3,15 @@
 OWNER=$1
 REPO=$2
 WORKFLOW_NAME=$3
+BRANCH=$4
 
-echo "Waiting for workflow '$WORKFLOW_NAME' in $OWNER/$REPO..."
+echo "Waiting for workflow '$WORKFLOW_NAME' in $OWNER/$REPO on branch $BRANCH..."
 
 while true; do
   RUN=$(curl -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_TOKEN" \
-    "https://api.github.com/repos/$OWNER/$REPO/actions/runs?per_page=1")
+    "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/build.yml/runs?branch=$BRANCH&per_page=1")
 
   STATUS=$(echo "$RUN" | jq -r '.workflow_runs[0].status')
   CONCLUSION=$(echo "$RUN" | jq -r '.workflow_runs[0].conclusion')
