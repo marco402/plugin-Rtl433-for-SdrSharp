@@ -69,7 +69,20 @@ jobs:
       - name: Debug RUN_ID
         run: |
           echo "RUN_ID = $RUN_ID"
-    
+          
+      - name: Download RTL_433 artifacts
+        run: |
+          RTL433_RUN_ID=$(cat rtl433_run_id.txt)
+
+          curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts" \
+            | jq .
+
+          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
+          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
+
  
       ############################################################
       # 3. Download artifacts
