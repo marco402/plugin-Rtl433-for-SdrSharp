@@ -26,11 +26,11 @@ jobs:
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"rtl_433forSDRSharp"}'
 
-      - name: Wait 5 minutes for GraphLib to finish
+      - name: Wait 3 minutes for GraphLib to finish
         if: success()
         run: |
-           echo "Waiting 5 minutes to ensure GraphLib artifacts are ready..."
-           sleep 300
+           echo "Waiting 3 minutes to ensure GraphLib artifacts are ready..."
+           sleep 180
 
             
       ############################################################
@@ -48,12 +48,20 @@ jobs:
             https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
             -d '{"ref":"main"}'
 
-      - name: Wait 5 minutes for RTL_433 to finish
+      - name: Wait 3 minutes for RTL_433 to finish
         if: success()
         run: |
-           echo "Waiting 5 minutes to ensure RTL_433 artifacts are ready..."
-           sleep 300
-
+           echo "Waiting 3 minutes to ensure RTL_433 artifacts are ready..."
+           sleep 180
+           
+      - name: Debug artifacts list for RTL_433
+        run: |
+          echo "Listing artifacts for RTL_433 run..."
+          curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts \
+            | jq .
 
       ############################################################
       # 3. Download artifacts
