@@ -13,6 +13,30 @@ jobs:
         uses: actions/checkout@v4
 
       ############################################################
+      # 2. Trigger RTL_433 build
+      ############################################################
+      - name: Trigger RTL_433 build
+        run: |
+          START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "$START_TIME" > rtl433_start_time.txt
+
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
+            -d '{"ref":"rtl_433forSDRSharp"}'
+
+      - name: Wait for RTL_433 build
+        run: |
+          START_TIME=$(cat rtl433_start_time.txt)
+          bash .github/scripts/wait_for_workflow.sh \
+            marco402 \
+            Rtl_433_dll-for-plugin-SdrSharp \
+            build.yml \
+            rtl_433forSDRSharp \
+            "$START_TIME"
+            
+      ############################################################
       # 1. Trigger GraphLib ONLY IF RTL_433 SUCCEEDED
       ############################################################
       - name: Trigger GraphLib build
@@ -36,31 +60,6 @@ jobs:
             GraphLibSpecific \
             build.yml \
             main \
-            "$START_TIME"
-
-
-      ############################################################
-      # 2. Trigger RTL_433 build
-      ############################################################
-      - name: Trigger RTL_433 build
-        run: |
-          START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "$START_TIME" > rtl433_start_time.txt
-
-          curl -s -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
-            -d '{"ref":"rtl_433forSDRSharp"}'
-
-      - name: Wait for RTL_433 build
-        run: |
-          START_TIME=$(cat rtl433_start_time.txt)
-          bash .github/scripts/wait_for_workflow.sh \
-            marco402 \
-            Rtl_433_dll-for-plugin-SdrSharp \
-            build.yml \
-            rtl_433forSDRSharp \
             "$START_TIME"
 
 
