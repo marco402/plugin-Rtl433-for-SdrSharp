@@ -38,12 +38,13 @@ jobs:
       - name: Get latest RTL_433 run ID
         run: |
           RUN_ID=$(curl -s \
-          -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-          "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
-          | jq -r '.workflow_runs[0].id')
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
+            | jq -r '.workflow_runs[0].id')
 
-        echo "RUN_ID=$RUN_ID"
-        echo "$RUN_ID" > rtl433_run_id.txt
+          echo "RUN_ID=$RUN_ID"
+          echo "$RUN_ID" > rtl433_run_id.txt
+
        
       ############################################################
        # 4. Download RTL_433_x86 artifact
