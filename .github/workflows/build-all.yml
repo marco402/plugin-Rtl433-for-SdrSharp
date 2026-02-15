@@ -26,15 +26,12 @@ jobs:
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"rtl_433forSDRSharp"}'
 
-      - name: Wait for RTL_433 build
+      - name: Wait 5 minutes for GraphLib to finish
+        if: success()
         run: |
-          START_TIME=$(cat rtl433_start_time.txt)
-          bash .github/scripts/wait_for_workflow.sh \
-            marco402 \
-            Rtl_433_dll-for-plugin-SdrSharp \
-            build.yml \
-            rtl_433forSDRSharp \
-            "$START_TIME"
+           echo "Waiting 5 minutes to ensure GraphLib artifacts are ready..."
+           sleep 300
+
             
       ############################################################
       # 1. Trigger GraphLib ONLY IF RTL_433 SUCCEEDED
@@ -51,16 +48,11 @@ jobs:
             https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
             -d '{"ref":"main"}'
 
-      - name: Wait for GraphLib build
+      - name: Wait 5 minutes for RTL_433 to finish
         if: success()
         run: |
-          START_TIME=$(cat graphlib_start_time.txt)
-          bash .github/scripts/wait_for_workflow.sh \
-            marco402 \
-            GraphLibSpecific \
-            build.yml \
-            main \
-            "$START_TIME"
+           echo "Waiting 5 minutes to ensure RTL_433 artifacts are ready..."
+           sleep 300
 
 
       ############################################################
