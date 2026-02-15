@@ -111,11 +111,21 @@ jobs:
           mkdir -p plugin_x86
           cp RTL_433_x86/*.dll plugin_x86/
           
+      - name: Debug list RTL_433_x86 DLLs
+        run: |
+          echo "Contenu du dossier plugin_x86 :"
+          ls -l plugin_x86
+   
       - name: Assemble x64
         run: |
           mkdir -p plugin_x64
           cp RTL_433_x64/*.dll plugin_x64/
-
+          
+      - name: Debug list RTL_433_x64 DLLs
+        run: |
+          echo "Contenu du dossier plugin_x64 :"
+          ls -l plugin_x64
+          
       ############################################################
       # 6. ZIP + Upload
       ############################################################
