@@ -11,8 +11,8 @@ jobs:
       - name: Checkout plugin repo
         uses: actions/checkout@v4
 
-      - name: Wait 5 minutes for RTL_433 build
-        run: sleep 300
+      - name: Wait 2 minutes for RTL_433 build
+        run: sleep 120
 
       - name: Get latest RTL_433 run ID
         run: |
