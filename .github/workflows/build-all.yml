@@ -31,26 +31,30 @@ jobs:
         run: |
            echo "Waiting 2 minutes to ensure RTL_433 artifacts are ready..."
            sleep 120
-           
-      ############################################################
-       # 3. Get latest RTL_433 run ID
-      ############################################################          
+                
       - name: Get latest RTL_433 run ID
         run: |
-          RUN_ID=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
-            | jq -r '.workflow_runs[0].id')
-
-          echo "RUN_ID=$RUN_ID"
-          echo "$RUN_ID" > rtl433_run_id.txt
-
-       
+          RTL433_RUN_ID=$(curl -s \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+          "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
+          | jq -r '.workflow_runs[0].id')
+          
+          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
+          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
       ############################################################
-       # 4. Download RTL_433_x86 artifact
+       # 3. Download RTL_433_x86 artifact
       ############################################################          
       - name: Download RTL_433_x86 artifact
         run: |
+          # 1. Récupérer le dernier run terminé
+          RUN_ID=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
+           | jq -r '.workflow_runs[0].id')
+
+          echo "RUN_ID=$RUN_ID"
+
           # 2. Récupérer l’URL du ZIP
           ZIP_URL=$(curl -s \
             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
@@ -64,34 +68,11 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
             -o rtl433_x86.zip \
             "$ZIP_URL"
-  
+
           # 4. Dézipper
           mkdir -p RTL_433_x86
           unzip rtl433_x86.zip -d RTL_433_x86
-          
-      ############################################################
-      # 5. Download RTL_433_x64 artifact
-      ############################################################
-      - name: Download RTL_433_x64 artifact
-        run: |
-          # 2. Récupérer l’URL du ZIP
-          ZIP_URL=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
-            | jq -r '.artifacts[] | select(.name=="RTL_433_x64") | .archive_download_url')
 
-          echo "ZIP_URL=$ZIP_URL"
-
-          # 3. Télécharger le ZIP
-          curl -L \
-            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-            -o rtl433_x64.zip \
-            "$ZIP_URL"
-
-          # 4. Dézipper
-          mkdir -p RTL_433_x64
-          unzip rtl433_x64.zip -d RTL_433_x64
-          
       ############################################################
       # 5. Assemble final packages
       ############################################################
