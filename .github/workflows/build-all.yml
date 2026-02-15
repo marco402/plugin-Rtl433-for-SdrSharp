@@ -44,7 +44,17 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/22033554229/artifacts \
             | jq .
- 
+      - name: Get latest RTL_433 run ID
+        run: |
+          RTL433_RUN_ID=$(curl -s \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+          "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?branch=main&status=completed" \
+          | jq -r '.workflow_runs[0].id')
+
+          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
+          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
+
       ############################################################
       # 3. Download artifacts
        ############################################################
