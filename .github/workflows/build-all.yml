@@ -26,11 +26,11 @@ jobs:
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
             -d '{"ref":"rtl_433forSDRSharp"}'
 
-      - name: Wait 3 minutes for RTL_433 to finish
+      - name: Wait 2 minutes for RTL_433 to finish
         if: success()
         run: |
-           echo "Waiting 3 minutes to ensure RTL_433 artifacts are ready..."
-           sleep 180
+           echo "Waiting 2 minutes to ensure RTL_433 artifacts are ready..."
+           sleep 120
 
       - name: Debug RUN_ID
         run: |
