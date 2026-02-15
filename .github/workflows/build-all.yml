@@ -45,29 +45,34 @@ jobs:
       ############################################################
        # 3. Download RTL_433_x86 artifact
       ############################################################          
-      - name: Download RTL_433 artifacts (x86 + x64)
+      - name: Download RTL_433_x86 artifact
         run: |
-          for ARCH in x86 x64; do
-            echo "=== Downloading RTL_433_${ARCH} ==="
+          # 1. Récupérer le dernier run terminé
+          RUN_ID=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
+           | jq -r '.workflow_runs[0].id')
 
-            # 1. Récupérer l’URL du ZIP pour cet artifact
-            ZIP_URL=$(curl -s \
-              -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts" \
-              | jq -r ".artifacts[] | select(.name==\"RTL_433_${ARCH}\") | .archive_download_url")
+          echo "RUN_ID=$RUN_ID"
 
-            echo "ZIP_URL=$ZIP_URL"
+          # 2. Récupérer l’URL du ZIP
+          ZIP_URL=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+            | jq -r '.artifacts[] | select(.name=="RTL_433_x86") | .archive_download_url')
 
-           # 2. Télécharger le ZIP
-           curl -L \
-             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-             -o rtl433_${ARCH}.zip \
-             "$ZIP_URL"
+          echo "ZIP_URL=$ZIP_URL"
 
-          # 3. Dézipper
-            mkdir -p RTL_433_${ARCH}
-            unzip rtl433_${ARCH}.zip -d RTL_433_${ARCH}
-          done
+          # 3. Télécharger le ZIP
+          curl -L \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            -o rtl433_x86.zip \
+            "$ZIP_URL"
+
+          # 4. Dézipper
+          mkdir -p RTL_433_x86
+          unzip rtl433_x86.zip -d RTL_433_x86
+
       ############################################################
       # 5. Assemble final packages
       ############################################################
