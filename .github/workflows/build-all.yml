@@ -42,32 +42,29 @@ jobs:
           
           echo "RTL433_RUN_ID=$RTL433_RUN_ID"
           echo "$RTL433_RUN_ID" > rtl433_run_id.txt
-
       ############################################################
-      # 3. Download artifacts
-       ############################################################
-      - name: Download RTL_433 artifacts
+      # 3. Download RTL_433_x86 artifact
+      ############################################################          
+      - name: Download RTL_433_x86 artifact
         run: |
-          RTL433_RUN_ID=$(cat rtl433_run_id.txt)
-
-          curl -s \
-            -H "Accept: application/vnd.github+json" \
+          mkdir -p RTL_433_x86
+          curl -L \
             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts" \
-            | jq .
-  
+            -o rtl433_x86.zip \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/artifacts/$RTL433_RUN_ID/zip"
+          unzip rtl433_x86.zip -d RTL_433_x86
       ############################################################
       # 5. Assemble final packages
       ############################################################
       - name: Assemble x86
         run: |
-          mkdir plugin_x86
-          copy RTL_433_x86\*.dll plugin_x86\
+          mkdir -p plugin_x86
+          cp RTL_433_x86/*.dll plugin_x86/
           
       - name: Assemble x64
         run: |
-          mkdir plugin_x64
-          copy RTL_433_x64\*.dll plugin_x64\
+          mkdir -p plugin_x64
+          cp RTL_433_x64/*.dll plugin_x64/
 
       ############################################################
       # 6. ZIP + Upload
