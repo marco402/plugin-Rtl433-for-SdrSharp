@@ -53,7 +53,7 @@ jobs:
             # 1. Récupérer l’URL du ZIP pour cet artifact
             ZIP_URL=$(curl -s \
               -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts" \
               | jq -r ".artifacts[] | select(.name==\"RTL_433_${ARCH}\") | .archive_download_url")
 
             echo "ZIP_URL=$ZIP_URL"
