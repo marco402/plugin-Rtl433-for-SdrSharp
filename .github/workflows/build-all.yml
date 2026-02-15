@@ -31,7 +31,9 @@ jobs:
         run: |
            echo "Waiting 2 minutes to ensure RTL_433 artifacts are ready..."
            sleep 120
-                
+      ############################################################
+       # 3. Get latest RTL_433 run ID
+      ############################################################          
       - name: Get latest RTL_433 run ID
         run: |
           RUN_ID=$(curl -s \
@@ -43,7 +45,7 @@ jobs:
        echo "$RUN_ID" > rtl433_run_id.txt
        
       ############################################################
-       # 3. Download RTL_433_x86 artifact
+       # 4. Download RTL_433_x86 artifact
       ############################################################          
       - name: Download RTL_433_x86 artifact
         run: |
@@ -65,7 +67,7 @@ jobs:
           mkdir -p RTL_433_x86
           unzip rtl433_x86.zip -d RTL_433_x86
        ############################################################
-       # 4. Download RTL_433_x64 artifact
+       # 5. Download RTL_433_x64 artifact
       ############################################################          
       - name: Download RTL_433_x64 artifact
         run: |
