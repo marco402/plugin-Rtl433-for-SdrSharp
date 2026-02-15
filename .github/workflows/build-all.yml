@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       ############################################################
-      # 2. Trigger RTL_433 build
+      # 1. Trigger RTL_433 build
       ############################################################
       - name: Trigger RTL_433 build
         run: |
@@ -45,8 +45,8 @@ jobs:
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/22033554229/artifacts \
             | jq .
 
-            ############################################################
-      # 1. Trigger GraphLib ONLY IF RTL_433 SUCCEEDED
+      ############################################################
+      # 2. Trigger GraphLib ONLY IF RTL_433 SUCCEEDED
       ############################################################
       - name: Trigger GraphLib build
         if: success()
@@ -66,10 +66,21 @@ jobs:
            echo "Waiting 3 minutes to ensure GraphLib artifacts are ready..."
            sleep 180
            
-      - name: Debug RUN_ID
+      - name: Get latest RTL_433 run ID
         run: |
-          echo "RUN_ID = $RUN_ID"
-          
+          RTL433_RUN_ID=$(curl -s \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+          "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?branch=main&status=completed" \
+          | jq -r '.workflow_runs[0].id')
+
+          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
+          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
+
+ 
+      ############################################################
+      # 3. Download artifacts
+       ############################################################
       - name: Download RTL_433 artifacts
         run: |
           RTL433_RUN_ID=$(cat rtl433_run_id.txt)
@@ -80,20 +91,6 @@ jobs:
             "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts" \
             | jq .
 
-          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
-          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
-
- 
-      ############################################################
-      # 3. Download artifacts
-      ############################################################
-      - name: Download RTL_433 artifacts
-        if: success()
-        run: |
-          bash .github/scripts/download_artifacts.sh \
-            marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x86
-          bash .github/scripts/download_artifacts.sh \
-            marco402 Rtl_433_dll-for-plugin-SdrSharp RTL_433_x64
 
       - name: Download GraphLib artifacts
         if: success()
