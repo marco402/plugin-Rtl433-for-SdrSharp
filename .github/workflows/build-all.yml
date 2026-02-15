@@ -7,7 +7,6 @@ jobs:
 
   orchestrate:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout plugin repo
         uses: actions/checkout@v4
