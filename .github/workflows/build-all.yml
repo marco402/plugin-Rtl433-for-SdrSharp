@@ -72,7 +72,30 @@ jobs:
           # 4. Dézipper
           mkdir -p RTL_433_x86
           unzip rtl433_x86.zip -d RTL_433_x86
+		  
+      ############################################################
+      # 5. Download RTL_433_x64 artifact meme run que x86
+      ############################################################
+      - name: Download RTL_433_x64 artifact
+        run: |
+          # 2. Récupérer l’URL du ZIP
+          ZIP_URL=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+            | jq -r '.artifacts[] | select(.name=="RTL_433_x64") | .archive_download_url')
 
+          echo "ZIP_URL=$ZIP_URL"
+
+          # 3. Télécharger le ZIP
+          curl -L \
+            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+            -o rtl433_x64.zip \
+            "$ZIP_URL"
+
+          # 4. Dézipper
+          mkdir -p RTL_433_x64
+          unzip rtl433_x64.zip -d RTL_433_x64
+          
       ############################################################
       # 5. Assemble final packages
       ############################################################
