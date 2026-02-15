@@ -44,39 +44,6 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
             https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/22033554229/artifacts \
             | jq .
-
-      ############################################################
-      # 2. Trigger GraphLib ONLY IF RTL_433 SUCCEEDED
-      ############################################################
-      - name: Trigger GraphLib build
-        if: success()
-        run: |
-          START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "$START_TIME" > graphlib_start_time.txt
-
-          curl -s -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-            https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches \
-            -d '{"ref":"main"}'
-
-      - name: Wait 3 minutes for GraphLib to finish
-        if: success()
-        run: |
-           echo "Waiting 3 minutes to ensure GraphLib artifacts are ready..."
-           sleep 180
-           
-      - name: Get latest RTL_433 run ID
-        run: |
-          RTL433_RUN_ID=$(curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
-          "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?branch=main&status=completed" \
-          | jq -r '.workflow_runs[0].id')
-
-          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
-          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
-
  
       ############################################################
       # 3. Download artifacts
@@ -90,15 +57,6 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
             "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RTL433_RUN_ID/artifacts" \
             | jq .
-
-
-      - name: Download GraphLib artifacts
-        if: success()
-        run: |
-          bash .github/scripts/download_artifacts.sh \
-            marco402 GraphLibSpecific GraphLib_x86
-          bash .github/scripts/download_artifacts.sh \
-            marco402 GraphLibSpecific GraphLib_x64
 
   ############################################################
   # 4. Build plugin (Windows)
@@ -126,14 +84,12 @@ jobs:
           mkdir plugin_x86
           copy Rtl_433_Plugin\bin\x86\CI_x86\*.dll plugin_x86\
           copy RTL_433_x86\*.dll plugin_x86\
-          copy GraphLib_x86\*.dll plugin_x86\
-
+          
       - name: Assemble x64
         run: |
           mkdir plugin_x64
           copy Rtl_433_Plugin\bin\x64\CI_x64\*.dll plugin_x64\
           copy RTL_433_x64\*.dll plugin_x64\
-          copy GraphLib_x64\*.dll plugin_x64\
 
       ############################################################
       # 6. ZIP + Upload
