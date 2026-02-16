@@ -96,61 +96,58 @@ jobs:
             echo "NOTES=Release automatique du plugin RTL_433." >> $env:GITHUB_ENV
           }
 
-      # ---------------------------------------------------------
-      # 6) Attendre le build RTL_433 (60 tentatives)
-      # ---------------------------------------------------------
+      ############################################################
+      # 1. Trigger RTL_433 build
+      ############################################################
       - name: Wait for RTL_433 artifacts
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
         run: |
           $START_TIME = $env:START_TIME
-          Write-Host "Recherche d'un run RTL_433 créé après $START_TIME"
+          echo "Recherche d'un run RTL_433 créé après $START_TIME"
 
-          for ($i = 1; $i -le 60; $i++) {
+          for i in {1..60}; do
+            echo "Tentative $i..."
 
-              Write-Host "Tentative $i..."
-
-              $runsJson = curl -s `
-                -H "Authorization: Bearer $env:GH_TOKEN" `
-                "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs"
-
-              $RUN_ID = echo $runsJson | jq -r --arg START "$START_TIME" '
+            # Trouver le run créé APRÈS START_TIME et terminé
+            RUN_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" \
+              | jq -r --arg START "$START_TIME" '
                   .workflow_runs
                   | map(select(.created_at > $START))
                   | map(select(.status == "completed"))
                   | sort_by(.created_at)
                   | last
                   | .id
-              '
+                ')
 
-              if ($RUN_ID -ne "null" -and $RUN_ID -ne "") {
-
-                  Write-Host "Run trouvé : $RUN_ID"
-
-                  $artifactsJson = curl -s `
-                    -H "Authorization: Bearer $env:GH_TOKEN" `
-                    "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts"
-
-                  $ART_COUNT = echo $artifactsJson | jq '.artifacts | length'
-
-                  Write-Host "Nombre d'artefacts : $ART_COUNT"
-
-                  if ($ART_COUNT -ge 2) {
-                      Write-Host "Artifacts prêts !"
-                      echo "RUN_ID=$RUN_ID" >> $env:GITHUB_ENV
-                      break
-                  }
+            - name: Check RUN_ID
+            shell: pwsh
+            run: |
+              if ($env:RUN_ID -ne "null" -and $env:RUN_ID -ne "") {
+                Write-Host "Run trouvé : $env:RUN_ID"
+              } else {
+                Write-Host "Aucun run trouvé"
               }
 
-              Write-Host "Pas encore prêts, attente 5 secondes..."
-              Start-Sleep -Seconds 5
-          }
 
-          if (-not $env:RUN_ID) {
-              Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
-              exit 1
-          }
+              # Vérifier que les artifacts existent
+              ART_COUNT=$(curl -s \
+                -H "Authorization: Bearer ${{ secrets.PAT }}" \
+                "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+                | jq '.artifacts | length')
+
+              echo "Nombre d'artifacts : $ART_COUNT"
+
+              if [ "$ART_COUNT" -ge 2 ]; then
+                echo "Artifacts prêts !"
+                echo "$RUN_ID" > rtl433_run_id.txt
+                break
+              fi
+            fi
+
+            echo "Pas encore prêts, attente 5 secondes..."
+            sleep 5
+          done
 
       # ---------------------------------------------------------
       # 7) Télécharger les artefacts RTL_433
