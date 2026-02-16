@@ -42,69 +42,40 @@ jobs:
           
           echo "RTL433_RUN_ID=$RTL433_RUN_ID"
           echo "$RTL433_RUN_ID" > rtl433_run_id.txt
-      ############################################################
-       # 3. Download RTL_433_x86 artifact
-      ############################################################          
-      - name: Download RTL_433_x86 artifact
-        run: |
-          # 1. Récupérer le dernier run terminé
-          RUN_ID=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
-           | jq -r '.workflow_runs[0].id')
-
-          echo "RUN_ID=$RUN_ID"
-
-          # 2. Récupérer l’URL du ZIP
-          ZIP_URL=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
-            | jq -r '.artifacts[] | select(.name=="RTL_433_x86") | .archive_download_url')
-
-          echo "ZIP_URL=$ZIP_URL"
-
-          # 3. Télécharger le ZIP
-          curl -L \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            -o rtl433_x86.zip \
-            "$ZIP_URL"
-
-          # 4. Dézipper
-          mkdir -p RTL_433_x86
-          unzip rtl433_x86.zip -d RTL_433_x86
 
       ############################################################
-      # 5. Download RTL_433_x64 artifact meme run que x86
+      # 2. Download RTL_433_x86 et RTL_433_x64 artifact
       ############################################################
       - name: Download RTL_433_x64 artifact
         run: |
-          # 1. Récupérer le dernier run terminé
-          RUN_ID=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
-           | jq -r '.workflow_runs[0].id')
+		  for ARCH in x86 x64; do
+            # 1. Récupérer le dernier run terminé
+            RUN_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
+             | jq -r '.workflow_runs[0].id')
 
-          echo "RUN_ID=$RUN_ID"
-          # 2. Récupérer l’URL du ZIP
-          ZIP_URL=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
-            | jq -r '.artifacts[] | select(.name=="RTL_433_x64") | .archive_download_url')
+            echo "RUN_ID=$RUN_ID"
+            # 2. Récupérer l’URL du ZIP
+            ZIP_URL=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="RTL_433_${ARCH}") | .archive_download_url')
 
-          echo "ZIP_URL=$ZIP_URL"
+            echo "ZIP_URL=$ZIP_URL"
 
-          # 3. Télécharger le ZIP
-          curl -L \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            -o rtl433_x64.zip \
-            "$ZIP_URL"
+            # 3. Télécharger le ZIP
+            curl -L \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              -o rtl433_${ARCH}.zip \
+              "$ZIP_URL"
 
-          # 4. Dézipper
-          mkdir -p RTL_433_x64
-          unzip rtl433_x64.zip -d RTL_433_x64
-          
+            # 4. Dézipper
+            mkdir -p RTL_433_${ARCH}
+            unzip rtl433_${ARCH}.zip -d RTL_433_${ARCH}
+          done
       ############################################################
-      # 5. Assemble final packages
+      # 3. Assemble final packages
       ############################################################
       - name: Assemble x86
         run: |
@@ -127,7 +98,7 @@ jobs:
           ls -l plugin_x64
           
       ############################################################
-      # 6. ZIP + Upload
+      # 4. ZIP + Upload
       ############################################################
       - name: Create ZIPs
         run: |
