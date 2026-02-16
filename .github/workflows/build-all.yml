@@ -142,9 +142,11 @@ jobs:
         run: |
           for ARCH in x86 x64; do
             echo "Traitement de RTL_433_$ARCH..." 
-
+            
+            rm -rf RTL_433_${ARCH}
             mkdir -p RTL_433_${ARCH}
-            unzip rtl433_${ARCH}.zip -d RTL_433_${ARCH}
+            
+            unzip -o rtl433_${ARCH}.zip -d RTL_433_${ARCH}
 
             DLL=$(find RTL_433_${ARCH} -type f -name "*.dll" | head -n 1)
 
