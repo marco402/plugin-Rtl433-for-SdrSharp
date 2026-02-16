@@ -23,6 +23,7 @@ jobs:
       - name: Save start time
         shell: pwsh
         run: |
+          Write-Host "PWD = $(Get-Location)"
           Set-Location "${{ github.workspace }}"
           $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
           Set-Content -Path "rtl433_start_time.txt" -Value $now
@@ -31,6 +32,7 @@ jobs:
       - name: Debug START_TIME
         shell: pwsh
         run: |
+          Write-Host "PWD = $(Get-Location)"
           Set-Location "${{ github.workspace }}"
           Write-Host "START_TIME contenu dans le fichier :"
           Get-Content "rtl433_start_time.txt"
@@ -107,6 +109,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
+          Write-Host "PWD = $(Get-Location)"
           Set-Location "${{ github.workspace }}"
           $START_TIME = Get-Content "rtl433_start_time.txt"
           Write-Host "Recherche d'un run RTL_433 créé après $START_TIME"
