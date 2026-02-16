@@ -21,6 +21,19 @@ jobs:
           echo "Start time saved:"
           cat rtl433_start_time.txt
 
+      - name: Debug START_TIME
+        run: |
+          echo "START_TIME contenu dans le fichier :"
+          cat rtl433_start_time.txt
+          
+      - name: Trigger RTL_433 build
+        run: |
+          curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.PAT }}" \
+          -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
+          -d '{"ref":"main"}'
+
       ############################################################
       # 1. Trigger RTL_433 build
       ############################################################
