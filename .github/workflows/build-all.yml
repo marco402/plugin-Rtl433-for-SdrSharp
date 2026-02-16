@@ -136,13 +136,26 @@ jobs:
           ls -l plugin_x64
           
       ############################################################
-      # 4. ZIP + Upload
+      # 4. ZIP
       ############################################################
       - name: Create ZIPs
         run: |
-          zip -r plugin_rtl433_x86.zip plugin_x86
-          zip -r plugin_rtl433_x64.zip plugin_x64
+          for ARCH in x86 x64; do
+            echo "Traitement de RTL_433_$ARCH..." 
 
+            mkdir -p RTL_433_${ARCH}
+            unzip rtl433_${ARCH}.zip -d RTL_433_${ARCH}
+
+            DLL=$(find RTL_433_${ARCH} -type f -name "*.dll" | head -n 1)
+
+            echo "DLL trouvé : $DLL"
+
+            zip -j plugin_rtl433_${ARCH}.zip "$DLL"
+          done
+
+      ############################################################
+      # 5. Upload ZIP
+      ############################################################
       - name: Upload ZIPs
         uses: actions/upload-artifact@v4
         with:
