@@ -165,3 +165,26 @@ jobs:
           path: |
             plugin_rtl433_x86.zip
             plugin_rtl433_x64.zip
+            
+      ############################################################
+      # 6. Create GitHub Release
+      ############################################################
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: plugin_rtl433_${{ github.run_number }}
+          name: "Plugin RTL_433 Release ${{ github.run_number }}"
+          body: |
+            Release automatique du plugin RTL_433.
+            Contient les versions x86 et x64.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload plugin_x86 and plugin_x64 to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            plugin_rtl433_x86.zip
+            plugin_rtl433_x64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
