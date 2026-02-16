@@ -217,7 +217,7 @@ jobs:
           name: "Release RTL_433 ${ env.TAG }"
           body: ${ env.NOTES }
         env:
-          GITHUB_TOKEN: ${ secrets.GITHUB_TOKEN }
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       ############################################################
       # 6. Upload plugin_x86 and plugin_x64 to release
