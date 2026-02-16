@@ -20,13 +20,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      # ---------------------------------------------------------
+      # 1) Checkout complet (obligatoire pour créer un tag)
+      # ---------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       # ---------------------------------------------------------
-      # 1) Récupérer le dernier tag existant
+      # 2) Récupérer le dernier tag existant
       # ---------------------------------------------------------
       - name: Get latest tag
         shell: pwsh
@@ -40,7 +43,7 @@ jobs:
           Write-Host "Dernier tag détecté : $tag"
 
       # ---------------------------------------------------------
-      # 2) Auto-incrément (BUILD)
+      # 3) Auto-incrément (BUILD)
       # ---------------------------------------------------------
       - name: Auto increment version
         shell: pwsh
@@ -56,7 +59,7 @@ jobs:
           Write-Host "Version auto-incrémentée : $auto"
 
       # ---------------------------------------------------------
-      # 3) Choisir entre version manuelle ou auto
+      # 4) Choisir entre version manuelle ou auto
       # ---------------------------------------------------------
       - name: Determine final tag
         shell: pwsh
@@ -70,200 +73,88 @@ jobs:
           }
 
       # ---------------------------------------------------------
-      # 4) Lire les notes de release
+      # 5) Notes de release
       # ---------------------------------------------------------
       - name: Read notes
+        shell: pwsh
         run: |
-          if [ -n "${{ github.event.inputs.notes }}" ]; then
-            echo "NOTES=${{ github.event.inputs.notes }}" >> $GITHUB_ENV
-          else
-            echo "NOTES=Release automatique du plugin RTL_433." >> $GITHUB_ENV
-          fi
+          if ("${{ github.event.inputs.notes }}" -ne "") {
+            echo "NOTES=${{ github.event.inputs.notes }}" >> $env:GITHUB_ENV
+          } else {
+            echo "NOTES=Release automatique du plugin RTL_433." >> $env:GITHUB_ENV
+          }
 
       # ---------------------------------------------------------
-      # 5) ICI : ton build, ton extraction, tes ZIP x86/x64
+      # 6) Attendre le build RTL_433 (60 tentatives)
       # ---------------------------------------------------------
-      ############################################################
-      # 1. Save start time
-      ############################################################		
-      - name: Save start time
-        run: |
-          date -u +"%Y-%m-%dT%H:%M:%SZ" > rtl433_start_time.txt
-          echo "Start time saved:"
-          cat rtl433_start_time.txt
-
-      - name: Debug START_TIME
-        run: |
-          echo "START_TIME contenu dans le fichier :"
-          cat rtl433_start_time.txt
-          
-      - name: Trigger RTL_433 build
-        run: |
-          curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.PAT }}" \
-          -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
-          -d '{"ref":"rtl_433forSDRSharp"}'
-
-      ############################################################
-      # 1. Trigger RTL_433 build
-      ############################################################
       - name: Wait for RTL_433 artifacts
+        shell: pwsh
         run: |
-          START_TIME=$(cat rtl433_start_time.txt)
-          echo "Recherche d'un run RTL_433 créé après $START_TIME"
+          for ($i = 1; $i -le 60; $i++) {
 
-          for i in {1..60}; do
-            echo "Tentative $i..."
+              Write-Host "Tentative $i/60 : récupération du dernier run..."
 
-            # Trouver le run créé APRÈS START_TIME et terminé
-            RUN_ID=$(curl -s \
-              -H "Authorization: Bearer ${{ secrets.PAT }}" \
-              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" \
-              | jq -r --arg START "$START_TIME" '
-                  .workflow_runs
-                  | map(select(.created_at > $START))
-                  | map(select(.status == "completed"))
-                  | sort_by(.created_at)
-                  | last
-                  | .id
-                ')
+              $run = gh run list --repo marco402/Rtl_433_dll-for-plugin-SdrSharp --limit 1 --json databaseId | ConvertFrom-Json
 
-            if [ "$RUN_ID" != "null" ] && [ -n "$RUN_ID" ]; then
-              echo "Run trouvé : $RUN_ID"
+              if ($run -and $run.databaseId) {
+                  $RUN_ID = $run.databaseId
+                  Write-Host "Run trouvé : $RUN_ID"
+                  echo "RUN_ID=$RUN_ID" >> $env:GITHUB_ENV
+                  break
+              }
 
-              # Vérifier que les artifacts existent
-              ART_COUNT=$(curl -s \
-                -H "Authorization: Bearer ${{ secrets.PAT }}" \
-                "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
-                | jq '.artifacts | length')
+              Write-Host "Aucun run trouvé, nouvelle tentative dans 5 secondes..."
+              Start-Sleep -Seconds 5
+          }
 
-              echo "Nombre d'artifacts : $ART_COUNT"
-
-              if [ "$ART_COUNT" -ge 2 ]; then
-                echo "Artifacts prêts !"
-                echo "$RUN_ID" > rtl433_run_id.txt
-                break
-              fi
-            fi
-
-            echo "Pas encore prêts, attente 5 secondes..."
-            sleep 5
-          done
-
-      ############################################################
-      # 2. Download RTL_433_x86 et RTL_433_x64 artifact
-      ############################################################
-      - name: Download RTL_433 artifacts (x86 + x64)
-        run: |
-          for ARCH in x86 x64; do
-            ARCH=$(echo "$ARCH" | xargs)
-            # 1. Récupérer le dernier run terminé
-            RUN_ID=$(curl -s \
-              -H "Authorization: Bearer ${{ secrets.PAT }}" \
-              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
-             | jq -r '.workflow_runs[0].id')
-
-            echo "RUN_ID=$RUN_ID"
-            # 2. Récupérer l’URL du ZIP
-            ZIP_URL=$(curl -s \
-              -H "Authorization: Bearer ${{ secrets.PAT }}" \
-              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
-              | jq -r --arg ARCH "$ARCH" '.artifacts[] | select(.name == ("RTL_433_" + $ARCH)) | .archive_download_url')
- 
-            echo "ZIP_URL=$ZIP_URL"
-
-            # 3. Télécharger le ZIP
-            curl -L \
-              -H "Authorization: Bearer ${{ secrets.PAT }}" \
-              -o rtl433_${ARCH}.zip \
-              "$ZIP_URL"
-
-            # 4. Dézipper
-            mkdir -p RTL_433_${ARCH}
-            unzip rtl433_${ARCH}.zip -d RTL_433_${ARCH}
-          done
-      ############################################################
-      # 3. Assemble final packages
-      ############################################################
-      - name: Assemble x86
-        run: |
-          mkdir -p plugin_x86
-          cp RTL_433_x86/*.dll plugin_x86/
-          
-      - name: Debug list RTL_433_x86 DLLs
-        run: |
-          echo "Contenu du dossier plugin_x86 :"
-          ls -l plugin_x86
-   
-      - name: Assemble x64
-        run: |
-          mkdir -p plugin_x64
-          cp RTL_433_x64/*.dll plugin_x64/
-          
-      - name: Debug list RTL_433_x64 DLLs
-        run: |
-          echo "Contenu du dossier plugin_x64 :"
-          ls -l plugin_x64
-          
-      ############################################################
-      # 4. ZIP
-      ############################################################
-      - name: Create ZIPs
-        run: |
-          for ARCH in x86 x64; do
-            echo "Traitement de RTL_433_$ARCH..." 
-            
-            rm -rf RTL_433_${ARCH}
-            mkdir -p RTL_433_${ARCH}
-            
-            unzip -o rtl433_${ARCH}.zip -d RTL_433_${ARCH}
-
-            DLL=$(find RTL_433_${ARCH} -type f -name "*.dll" | head -n 1)
-
-            echo "DLL trouvé : $DLL"
-
-            zip -j plugin_rtl433_${ARCH}.zip "$DLL"
-          done
-
-      - name: Rename ZIPs with tag
-        run: |
-          mv plugin_rtl433_x86.zip plugin_rtl433_x86-${{ env.TAG }}.zip
-          mv plugin_rtl433_x64.zip plugin_rtl433_x64-${{ env.TAG }}.zip
-
-      ############################################################
-      # 5. Upload ZIP
-      ############################################################
-      - name: Upload ZIPs
-        uses: actions/upload-artifact@v4
-        with:
-          name: plugin_rtl433_packages
-          path: |
-            plugin_rtl433_x86.zip
-            plugin_rtl433_x64.zip    
+          if (-not $env:RUN_ID) {
+              Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
+              exit 1
+          }
 
       # ---------------------------------------------------------
-      # 6) Renommer les ZIP avec le tag final
+      # 7) Télécharger les artefacts RTL_433
+      # ---------------------------------------------------------
+      - name: Download RTL_433 artifacts
+        shell: pwsh
+        run: |
+          gh run download $env:RUN_ID --repo marco402/Rtl_433_dll-for-plugin-SdrSharp --dir artifacts
+          Write-Host "Artefacts RTL_433 téléchargés."
+
+      # ---------------------------------------------------------
+      # 8) Construire les ZIP x86/x64 du plugin
+      # ---------------------------------------------------------
+      - name: Build plugin ZIPs
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "artifacts\x86\*" -DestinationPath "plugin_rtl433_x86.zip"
+          Compress-Archive -Path "artifacts\x64\*" -DestinationPath "plugin_rtl433_x64.zip"
+          Write-Host "ZIP x86/x64 créés."
+
+      # ---------------------------------------------------------
+      # 9) Renommer les ZIP avec le tag final
       # ---------------------------------------------------------
       - name: Rename ZIPs with tag
+        shell: pwsh
         run: |
-          mv plugin_rtl433_x86.zip plugin_rtl433_x86-${{ env.TAG }}.zip
-          mv plugin_rtl433_x64.zip plugin_rtl433_x64-${{ env.TAG }}.zip
-          echo "ZIP renommés avec la version ${{ env.TAG }}"
+          Rename-Item "plugin_rtl433_x86.zip" "plugin_rtl433_x86-$env:TAG.zip"
+          Rename-Item "plugin_rtl433_x64.zip" "plugin_rtl433_x64-$env:TAG.zip"
+          Write-Host "ZIP renommés avec la version $env:TAG"
 
       # ---------------------------------------------------------
-      # 7) Créer le tag Git
+      # 10) Créer le tag Git
       # ---------------------------------------------------------
       - name: Create Git tag
+        shell: pwsh
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git tag ${{ env.TAG }}
-          git push origin ${{ env.TAG }}
-          echo "Tag ${{ env.TAG }} créé et poussé"
+          git tag $env:TAG
+          git push origin $env:TAG
+          Write-Host "Tag $env:TAG créé et poussé."
 
       # ---------------------------------------------------------
-      # 8) Créer la release GitHub
+      # 11) Créer la release GitHub
       # ---------------------------------------------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -275,7 +166,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ---------------------------------------------------------
-      # 9) Upload des ZIP dans la release
+      # 12) Upload des ZIP dans la release
       # ---------------------------------------------------------
       - name: Upload ZIPs to release
         uses: softprops/action-gh-release@v1
