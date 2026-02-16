@@ -89,6 +89,8 @@ jobs:
       # ---------------------------------------------------------
       - name: Wait for RTL_433 artifacts
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           for ($i = 1; $i -le 60; $i++) {
 
@@ -117,6 +119,8 @@ jobs:
       # ---------------------------------------------------------
       - name: Download RTL_433 artifacts
         shell: pwsh
+        env: 
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh run download $env:RUN_ID --repo marco402/Rtl_433_dll-for-plugin-SdrSharp --dir artifacts
           Write-Host "Artefacts RTL_433 téléchargés."
