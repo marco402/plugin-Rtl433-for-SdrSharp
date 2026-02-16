@@ -25,6 +25,7 @@ jobs:
         run: |
           Write-Host "PWD = $(Get-Location)"
           Set-Location "${{ github.workspace }}"
+          Write-Host "PWD après Set-Location = $(Get-Location)"
           $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
           Set-Content -Path "rtl433_start_time.txt" -Value $now
           Write-Host "Start time saved: $now"
