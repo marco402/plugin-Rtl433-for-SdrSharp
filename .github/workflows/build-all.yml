@@ -88,31 +88,47 @@ jobs:
       # 6) Attendre le build RTL_433 (60 tentatives)
       # ---------------------------------------------------------
       - name: Wait for RTL_433 artifacts
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          for ($i = 1; $i -le 60; $i++) {
+          START_TIME=$(cat rtl433_start_time.txt)
+          echo "Recherche d'un run RTL_433 créé après $START_TIME"
 
-              Write-Host "Tentative $i/60 : récupération du dernier run..."
+          for i in {1..60}; do
+            echo "Tentative $i..."
 
-              $run = gh run list --repo marco402/Rtl_433_dll-for-plugin-SdrSharp --limit 1 --json databaseId | ConvertFrom-Json
+            # Trouver le run créé APRÈS START_TIME et terminé
+            RUN_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" \
+              | jq -r --arg START "$START_TIME" '
+                  .workflow_runs
+                  | map(select(.created_at > $START))
+                  | map(select(.status == "completed"))
+                  | sort_by(.created_at)
+                  | last
+                  | .id
+                ')
 
-              if ($run -and $run.databaseId) {
-                  $RUN_ID = $run.databaseId
-                  Write-Host "Run trouvé : $RUN_ID"
-                  echo "RUN_ID=$RUN_ID" >> $env:GITHUB_ENV
-                  break
-              }
+            if [ "$RUN_ID" != "null" ] && [ -n "$RUN_ID" ]; then
+              echo "Run trouvé : $RUN_ID"
 
-              Write-Host "Aucun run trouvé, nouvelle tentative dans 5 secondes..."
-              Start-Sleep -Seconds 5
-          }
+              # Vérifier que les artifacts existent
+              ART_COUNT=$(curl -s \
+                -H "Authorization: Bearer ${{ secrets.PAT }}" \
+                "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+                | jq '.artifacts | length')
 
-          if (-not $env:RUN_ID) {
-              Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
-              exit 1
-          }
+              echo "Nombre d'artifacts : $ART_COUNT"
+
+              if [ "$ART_COUNT" -ge 2 ]; then
+                echo "Artifacts prêts !"
+                echo "$RUN_ID" > rtl433_run_id.txt
+                break
+              fi
+            fi
+
+            echo "Pas encore prêts, attente 5 secondes..."
+            sleep 5
+          done
 
       # ---------------------------------------------------------
       # 7) Télécharger les artefacts RTL_433
