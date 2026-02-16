@@ -1,43 +1,76 @@
-name: Build All SDRSharp Components
+name: Build All
 
 permissions:
   contents: write
 
 on:
   workflow_dispatch:
-  
-    ############################################################
-    # 1. Input TAG version et commentaire release
-    ############################################################	  
     inputs:
       tag:
-        description: "Version du plugin (ex: 0.0.0.1)"
-        required: true
+        description: "Version manuelle (laisser vide pour auto-incrément)"
+        required: false
         type: string
       notes:
         description: "Notes de la release"
-        required: true
+        required: false
         type: string
 
 jobs:
-
-  orchestrate:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
 
     steps:
-      ############################################################
-      # 1. Read inputs
-      ############################################################		
-      - name: Read inputs
-        run: |
-          echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
-          echo "NOTES=${{ github.event.inputs.notes }}" >> $GITHUB_ENV
-    
-      - name: Checkout plugin repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # ---------------------------------------------------------
+      # 1) Récupérer le dernier tag existant
+      # ---------------------------------------------------------
+      - name: Get latest tag
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0.0")
+          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
+          echo "Dernier tag détecté : $LAST_TAG"
+
+      # ---------------------------------------------------------
+      # 2) Auto-incrément (BUILD)
+      # ---------------------------------------------------------
+      - name: Auto increment version
+        run: |
+          IFS='.' read -r MAJ MIN PAT BLD <<< "${LAST_TAG}"
+          AUTO_TAG="$MAJ.$MIN.$PAT.$((BLD+1))"
+          echo "AUTO_TAG=$AUTO_TAG" >> $GITHUB_ENV
+          echo "Version auto-incrémentée : $AUTO_TAG"
+
+      # ---------------------------------------------------------
+      # 3) Choisir entre version manuelle ou auto
+      # ---------------------------------------------------------
+      - name: Determine final tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+            echo "Version forcée par l'utilisateur : ${{ github.event.inputs.tag }}"
+          else
+            echo "TAG=${AUTO_TAG}" >> $GITHUB_ENV
+            echo "Version finale (auto) : ${AUTO_TAG}"
+          fi
+
+      # ---------------------------------------------------------
+      # 4) Lire les notes de release
+      # ---------------------------------------------------------
+      - name: Read notes
+        run: |
+          if [ -n "${{ github.event.inputs.notes }}" ]; then
+            echo "NOTES=${{ github.event.inputs.notes }}" >> $GITHUB_ENV
+          else
+            echo "NOTES=Release automatique du plugin RTL_433." >> $GITHUB_ENV
+          fi
+
+      # ---------------------------------------------------------
+      # 5) ICI : ton build, ton extraction, tes ZIP x86/x64
+      # ---------------------------------------------------------
       ############################################################
       # 1. Save start time
       ############################################################		
@@ -196,20 +229,30 @@ jobs:
           path: |
             plugin_rtl433_x86.zip
             plugin_rtl433_x64.zip    
-            
-      ############################################################
-      # 5. Create Git tag
-      ############################################################
+
+      # ---------------------------------------------------------
+      # 6) Renommer les ZIP avec le tag final
+      # ---------------------------------------------------------
+      - name: Rename ZIPs with tag
+        run: |
+          mv plugin_rtl433_x86.zip plugin_rtl433_x86-${{ env.TAG }}.zip
+          mv plugin_rtl433_x64.zip plugin_rtl433_x64-${{ env.TAG }}.zip
+          echo "ZIP renommés avec la version ${{ env.TAG }}"
+
+      # ---------------------------------------------------------
+      # 7) Créer le tag Git
+      # ---------------------------------------------------------
       - name: Create Git tag
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git tag ${{ env.TAG }}
           git push origin ${{ env.TAG }}
+          echo "Tag ${{ env.TAG }} créé et poussé"
 
-      ############################################################
-      # 6. Create GitHub Release
-      ############################################################
+      # ---------------------------------------------------------
+      # 8) Créer la release GitHub
+      # ---------------------------------------------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -218,15 +261,16 @@ jobs:
           body: ${{ env.NOTES }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      ############################################################
-      # 6. Upload plugin_x86 and plugin_x64 to release
-      ############################################################
-      - name: Upload plugin_x86 and plugin_x64 to release
+
+      # ---------------------------------------------------------
+      # 9) Upload des ZIP dans la release
+      # ---------------------------------------------------------
+      - name: Upload ZIPs to release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ env.TAG }}
           files: |
-            plugin_rtl433_x86.zip
-            plugin_rtl433_x64.zip
+            plugin_rtl433_x86-${{ env.TAG }}.zip
+            plugin_rtl433_x64-${{ env.TAG }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
