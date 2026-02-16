@@ -35,6 +35,8 @@ jobs:
     
       - name: Checkout plugin repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       ############################################################
       # 1. Save start time
@@ -215,8 +217,11 @@ jobs:
           name: "Release RTL_433 ${ env.TAG }"
           body: ${ env.NOTES }
         env:
-          GITHUB_TOKEN: ${ secrets.PAT }
-
+          GITHUB_TOKEN: ${ secrets.GITHUB_TOKEN }
+          
+      ############################################################
+      # 6. Upload plugin_x86 and plugin_x64 to release
+      ############################################################
       - name: Upload plugin_x86 and plugin_x64 to release
         uses: softprops/action-gh-release@v1
         with:
@@ -224,4 +229,4 @@ jobs:
             plugin_rtl433_x86.zip
             plugin_rtl433_x64.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
