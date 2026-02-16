@@ -20,6 +20,19 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Save start time
+        shell: pwsh
+        run: |
+          $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          Set-Content -Path "rtl433_start_time.txt" -Value $now
+          Write-Host "Start time saved: $now"
+          
+      - name: Debug START_TIME
+        shell: pwsh
+        run: |
+          Write-Host "START_TIME contenu dans le fichier :"
+          Get-Content rtl433_start_time.txt
+    
       # ---------------------------------------------------------
       # 1) Checkout complet (obligatoire pour créer un tag)
       # ---------------------------------------------------------
