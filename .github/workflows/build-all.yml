@@ -15,33 +15,48 @@ jobs:
       ############################################################
       # 1. Trigger RTL_433 build
       ############################################################
-      - name: Trigger RTL_433 build
+      - name: Wait for RTL_433 artifacts
         run: |
-          START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "$START_TIME" > rtl433_start_time.txt
+          START_TIME=$(cat rtl433_start_time.txt)
+          echo "Recherche d'un run RTL_433 créé après $START_TIME"
 
-          curl -s -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PAT }}" \
-            https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches \
-            -d '{"ref":"rtl_433forSDRSharp"}'
+          for i in {1..60}; do
+            echo "Tentative $i..."
 
-      - name: Wait 2 minutes for RTL_433 to finish
-        if: success()
-        run: |
-           echo "Waiting 2 minutes to ensure RTL_433 artifacts are ready..."
-           sleep 120
-                
-      - name: Get latest RTL_433 run ID
-        run: |
-          RTL433_RUN_ID=$(curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PAT }}" \
-          "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs?status=completed" \
-          | jq -r '.workflow_runs[0].id')
-          
-          echo "RTL433_RUN_ID=$RTL433_RUN_ID"
-          echo "$RTL433_RUN_ID" > rtl433_run_id.txt
+            # Trouver le run créé APRÈS START_TIME et terminé
+            RUN_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" \
+              | jq -r --arg START "$START_TIME" '
+                  .workflow_runs
+                  | map(select(.created_at > $START))
+                  | map(select(.status == "completed"))
+                  | sort_by(.created_at)
+                  | last
+                  | .id
+                ')
+
+            if [ "$RUN_ID" != "null" ] && [ -n "$RUN_ID" ]; then
+              echo "Run trouvé : $RUN_ID"
+
+              # Vérifier que les artifacts existent
+              ART_COUNT=$(curl -s \
+                -H "Authorization: Bearer ${{ secrets.PAT }}" \
+                "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts" \
+                | jq '.artifacts | length')
+
+              echo "Nombre d'artifacts : $ART_COUNT"
+
+              if [ "$ART_COUNT" -ge 2 ]; then
+                echo "Artifacts prêts !"
+                echo "$RUN_ID" > rtl433_run_id.txt
+                break
+              fi
+            fi
+
+            echo "Pas encore prêts, attente 5 secondes..."
+            sleep 5
+          done
 
       ############################################################
       # 2. Download RTL_433_x86 et RTL_433_x64 artifact
