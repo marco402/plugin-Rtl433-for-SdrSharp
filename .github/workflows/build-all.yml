@@ -22,6 +22,7 @@ jobs:
     steps:
       - name: Save start time
         shell: pwsh
+        working-directory: ${{ github.workspace }}
         run: |
           $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
           $file = "${{ github.workspace }}\rtl433_start_time.txt"
@@ -30,6 +31,7 @@ jobs:
           
       - name: Debug START_TIME
         shell: pwsh
+        working-directory: ${{ github.workspace }}
         run: |
           $file = "${{ github.workspace }}\rtl433_start_time.txt"
           Write-Host "START_TIME contenu dans le fichier :"
@@ -104,6 +106,7 @@ jobs:
       # ---------------------------------------------------------
       - name: Wait for RTL_433 artifacts
         shell: pwsh
+        working-directory: ${{ github.workspace }}
         env:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
