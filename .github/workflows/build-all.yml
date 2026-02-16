@@ -58,7 +58,7 @@ jobs:
             echo "RUN_ID=$RUN_ID"
             # 2. Récupérer l’URL du ZIP
             ZIP_URL=$(curl -s \
-              -H "Authorization: Bearer ${{ secrets.PAT1 }}" \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
               "https://api.github.com/repos/.../runs/$RUN_ID/artifacts" \
               | jq -r --arg ARCH "$ARCH" '.artifacts[] | select(.name == ("RTL_433_" + $ARCH)) | .archive_download_url')
  
