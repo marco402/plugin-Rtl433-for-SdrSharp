@@ -24,8 +24,8 @@ jobs:
         shell: pwsh
         working-directory: ${{ github.workspace }}
         run: |
+          Set-Location "${{ github.workspace }}"
           $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          $file = "${{ github.workspace }}\rtl433_start_time.txt"
           Set-Content -Path $file -Value $now
           Write-Host "Start time saved in $file : $now"
           
@@ -33,7 +33,7 @@ jobs:
         shell: pwsh
         working-directory: ${{ github.workspace }}
         run: |
-          $file = "${{ github.workspace }}\rtl433_start_time.txt"
+          Set-Location "${{ github.workspace }}"
           Write-Host "START_TIME contenu dans le fichier :"
           Get-Content $file
     
@@ -110,7 +110,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          $file = "${{ github.workspace }}\rtl433_start_time.txt"
+          Set-Location "${{ github.workspace }}"
           $START_TIME = Get-Content $file
           Write-Host "Recherche d'un run RTL_433 créé après $START_TIME"
 
