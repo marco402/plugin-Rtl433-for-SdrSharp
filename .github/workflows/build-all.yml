@@ -214,7 +214,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG }}
-          name: "Release RTL_433 ${ env.TAG }"
+          name: "Release RTL_433 ${{ env.TAG }}"
           body: ${{ env.NOTES }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
