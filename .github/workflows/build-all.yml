@@ -29,10 +29,15 @@ jobs:
       # 1) Récupérer le dernier tag existant
       # ---------------------------------------------------------
       - name: Get latest tag
+        shell: pwsh
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0.0")
-          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
-          echo "Dernier tag détecté : $LAST_TAG"
+          try {
+            $tag = git describe --tags --abbrev=0
+          } catch {
+            $tag = "0.0.0.0"
+          }
+          echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+          Write-Host "Dernier tag détecté : $tag"
 
       # ---------------------------------------------------------
       # 2) Auto-incrément (BUILD)
