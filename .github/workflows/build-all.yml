@@ -46,9 +46,9 @@ jobs:
       ############################################################
       # 2. Download RTL_433_x86 et RTL_433_x64 artifact
       ############################################################
-      - name: Download RTL_433_x64 artifact
+      - name: Download RTL_433 artifacts (x86 + x64)
         run: |
-		  for ARCH in x86 x64; do
+          for ARCH in x86 x64; do
             # 1. Récupérer le dernier run terminé
             RUN_ID=$(curl -s \
               -H "Authorization: Bearer ${{ secrets.PAT }}" \
