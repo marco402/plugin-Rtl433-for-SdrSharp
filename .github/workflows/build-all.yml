@@ -43,24 +43,31 @@ jobs:
       # 2) Auto-incrément (BUILD)
       # ---------------------------------------------------------
       - name: Auto increment version
+        shell: pwsh
         run: |
-          IFS='.' read -r MAJ MIN PAT BLD <<< "${LAST_TAG}"
-          AUTO_TAG="$MAJ.$MIN.$PAT.$((BLD+1))"
-          echo "AUTO_TAG=$AUTO_TAG" >> $GITHUB_ENV
-          echo "Version auto-incrémentée : $AUTO_TAG"
+          $parts = $env:LAST_TAG.Split('.')
+          $maj = [int]$parts[0]
+          $min = [int]$parts[1]
+          $pat = [int]$parts[2]
+          $bld = [int]$parts[3] + 1
+
+          $auto = "$maj.$min.$pat.$bld"
+          echo "AUTO_TAG=$auto" >> $env:GITHUB_ENV
+          Write-Host "Version auto-incrémentée : $auto"
 
       # ---------------------------------------------------------
       # 3) Choisir entre version manuelle ou auto
       # ---------------------------------------------------------
       - name: Determine final tag
+        shell: pwsh
         run: |
-          if [ -n "${{ github.event.inputs.tag }}" ]; then
-            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
-            echo "Version forcée par l'utilisateur : ${{ github.event.inputs.tag }}"
-          else
-            echo "TAG=${AUTO_TAG}" >> $GITHUB_ENV
-            echo "Version finale (auto) : ${AUTO_TAG}"
-          fi
+          if ("${{ github.event.inputs.tag }}" -ne "") {
+            echo "TAG=${{ github.event.inputs.tag }}" >> $env:GITHUB_ENV
+            Write-Host "Version forcée : ${{ github.event.inputs.tag }}"
+          } else {
+            echo "TAG=$env:AUTO_TAG" >> $env:GITHUB_ENV
+            Write-Host "Version finale (auto) : $env:AUTO_TAG"
+          }
 
       # ---------------------------------------------------------
       # 4) Lire les notes de release
