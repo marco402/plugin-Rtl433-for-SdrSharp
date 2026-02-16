@@ -212,7 +212,7 @@ jobs:
           name: "Release RTL_433 ${ env.TAG }"
           body: ${ env.NOTES }
         env:
-          GITHUB_TOKEN: ${ secrets.GITHUB_TOKEN }
+          GITHUB_TOKEN: ${ secrets.PAT }
 
       - name: Upload plugin_x86 and plugin_x64 to release
         uses: softprops/action-gh-release@v1
@@ -221,4 +221,4 @@ jobs:
             plugin_rtl433_x86.zip
             plugin_rtl433_x64.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
