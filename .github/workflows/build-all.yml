@@ -219,6 +219,10 @@ jobs:
         SIGN_PFX: ${{ secrets.SIGN_PFX }}
         SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
       run: |
+        Write-Host "PFX path: $pfxPath"
+        Write-Host "File exists: $(Test-Path $pfxPath)"
+        Write-Host "File size: $((Get-Item $pfxPath).Length)"
+
         $pfxPath = "$env:USERPROFILE\signcert.pfx"
         [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGN_PFX))
 
