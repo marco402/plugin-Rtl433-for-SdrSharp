@@ -104,9 +104,9 @@ jobs:
           $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
           $body = '{"ref":"rtl_433forSDRSharp"}'
 
-          $response = curl -s -o $null -w "%{http_code}" `
+          $response = curl.exe -s -o $null -w "%{http_code}" `
             -X POST `
-            -H "Authorization: Bearer ${{ secrets.PAT }}" `
+            -H "Authorization: Bearer $env:GH_TOKEN"
             -H "Accept: application/vnd.github+json" `
             -d $body `
             $url
