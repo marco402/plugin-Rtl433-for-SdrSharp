@@ -42,15 +42,13 @@ jobs:
       id: notes
       shell: pwsh
       run: |
-        $notes = @"${{ github.event.inputs.notes }}"@
+        $notes = "${{ github.event.inputs.notes }}"
 
         Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
         Add-Content -Path $env:GITHUB_ENV -Value $notes
         Add-Content -Path $env:GITHUB_ENV -Value "EOF"
 
         Write-Host "Notes de release enregistrées."
-
-
 
     # ---------------------------------------------------------
     # 3) Get last tag
