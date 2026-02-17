@@ -118,58 +118,58 @@ jobs:
             exit 1
           }
 
-          - name: Wait for RTL_433 artifacts
-            shell: pwsh
-            env:
-              GH_TOKEN: ${{ secrets.PAT }}
-            run: |
-              $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
+      - name: Wait for RTL_433 artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
 
-              $start = Get-Date $env:START_TIME
+          $start = Get-Date $env:START_TIME
 
-              Write-Host "Recherche d'un run RTL_433 créé après $start"
+          Write-Host "Recherche d'un run RTL_433 créé après $start"
 
-              for ($i = 1; $i -le 60; $i++) {
+          for ($i = 1; $i -le 60; $i++) {
 
-                  Write-Host "Tentative $i..."
+              Write-Host "Tentative $i..."
 
-                  $runs = Invoke-RestMethod -Headers $headers `
-                    -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
-                    -Method GET
+              $runs = Invoke-RestMethod -Headers $headers `
+                -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
+                -Method GET
 
-                  # Trouver le run le plus récent sur la bonne branche
-                  $run = $runs.workflow_runs |
-                    Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
-                    Sort-Object created_at |
-                    Select-Object -Last 1
+              # Trouver le run le plus récent sur la bonne branche
+              $run = $runs.workflow_runs |
+                Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
+                Sort-Object created_at |
+                Select-Object -Last 1
 
-                  if ($run) {
-                      Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
+              if ($run) {
+                  Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
 
-                      # Attendre qu'il soit terminé
-                      if ($run.status -eq "completed") {
+                  # Attendre qu'il soit terminé
+                  if ($run.status -eq "completed") {
 
-                          # Vérifier les artefacts
-                          $artifacts = Invoke-RestMethod -Headers $headers `
-                            -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
-                            -Method GET
+                      # Vérifier les artefacts
+                      $artifacts = Invoke-RestMethod -Headers $headers `
+                        -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
+                        -Method GET
 
-                          $count = $artifacts.artifacts.Count
-                          Write-Host "Nombre d'artefacts : $count"
+                      $count = $artifacts.artifacts.Count
+                      Write-Host "Nombre d'artefacts : $count"
 
-                          if ($count -ge 2) {
-                              Write-Host "Artifacts prêts !"
-                              echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
-                              exit 0
-                          }
+                      if ($count -ge 2) {
+                          Write-Host "Artifacts prêts !"
+                          echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
+                          exit 0
                       }
                   }
-
-                  Start-Sleep -Seconds 5
               }
 
-              Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
-              exit 1
+              Start-Sleep -Seconds 5
+          }
+
+          Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
+          exit 1
 
       # ---------------------------------------------------------
       # 7) Télécharger les artefacts RTL_433
