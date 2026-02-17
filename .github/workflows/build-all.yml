@@ -176,9 +176,15 @@ jobs:
       # ---------------------------------------------------------
       - name: Download RTL_433 artifacts
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          gh run download $env:RUN_ID --repo marco402/Rtl_433_dll-for-plugin-SdrSharp --dir artifacts
+          gh run download $env:RUN_ID `
+            --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
+            --dir artifacts
+
           Write-Host "Artefacts RTL_433 téléchargés."
+
 
       # ---------------------------------------------------------
       # 8) Construire les ZIP x86/x64 du plugin
