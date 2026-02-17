@@ -96,6 +96,32 @@ jobs:
             echo "NOTES=Release automatique du plugin RTL_433." >> $env:GITHUB_ENV
           }
 
+      - name: Trigger RTL_433 build
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
+          $body = '{"ref":"rtl_433forSDRSharp"}'
+
+          $response = curl -s -o $null -w "%{http_code}" `
+            -X POST `
+            -H "Authorization: Bearer $env:GH_TOKEN" `
+            -H "Accept: application/vnd.github+json" `
+            -d $body `
+            $url
+
+          Write-Host "HTTP status: $response"
+
+          if ($response -ne "204") {
+            Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
+            exit 1
+          }
+
+          Write-Host "Workflow RTL_433 déclenché avec succès."
+
+
+
       # ---------------------------------------------------------
       # 6) Attendre le build RTL_433 (60 tentatives)
       # ---------------------------------------------------------
