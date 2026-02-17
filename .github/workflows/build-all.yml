@@ -110,7 +110,7 @@ jobs:
             $url
 
           Write-Host "HTTP status: $response"
-
+          echo "response=$response"
           if ($response -eq "204" -or $response -eq "") {
             Write-Host "Workflow RTL_433 déclenché avec succès."
           }
