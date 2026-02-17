@@ -192,8 +192,20 @@ jobs:
       - name: Build plugin ZIPs
         shell: pwsh
         run: |
-          Compress-Archive -Path "artifacts\*" -DestinationPath "plugin_rtl433_x86.zip"
-          Compress-Archive -Path "artifacts\*" -DestinationPath "plugin_rtl433_x64.zip"
+          # Création des dossiers temporaires
+          New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
+          New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
+
+          # Copier UNIQUEMENT la DLL x86
+          Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
+
+          # Copier UNIQUEMENT la DLL x64
+          Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
+
+          # Compression propre
+          Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
+          Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+
           Write-Host "ZIP x86/x64 créés."
 
       # ---------------------------------------------------------
