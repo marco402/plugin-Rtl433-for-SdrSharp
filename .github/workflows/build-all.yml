@@ -118,71 +118,58 @@ jobs:
             exit 1
           }
 
-      # ---------------------------------------------------------
-      # 6) Attendre le build RTL_433 (60 tentatives)
-      # ---------------------------------------------------------
-      - name: Wait for RTL_433 artifacts
-        shell: pwsh
-        run: |
-          $START_TIME = $env:START_TIME
+          - name: Wait for RTL_433 artifacts
+            shell: pwsh
+            env:
+              GH_TOKEN: ${{ secrets.PAT }}
+            run: |
+              $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
 
-          # Convertir START_TIME en timestamp Unix
-          $startUnix = [int][double]::Parse((Get-Date $START_TIME -UFormat %s))
+              $start = Get-Date $env:START_TIME
 
-          # On enlève 60 secondes
-          $startUnix = $startUnix - 60
+              Write-Host "Recherche d'un run RTL_433 créé après $start"
 
-          # On reconvertit en ISO8601
-          $startMinus60 = (Get-Date -Date "1970-01-01T00:00:00Z").AddSeconds($startUnix).ToString("yyyy-MM-ddTHH:mm:ssZ")
+              for ($i = 1; $i -le 60; $i++) {
 
-          Write-Host "Recherche d'un run RTL_433 créé après $startMinus60"
+                  Write-Host "Tentative $i..."
 
+                  $runs = Invoke-RestMethod -Headers $headers `
+                    -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
+                    -Method GET
 
-          for ($i = 1; $i -le 60; $i++) {
+                  # Trouver le run le plus récent sur la bonne branche
+                  $run = $runs.workflow_runs |
+                    Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
+                    Sort-Object created_at |
+                    Select-Object -Last 1
 
-              Write-Host "Tentative $i..."
+                  if ($run) {
+                      Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
 
-          Write-Host "=== RAW RUNS JSON ==="
-          curl.exe -s -H "Authorization: Bearer ${{ secrets.PAT }}" "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs"
-          Write-Host "======================"
+                      # Attendre qu'il soit terminé
+                      if ($run.status -eq "completed") {
 
-          $RUN_ID = echo $runsJson | jq -r --arg START "$startMinus60" '
-              .workflow_runs
-              | map(select(.created_at > $START))
-              | map(select(.status == "completed"))
-              | sort_by(.created_at)
-              | last
-              | .id
-          '
+                          # Vérifier les artefacts
+                          $artifacts = Invoke-RestMethod -Headers $headers `
+                            -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
+                            -Method GET
 
+                          $count = $artifacts.artifacts.Count
+                          Write-Host "Nombre d'artefacts : $count"
 
-              if ($RUN_ID -ne "null" -and $RUN_ID -ne "") {
-
-                  Write-Host "Run trouvé : $RUN_ID"
-
-                  $artifactsJson = curl -s `
-                    -H "Authorization: Bearer ${{ secrets.PAT }}" `
-                    "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts"
-
-                  $ART_COUNT = echo $artifactsJson | jq '.artifacts | length'
-
-                  Write-Host "Nombre d'artefacts : $ART_COUNT"
-
-                  if ($ART_COUNT -ge 2) {
-                      Write-Host "Artifacts prêts !"
-                      echo "RUN_ID=$RUN_ID" >> $env:GITHUB_ENV
-                      break
+                          if ($count -ge 2) {
+                              Write-Host "Artifacts prêts !"
+                              echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
+                              exit 0
+                          }
+                      }
                   }
+
+                  Start-Sleep -Seconds 5
               }
 
-              Write-Host "Pas encore prêts, attente 5 secondes..."
-              Start-Sleep -Seconds 5
-          }
-
-          if (-not $env:RUN_ID) {
               Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
               exit 1
-          }
 
       # ---------------------------------------------------------
       # 7) Télécharger les artefacts RTL_433
