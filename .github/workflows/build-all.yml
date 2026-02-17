@@ -1,246 +1,268 @@
 name: Build All
 
-permissions:
-  contents: write
-
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Version manuelle (laisser vide pour auto-incrément)"
-        required: false
-        type: string
-      notes:
-        description: "Notes de la release"
-        required: false
-        type: string
 
 jobs:
-  build:
+  build-all:
     runs-on: windows-latest
 
     steps:
-      - name: Save start time
-        shell: pwsh
-        run: |
-          $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          echo "START_TIME=$now" >> $env:GITHUB_ENV
-          Write-Host "Start time saved: $now"
+        # ---------------------------------------------------------
+    # 0) Gestion du TAG / VERSION / NOTES
+    # ---------------------------------------------------------
+    - name: Get last tag
+      id: lasttag
+      shell: pwsh
+      run: |
+        $tag = git describe --tags --abbrev=0 2>$null
+        if (-not $tag) { $tag = "0.0.0.0" }
+        echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag trouvé : $tag"
 
-      - name: Debug START_TIME
-        shell: pwsh
-        run: |
-           Write-Host "START_TIME = $env:START_TIME"
-    
-      # ---------------------------------------------------------
-      # 1) Checkout complet (obligatoire pour créer un tag)
-      # ---------------------------------------------------------
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Auto-increment BUILD
+      id: version
+      shell: pwsh
+      run: |
+        $last = $env:LAST_TAG
+        $parts = $last.Split(".")
+        $major = [int]$parts[0]
+        $minor = [int]$parts[1]
+        $patch = [int]$parts[2]
+        $build = [int]$parts[3] + 1
 
-      # ---------------------------------------------------------
-      # 2) Récupérer le dernier tag existant
-      # ---------------------------------------------------------
-      - name: Get latest tag
-        shell: pwsh
-        run: |
-          try {
-            $tag = git describe --tags --abbrev=0
-          } catch {
-            $tag = "0.0.0.0"
-          }
-          echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
-          Write-Host "Dernier tag détecté : $tag"
+        $new = "$major.$minor.$patch.$build"
+        echo "VERSION=$new" >> $env:GITHUB_ENV
+        echo "TAG=$new" >> $env:GITHUB_ENV
 
-      # ---------------------------------------------------------
-      # 3) Auto-incrément (BUILD)
-      # ---------------------------------------------------------
-      - name: Auto increment version
-        shell: pwsh
-        run: |
-          $parts = $env:LAST_TAG.Split('.')
-          $maj = [int]$parts[0]
-          $min = [int]$parts[1]
-          $pat = [int]$parts[2]
-          $bld = [int]$parts[3] + 1
+        Write-Host "Nouvelle version auto : $new"
 
-          $auto = "$maj.$min.$pat.$bld"
-          echo "AUTO_TAG=$auto" >> $env:GITHUB_ENV
-          Write-Host "Version auto-incrémentée : $auto"
+    - name: Manual version override (optional)
+      if: ${{ inputs.version != '' }}
+      shell: pwsh
+      run: |
+        echo "VERSION=${{ inputs.version }}" >> $env:GITHUB_ENV
+        echo "TAG=${{ inputs.version }}" >> $env:GITHUB_ENV
+        Write-Host "Version forcée : ${{ inputs.version }}"
 
-      # ---------------------------------------------------------
-      # 4) Choisir entre version manuelle ou auto
-      # ---------------------------------------------------------
-      - name: Determine final tag
-        shell: pwsh
-        run: |
-          if ("${{ github.event.inputs.tag }}" -ne "") {
-            echo "TAG=${{ github.event.inputs.tag }}" >> $env:GITHUB_ENV
-            Write-Host "Version forcée : ${{ github.event.inputs.tag }}"
-          } else {
-            echo "TAG=$env:AUTO_TAG" >> $env:GITHUB_ENV
-            Write-Host "Version finale (auto) : $env:AUTO_TAG"
-          }
+    - name: Release notes
+      id: notes
+      shell: pwsh
+      run: |
+        $notes = @" ${{ inputs.notes }} "@
+        echo "NOTES<<EOF" >> $env:GITHUB_ENV
+        echo "$notes" >> $env:GITHUB_ENV
+        echo "EOF" >> $env:GITHUB_ENV
 
-      # ---------------------------------------------------------
-      # 5) Notes de release
-      # ---------------------------------------------------------
-      - name: Read notes
-        shell: pwsh
-        run: |
-          if ("${{ github.event.inputs.notes }}" -ne "") {
-            echo "NOTES=${{ github.event.inputs.notes }}" >> $env:GITHUB_ENV
-          } else {
-            echo "NOTES=Release automatique du plugin RTL_433." >> $env:GITHUB_ENV
-          }
+        Write-Host "Notes de release enregistrées."
 
-      - name: Trigger RTL_433 build
-        shell: pwsh
-        run: |
-          $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
-          $body = '{"ref":"rtl_433forSDRSharp"}'
+    # ---------------------------------------------------------
+    # 1) Checkout
+    # ---------------------------------------------------------
+    - name: Checkout
+      uses: actions/checkout@v4
 
-          $response = curl.exe -s -o $null -w "%{http_code}" `
-            -X POST `
-            -H "Authorization: Bearer ${{ secrets.PAT }}" `
-            -H "Accept: application/vnd.github+json" `
-            -d $body `
-            $url
+    # ---------------------------------------------------------
+    # 2) Définir START_TIME
+    # ---------------------------------------------------------
+    - name: Save START_TIME
+      shell: pwsh
+      run: |
+        $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        echo "START_TIME=$t" >> $env:GITHUB_ENV
+        Write-Host "START_TIME=$t"
 
-          Write-Host "HTTP status: $response"
-          if ($response -eq "204" -or $null -eq $response) {
+    # ---------------------------------------------------------
+    # 3) Déclencher le build RTL_433
+    # ---------------------------------------------------------
+    - name: Trigger RTL_433 build
+      shell: pwsh
+      run: |
+        $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
+        $body = '{"ref":"rtl_433forSDRSharp"}'
+
+        $response = curl.exe -s -o $null -w "%{http_code}" `
+          -X POST `
+          -H "Authorization: Bearer ${{ secrets.PAT }}" `
+          -H "Accept: application/vnd.github+json" `
+          -d $body `
+          $url
+
+        Write-Host "response='$response'"
+
+        if ($response -eq "204" -or $null -eq $response) {
             Write-Host "Workflow RTL_433 déclenché avec succès."
-          }
-          else {
-            Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
-            exit 1
-          }
+            exit 0
+        }
 
-      - name: Wait for RTL_433 artifacts
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
-        run: |
-          $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
+        Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
+        exit 1
 
-          $start = Get-Date $env:START_TIME
+    # ---------------------------------------------------------
+    # 4) Attendre les artefacts RTL_433
+    # ---------------------------------------------------------
+    - name: Wait for RTL_433 artifacts
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+      run: |
+        $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
+        $start = Get-Date $env:START_TIME
 
-          Write-Host "Recherche d'un run RTL_433 créé après $start"
+        Write-Host "Recherche d'un run RTL_433 créé après $start"
 
-          for ($i = 1; $i -le 60; $i++) {
+        for ($i = 1; $i -le 60; $i++) {
 
-              Write-Host "Tentative $i..."
+            Write-Host "Tentative $i..."
 
-              $runs = Invoke-RestMethod -Headers $headers `
-                -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
-                -Method GET
+            $runs = Invoke-RestMethod -Headers $headers `
+              -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
+              -Method GET
 
-              # Trouver le run le plus récent sur la bonne branche
-              $run = $runs.workflow_runs |
-                Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
-                Sort-Object created_at |
-                Select-Object -Last 1
+            $run = $runs.workflow_runs |
+              Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
+              Sort-Object created_at |
+              Select-Object -Last 1
 
-              if ($run) {
-                  Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
+            if ($run) {
+                Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
 
-                  # Attendre qu'il soit terminé
-                  if ($run.status -eq "completed") {
+                if ($run.status -eq "completed") {
 
-                      # Vérifier les artefacts
-                      $artifacts = Invoke-RestMethod -Headers $headers `
-                        -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
-                        -Method GET
+                    $artifacts = Invoke-RestMethod -Headers $headers `
+                      -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
+                      -Method GET
 
-                      $count = $artifacts.artifacts.Count
-                      Write-Host "Nombre d'artefacts : $count"
+                    $count = $artifacts.artifacts.Count
+                    Write-Host "Nombre d'artefacts : $count"
 
-                      if ($count -ge 2) {
-                          Write-Host "Artifacts prêts !"
-                          echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
-                          exit 0
-                      }
-                  }
-              }
+                    if ($count -ge 2) {
+                        Write-Host "Artifacts prêts !"
+                        echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
+                        exit 0
+                    }
+                }
+            }
 
-              Start-Sleep -Seconds 5
-          }
+            Start-Sleep -Seconds 5
+        }
 
-          Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
-          exit 1
+        Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
+        exit 1
 
-      # ---------------------------------------------------------
-      # 7) Télécharger les artefacts RTL_433
-      # ---------------------------------------------------------
-      - name: Download RTL_433 artifacts
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
-        run: |
-          gh run download $env:RUN_ID `
-            --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
-            --dir artifacts
+    # ---------------------------------------------------------
+    # 5) Télécharger les artefacts RTL_433
+    # ---------------------------------------------------------
+    - name: Download RTL_433 artifacts
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+      run: |
+        gh run download $env:RUN_ID `
+          --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
+          --dir artifacts
 
-          Write-Host "Artefacts RTL_433 téléchargés."
+        Write-Host "Artefacts RTL_433 téléchargés."
 
+    # ---------------------------------------------------------
+    # 6) Construire les ZIP x86/x64 du plugin
+    # ---------------------------------------------------------
+    - name: Build plugin ZIPs
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
+        New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
 
-      # ---------------------------------------------------------
-      # 8) Construire les ZIP x86/x64 du plugin
-      # ---------------------------------------------------------
-      - name: Build plugin ZIPs
-        shell: pwsh
-        run: |
-          # Création des dossiers temporaires
-          New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
-          New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
+        Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
+        Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
 
-          # Copier UNIQUEMENT la DLL x86
-          Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
+        Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:TAG.zip" -Force
+        Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:TAG.zip" -Force
 
-          # Copier UNIQUEMENT la DLL x64
-          Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
+        Write-Host "ZIP x86/x64 créés."
 
-          # Compression propre
-          Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:TAG.zip" -Force
-          Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:TAG.zip" -Force
+    # ---------------------------------------------------------
+    # 7) Import du certificat
+    # ---------------------------------------------------------
+    - name: Import certificate
+      shell: pwsh
+      env:
+        SIGN_PFX: ${{ secrets.SIGN_PFX }}
+        SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
+      run: |
+        $pfxPath = "$env:USERPROFILE\signcert.pfx"
+        [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGN_PFX))
 
-          Write-Host "ZIP x86/x64 créés."
+        certutil -f -p $env:SIGN_PFX_PASSWORD -importpfx $pfxPath NoRoot
 
-      # ---------------------------------------------------------
-      # 10) Créer le tag Git
-      # ---------------------------------------------------------
-      - name: Create Git tag
-        shell: pwsh
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag $env:TAG
-          git push origin $env:TAG
-          Write-Host "Tag $env:TAG créé et poussé."
+        Write-Host "Certificat importé."
 
-      # ---------------------------------------------------------
-      # 11) Créer la release GitHub
-      # ---------------------------------------------------------
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.TAG }}
-          name: "Release RTL_433 ${{ env.TAG }}"
-          body: ${{ env.NOTES }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # ---------------------------------------------------------
+    # 8) Signature des DLL
+    # ---------------------------------------------------------
+    - name: Sign DLLs
+      shell: pwsh
+      run: |
+        $signtool = "C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe"
 
-      # ---------------------------------------------------------
-      # 12) Upload des ZIP dans la release
-      # ---------------------------------------------------------
-      - name: Upload ZIPs to release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.TAG }}
-          files: |
-            plugin_rtl433_x86-${{ env.TAG }}.zip
-            plugin_rtl433_x64-${{ env.TAG }}.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        Write-Host "Signature x86..."
+        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x86\rtl_433.dll"
+
+        Write-Host "Signature x64..."
+        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x64\rtl_433.dll"
+
+        Write-Host "DLL signées."
+
+    # ---------------------------------------------------------
+    # 9) Repack des ZIP signés
+    # ---------------------------------------------------------
+    - name: Repack signed ZIPs
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
+        Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+
+        Write-Host "ZIP signés recréés."
+
+    # ---------------------------------------------------------
+    # 10) Cleanup certificat
+    # ---------------------------------------------------------
+    - name: Cleanup certificate
+      shell: pwsh
+      run: |
+        Remove-Item "$env:USERPROFILE\signcert.pfx" -Force
+        Write-Host "Certificat supprimé."
+
+    # ---------------------------------------------------------
+    # 11) Tag Git
+    # ---------------------------------------------------------
+    - name: Create Git tag
+      shell: pwsh
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag $env:TAG
+        git push origin $env:TAG
+        Write-Host "Tag $env:TAG créé et poussé."
+
+    # ---------------------------------------------------------
+    # 12) Release GitHub
+    # ---------------------------------------------------------
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ env.TAG }}
+        name: "Release RTL_433 ${{ env.TAG }}"
+        body: ${{ env.NOTES }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # ---------------------------------------------------------
+    # 13) Upload ZIPs
+    # ---------------------------------------------------------
+    - name: Upload ZIPs to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          plugin_rtl433_x86-${{ env.VERSION }}.zip
+          plugin_rtl433_x64-${{ env.VERSION }}.zip
