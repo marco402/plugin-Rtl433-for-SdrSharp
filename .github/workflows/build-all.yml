@@ -142,9 +142,9 @@ jobs:
 
               Write-Host "Tentative $i..."
 
-              $runsJson = curl -s `
-                -H "Authorization: Bearer ${{ secrets.PAT }}" `
-                "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs"
+          Write-Host "=== RAW RUNS JSON ==="
+          curl.exe -s -H "Authorization: Bearer ${{ secrets.PAT }}" "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs"
+          Write-Host "======================"
 
           $RUN_ID = echo $runsJson | jq -r --arg START "$startMinus60" '
               .workflow_runs
