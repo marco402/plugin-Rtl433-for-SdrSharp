@@ -192,8 +192,8 @@ jobs:
       - name: Build plugin ZIPs
         shell: pwsh
         run: |
-          Compress-Archive -Path "artifacts\x86\*" -DestinationPath "plugin_rtl433_x86.zip"
-          Compress-Archive -Path "artifacts\x64\*" -DestinationPath "plugin_rtl433_x64.zip"
+          Compress-Archive -Path "artifacts\*" -DestinationPath "plugin_rtl433_x86.zip"
+          Compress-Archive -Path "artifacts\*" -DestinationPath "plugin_rtl433_x64.zip"
           Write-Host "ZIP x86/x64 créés."
 
       # ---------------------------------------------------------
