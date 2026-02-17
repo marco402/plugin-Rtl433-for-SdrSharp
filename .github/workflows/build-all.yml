@@ -106,7 +106,7 @@ jobs:
 
           $response = curl.exe -s -o $null -w "%{http_code}" `
             -X POST `
-            -H "Authorization: Bearer $env:GH_TOKEN"
+            -H "Authorization: Bearer $env:GH_TOKEN" `
             -H "Accept: application/vnd.github+json" `
             -d $body `
             $url
