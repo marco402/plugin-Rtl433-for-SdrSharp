@@ -18,7 +18,13 @@ jobs:
 
     steps:
     # ---------------------------------------------------------
-    # Read input (version manuelle ou auto)
+    # 1) Checkout
+    # ---------------------------------------------------------
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # ---------------------------------------------------------
+    # 2) Read input (version manuelle + notes)
     # ---------------------------------------------------------
     - name: Read input
       shell: pwsh
@@ -34,8 +40,8 @@ jobs:
 
         # Notes de release
         $notes = @"
-        ${{ github.event.inputs.notes }}
-        "@
+${{ github.event.inputs.notes }}
+"@
         echo "NOTES<<EOF" >> $env:GITHUB_ENV
         echo "$notes" >> $env:GITHUB_ENV
         echo "EOF" >> $env:GITHUB_ENV
@@ -43,7 +49,7 @@ jobs:
         Write-Host "Notes de release enregistrées."
 
     # ---------------------------------------------------------
-    # 0) Gestion du TAG / VERSION / NOTES
+    # 3) Get last tag
     # ---------------------------------------------------------
     - name: Get last tag
       id: lasttag
@@ -54,9 +60,11 @@ jobs:
         echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
         Write-Host "Dernier tag trouvé : $tag"
 
-
+    # ---------------------------------------------------------
+    # 4) Auto-increment BUILD (si pas de version manuelle)
+    # ---------------------------------------------------------
     - name: Auto-increment BUILD
-      id: version
+      if: ${{ github.event.inputs.version == '' }}
       shell: pwsh
       run: |
         $last = $env:LAST_TAG
@@ -72,33 +80,8 @@ jobs:
 
         Write-Host "Nouvelle version auto : $new"
 
-    - name: Manual version override (optional)
-      if: ${{ inputs.version != '' }}
-      shell: pwsh
-      run: |
-        echo "VERSION=${{ inputs.version }}" >> $env:GITHUB_ENV
-        echo "TAG=${{ inputs.version }}" >> $env:GITHUB_ENV
-        Write-Host "Version forcée : ${{ inputs.version }}"
-
-    - name: Release notes
-      id: notes
-      shell: pwsh
-      run: |
-        $notes = @" ${{ inputs.notes }} "@
-        echo "NOTES<<EOF" >> $env:GITHUB_ENV
-        echo "$notes" >> $env:GITHUB_ENV
-        echo "EOF" >> $env:GITHUB_ENV
-
-        Write-Host "Notes de release enregistrées."
-
     # ---------------------------------------------------------
-    # 1) Checkout
-    # ---------------------------------------------------------
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    # ---------------------------------------------------------
-    # 2) Définir START_TIME
+    # 5) Save START_TIME
     # ---------------------------------------------------------
     - name: Save START_TIME
       shell: pwsh
@@ -108,7 +91,7 @@ jobs:
         Write-Host "START_TIME=$t"
 
     # ---------------------------------------------------------
-    # 3) Déclencher le build RTL_433
+    # 6) Trigger RTL_433 build
     # ---------------------------------------------------------
     - name: Trigger RTL_433 build
       shell: pwsh
@@ -134,7 +117,7 @@ jobs:
         exit 1
 
     # ---------------------------------------------------------
-    # 4) Attendre les artefacts RTL_433
+    # 7) Wait for RTL_433 artifacts
     # ---------------------------------------------------------
     - name: Wait for RTL_433 artifacts
       shell: pwsh
@@ -186,7 +169,7 @@ jobs:
         exit 1
 
     # ---------------------------------------------------------
-    # 5) Télécharger les artefacts RTL_433
+    # 8) Download RTL_433 artifacts
     # ---------------------------------------------------------
     - name: Download RTL_433 artifacts
       shell: pwsh
@@ -200,7 +183,7 @@ jobs:
         Write-Host "Artefacts RTL_433 téléchargés."
 
     # ---------------------------------------------------------
-    # 6) Construire les ZIP x86/x64 du plugin
+    # 9) Build plugin ZIPs (propre)
     # ---------------------------------------------------------
     - name: Build plugin ZIPs
       shell: pwsh
@@ -217,7 +200,7 @@ jobs:
         Write-Host "ZIP x86/x64 créés."
 
     # ---------------------------------------------------------
-    # 7) Import du certificat
+    # 10) Import certificate
     # ---------------------------------------------------------
     - name: Import certificate
       shell: pwsh
@@ -233,7 +216,7 @@ jobs:
         Write-Host "Certificat importé."
 
     # ---------------------------------------------------------
-    # 8) Signature des DLL
+    # 11) Sign DLLs
     # ---------------------------------------------------------
     - name: Sign DLLs
       shell: pwsh
@@ -249,7 +232,7 @@ jobs:
         Write-Host "DLL signées."
 
     # ---------------------------------------------------------
-    # 9) Repack des ZIP signés
+    # 12) Repack signed ZIPs
     # ---------------------------------------------------------
     - name: Repack signed ZIPs
       shell: pwsh
@@ -260,7 +243,7 @@ jobs:
         Write-Host "ZIP signés recréés."
 
     # ---------------------------------------------------------
-    # 10) Cleanup certificat
+    # 13) Cleanup certificate
     # ---------------------------------------------------------
     - name: Cleanup certificate
       shell: pwsh
@@ -269,7 +252,7 @@ jobs:
         Write-Host "Certificat supprimé."
 
     # ---------------------------------------------------------
-    # 11) Tag Git
+    # 14) Create Git tag
     # ---------------------------------------------------------
     - name: Create Git tag
       shell: pwsh
@@ -281,7 +264,7 @@ jobs:
         Write-Host "Tag $env:TAG créé et poussé."
 
     # ---------------------------------------------------------
-    # 12) Release GitHub
+    # 15) Create GitHub Release
     # ---------------------------------------------------------
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
@@ -293,7 +276,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # ---------------------------------------------------------
-    # 13) Upload ZIPs
+    # 16) Upload ZIPs
     # ---------------------------------------------------------
     - name: Upload ZIPs to release
       uses: softprops/action-gh-release@v1
