@@ -2,6 +2,15 @@ name: Build All
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version manuelle (laisser vide pour auto-incrément)"
+        required: false
+        default: ""
+      notes:
+        description: "Notes de release"
+        required: false
+        default: ""
 
 jobs:
   build-all:
