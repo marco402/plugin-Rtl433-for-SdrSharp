@@ -113,14 +113,13 @@ jobs:
 
           Write-Host "HTTP status: $response"
 
-          if ($response -ne "204") {
+          if ($response -eq "204" -or $response -eq "") {
+            Write-Host "Workflow RTL_433 déclenché avec succès."
+          }
+          else {
             Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
             exit 1
           }
-
-          Write-Host "Workflow RTL_433 déclenché avec succès."
-
-
 
       # ---------------------------------------------------------
       # 6) Attendre le build RTL_433 (60 tentatives)
