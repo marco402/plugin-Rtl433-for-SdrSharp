@@ -63,6 +63,11 @@ jobs:
     #    echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
     #    Write-Host "Dernier tag trouvé : 0.0.0.100"
 
+    - name: Fake last tag
+      shell: pwsh
+      run: |
+        echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag trouvé : 0.0.0.100"
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
@@ -71,8 +76,8 @@ jobs:
       if: ${{ github.event.inputs.version == '' }}
       shell: pwsh
       run: |
-        echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
-        Write-Host "Dernier tag trouvé : 0.0.0.100"
+        $last = $env:LAST_TAG
+        Write-Host "DEBUG: LAST_TAG = $last"
         $last = $env:LAST_TAG
         $parts = $last.Split(".")
         $major = [int]$parts[0]
