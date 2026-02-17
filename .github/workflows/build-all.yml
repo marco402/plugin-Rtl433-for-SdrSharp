@@ -18,6 +18,31 @@ jobs:
 
     steps:
     # ---------------------------------------------------------
+    # Read input (version manuelle ou auto)
+    # ---------------------------------------------------------
+    - name: Read input
+      shell: pwsh
+      run: |
+        if ("${{ github.event.inputs.version }}" -ne "") {
+            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+            echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+            Write-Host "Version manuelle détectée : ${{ github.event.inputs.version }}"
+        }
+        else {
+            Write-Host "Aucune version manuelle, auto-incrément."
+        }
+
+        # Notes de release
+        $notes = @"
+        ${{ github.event.inputs.notes }}
+        "@
+        echo "NOTES<<EOF" >> $env:GITHUB_ENV
+        echo "$notes" >> $env:GITHUB_ENV
+        echo "EOF" >> $env:GITHUB_ENV
+
+        Write-Host "Notes de release enregistrées."
+
+    # ---------------------------------------------------------
     # 0) Gestion du TAG / VERSION / NOTES
     # ---------------------------------------------------------
     - name: Get last tag
