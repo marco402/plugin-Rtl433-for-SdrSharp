@@ -125,7 +125,18 @@ jobs:
         shell: pwsh
         run: |
           $START_TIME = $env:START_TIME
-          Write-Host "Recherche d'un run RTL_433 créé après $START_TIME"
+
+          # Convertir START_TIME en timestamp Unix
+          $startUnix = [int][double]::Parse((Get-Date $START_TIME -UFormat %s))
+
+          # On enlève 60 secondes
+          $startUnix = $startUnix - 60
+
+          # On reconvertit en ISO8601
+          $startMinus60 = (Get-Date -Date "1970-01-01T00:00:00Z").AddSeconds($startUnix).ToString("yyyy-MM-ddTHH:mm:ssZ")
+
+          Write-Host "Recherche d'un run RTL_433 créé après $startMinus60"
+
 
           for ($i = 1; $i -le 60; $i++) {
 
@@ -135,14 +146,15 @@ jobs:
                 -H "Authorization: Bearer ${{ secrets.PAT }}" `
                 "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs"
 
-              $RUN_ID = echo $runsJson | jq -r --arg START "$START_TIME" '
-                  .workflow_runs
-                  | map(select(.created_at > $START))
-                  | map(select(.status == "completed"))
-                  | sort_by(.created_at)
-                  | last
-                  | .id
-              '
+          $RUN_ID = echo $runsJson | jq -r --arg START "$startMinus60" '
+              .workflow_runs
+              | map(select(.created_at > $START))
+              | map(select(.status == "completed"))
+              | sort_by(.created_at)
+              | last
+              | .id
+          '
+
 
               if ($RUN_ID -ne "null" -and $RUN_ID -ne "") {
 
