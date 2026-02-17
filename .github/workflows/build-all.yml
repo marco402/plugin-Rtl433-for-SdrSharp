@@ -138,7 +138,7 @@ jobs:
               $RUN_ID = echo $runsJson | jq -r --arg START "$START_TIME" '
                   .workflow_runs
                   | map(select(.created_at > $START))
-                  | map(select(.status == "completed"))-H "Authorization: Bearer ${{ secrets.PAT }}" `
+                  | map(select(.status == "completed"))
                   | sort_by(.created_at)
                   | last
                   | .id
