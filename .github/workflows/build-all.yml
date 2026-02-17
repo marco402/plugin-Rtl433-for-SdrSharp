@@ -54,6 +54,7 @@ jobs:
         echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
         Write-Host "Dernier tag trouvé : $tag"
 
+
     - name: Auto-increment BUILD
       id: version
       shell: pwsh
