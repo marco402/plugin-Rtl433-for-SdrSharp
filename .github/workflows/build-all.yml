@@ -110,7 +110,6 @@ jobs:
             $url
 
           Write-Host "HTTP status: $response"
-          echo "response=$response"
           if ($response -eq "204" -or $null -eq $response) {
             Write-Host "Workflow RTL_433 déclenché avec succès."
           }
@@ -124,8 +123,6 @@ jobs:
       # ---------------------------------------------------------
       - name: Wait for RTL_433 artifacts
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
         run: |
           $START_TIME = $env:START_TIME
           Write-Host "Recherche d'un run RTL_433 créé après $START_TIME"
@@ -135,13 +132,13 @@ jobs:
               Write-Host "Tentative $i..."
 
               $runsJson = curl -s `
-                -H "Authorization: Bearer $env:GH_TOKEN" `
+                -H "Authorization: Bearer ${{ secrets.PAT }}" `
                 "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs"
 
               $RUN_ID = echo $runsJson | jq -r --arg START "$START_TIME" '
                   .workflow_runs
                   | map(select(.created_at > $START))
-                  | map(select(.status == "completed"))
+                  | map(select(.status == "completed"))-H "Authorization: Bearer ${{ secrets.PAT }}" `
                   | sort_by(.created_at)
                   | last
                   | .id
@@ -152,7 +149,7 @@ jobs:
                   Write-Host "Run trouvé : $RUN_ID"
 
                   $artifactsJson = curl -s `
-                    -H "Authorization: Bearer $env:GH_TOKEN" `
+                    -H "Authorization: Bearer ${{ secrets.PAT }}" `
                     "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$RUN_ID/artifacts"
 
                   $ART_COUNT = echo $artifactsJson | jq '.artifacts | length'
