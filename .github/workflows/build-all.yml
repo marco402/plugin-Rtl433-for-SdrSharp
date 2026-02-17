@@ -56,12 +56,16 @@ jobs:
     # ---------------------------------------------------------
     # 3) Get last tag
     # ---------------------------------------------------------
-    - name: Get last tag
-      id: lasttag
+    - name: Get latest tag
       shell: pwsh
       run: |
-        echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
-        Write-Host "Dernier tag trouvé : 0.0.0.100"
+        try {
+          $tag = git describe --tags --abbrev=0
+        } catch {
+          $tag = "0.0.0.0"
+        }
+        echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag détecté : $tag"
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
