@@ -60,7 +60,8 @@ jobs:
       id: lasttag
       shell: pwsh
       run: |
-        echo "0.0.0.100" >> $env:GITHUB_ENV
+        echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag trouvé : 0.0.0.100"
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
