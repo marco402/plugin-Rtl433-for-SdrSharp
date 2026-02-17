@@ -38,15 +38,19 @@ jobs:
             Write-Host "Aucune version manuelle, auto-incrément."
         }
 
-        # Notes de release
-        $notes = @"
-${{ github.event.inputs.notes }}
-"@
-        echo "NOTES<<EOF" >> $env:GITHUB_ENV
-        echo "$notes" >> $env:GITHUB_ENV
-        echo "EOF" >> $env:GITHUB_ENV
+    - name: Release notes
+      id: notes
+      shell: pwsh
+      run: |
+        $notes = @"${{ github.event.inputs.notes }}"@
+
+        Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+        Add-Content -Path $env:GITHUB_ENV -Value $notes
+        Add-Content -Path $env:GITHUB_ENV -Value "EOF"
 
         Write-Host "Notes de release enregistrées."
+
+
 
     # ---------------------------------------------------------
     # 3) Get last tag
