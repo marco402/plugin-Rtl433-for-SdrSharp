@@ -210,91 +210,87 @@ jobs:
 
         Write-Host "ZIP x86/x64 créés."
 
-    # ---------------------------------------------------------
-    # 10) Import certificate
-    # ---------------------------------------------------------
-    - name: Import certificate
-      shell: pwsh
+    - name: Request OIDC token
+      id: oidc
+      run: |
+        echo "token=$(curl -sLS \
+          -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sigstore" \
+          | jq -r '.value')" >> $GITHUB_OUTPUT
+
+    - name: Sign plugin ZIPs with Cosign
       env:
-        SIGN_PFX: ${{ secrets.SIGN_PFX }}
-        SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
+        COSIGN_EXPERIMENTAL: "true"
       run: |
-        $pfxPath = "$env:USERPROFILE\signcert.pfx"
-        Write-Host "PFX path: $pfxPath"
-        Write-Host "File exists: $(Test-Path $pfxPath)"
-        Write-Host "File size: $((Get-Item $pfxPath).Length)"    
-        [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGN_PFX))
+        TAG="${{ github.event.release.tag_name }}"
 
-        certutil -f -p $env:SIGN_PFX_PASSWORD -importpfx $pfxPath NoRoot
+        FILES=(
+          "plugin_rtl433_x86-${TAG}.zip"
+          "plugin_rtl433_x64-${TAG}.zip"
+        )
 
-        Write-Host "Certificat importé."
+        for FILE in "${FILES[@]}"; do
+          echo "Signing $FILE..."
+          cosign sign-blob \
+            --yes \
+            --identity-token "${{ steps.oidc.outputs.token }}" \
+            --output-signature "${FILE}.sig" \
+            --output-certificate "${FILE}.pem" \
+            "${FILE}"
+        done
 
-    # ---------------------------------------------------------
-    # 11) Sign DLLs
-    # ---------------------------------------------------------
-    - name: Sign DLLs
-      shell: pwsh
+    - name: Generate SHA256SUMS
       run: |
-        $signtool = "C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe"
+        TAG="${{ github.event.release.tag_name }}"
+        sha256sum plugin_rtl433_x86-${TAG}.zip > SHA256SUMS
+        sha256sum plugin_rtl433_x64-${TAG}.zip >> SHA256SUMS
 
-        Write-Host "Signature x86..."
-        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x86\rtl_433.dll"
-
-        Write-Host "Signature x64..."
-        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x64\rtl_433.dll"
-
-        Write-Host "DLL signées."
-
-    # ---------------------------------------------------------
-    # 12) Repack signed ZIPs
-    # ---------------------------------------------------------
-    - name: Repack signed ZIPs
-      shell: pwsh
+    - name: Generate VERIFY.txt
       run: |
-        Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
-        Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+        TAG="${{ github.event.release.tag_name }}"
+        cat <<EOF > VERIFY.txt
+#Signatures generated with Sigstore/Cosign using GitHub OIDC.
+#Files:
+#- plugin_rtl433_x86-${TAG}.zip
+#- plugin_rtl433_x64-${TAG}.zip
 
-        Write-Host "ZIP signés recréés."
+#To verify:
+#cosign verify-blob --certificate plugin_rtl433_x86-${TAG}.zip.pem --signature plugin_rtl433_x86-${TAG}.zip.sig plugin_rtl433_x86-${TAG}.zip
+#cosign verify-blob --certificate plugin_rtl433_x64-${TAG}.zip.pem --signature plugin_rtl433_x64-${TAG}.zip.sig plugin_rtl433_x64-${TAG}.zip
+#EOF
 
-    # ---------------------------------------------------------
-    # 13) Cleanup certificate
-    # ---------------------------------------------------------
-    - name: Cleanup certificate
-      shell: pwsh
-      run: |
-        Remove-Item "$env:USERPROFILE\signcert.pfx" -Force
-        Write-Host "Certificat supprimé."
+# 1. Build ZIPs
+# (déjà dans ton workflow)
 
-    # ---------------------------------------------------------
-    # 14) Create Git tag
-    # ---------------------------------------------------------
-    - name: Create Git tag
-      shell: pwsh
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git tag $env:TAG
-        git push origin $env:TAG
-        Write-Host "Tag $env:TAG créé et poussé."
+# 2. OIDC token
+# 3. Signature Cosign
+# 4. SHA256SUMS
+# 5. VERIFY.txt
+# (bloc que je t’ai donné précédemment)
 
-    # ---------------------------------------------------------
-    # 15) Create GitHub Release
-    # ---------------------------------------------------------
+# 6. Create GitHub Release
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ env.TAG }}
-        name: "Release RTL_433 ${{ env.TAG }}"
-        body: ${{ env.NOTES }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ github.event.release.tag_name }}
+        name: Release ${{ github.event.release.tag_name }}
+        draft: false
+        prerelease: false
 
-    # ---------------------------------------------------------
-    # 16) Upload ZIPs
-    # ---------------------------------------------------------
-    - name: Upload ZIPs to release
+# 7. Upload ZIPs + signatures + fichiers de vérification
+    - name: Upload ZIPs and signatures
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          plugin_rtl433_x86-${{ env.VERSION }}.zip
-          plugin_rtl433_x64-${{ env.VERSION }}.zip
+          plugin_rtl433_x86-${{ github.event.release.tag_name }}.zip
+          plugin_rtl433_x86-${{ github.event.release.tag_name }}.zip.sig
+          plugin_rtl433_x86-${{ github.event.release.tag_name }}.zip.pem
+          plugin_rtl433_x64-${{ github.event.release.tag_name }}.zip
+          plugin_rtl433_x64-${{ github.event.release.tag_name }}.zip.sig
+          plugin_rtl433_x64-${{ github.event.release.tag_name }}.zip.pem
+          SHA256SUMS
+          VERIFY.txt
+
+
+
+
