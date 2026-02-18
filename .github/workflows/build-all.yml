@@ -13,13 +13,72 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    # ---------------------------------------------------------
-    # 3) Get last tag
-    # ---------------------------------------------------------
+
     steps:
-    - name: Get last tag
-      id: lasttag
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # ---------------------------------------------------------
+    # 1) Setup .NET
+    # ---------------------------------------------------------
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "8.0.x"
+
+    # ---------------------------------------------------------
+    # 2) Read input (version manuelle + notes)
+    # ---------------------------------------------------------
+    - name: Read input
+      shell: pwsh
+      run: |
+        if ("${{ github.event.inputs.version }}" -ne "") {
+            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+            echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+            Write-Host "Version manuelle détectée : ${{ github.event.inputs.version }}"
+        }
+        else {
+            Write-Host "Aucune version manuelle, auto-incrément."
+        }
+
+    - name: Release notes
+      id: notes
+      shell: pwsh
+      run: |
+        $notes = "${{ github.event.inputs.notes }}"
+
+        Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+        Add-Content -Path $env:GITHUB_ENV -Value $notes
+        Add-Content -Path $env:GITHUB_ENV -Value "EOF"
+
+        Write-Host "Notes de release enregistrées."
+
+    # ---------------------------------------------------------
+    # 3) Get last tag (fake pour l’instant)
+    # ---------------------------------------------------------
+    - name: Fake last tag
       shell: pwsh
       run: |
         echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
         Write-Host "Dernier tag trouvé : 0.0.0.100"
+
+    # ---------------------------------------------------------
+    # 4) Auto-increment BUILD (si pas de version manuelle)
+    # ---------------------------------------------------------
+    - name: Auto-increment BUILD
+      if: ${{ github.event.inputs.version == '' }}
+      shell: pwsh
+      run: |
+        $last = $env:LAST_TAG
+        Write-Host "DEBUG: LAST_TAG = $last"
+        $parts = $last.Split(".")
+        $major = [int]$parts[0]
+        $minor = [int]$parts[1]
+        $patch = [int]$parts[2]
+        $build = [int]$parts[3] + 1
+
+        $new = "$major.$minor.$patch.$build"
+        echo "VERSION=$new" >> $env:GITHUB_ENV
+        echo "TAG=$new" >> $env:GITHUB_ENV 
+
+        Write-Host "Nouvelle version auto : $new"
