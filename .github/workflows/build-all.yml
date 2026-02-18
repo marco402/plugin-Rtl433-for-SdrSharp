@@ -269,11 +269,7 @@ jobs:
             --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
             --output-certificate plugin_rtl433_x64-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x64-${{ env.VERSION }}.zip
-            
-      - name: Generate PEM public key
-        run: |
-          cosign public-key --output-file cosign.pub
-      
+     
       - name: Generate SHA256SUMS
         run: |
          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
