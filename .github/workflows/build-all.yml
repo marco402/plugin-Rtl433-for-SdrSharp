@@ -67,6 +67,13 @@ jobs:
     # ---------------------------------------------------------
     # 2) Récupérer le dernier tag existant
     # ---------------------------------------------------------
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+
+    
     - name: Get latest tag
       shell: pwsh
       run: |
