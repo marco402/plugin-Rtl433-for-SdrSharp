@@ -267,6 +267,36 @@ jobs:
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
             plugin_rtl433_x64-${{ env.VERSION }}.zip
+            
+      - name: Generate PEM public key
+        run: |
+          cosign public-key --output-file cosign.pub
+      
+      - name: Generate SHA256SUMS
+        run: |
+          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
+          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
+          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
+          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.sig >> SHA256SUMS
+          sha256sum cosign.pub >> SHA256SUMS
+          
+      - name: Generate VERIFY.txt
+        run: |
+          echo "To verify signatures:" > VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "cosign verify-blob \\" >> VERIFY.txt
+          echo "  --signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \\" >> VERIFY.txt
+          echo "  --certificate cosign.pub \\" >> VERIFY.txt
+          echo "  plugin_rtl433_x86-${{ env.VERSION }}.zip" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "cosign verify-blob \\" >> VERIFY.txt
+          echo "  --signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \\" >> VERIFY.txt
+          echo "  --certificate cosign.pub \\" >> VERIFY.txt
+          echo "  plugin_rtl433_x64-${{ env.VERSION }}.zip" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "SHA256SUMS file included for integrity checking." >> VERIFY.txt
+
+
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -279,6 +309,9 @@ jobs:
             plugin_rtl433_x64-${{ env.VERSION }}.zip
             plugin_rtl433_x86-${{ env.VERSION }}.zip.sig
             plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
+            cosign.pub
+            SHA256SUMS
+            VERIFY.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
