@@ -82,3 +82,233 @@ jobs:
         echo "TAG=$new" >> $env:GITHUB_ENV 
 
         Write-Host "Nouvelle version auto : $new"
+
+    # ---------------------------------------------------------
+    # 5) Save START_TIME
+    # ---------------------------------------------------------
+    - name: Save START_TIME
+      shell: pwsh
+      run: |
+        $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        echo "START_TIME=$t" >> $env:GITHUB_ENV
+        Write-Host "START_TIME=$t"
+
+    # ---------------------------------------------------------
+    # 6) Trigger RTL_433 build
+    # ---------------------------------------------------------
+    - name: Trigger RTL_433 build
+      shell: pwsh
+      run: |
+        $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
+        $body = '{"ref":"rtl_433forSDRSharp"}'
+
+        $response = curl.exe -s -o $null -w "%{http_code}" `
+          -X POST `
+          -H "Authorization: Bearer ${{ secrets.PAT }}" `
+          -H "Accept: application/vnd.github+json" `
+          -d $body `
+          $url
+
+        Write-Host "response='$response'"
+
+        if ($response -eq "204" -or $null -eq $response) {
+            Write-Host "Workflow RTL_433 déclenché avec succès."
+            exit 0
+        }
+
+        Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
+        exit 1
+
+    # ---------------------------------------------------------
+    # 7) Wait for RTL_433 artifacts
+    # ---------------------------------------------------------
+    - name: Wait for RTL_433 artifacts
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+      run: |
+        $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
+        $start = Get-Date $env:START_TIME
+
+        Write-Host "Recherche d'un run RTL_433 créé après $start"
+
+        for ($i = 1; $i -le 60; $i++) {
+
+            Write-Host "Tentative $i..."
+
+            $runs = Invoke-RestMethod -Headers $headers `
+              -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
+              -Method GET
+
+            $run = $runs.workflow_runs |
+              Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
+              Sort-Object created_at |
+              Select-Object -Last 1
+
+            if ($run) {
+                Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
+
+                if ($run.status -eq "completed") {
+
+                    $artifacts = Invoke-RestMethod -Headers $headers `
+                      -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
+                      -Method GET
+
+                    $count = $artifacts.artifacts.Count
+                    Write-Host "Nombre d'artefacts : $count"
+
+                    if ($count -ge 2) {
+                        Write-Host "Artifacts prêts !"
+                        echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
+                        exit 0
+                    }
+                }
+            }
+
+            Start-Sleep -Seconds 5
+        }
+
+        Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
+        exit 1
+
+    # ---------------------------------------------------------
+    # 8) Download RTL_433 artifacts
+    # ---------------------------------------------------------
+    - name: Download RTL_433 artifacts
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+      run: |
+        gh run download $env:RUN_ID `
+          --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
+          --dir artifacts
+
+        Write-Host "Artefacts RTL_433 téléchargés."
+
+    # ---------------------------------------------------------
+    # 9) Build plugin ZIPs (propre)
+    # ---------------------------------------------------------
+    - name: Build plugin ZIPs
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
+        New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
+
+        Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
+        Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
+
+        Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
+        Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+
+        Write-Host "ZIP x86/x64 créés."
+
+    # ---------------------------------------------------------
+    # 10) Import certificate (PFX)
+    # ---------------------------------------------------------
+    - name: Import certificate
+      shell: pwsh
+      env:
+        SIGN_PFX: ${{ secrets.SIGN_PFX }}
+        SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
+      run: |
+        $pfxPath = "$env:USERPROFILE\signcert.pfx"
+        [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGN_PFX))
+        certutil -f -p $env:SIGN_PFX_PASSWORD -importpfx $pfxPath NoRoot
+        Write-Host "Certificat importé."
+
+    # ---------------------------------------------------------
+    # 11) Sign DLLs (PFX)
+    # ---------------------------------------------------------
+    - name: Sign DLLs
+      shell: pwsh
+      run: |
+        $signtool = "C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe"
+
+        Write-Host "Signature x86..."
+        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x86\rtl_433.dll"
+
+        Write-Host "Signature x64..."
+        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x64\rtl_433.dll"
+
+        Write-Host "DLL signées."
+
+    # ---------------------------------------------------------
+    # 12) Repack signed ZIPs
+    # ---------------------------------------------------------
+    - name: Repack signed ZIPs
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
+        Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+
+        Write-Host "ZIP signés recréés."
+
+    # ---------------------------------------------------------
+    # 13) Cleanup certificate
+    # ---------------------------------------------------------
+    - name: Cleanup certificate
+      shell: pwsh
+      run: |
+        Remove-Item "$env:USERPROFILE\signcert.pfx" -Force
+        Write-Host "Certificat supprimé."
+
+    # ---------------------------------------------------------
+    # 14) Upload ZIPs as artifact (pour cosign)
+    # ---------------------------------------------------------
+    - name: Upload ZIPs artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: plugin-zips
+        path: |
+          plugin_rtl433_x86-${{ env.VERSION }}.zip
+          plugin_rtl433_x64-${{ env.VERSION }}.zip
+
+    # ---------------------------------------------------------
+    # 15) Create Git tag (on garde)
+    # ---------------------------------------------------------
+    - name: Create Git tag
+      shell: pwsh
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag $env:TAG
+        git push origin $env:TAG
+        Write-Host "Tag $env:TAG créé et poussé."
+
+  # ---------------------------------------------------------
+  # 16) SIGNATURE COSIGN + RELEASE (Ubuntu, comme Tcp-file-server)
+  # ---------------------------------------------------------
+  sign_and_release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Download plugin ZIPs
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-zips
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+
+      - name: Cosign sign ZIPs
+        run: |
+          cosign sign-blob --yes --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig plugin_rtl433_x86-${{ env.VERSION }}.zip
+          cosign sign-blob --yes --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig plugin_rtl433_x64-${{ env.VERSION }}.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}
+          name: "Release RTL_433 ${{ env.TAG }}"
+          body: ${{ env.NOTES }}
+          files: |
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
+            plugin_rtl433_x86-${{ env.VERSION }}.zip.sig
+            plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
