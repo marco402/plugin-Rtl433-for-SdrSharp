@@ -63,8 +63,8 @@ jobs:
     - name: Fake last tag
       shell: pwsh
       run: |
-        echo "LAST_TAG=0.0.0.103" >> $env:GITHUB_ENV
-        Write-Host "Dernier tag trouvé : 0.0.0.103"
+        echo "LAST_TAG=0.0.0.104" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag trouvé : 0.0.0.104"
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
@@ -280,11 +280,9 @@ jobs:
           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.pem >> SHA256SUMS
-          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.pem >> SHA256SUMS
           sha256sum cosign.pub >> SHA256SUMS
           
-      - name: Generate VERIFY.txt
+       - name: Generate VERIFY.txt
         run: |
           echo "To verify signatures:" > VERIFY.txt
           echo "" >> VERIFY.txt
@@ -299,6 +297,7 @@ jobs:
           echo "  plugin_rtl433_x64-${{ env.VERSION }}.zip" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "SHA256SUMS file included for integrity checking." >> VERIFY.txt
+
 
 
 
