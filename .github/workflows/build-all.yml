@@ -201,83 +201,9 @@ jobs:
         Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
 
         Write-Host "ZIP x86/x64 créés."
-
     # ---------------------------------------------------------
-    # 10) Import certificate (PFX)
+    # 9) sign_and_release
     # ---------------------------------------------------------
-    - name: Import certificate
-      shell: pwsh
-      env:
-        SIGN_PFX: ${{ secrets.SIGN_PFX }}
-        SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
-      run: |
-        $pfxPath = "$env:USERPROFILE\signcert.pfx"
-        [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGN_PFX))
-        certutil -f -p $env:SIGN_PFX_PASSWORD -importpfx $pfxPath NoRoot
-        Write-Host "Certificat importé."
-
-    # ---------------------------------------------------------
-    # 11) Sign DLLs (PFX)
-    # ---------------------------------------------------------
-    - name: Sign DLLs
-      shell: pwsh
-      run: |
-        $signtool = "C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe"
-
-        Write-Host "Signature x86..."
-        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x86\rtl_433.dll"
-
-        Write-Host "Signature x64..."
-        & $signtool sign /f "$env:USERPROFILE\signcert.pfx" /p "${{ secrets.SIGN_PFX_PASSWORD }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 "out_x64\rtl_433.dll"
-
-        Write-Host "DLL signées."
-
-    # ---------------------------------------------------------
-    # 12) Repack signed ZIPs
-    # ---------------------------------------------------------
-    - name: Repack signed ZIPs
-      shell: pwsh
-      run: |
-        Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
-        Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
-
-        Write-Host "ZIP signés recréés."
-
-    # ---------------------------------------------------------
-    # 13) Cleanup certificate
-    # ---------------------------------------------------------
-    - name: Cleanup certificate
-      shell: pwsh
-      run: |
-        Remove-Item "$env:USERPROFILE\signcert.pfx" -Force
-        Write-Host "Certificat supprimé."
-
-    # ---------------------------------------------------------
-    # 14) Upload ZIPs as artifact (pour cosign)
-    # ---------------------------------------------------------
-    - name: Upload ZIPs artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: plugin-zips
-        path: |
-          plugin_rtl433_x86-${{ env.VERSION }}.zip
-          plugin_rtl433_x64-${{ env.VERSION }}.zip
-
-    # ---------------------------------------------------------
-    # 15) Create Git tag (on garde)
-    # ---------------------------------------------------------
-    - name: Create Git tag
-      shell: pwsh
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git tag $env:TAG
-        git push origin $env:TAG
-        Write-Host "Tag $env:TAG créé et poussé."
-
-  # ---------------------------------------------------------
-  # 16) SIGNATURE COSIGN + RELEASE (Ubuntu, comme Tcp-file-server)
-  # ---------------------------------------------------------
   sign_and_release:
     needs: build
     runs-on: ubuntu-latest
@@ -296,8 +222,13 @@ jobs:
 
       - name: Cosign sign ZIPs
         run: |
-          cosign sign-blob --yes --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig plugin_rtl433_x86-${{ env.VERSION }}.zip
-          cosign sign-blob --yes --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig plugin_rtl433_x64-${{ env.VERSION }}.zip
+          cosign sign-blob --yes \
+            --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
+
+          cosign sign-blob --yes \
+            --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -312,3 +243,4 @@ jobs:
             plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
