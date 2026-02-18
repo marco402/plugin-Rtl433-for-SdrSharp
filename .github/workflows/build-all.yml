@@ -201,6 +201,27 @@ jobs:
         Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
 
         Write-Host "ZIP x86/x64 créés."
+
+    - name: Upload plugin ZIPs artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: plugin-zips
+        path: |
+          plugin_rtl433_x86-${{ env.VERSION }}.zip
+          plugin_rtl433_x64-${{ env.VERSION }}.zip
+
+    # ---------------------------------------------------------
+    # 15) Create Git tag (on garde)
+    # ---------------------------------------------------------
+    - name: Create Git tag
+      shell: pwsh
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag $env:TAG
+        git push origin $env:TAG
+        Write-Host "Tag $env:TAG créé et poussé."
+     
     # ---------------------------------------------------------
     # 9) sign_and_release
     # ---------------------------------------------------------
