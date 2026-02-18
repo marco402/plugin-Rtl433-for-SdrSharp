@@ -63,8 +63,8 @@ jobs:
     - name: Fake last tag
       shell: pwsh
       run: |
-        echo "LAST_TAG=0.0.0.102" >> $env:GITHUB_ENV
-        Write-Host "Dernier tag trouvé : 0.0.0.102"
+        echo "LAST_TAG=0.0.0.103" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag trouvé : 0.0.0.103"
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
@@ -262,10 +262,12 @@ jobs:
         run: |
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \
+            --output-certificate plugin_rtl433_x86-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x86-${{ env.VERSION }}.zip
 
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
+            --output-certificate plugin_rtl433_x64-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x64-${{ env.VERSION }}.zip
             
       - name: Generate PEM public key
@@ -278,6 +280,8 @@ jobs:
           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.sig >> SHA256SUMS
+          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.pem >> SHA256SUMS
+          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.pem >> SHA256SUMS
           sha256sum cosign.pub >> SHA256SUMS
           
       - name: Generate VERIFY.txt
@@ -309,6 +313,8 @@ jobs:
             plugin_rtl433_x64-${{ env.VERSION }}.zip
             plugin_rtl433_x86-${{ env.VERSION }}.zip.sig
             plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
+            plugin_rtl433_x86-${{ env.VERSION }}.zip.pem
+            plugin_rtl433_x64-${{ env.VERSION }}.zip.pem
             cosign.pub
             SHA256SUMS
             VERIFY.txt
