@@ -70,16 +70,27 @@ jobs:
     # ---------------------------------------------------------
     # 3) Get last tag (fake pour l’instant)
     # ---------------------------------------------------------
-    - name: Get latest tag
+    - name: Get latest valid tag (super robust)
       shell: pwsh
       run: |
-        try {
-          $tag = git describe --tags --abbrev=0
-        } catch {
-          $tag = "0.0.0.0"
+        # Récupère tous les tags triés par ordre numérique décroissant
+        $allTags = git tag --sort=-v:refname
+
+        # Filtre uniquement les tags au format X.Y.Z.W
+        $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
+
+        if ($validTags.Count -gt 0) {
+            # Prend le plus grand tag valide
+            $tag = $validTags[0]
+            Write-Host "Tag valide détecté : $tag"
+        } else {
+            # Aucun tag valide → fallback
+            Write-Host "Aucun tag valide trouvé → fallback vers 0.0.0.0"
+            $tag = "0.0.0.0"
         }
+
         echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
-        Write-Host "Dernier tag détecté : $tag"
+
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
