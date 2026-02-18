@@ -235,83 +235,83 @@ jobs:
         git push origin $env:TAG
         Write-Host "Tag $env:TAG créé et poussé."
      
-    # ---------------------------------------------------------
-    # 9) sign_and_release
-    # ---------------------------------------------------------
-sign_and_release:
-  needs: build
-  env:
-    VERSION: ${{ needs.build.outputs.VERSION }}
-    TAG: ${{ needs.build.outputs.TAG }}
+  # ---------------------------------------------------------
+  # 9) sign_and_release
+  # ---------------------------------------------------------
+  sign_and_release:
+    needs: build
+    env:
+        VERSION: ${{ needs.build.outputs.VERSION }}
+        TAG: ${{ needs.build.outputs.TAG }}
 
-  runs-on: ubuntu-latest
-  permissions:
-    id-token: write
-    contents: write
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
 
-  steps:
-    - name: Download plugin ZIPs
-      uses: actions/download-artifact@v4
-      with:
-        name: plugin-zips
+    steps:
+      - name: Download plugin ZIPs
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-zips
 
-    - name: Install Cosign
-      uses: sigstore/cosign-installer@v3.5.0
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
 
-    - name: Cosign sign ZIPs
-      run: |
-        cosign sign-blob --yes \
-          --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \
-          --output-certificate plugin_rtl433_x86-${{ env.VERSION }}.zip.pem \
-          plugin_rtl433_x86-${{ env.VERSION }}.zip
+      - name: Cosign sign ZIPs
+        run: |
+          cosign sign-blob --yes \
+            --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \
+            --output-certificate plugin_rtl433_x86-${{ env.VERSION }}.zip.pem \
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
 
-        cosign sign-blob --yes \
-          --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
-          --output-certificate plugin_rtl433_x64-${{ env.VERSION }}.zip.pem \
-          plugin_rtl433_x64-${{ env.VERSION }}.zip
+          cosign sign-blob --yes \
+            --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
+            --output-certificate plugin_rtl433_x64-${{ env.VERSION }}.zip.pem \
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
             
-    - name: Generate PEM public key
-      run: |
-        cosign public-key --output-file cosign.pub
+      - name: Generate PEM public key
+        run: |
+          cosign public-key --output-file cosign.pub
       
-    - name: Generate SHA256SUMS
-      run: |
-        sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
-        sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
-        sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-        sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-        sha256sum cosign.pub >> SHA256SUMS
+      - name: Generate SHA256SUMS
+        run: |
+         sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
+           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
+           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
+          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.sig >> SHA256SUMS
+          sha256sum cosign.pub >> SHA256SUMS
           
-    - name: Generate VERIFY.txt
-      run: |
-        echo "To verify signatures:" > VERIFY.txt
-        echo "" >> VERIFY.txt
-        echo "cosign verify-blob \\" >> VERIFY.txt
-        echo "  --signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \\" >> VERIFY.txt
-        echo "  --certificate cosign.pub \\" >> VERIFY.txt
-        echo "  plugin_rtl433_x86-${{ env.VERSION }}.zip" >> VERIFY.txt
-        echo "" >> VERIFY.txt
-        echo "cosign verify-blob \\" >> VERIFY.txt
-        echo "  --signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \\" >> VERIFY.txt
-        echo "  --certificate cosign.pub \\" >> VERIFY.txt
-        echo "  plugin_rtl433_x64-${{ env.VERSION }}.zip" >> VERIFY.txt
-        echo "" >> VERIFY.txt
-        echo "SHA256SUMS file included for integrity checking." >> VERIFY.txt
+      - name: Generate VERIFY.txt
+        run: |
+          echo "To verify signatures:" > VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "cosign verify-blob \\" >> VERIFY.txt
+          echo "  --signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \\" >> VERIFY.txt
+          echo "  --certificate cosign.pub \\" >> VERIFY.txt
+          echo "  plugin_rtl433_x86-${{ env.VERSION }}.zip" >> VERIFY.txt
+           echo "" >> VERIFY.txt
+          echo "cosign verify-blob \\" >> VERIFY.txt
+          echo "  --signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \\" >> VERIFY.txt
+          echo "  --certificate cosign.pub \\" >> VERIFY.txt
+          echo "  plugin_rtl433_x64-${{ env.VERSION }}.zip" >> VERIFY.txt
+          echo "" >> VERIFY.txt
+          echo "SHA256SUMS file included for integrity checking." >> VERIFY.txt
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ env.TAG }}
-        name: "Release RTL_433 ${{ env.TAG }}"
-        body: ${{ env.NOTES }}
-        files: |
-          plugin_rtl433_x86-${{ env.VERSION }}.zip
-          plugin_rtl433_x64-${{ env.VERSION }}.zip
-          plugin_rtl433_x86-${{ env.VERSION }}.zip.sig
-          plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
-          cosign.pub
-          SHA256SUMS
-          VERIFY.txt
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}
+          name: "Release RTL_433 ${{ env.TAG }}"
+          body: ${{ env.NOTES }}
+          files: |
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
+            plugin_rtl433_x86-${{ env.VERSION }}.zip.sig
+            plugin_rtl433_x64-${{ env.VERSION }}.zip.sig
+            cosign.pub
+            SHA256SUMS
+            VERIFY.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
