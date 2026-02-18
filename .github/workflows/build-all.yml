@@ -54,15 +54,19 @@ jobs:
       # -----------------------------------------------------
       # Get last tag
       # -----------------------------------------------------
-      - name: Get last tag
-        id: lasttag
+      #- name: Get last tag
+      #  id: lasttag
+      #  shell: pwsh
+      #  run: |
+      #    $tag = git describe --tags --abbrev=0 2>$null
+      #    if ($LASTEXITCODE -ne 0) { $tag = "0.0.0.0" }
+      #    echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+      #    Write-Host "Dernier tag trouvé : $tag"
+      - name: Fake last tag
         shell: pwsh
         run: |
-          $tag = git describe --tags --abbrev=0 2>$null
-          if ($LASTEXITCODE -ne 0) { $tag = "0.0.0.0" }
-          echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
-          Write-Host "Dernier tag trouvé : $tag"
-
+          echo "LAST_TAG=0.0.0.100" >> $env:GITHUB_ENV
+          Write-Host "Dernier tag trouvé : 0.0.0.100"
       # -----------------------------------------------------
       # Auto-increment BUILD
       # -----------------------------------------------------
