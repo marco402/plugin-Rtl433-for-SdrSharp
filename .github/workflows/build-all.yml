@@ -10,10 +10,20 @@ on:
         description: "Notes de release"
         required: false
 
+trigger_graphlib:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Trigger GraphLibSpecific build
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.PAT }}
+        repository: marco402/GraphLibSpecific
+        event-type: build-graphlib
+
 jobs:
   build:
     runs-on: windows-latest
-
+    needs: wait_graphlib
     outputs:
       VERSION: ${{ steps.setversion.outputs.VERSION }}
       TAG: ${{ steps.setversion.outputs.TAG }}
@@ -59,7 +69,13 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value $notes
         Add-Content -Path $env:GITHUB_ENV -Value "EOF"
 
-        Write-Host "Notes de release enregistrées."
+        Write-Host "Notes de release enregistrées."	
+        
+    - name: Download GraphLib DLLs
+      uses: actions/download-artifact@v4
+      with:
+        name: graphlib
+        path: graphlib
 
     - name: Export NOTES
       id: setnotes
@@ -154,6 +170,18 @@ jobs:
         Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
         exit 1
 
+wait_graphlib:
+  runs-on: ubuntu-latest
+  needs: trigger_graphlib
+  steps:
+    - name: Wait for GraphLibSpecific workflow to finish
+      uses: lewagon/wait-on-check-action@v1.3.1
+      with:
+        ref: main
+        check-name: "build"
+        repo-token: ${{ secrets.PAT }}
+        repo: marco402/GraphLibSpecific
+
     # ---------------------------------------------------------
     # 7) Wait for RTL_433 artifacts
     # ---------------------------------------------------------
@@ -231,7 +259,8 @@ jobs:
 
         Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
         Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
-
+        Copy-Item "graphlib/x86/GraphLib.dll" "out_x86\rtl_433.dll" -Force
+        Copy-Item "graphlib/x64/GraphLib.dll" "out_x64\rtl_433.dll" -Force
         Compress-Archive -Path "out_x86\rtl_433.dll" -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
         Compress-Archive -Path "out_x64\rtl_433.dll" -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
 
