@@ -22,6 +22,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
 
     # ---------------------------------------------------------
     # 1) Setup .NET
@@ -65,15 +68,8 @@ jobs:
         echo "::set-output name=NOTES::$env:NOTES"
 
     # ---------------------------------------------------------
-    # 2) Récupérer le dernier tag existant
+    # 3) Get last tag (fake pour l’instant)
     # ---------------------------------------------------------
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        fetch-tags: true
-
-    
     - name: Get latest tag
       shell: pwsh
       run: |
@@ -85,3 +81,32 @@ jobs:
         echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
         Write-Host "Dernier tag détecté : $tag"
 
+    # ---------------------------------------------------------
+    # 4) Auto-increment BUILD (si pas de version manuelle)
+    # ---------------------------------------------------------
+    - name: Auto-increment BUILD
+      if: ${{ github.event.inputs.version == '' }}
+      shell: pwsh
+      run: |
+        $last = $env:LAST_TAG
+        Write-Host "DEBUG: LAST_TAG = $last"
+        $parts = $last.Split(".")
+        $major = [int]$parts[0]
+        $minor = [int]$parts[1]
+        $patch = [int]$parts[2]
+        $build = [int]$parts[3] + 1
+
+        $new = "$major.$minor.$patch.$build"
+        echo "VERSION=$new" >> $env:GITHUB_ENV
+        echo "TAG=$new" >> $env:GITHUB_ENV 
+
+        Write-Host "Nouvelle version auto : $new"
+
+    - name: Export VERSION and TAG
+      id: setversion
+      shell: pwsh
+      run: |
+        echo "VERSION=$env:VERSION"
+        echo "TAG=$env:TAG"
+        echo "::set-output name=VERSION::$env:VERSION"
+        echo "::set-output name=TAG::$env:TAG"
