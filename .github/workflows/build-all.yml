@@ -273,10 +273,8 @@ jobs:
       - name: Generate SHA256SUMS
         run: |
          sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
-           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
-           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-          sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-          sha256sum cosign.pub >> SHA256SUMS
+         sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
+         sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
           
       - name: Generate VERIFY.txt
         run: |
