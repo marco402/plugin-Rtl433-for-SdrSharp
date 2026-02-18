@@ -17,7 +17,8 @@ jobs:
     outputs:
       VERSION: ${{ steps.setversion.outputs.VERSION }}
       TAG: ${{ steps.setversion.outputs.TAG }}
-    
+      NOTES: ${{ steps.setnotes.outputs.NOTES }}
+      
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -57,14 +58,20 @@ jobs:
 
         Write-Host "Notes de release enregistrées."
 
+    - name: Export NOTES
+      id: setnotes
+      shell: pwsh
+      run: |
+        echo "::set-output name=NOTES::$env:NOTES"
+
     # ---------------------------------------------------------
     # 3) Get last tag (fake pour l’instant)
     # ---------------------------------------------------------
     - name: Fake last tag
       shell: pwsh
       run: |
-        echo "LAST_TAG=0.0.0.107" >> $env:GITHUB_ENV
-        Write-Host "Dernier tag trouvé : 0.0.0.107"
+        echo "LAST_TAG=0.0.0.108" >> $env:GITHUB_ENV
+        Write-Host "Dernier tag trouvé : 0.0.0.108"
 
     # ---------------------------------------------------------
     # 4) Auto-increment BUILD (si pas de version manuelle)
@@ -243,7 +250,8 @@ jobs:
     env:
         VERSION: ${{ needs.build.outputs.VERSION }}
         TAG: ${{ needs.build.outputs.TAG }}
-
+        NOTES: ${{ needs.build.outputs.NOTES }}
+        
     runs-on: ubuntu-latest
     permissions:
       id-token: write
