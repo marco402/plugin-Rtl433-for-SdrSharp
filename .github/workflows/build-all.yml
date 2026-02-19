@@ -30,7 +30,7 @@ jobs:
           $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
           echo "START_TIME=$t" >> $env:GITHUB_ENV
           Write-Host "START_TIME=$t"
-		  
+
       # ---------------------------------------------------------
       # 1) Trigger GraphLibSpecific
       # ---------------------------------------------------------
@@ -57,9 +57,9 @@ jobs:
           Write-Error "Échec du déclenchement du workflow GraphLib (HTTP $response)"
           exit 1
 
-    # ---------------------------------------------------------
-    # 2) Wait for GraphLibSpecific
-    # ---------------------------------------------------------
+     # ---------------------------------------------------------
+	 # 2) Wait for GraphLibSpecific
+	 # ---------------------------------------------------------
       - name: Wait for GraphLib artifacts
         shell: pwsh
         env:
@@ -105,10 +105,9 @@ jobs:
               Start-Sleep -Seconds 10
           }
 
-
-    # ---------------------------------------------------------
-    # 3) Trigger RTL_433
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # 3) Trigger RTL_433
+      # ---------------------------------------------------------
       - name: Trigger RTL_433 build
         shell: pwsh
         run: |
@@ -132,9 +131,9 @@ jobs:
           Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
           exit 1
 
-    # ---------------------------------------------------------
-    # 4) Wait for RTL_433 artifacts
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # 4) Wait for RTL_433 artifacts
+      # ---------------------------------------------------------
       - name: Wait for RTL_433 artifacts
         shell: pwsh
         env:
