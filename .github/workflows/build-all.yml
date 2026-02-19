@@ -20,6 +20,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+		
+      # ---------------------------------------------------------
+      # 5) Save START_TIME
+      # ---------------------------------------------------------
+      - name: Save START_TIME
+        shell: pwsh
+        run: |
+          $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          echo "START_TIME=$t" >> $env:GITHUB_ENV
+          Write-Host "START_TIME=$t"
+		  
       # ---------------------------------------------------------
       # 1) Trigger GraphLibSpecific
       # ---------------------------------------------------------
@@ -120,7 +131,7 @@ jobs:
     
           Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
           exit 1
-  
+
     # ---------------------------------------------------------
     # 4) Wait for RTL_433 artifacts
     # ---------------------------------------------------------
@@ -129,49 +140,45 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
-          $start = Get-Date $env:START_TIME
-  
-          Write-Host "Recherche d'un run RTL_433 créé après $start"
-  
-          for ($i = 1; $i -le 60; $i++) {
-  
-              Write-Host "Tentative $i..."
-  
+          $headers = @{
+              "Accept" = "application/vnd.github+json"
+              "Authorization" = "Bearer $env:GH_TOKEN"
+          }
+
+          $repo = "marco402/Rtl_433_dll-for-plugin-SdrSharp"
+          $workflow = "build.yml"
+          $branch = "rtl_433forSDRSharp"
+
+          Write-Host "Waiting for RTL_433 workflow to complete..."
+
+          while ($true) {
               $runs = Invoke-RestMethod -Headers $headers `
-                -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
-                -Method GET
-  
-              $run = $runs.workflow_runs |
-                Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
-                Sort-Object created_at |
-                Select-Object -Last 1
-  
-              if ($run) {
-                  Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
-  
-                  if ($run.status -eq "completed") {
-  
-                      $artifacts = Invoke-RestMethod -Headers $headers `
-                        -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
-                        -Method GET
-  
-                      $count = $artifacts.artifacts.Count
-                      Write-Host "Nombre d'artefacts : $count"
-  
-                      if ($count -ge 2) {
-                          Write-Host "Artifacts prêts !"
-                          echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
-                          exit 0
-                      }
+                  -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
+                  -Method GET
+
+              if ($runs.workflow_runs.Count -eq 0) {
+                  Write-Host "No workflow run found yet. Retrying in 10 seconds..."
+                  Start-Sleep -Seconds 10
+                  continue
+              }
+
+              $run = $runs.workflow_runs | Sort-Object created_at -Descending | Select-Object -First 1
+
+              Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
+
+              if ($run.status -eq "completed") {
+                  if ($run.conclusion -eq "success") {
+                      Write-Host "RTL_433 workflow completed successfully."
+                      break
+                  } else {
+                      Write-Error "RTL_433 workflow failed with conclusion: $($run.conclusion)"
+                      exit 1
                   }
               }
-  
-              Start-Sleep -Seconds 5
+
+              Start-Sleep -Seconds 10
           }
-  
-          Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
-          exit 1
+
     # ---------------------------------------------------------
     # 5) Build plugin + assemble ZIPs
     # ---------------------------------------------------------
