@@ -313,17 +313,16 @@ jobs:
       # ---------------------------------------------------------
       # Download RTL_433 artifacts
       # ---------------------------------------------------------
-      - name: Download RTL_433 x86
-        uses: actions/download-artifact@v4
-        with:
-          name: RTL_433_x86
-          path: rtl433/x86
-
-      - name: Download RTL_433 x64
-        uses: actions/download-artifact@v4
-        with:
-          name: RTL_433_x64
-          path: rtl433/x64
+      - name: Download RTL_433 artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          gh run download $env:RUN_ID `
+            --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
+            --dir artifacts
+  
+          Write-Host "Artefacts RTL_433 téléchargés."
           
       # ---------------------------------------------------------
       # Ensure GraphLib artifacts are downloadable
