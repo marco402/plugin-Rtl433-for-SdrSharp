@@ -300,10 +300,19 @@ jobs:
         run: |
           echo "::set-output name=VERSION::$env:VERSION"
           echo "::set-output name=TAG::$env:TAG"
+          
+      # ---------------------------------------------------------
+      # Download RTL_433 artifacts
+      # ---------------------------------------------------------
+      - name: Download RTL_433 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rtl433
+          path: rtl433
+          
       # ---------------------------------------------------------
       # Ensure GraphLib artifacts are downloadable
       # ---------------------------------------------------------
-      
       - name: Ensure GraphLib artifacts are downloadable
         shell: pwsh
         env:
@@ -351,14 +360,7 @@ jobs:
           path: graphlib
 
   
-      # ---------------------------------------------------------
-      # Download RTL_433 artifacts
-      # ---------------------------------------------------------
-      - name: Download RTL_433 artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: rtl433
-          path: rtl433
+
   
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
