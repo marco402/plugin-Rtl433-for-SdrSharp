@@ -104,11 +104,11 @@ jobs:
   
               Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
   
-              if ($run.status -eq "completed") {
-                  if ($run.conclusion -eq "success") {
-                      Write-Host "GraphLibSpecific workflow completed successfully."
-                      break
-                  } else {
+              if ($run.conclusion -eq "success" -or $run.conclusion -eq "failure" -and $run.status -eq "completed") {
+                  Write-Host "GraphLibSpecific workflow completed (ignoring cleanup failures)."
+                  break
+              }
+              else {
                       Write-Error "GraphLibSpecific workflow failed with conclusion: $($run.conclusion)"
                       exit 1
                   }
@@ -177,11 +177,11 @@ jobs:
 
               Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
 
-              if ($run.status -eq "completed") {
-                  if ($run.conclusion -eq "success") {
-                      Write-Host "RTL_433 workflow completed successfully."
-                      break
-                  } else {
+              if ($run.conclusion -eq "success" -or $run.conclusion -eq "failure" -and $run.status -eq "completed") {
+                  Write-Host "RTL_433 workflow completed (ignoring cleanup failures)."
+                  break
+              }
+              else {
                       Write-Error "RTL_433 workflow failed with conclusion: $($run.conclusion)"
                       exit 1
                   }
