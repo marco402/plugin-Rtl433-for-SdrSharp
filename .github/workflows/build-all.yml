@@ -175,14 +175,14 @@ jobs:
     # ---------------------------------------------------------
     # 5) Build plugin + assemble ZIPs
     # ---------------------------------------------------------
-    build:
-      runs-on: windows-latest
-      needs: wait_rtl433
+    # build:
+    #  runs-on: windows-latest
+    #  needs: wait_rtl433
   
-      outputs:
-        VERSION: ${{ steps.setversion.outputs.VERSION }}
-        TAG: ${{ steps.setversion.outputs.TAG }}
-        NOTES: ${{ steps.setnotes.outputs.NOTES }}
+    #  outputs:
+    #    VERSION: ${{ steps.setversion.outputs.VERSION }}
+    #    TAG: ${{ steps.setversion.outputs.TAG }}
+    #    NOTES: ${{ steps.setnotes.outputs.NOTES }}
   
       steps:
   
