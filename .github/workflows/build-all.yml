@@ -99,8 +99,13 @@ jobs:
                   -Method GET
 
               $candidates = $runs.workflow_runs |
-                Where-Object { [DateTime]::Parse($_.created_at) -gt $start } |
+                Where-Object {
+                    $_.event -eq "workflow_dispatch" -and
+                    $_.head_branch -eq $branch -and
+                    [DateTime]::Parse($_.created_at) -gt $start
+                } |
                 Sort-Object created_at -Descending
+
 
               if ($candidates.Count -eq 0) {
                   Write-Host "No new run yet. Retrying in 10 seconds..."
@@ -204,7 +209,11 @@ jobs:
                   -Method GET
 
               $candidates = $runs.workflow_runs |
-                Where-Object { [DateTime]::Parse($_.created_at) -gt $start } |
+                Where-Object {
+                    $_.event -eq "workflow_dispatch" -and
+                    $_.head_branch -eq $branch -and
+                    [DateTime]::Parse($_.created_at) -gt $start
+                } |
                 Sort-Object created_at -Descending
 
               if ($candidates.Count -eq 0) {
