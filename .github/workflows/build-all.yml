@@ -39,9 +39,8 @@ jobs:
       - name: Save START_TIME
         shell: pwsh
         run: |
-          $now = Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
-          echo "START_TIME=$now" >> $env:GITHUB_ENV
-
+          $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          echo "START_TIME=$t" >> $env:GITHUB_ENV
           Write-Host "START_TIME=$t"
 
       # ---------------------------------------------------------
