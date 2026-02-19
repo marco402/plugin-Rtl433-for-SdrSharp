@@ -298,7 +298,41 @@ jobs:
         run: |
           echo "::set-output name=VERSION::$env:VERSION"
           echo "::set-output name=TAG::$env:TAG"
-  
+      # ---------------------------------------------------------
+      # Ensure GraphLib artifacts are downloadable
+      # ---------------------------------------------------------
+      
+      - name: Ensure GraphLib artifacts are downloadable
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{
+              "Accept" = "application/vnd.github+json"
+              "Authorization" = "Bearer $env:GH_TOKEN"
+          }
+
+          $repo = "marco402/GraphLibSpecific"
+          $runId = "${{ steps.wait_graphlib.outputs.run_id }}"
+
+          Write-Host "Waiting for GraphLib artifacts to become downloadable..."
+
+          while ($true) {
+              $arts = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/runs/$runId/artifacts" `
+                  -Method GET
+
+              $names = $arts.artifacts.name
+
+              if ($names -contains "CI_x86" -and $names -contains "CI_x64") {
+                  Write-Host "Artifacts CI_x86 and CI_x64 are now downloadable."
+                  break
+              }
+
+              Write-Host "Artifacts not downloadable yet. Retrying in 5 seconds..."
+              Start-Sleep -Seconds 5
+          }
+
       # ---------------------------------------------------------
       # Download GraphLib artifacts
       # ---------------------------------------------------------
