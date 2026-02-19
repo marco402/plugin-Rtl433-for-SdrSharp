@@ -15,6 +15,123 @@ permissions:
   actions: write
 
 jobs:
+  build:
+    runs-on: windows-latest
+
+    outputs:
+      VERSION: ${{ steps.setversion.outputs.VERSION }}
+      TAG: ${{ steps.setversion.outputs.TAG }}
+      NOTES: ${{ steps.setnotes.outputs.NOTES }}
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+
+   # ---------------------------------------------------------
+    # 1) Setup .NET
+    # ---------------------------------------------------------
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "8.0.x"
+    # ---------------------------------------------------------
+    # 2) Read input (version manuelle + notes)
+    # ---------------------------------------------------------
+    - name: Read input
+      shell: pwsh
+      run: |
+        if ("${{ github.event.inputs.version }}" -ne "") {
+            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+            echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+            Write-Host "Version manuelle détectée : ${{ github.event.inputs.version }}"
+        }
+        else {
+            Write-Host "Aucune version manuelle, auto-incrément."
+        }
+
+    - name: Release notes
+      id: notes
+      shell: pwsh
+      run: |
+        $notes = "${{ github.event.inputs.notes }}"
+
+        Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+        Add-Content -Path $env:GITHUB_ENV -Value $notes
+        Add-Content -Path $env:GITHUB_ENV -Value "EOF"
+
+        Write-Host "Notes de release enregistrées."
+
+    - name: Export NOTES
+      id: setnotes
+      shell: pwsh
+      run: |
+        echo "::set-output name=NOTES::$env:NOTES"
+
+    - name: Get latest valid tag (super robust)
+      shell: pwsh
+      run: |
+        # Récupère tous les tags triés par ordre numérique décroissant
+        $allTags = git tag --sort=-v:refname
+
+        # Filtre uniquement les tags au format X.Y.Z.W
+        $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
+
+        if ($validTags.Count -gt 0) {
+            # Prend le plus grand tag valide
+            $tag = $validTags[0]
+            Write-Host "Tag valide détecté : $tag"
+        } else {
+            # Aucun tag valide → fallback
+            Write-Host "Aucun tag valide trouvé → fallback vers 0.0.0.0"
+            $tag = "0.0.0.0"
+        }
+
+        echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+    # ---------------------------------------------------------
+    # 4) Auto-increment BUILD (si pas de version manuelle)
+    # ---------------------------------------------------------
+    - name: Auto-increment BUILD
+      if: ${{ github.event.inputs.version == '' }}
+      shell: pwsh
+      run: |
+        $last = $env:LAST_TAG
+        Write-Host "DEBUG: LAST_TAG = $last"
+        $parts = $last.Split(".")
+        $major = [int]$parts[0]
+        $minor = [int]$parts[1]
+        $patch = [int]$parts[2]
+        $build = [int]$parts[3] + 1
+
+        $new = "$major.$minor.$patch.$build"
+        echo "VERSION=$new" >> $env:GITHUB_ENV
+        echo "TAG=$new" >> $env:GITHUB_ENV 
+
+        Write-Host "Nouvelle version auto : $new"
+
+    - name: Export VERSION and TAG
+      id: setversion
+      shell: pwsh
+      run: |
+        echo "VERSION=$env:VERSION"
+        echo "TAG=$env:TAG"
+        echo "::set-output name=VERSION::$env:VERSION"
+        echo "::set-output name=TAG::$env:TAG"
+
+    # ---------------------------------------------------------
+    # 5) Save START_TIME
+    # ---------------------------------------------------------
+    - name: Save START_TIME
+      shell: pwsh
+      run: |
+        $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        echo "START_TIME=$t" >> $env:GITHUB_ENV
+        Write-Host "START_TIME=$t"
+
+
+#jobs:
 
   # ---------------------------------------------------------
   # 1) Trigger GraphLibSpecific
