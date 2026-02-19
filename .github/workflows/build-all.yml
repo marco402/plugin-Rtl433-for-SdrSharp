@@ -15,297 +15,298 @@ permissions:
   actions: write
 
 jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      # ---------------------------------------------------------
+      # 1) Trigger GraphLibSpecific
+      # ---------------------------------------------------------
+      - name: Trigger GraphLib build
+        shell: pwsh
+        run: |
+          $url = "https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches"
+          $body = '{"ref":"main"}'
+    
+          $response = curl.exe -s -o $null -w "%{http_code}" `
+            -X POST `
+            -H "Authorization: Bearer ${{ secrets.PAT }}" `
+            -H "Accept: application/vnd.github+json" `
+            -d $body `
+            $url
+    
+          Write-Host "response='$response'"
+    
+          if ($response -eq "204" -or $null -eq $response) {
+              Write-Host "Workflow GraphLib déclenché avec succès."
+              exit 0
+          }
+    
+          Write-Error "Échec du déclenchement du workflow GraphLib (HTTP $response)"
+          exit 1
 
-  # ---------------------------------------------------------
-  # 1) Trigger GraphLibSpecific
-  # ---------------------------------------------------------
-    - name: Trigger GraphLib build
-      shell: pwsh
-      run: |
-        $url = "https://api.github.com/repos/marco402/GraphLibSpecific/actions/workflows/build.yml/dispatches"
-        $body = '{"ref":"main"}'
+    # ---------------------------------------------------------
+    # 2) Wait for GraphLibSpecific
+    # ---------------------------------------------------------
+      - name: Wait for GraphLib artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{
+              "Accept" = "application/vnd.github+json"
+              "Authorization" = "Bearer $env:GH_TOKEN"
+          }
   
-        $response = curl.exe -s -o $null -w "%{http_code}" `
-          -X POST `
-          -H "Authorization: Bearer ${{ secrets.PAT }}" `
-          -H "Accept: application/vnd.github+json" `
-          -d $body `
-          $url
+          $repo = "marco402/GraphLibSpecific"
+          $workflow = "build.yml"
+          $branch = "main"
+          $jobName = "build"
   
-        Write-Host "response='$response'"
+          Write-Host "Waiting for GraphLibSpecific workflow to complete..."
   
-        if ($response -eq "204" -or $null -eq $response) {
-            Write-Host "Workflow GraphLib déclenché avec succès."
-            exit 0
-        }
+          while ($true) {
+              $runs = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
+                  -Method GET
   
-        Write-Error "Échec du déclenchement du workflow GraphLib (HTTP $response)"
-        exit 1
-
-
-  # ---------------------------------------------------------
-  # 2) Wait for GraphLibSpecific
-  # ---------------------------------------------------------
-    - name: Wait for GraphLib artifacts
-      shell: pwsh
-      env:
-        GH_TOKEN: ${{ secrets.PAT }}
-      run: |
-        $headers = @{
-            "Accept" = "application/vnd.github+json"
-            "Authorization" = "Bearer $env:GH_TOKEN"
-        }
-
-        $repo = "marco402/GraphLibSpecific"
-        $workflow = "build.yml"
-        $branch = "main"
-        $jobName = "build"
-
-        Write-Host "Waiting for GraphLibSpecific workflow to complete..."
-
-        while ($true) {
-            $runs = Invoke-RestMethod -Headers $headers `
-                -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
-                -Method GET
-
-            if ($runs.workflow_runs.Count -eq 0) {
-                Write-Host "No workflow run found yet. Retrying in 10 seconds..."
-                Start-Sleep -Seconds 10
-                continue
-            }
-
-            $run = $runs.workflow_runs | Sort-Object created_at -Descending | Select-Object -First 1
-
-            Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
-
-            if ($run.status -eq "completed") {
-                if ($run.conclusion -eq "success") {
-                    Write-Host "GraphLibSpecific workflow completed successfully."
-                    break
-                } else {
-                    Write-Error "GraphLibSpecific workflow failed with conclusion: $($run.conclusion)"
-                    exit 1
-                }
-            }
-
-            Start-Sleep -Seconds 10
-        }
+              if ($runs.workflow_runs.Count -eq 0) {
+                  Write-Host "No workflow run found yet. Retrying in 10 seconds..."
+                  Start-Sleep -Seconds 10
+                  continue
+              }
+  
+              $run = $runs.workflow_runs | Sort-Object created_at -Descending | Select-Object -First 1
+  
+              Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
+  
+              if ($run.status -eq "completed") {
+                  if ($run.conclusion -eq "success") {
+                      Write-Host "GraphLibSpecific workflow completed successfully."
+                      break
+                  } else {
+                      Write-Error "GraphLibSpecific workflow failed with conclusion: $($run.conclusion)"
+                      exit 1
+                  }
+              }
+  
+              Start-Sleep -Seconds 10
+          }
 
 
     # ---------------------------------------------------------
     # 3) Trigger RTL_433
     # ---------------------------------------------------------
-    - name: Trigger RTL_433 build
-      shell: pwsh
-      run: |
-        $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
-        $body = '{"ref":"rtl_433forSDRSharp"}'
+      - name: Trigger RTL_433 build
+        shell: pwsh
+        run: |
+          $url = "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/workflows/build.yml/dispatches"
+          $body = '{"ref":"rtl_433forSDRSharp"}'
+    
+          $response = curl.exe -s -o $null -w "%{http_code}" `
+            -X POST `
+            -H "Authorization: Bearer ${{ secrets.PAT }}" `
+            -H "Accept: application/vnd.github+json" `
+            -d $body `
+            $url
+    
+          Write-Host "response='$response'"
+    
+          if ($response -eq "204" -or $null -eq $response) {
+              Write-Host "Workflow RTL_433 déclenché avec succès."
+              exit 0
+          }
+    
+          Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
+          exit 1
   
-        $response = curl.exe -s -o $null -w "%{http_code}" `
-          -X POST `
-          -H "Authorization: Bearer ${{ secrets.PAT }}" `
-          -H "Accept: application/vnd.github+json" `
-          -d $body `
-          $url
+    # ---------------------------------------------------------
+    # 4) Wait for RTL_433 artifacts
+    # ---------------------------------------------------------
+      - name: Wait for RTL_433 artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
+          $start = Get-Date $env:START_TIME
   
-        Write-Host "response='$response'"
+          Write-Host "Recherche d'un run RTL_433 créé après $start"
   
-        if ($response -eq "204" -or $null -eq $response) {
-            Write-Host "Workflow RTL_433 déclenché avec succès."
-            exit 0
-        }
+          for ($i = 1; $i -le 60; $i++) {
   
-        Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
-        exit 1
-
-
-  # ---------------------------------------------------------
-  # 4) Wait for RTL_433 artifacts
-  # ---------------------------------------------------------
-    - name: Wait for RTL_433 artifacts
-      shell: pwsh
-      env:
-        GH_TOKEN: ${{ secrets.PAT }}
-      run: |
-        $headers = @{ Authorization = "Bearer $env:GH_TOKEN" }
-        $start = Get-Date $env:START_TIME
-
-        Write-Host "Recherche d'un run RTL_433 créé après $start"
-
-        for ($i = 1; $i -le 60; $i++) {
-
-            Write-Host "Tentative $i..."
-
-            $runs = Invoke-RestMethod -Headers $headers `
-              -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
-              -Method GET
-
-            $run = $runs.workflow_runs |
-              Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
-              Sort-Object created_at |
-              Select-Object -Last 1
-
-            if ($run) {
-                Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
-
-                if ($run.status -eq "completed") {
-
-                    $artifacts = Invoke-RestMethod -Headers $headers `
-                      -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
-                      -Method GET
-
-                    $count = $artifacts.artifacts.Count
-                    Write-Host "Nombre d'artefacts : $count"
-
-                    if ($count -ge 2) {
-                        Write-Host "Artifacts prêts !"
-                        echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
-                        exit 0
-                    }
-                }
-            }
-
-            Start-Sleep -Seconds 5
-        }
-
-        Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
-        exit 1
+              Write-Host "Tentative $i..."
+  
+              $runs = Invoke-RestMethod -Headers $headers `
+                -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs" `
+                -Method GET
+  
+              $run = $runs.workflow_runs |
+                Where-Object { $_.head_branch -eq "rtl_433forSDRSharp" } |
+                Sort-Object created_at |
+                Select-Object -Last 1
+  
+              if ($run) {
+                  Write-Host "Run trouvé : $($run.id) - status=$($run.status)"
+  
+                  if ($run.status -eq "completed") {
+  
+                      $artifacts = Invoke-RestMethod -Headers $headers `
+                        -Uri "https://api.github.com/repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/actions/runs/$($run.id)/artifacts" `
+                        -Method GET
+  
+                      $count = $artifacts.artifacts.Count
+                      Write-Host "Nombre d'artefacts : $count"
+  
+                      if ($count -ge 2) {
+                          Write-Host "Artifacts prêts !"
+                          echo "RUN_ID=$($run.id)" >> $env:GITHUB_ENV
+                          exit 0
+                      }
+                  }
+              }
+  
+              Start-Sleep -Seconds 5
+          }
+  
+          Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
+          exit 1
+    # ---------------------------------------------------------
+    # 5) Build plugin + assemble ZIPs
+    # ---------------------------------------------------------
+    build:
+      runs-on: windows-latest
+      needs: wait_rtl433
+  
+      outputs:
+        VERSION: ${{ steps.setversion.outputs.VERSION }}
+        TAG: ${{ steps.setversion.outputs.TAG }}
+        NOTES: ${{ steps.setnotes.outputs.NOTES }}
+  
+      steps:
+  
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       # ---------------------------------------------------------
-      # 5) Build plugin + assemble ZIPs
+      # Versioning (inchangé)
       # ---------------------------------------------------------
-      build:
-        runs-on: windows-latest
-        needs: wait_rtl433
-    
-        outputs:
-          VERSION: ${{ steps.setversion.outputs.VERSION }}
-          TAG: ${{ steps.setversion.outputs.TAG }}
-          NOTES: ${{ steps.setnotes.outputs.NOTES }}
-    
-        steps:
-    
-        - name: Checkout
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-            fetch-tags: true
-
-    # ---------------------------------------------------------
-    # Versioning (inchangé)
-    # ---------------------------------------------------------
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: "8.0.x"
-
-    - name: Read input
-      shell: pwsh
-      run: |
-        if ("${{ github.event.inputs.version }}" -ne "") {
-            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
-            echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
-        }
-
-    - name: Release notes
-      id: notes
-      shell: pwsh
-      run: |
-        $notes = "${{ github.event.inputs.notes }}"
-        Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
-        Add-Content -Path $env:GITHUB_ENV -Value $notes
-        Add-Content -Path $env:GITHUB_ENV -Value "EOF"
-
-    - name: Export NOTES
-      id: setnotes
-      shell: pwsh
-      run: echo "::set-output name=NOTES::$env:NOTES"
-
-    - name: Get latest valid tag
-      shell: pwsh
-      run: |
-        $allTags = git tag --sort=-v:refname
-        $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
-        if ($validTags.Count -gt 0) { $tag = $validTags[0] } else { $tag = "0.0.0.0" }
-        echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
-
-    - name: Auto-increment BUILD
-      if: ${{ github.event.inputs.version == '' }}
-      shell: pwsh
-      run: |
-        $parts = $env:LAST_TAG.Split(".")
-        $new = "$($parts[0]).$($parts[1]).$($parts[2]).$([int]$parts[3] + 1)"
-        echo "VERSION=$new" >> $env:GITHUB_ENV
-        echo "TAG=$new" >> $env:GITHUB_ENV
-
-    - name: Export VERSION and TAG
-      id: setversion
-      shell: pwsh
-      run: |
-        echo "::set-output name=VERSION::$env:VERSION"
-        echo "::set-output name=TAG::$env:TAG"
-
-    # ---------------------------------------------------------
-    # Download GraphLib artifacts
-    # ---------------------------------------------------------
-    - name: Download GraphLib DLLs
-      uses: actions/download-artifact@v4
-      with:
-        name: graphlib
-        path: graphlib
-
-    # ---------------------------------------------------------
-    # Download RTL_433 artifacts
-    # ---------------------------------------------------------
-    - name: Download RTL_433 artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: rtl433
-        path: rtl433
-
-    # ---------------------------------------------------------
-    # Build plugin x86 / x64 (.NET Framework 4.8)
-    # ---------------------------------------------------------
-    - name: Build plugin x86
-      shell: pwsh
-      run: |
-        msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.sln `
-          /p:Configuration=Release /p:Platform=x86
-
-    - name: Build plugin x64
-      shell: pwsh
-      run: |
-        msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.sln `
-          /p:Configuration=Release /p:Platform=x64
-
-    # ---------------------------------------------------------
-    # Assemble ZIPs
-    # ---------------------------------------------------------
-    - name: Build plugin ZIPs
-      shell: pwsh
-      run: |
-        New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
-        New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
-
-        Copy-Item "rtl433/x86/rtl_433.dll" "out_x86/"
-        Copy-Item "rtl433/x64/rtl_433.dll" "out_x64/"
-
-        Copy-Item "graphlib/x86/GraphLib.dll" "out_x86/"
-        Copy-Item "graphlib/x64/GraphLib.dll" "out_x64/"
-
-        Copy-Item "Rtl_433_Plugin/bin/x86/Release/SDRSharp.Rtl_433.dll" "out_x86/"
-        Copy-Item "Rtl_433_Plugin/bin/x64/Release/SDRSharp.Rtl_433.dll" "out_x64/"
-
-        Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
-        Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
-
-    - name: Upload plugin ZIPs artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: plugin-zips
-        path: |
-          plugin_rtl433_x86-${{ env.VERSION }}.zip
-          plugin_rtl433_x64-${{ env.VERSION }}.zip
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+  
+      - name: Read input
+        shell: pwsh
+        run: |
+          if ("${{ github.event.inputs.version }}" -ne "") {
+              echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+              echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
+          }
+  
+      - name: Release notes
+        id: notes
+        shell: pwsh
+        run: |
+          $notes = "${{ github.event.inputs.notes }}"
+          Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+          Add-Content -Path $env:GITHUB_ENV -Value $notes
+          Add-Content -Path $env:GITHUB_ENV -Value "EOF"
+  
+      - name: Export NOTES
+        id: setnotes
+        shell: pwsh
+        run: echo "::set-output name=NOTES::$env:NOTES"
+  
+      - name: Get latest valid tag
+        shell: pwsh
+        run: |
+          $allTags = git tag --sort=-v:refname
+          $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
+          if ($validTags.Count -gt 0) { $tag = $validTags[0] } else { $tag = "0.0.0.0" }
+          echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+  
+      - name: Auto-increment BUILD
+        if: ${{ github.event.inputs.version == '' }}
+        shell: pwsh
+        run: |
+          $parts = $env:LAST_TAG.Split(".")
+          $new = "$($parts[0]).$($parts[1]).$($parts[2]).$([int]$parts[3] + 1)"
+          echo "VERSION=$new" >> $env:GITHUB_ENV
+          echo "TAG=$new" >> $env:GITHUB_ENV
+  
+      - name: Export VERSION and TAG
+        id: setversion
+        shell: pwsh
+        run: |
+          echo "::set-output name=VERSION::$env:VERSION"
+          echo "::set-output name=TAG::$env:TAG"
+  
+      # ---------------------------------------------------------
+      # Download GraphLib artifacts
+      # ---------------------------------------------------------
+      - name: Download GraphLib DLLs
+        uses: actions/download-artifact@v4
+        with:
+          name: graphlib
+          path: graphlib
+  
+      # ---------------------------------------------------------
+      # Download RTL_433 artifacts
+      # ---------------------------------------------------------
+      - name: Download RTL_433 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rtl433
+          path: rtl433
+  
+      # ---------------------------------------------------------
+      # Build plugin x86 / x64 (.NET Framework 4.8)
+      # ---------------------------------------------------------
+      - name: Build plugin x86
+        shell: pwsh
+        run: |
+          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.sln `
+            /p:Configuration=Release /p:Platform=x86
+  
+      - name: Build plugin x64
+        shell: pwsh
+        run: |
+          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.sln `
+            /p:Configuration=Release /p:Platform=x64
+  
+      # ---------------------------------------------------------
+      # Assemble ZIPs
+      # ---------------------------------------------------------
+      - name: Build plugin ZIPs
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
+          New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
+  
+          Copy-Item "rtl433/x86/rtl_433.dll" "out_x86/"
+          Copy-Item "rtl433/x64/rtl_433.dll" "out_x64/"
+  
+          Copy-Item "graphlib/x86/GraphLib.dll" "out_x86/"
+          Copy-Item "graphlib/x64/GraphLib.dll" "out_x64/"
+  
+          Copy-Item "Rtl_433_Plugin/bin/x86/Release/SDRSharp.Rtl_433.dll" "out_x86/"
+          Copy-Item "Rtl_433_Plugin/bin/x64/Release/SDRSharp.Rtl_433.dll" "out_x64/"
+  
+          Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
+          Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+  
+      - name: Upload plugin ZIPs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-zips
+          path: |
+            plugin_rtl433_x86-${{ env.VERSION }}.zip
+            plugin_rtl433_x64-${{ env.VERSION }}.zip
 
   # ---------------------------------------------------------
   # 6) Sign + Release
@@ -316,39 +317,39 @@ jobs:
     permissions:
       id-token: write
       contents: write
-  
+
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
       NOTES: ${{ needs.build.outputs.NOTES }}
-  
+
     steps:
       - name: Download plugin ZIPs
         uses: actions/download-artifact@v4
         with:
           name: plugin-zips
-  
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.5.0
-  
+
       - name: Cosign sign ZIPs
         run: |
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \
             --output-certificate plugin_rtl433_x86-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x86-${{ env.VERSION }}.zip
-  
+
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
             --output-certificate plugin_rtl433_x64-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x64-${{ env.VERSION }}.zip
-  
+
       - name: Generate SHA256SUMS
         run: |
           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-  
+
       - name: Generate VERIFY.txt
         run: |
           echo "To verify signatures:" > VERIFY.txt
@@ -364,7 +365,7 @@ jobs:
           echo "  plugin_rtl433_x64-${{ env.VERSION }}.zip" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "SHA256SUMS file included for integrity checking." >> VERIFY.txt
-  
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
