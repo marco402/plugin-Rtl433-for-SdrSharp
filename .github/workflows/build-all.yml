@@ -73,6 +73,7 @@ jobs:
       # 2) Wait for GraphLibSpecific
       # ---------------------------------------------------------
       - name: Wait for GraphLib artifacts
+        id: wait_graphlib
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.PAT }}
@@ -139,6 +140,7 @@ jobs:
 
               if ($arts.total_count -ge 1) {
                   Write-Host "Artifacts are now available."
+                  echo "run_id=$($targetRun.id)" >> $env:GITHUB_OUTPUT
                   break
               }
 
