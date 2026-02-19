@@ -24,7 +24,17 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-
+          
+      # ---------------------------------------------------------
+      # 5) Save START_TIME
+      # ---------------------------------------------------------
+      - name: Save START_TIME
+        shell: pwsh
+        run: |
+          $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          echo "START_TIME=$t" >> $env:GITHUB_ENV
+          Write-Host "START_TIME=$t"
+          
       # ---------------------------------------------------------
       # 1) Setup .NET
       # ---------------------------------------------------------
@@ -71,37 +81,58 @@ jobs:
               "Accept" = "application/vnd.github+json"
               "Authorization" = "Bearer $env:GH_TOKEN"
           }
-  
+
           $repo = "marco402/GraphLibSpecific"
           $workflow = "build.yml"
           $branch = "main"
-          $jobName = "build"
-  
-          Write-Host "Waiting for GraphLibSpecific workflow to complete..."
-  
-          while ($true) {
+          $start = [DateTime]::Parse($env:START_TIME)
+
+          Write-Host "Waiting for GraphLibSpecific workflow to complete (created after $start)..."
+
+          $targetRun = $null
+
+          while (-not $targetRun) {
               $runs = Invoke-RestMethod -Headers $headers `
                   -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
                   -Method GET
-  
+
               if ($runs.workflow_runs.Count -eq 0) {
                   Write-Host "No workflow run found yet. Retrying in 10 seconds..."
                   Start-Sleep -Seconds 10
                   continue
               }
-  
-              $run = $runs.workflow_runs | Sort-Object created_at -Descending | Select-Object -First 1
-  
-              Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
-  
-              if ($run.conclusion -eq "success" -or $run.conclusion -eq "failure" -and $run.status -eq "completed") {
-                  Write-Host "GraphLibSpecific workflow completed (ignoring cleanup failures)."
-                  break
+
+              $candidates = $runs.workflow_runs |
+                Where-Object { [DateTime]::Parse($_.created_at) -gt $start } |
+                Sort-Object created_at -Descending
+
+              if ($candidates.Count -eq 0) {
+                  Write-Host "No run created after $start yet. Retrying in 10 seconds..."
+                  Start-Sleep -Seconds 10
+                  continue
               }
-              else {
+
+              $targetRun = $candidates[0]
+              Write-Host "Tracking run id=$($targetRun.id) created_at=$($targetRun.created_at)"
+          }
+
+          while ($true) {
+              $run = Invoke-RestMethod -Headers $headers `
+                  -Uri $targetRun.url `
+                  -Method GET
+
+              Write-Host "Latest tracked run status: $($run.status) - conclusion: $($run.conclusion)"
+
+              if ($run.status -eq "completed") {
+                  if ($run.conclusion -eq "success") {
+                      Write-Host "GraphLibSpecific workflow completed successfully."
+                      break
+                  } else {
                       Write-Error "GraphLibSpecific workflow failed with conclusion: $($run.conclusion)"
                       exit 1
                   }
+              }
+
               Start-Sleep -Seconds 10
           }
 
@@ -147,10 +178,13 @@ jobs:
           $repo = "marco402/Rtl_433_dll-for-plugin-SdrSharp"
           $workflow = "build.yml"
           $branch = "rtl_433forSDRSharp"
+          $start = [DateTime]::Parse($env:START_TIME)
 
-          Write-Host "Waiting for RTL_433 workflow to complete..."
+          Write-Host "Waiting for RTL_433 workflow to complete (created after $start)..."
 
-          while ($true) {
+          $targetRun = $null
+
+          while (-not $targetRun) {
               $runs = Invoke-RestMethod -Headers $headers `
                   -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
                   -Method GET
@@ -161,20 +195,40 @@ jobs:
                   continue
               }
 
-              $run = $runs.workflow_runs | Sort-Object created_at -Descending | Select-Object -First 1
+              $candidates = $runs.workflow_runs |
+                Where-Object { [DateTime]::Parse($_.created_at) -gt $start } |
+                Sort-Object created_at -Descending
 
-              Write-Host "Latest run status: $($run.status) - conclusion: $($run.conclusion)"
-
-              if ($run.conclusion -eq "success" -or $run.conclusion -eq "failure" -and $run.status -eq "completed") {
-                  Write-Host "RTL_433 workflow completed (ignoring cleanup failures)."
-                  break
+              if ($candidates.Count -eq 0) {
+                  Write-Host "No run created after $start yet. Retrying in 10 seconds..."
+                  Start-Sleep -Seconds 10
+                  continue
               }
-              else {
+
+              $targetRun = $candidates[0]
+              Write-Host "Tracking run id=$($targetRun.id) created_at=$($targetRun.created_at)"
+          }
+
+          while ($true) {
+              $run = Invoke-RestMethod -Headers $headers `
+                  -Uri $targetRun.url `
+                  -Method GET
+
+              Write-Host "Latest tracked run status: $($run.status) - conclusion: $($run.conclusion)"
+
+              if ($run.status -eq "completed") {
+                  if ($run.conclusion -eq "success") {
+                      Write-Host "RTL_433 workflow completed successfully."
+                      break
+                  } else {
                       Write-Error "RTL_433 workflow failed with conclusion: $($run.conclusion)"
                       exit 1
                   }
+              }
+
               Start-Sleep -Seconds 10
           }
+
     
       # ---------------------------------------------------------
       # Versioning (inchangé)
