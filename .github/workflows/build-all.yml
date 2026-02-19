@@ -18,17 +18,30 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
-		
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
       # ---------------------------------------------------------
-      # 5) Save START_TIME
+      # 1) Setup .NET
+      # ---------------------------------------------------------
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      # ---------------------------------------------------------
+      # 2) Save START_TIME
       # ---------------------------------------------------------
       - name: Save START_TIME
         shell: pwsh
         run: |
-          $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          echo "START_TIME=$t" >> $env:GITHUB_ENV
+          $now = Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
+          echo "START_TIME=$now" >> $env:GITHUB_ENV
+
           Write-Host "START_TIME=$t"
 
       # ---------------------------------------------------------
@@ -201,11 +214,6 @@ jobs:
       # ---------------------------------------------------------
       # Versioning (inchangé)
       # ---------------------------------------------------------
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-  
       - name: Read input
         shell: pwsh
         run: |
