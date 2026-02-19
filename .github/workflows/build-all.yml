@@ -361,21 +361,17 @@ jobs:
       # ---------------------------------------------------------
       # Download GraphLib artifacts
       # ---------------------------------------------------------
-      - name: Download GraphLib x86
-        uses: actions/download-artifact@v4
-        with:
-          name: CI_x86
-          path: graphlib
+      - name: Download GraphLib artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          gh run download $env:RUN_ID_GRAPHLIB `
+            --repo marco402/GraphLibSpecific `
+            --dir graphlib
+      
+          Write-Host "Artefacts GraphLib téléchargés."
 
-      - name: Download GraphLib x64
-        uses: actions/download-artifact@v4
-        with:
-          name: CI_x64
-          path: graphlib
-
-  
-
-  
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
       # ---------------------------------------------------------
