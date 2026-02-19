@@ -87,27 +87,22 @@ jobs:
           $branch = "main"
           $start = [DateTime]::Parse($env:START_TIME)
 
-          Write-Host "Waiting for GraphLibSpecific workflow to complete (created after $start)..."
+          Write-Host "Waiting for GraphLibSpecific workflow created after $start..."
 
           $targetRun = $null
 
+          # --- Trouver le run déclenché après START_TIME ---
           while (-not $targetRun) {
               $runs = Invoke-RestMethod -Headers $headers `
                   -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
                   -Method GET
-
-              if ($runs.workflow_runs.Count -eq 0) {
-                  Write-Host "No workflow run found yet. Retrying in 10 seconds..."
-                  Start-Sleep -Seconds 10
-                  continue
-              }
 
               $candidates = $runs.workflow_runs |
                 Where-Object { [DateTime]::Parse($_.created_at) -gt $start } |
                 Sort-Object created_at -Descending
 
               if ($candidates.Count -eq 0) {
-                  Write-Host "No run created after $start yet. Retrying in 10 seconds..."
+                  Write-Host "No new run yet. Retrying in 10 seconds..."
                   Start-Sleep -Seconds 10
                   continue
               }
@@ -116,14 +111,14 @@ jobs:
               Write-Host "Tracking run id=$($targetRun.id) created_at=$($targetRun.created_at)"
           }
 
+          # --- Attendre la fin du workflow ---
           while ($true) {
-              $run = Invoke-RestMethod -Headers $headers `
-                  -Uri $targetRun.url `
-                  -Method GET
+              $run = Invoke-RestMethod -Headers $headers -Uri $targetRun.url -Method GET
 
-              Write-Host "Latest tracked run status: $($run.status) - conclusion: $($run.conclusion)"
+              $conc = if ($run.conclusion) { $run.conclusion } else { "<pending>" }
+              Write-Host "Status: $($run.status) - Conclusion: $conc"
 
-              if ($run.status -eq "completed") {
+              if ($run.status -eq "completed" -and $run.conclusion) {
                   if ($run.conclusion -eq "success") {
                       Write-Host "GraphLibSpecific workflow completed successfully."
                       break
@@ -135,6 +130,22 @@ jobs:
 
               Start-Sleep -Seconds 10
           }
+
+          # --- Attendre que les artifacts soient disponibles ---
+          while ($true) {
+              $arts = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/runs/$($targetRun.id)/artifacts" `
+                  -Method GET
+
+              if ($arts.total_count -ge 1) {
+                  Write-Host "Artifacts are now available."
+                  break
+              }
+
+              Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
+              Start-Sleep -Seconds 5
+          }
+
 
       # ---------------------------------------------------------
       # 3) Trigger RTL_433
@@ -180,27 +191,22 @@ jobs:
           $branch = "rtl_433forSDRSharp"
           $start = [DateTime]::Parse($env:START_TIME)
 
-          Write-Host "Waiting for RTL_433 workflow to complete (created after $start)..."
+          Write-Host "Waiting for RTL_433 workflow created after $start..."
 
           $targetRun = $null
 
+          # --- Trouver le run déclenché après START_TIME ---
           while (-not $targetRun) {
               $runs = Invoke-RestMethod -Headers $headers `
                   -Uri "https://api.github.com/repos/$repo/actions/workflows/$workflow/runs?branch=$branch&event=workflow_dispatch" `
                   -Method GET
-
-              if ($runs.workflow_runs.Count -eq 0) {
-                  Write-Host "No workflow run found yet. Retrying in 10 seconds..."
-                  Start-Sleep -Seconds 10
-                  continue
-              }
 
               $candidates = $runs.workflow_runs |
                 Where-Object { [DateTime]::Parse($_.created_at) -gt $start } |
                 Sort-Object created_at -Descending
 
               if ($candidates.Count -eq 0) {
-                  Write-Host "No run created after $start yet. Retrying in 10 seconds..."
+                  Write-Host "No new run yet. Retrying in 10 seconds..."
                   Start-Sleep -Seconds 10
                   continue
               }
@@ -209,14 +215,14 @@ jobs:
               Write-Host "Tracking run id=$($targetRun.id) created_at=$($targetRun.created_at)"
           }
 
+          # --- Attendre la fin du workflow ---
           while ($true) {
-              $run = Invoke-RestMethod -Headers $headers `
-                  -Uri $targetRun.url `
-                  -Method GET
+              $run = Invoke-RestMethod -Headers $headers -Uri $targetRun.url -Method GET
 
-              Write-Host "Latest tracked run status: $($run.status) - conclusion: $($run.conclusion)"
+              $conc = if ($run.conclusion) { $run.conclusion } else { "<pending>" }
+              Write-Host "Status: $($run.status) - Conclusion: $conc"
 
-              if ($run.status -eq "completed") {
+              if ($run.status -eq "completed" -and $run.conclusion) {
                   if ($run.conclusion -eq "success") {
                       Write-Host "RTL_433 workflow completed successfully."
                       break
@@ -229,7 +235,21 @@ jobs:
               Start-Sleep -Seconds 10
           }
 
-    
+          # --- Attendre que les artifacts soient disponibles ---
+          while ($true) {
+              $arts = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/runs/$($targetRun.id)/artifacts" `
+                  -Method GET
+
+              if ($arts.total_count -ge 1) {
+                  Write-Host "Artifacts are now available."
+                  break
+              }
+
+              Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
+              Start-Sleep -Seconds 5
+          }
+
       # ---------------------------------------------------------
       # Versioning (inchangé)
       # ---------------------------------------------------------
