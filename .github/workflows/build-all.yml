@@ -102,8 +102,6 @@ jobs:
                       Write-Error "GraphLibSpecific workflow failed with conclusion: $($run.conclusion)"
                       exit 1
                   }
-              }
-  
               Start-Sleep -Seconds 10
           }
 
@@ -175,8 +173,6 @@ jobs:
                       Write-Error "RTL_433 workflow failed with conclusion: $($run.conclusion)"
                       exit 1
                   }
-              }
-
               Start-Sleep -Seconds 10
           }
     
