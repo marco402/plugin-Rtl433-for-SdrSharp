@@ -34,16 +34,6 @@ jobs:
           dotnet-version: "8.0.x"
 
       # ---------------------------------------------------------
-      # 2) Save START_TIME
-      # ---------------------------------------------------------
-      - name: Save START_TIME
-        shell: pwsh
-        run: |
-          $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          echo "START_TIME=$t" >> $env:GITHUB_ENV
-          Write-Host "START_TIME=$t"
-
-      # ---------------------------------------------------------
       # 1) Trigger GraphLibSpecific
       # ---------------------------------------------------------
       - name: Trigger GraphLib build
