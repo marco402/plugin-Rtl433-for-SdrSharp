@@ -15,116 +15,7 @@ permissions:
   actions: write
 
 jobs:
-  build:
-    runs-on: windows-latest
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        fetch-tags: true
 
-   # ---------------------------------------------------------
-    # 1) Setup .NET
-    # ---------------------------------------------------------
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: "8.0.x"
-    # ---------------------------------------------------------
-    # 2) Read input (version manuelle + notes)
-    # ---------------------------------------------------------
-    - name: Read input
-      shell: pwsh
-      run: |
-        if ("${{ github.event.inputs.version }}" -ne "") {
-            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
-            echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
-            Write-Host "Version manuelle détectée : ${{ github.event.inputs.version }}"
-        }
-        else {
-            Write-Host "Aucune version manuelle, auto-incrément."
-        }
-
-    - name: Release notes
-      id: notes
-      shell: pwsh
-      run: |
-        $notes = "${{ github.event.inputs.notes }}"
-
-        Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
-        Add-Content -Path $env:GITHUB_ENV -Value $notes
-        Add-Content -Path $env:GITHUB_ENV -Value "EOF"
-
-        Write-Host "Notes de release enregistrées."
-
-    - name: Export NOTES
-      id: setnotes
-      shell: pwsh
-      run: |
-        echo "::set-output name=NOTES::$env:NOTES"
-
-    - name: Get latest valid tag (super robust)
-      shell: pwsh
-      run: |
-        # Récupère tous les tags triés par ordre numérique décroissant
-        $allTags = git tag --sort=-v:refname
-
-        # Filtre uniquement les tags au format X.Y.Z.W
-        $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
-
-        if ($validTags.Count -gt 0) {
-            # Prend le plus grand tag valide
-            $tag = $validTags[0]
-            Write-Host "Tag valide détecté : $tag"
-        } else {
-            # Aucun tag valide → fallback
-            Write-Host "Aucun tag valide trouvé → fallback vers 0.0.0.0"
-            $tag = "0.0.0.0"
-        }
-
-        echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
-    # ---------------------------------------------------------
-    # 4) Auto-increment BUILD (si pas de version manuelle)
-    # ---------------------------------------------------------
-    - name: Auto-increment BUILD
-      if: ${{ github.event.inputs.version == '' }}
-      shell: pwsh
-      run: |
-        $last = $env:LAST_TAG
-        Write-Host "DEBUG: LAST_TAG = $last"
-        $parts = $last.Split(".")
-        $major = [int]$parts[0]
-        $minor = [int]$parts[1]
-        $patch = [int]$parts[2]
-        $build = [int]$parts[3] + 1
-
-        $new = "$major.$minor.$patch.$build"
-        echo "VERSION=$new" >> $env:GITHUB_ENV
-        echo "TAG=$new" >> $env:GITHUB_ENV 
-
-        Write-Host "Nouvelle version auto : $new"
-
-    - name: Export VERSION and TAG
-      id: setversion
-      shell: pwsh
-      run: |
-        echo "VERSION=$env:VERSION"
-        echo "TAG=$env:TAG"
-        echo "::set-output name=VERSION::$env:VERSION"
-        echo "::set-output name=TAG::$env:TAG"
-
-    # ---------------------------------------------------------
-    # 5) Save START_TIME
-    # ---------------------------------------------------------
-    - name: Save START_TIME
-      shell: pwsh
-      run: |
-        $t = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-        echo "START_TIME=$t" >> $env:GITHUB_ENV
-        Write-Host "START_TIME=$t"
-        
   # ---------------------------------------------------------
   # 1) Trigger GraphLibSpecific
   # ---------------------------------------------------------
@@ -280,18 +171,34 @@ jobs:
         Write-Error "Impossible de trouver un run RTL_433 après 60 tentatives."
         exit 1
 
-  # ---------------------------------------------------------
-  # 5) Build plugin + assemble ZIPs
-  # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # 5) Build plugin + assemble ZIPs
+      # ---------------------------------------------------------
+      build:
+        runs-on: windows-latest
+        needs: wait_rtl433
+    
+        outputs:
+          VERSION: ${{ steps.setversion.outputs.VERSION }}
+          TAG: ${{ steps.setversion.outputs.TAG }}
+          NOTES: ${{ steps.setnotes.outputs.NOTES }}
+    
+        steps:
+    
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+            fetch-tags: true
 
-      # ---------------------------------------------------------
-      # Versioning (inchangé)
-      # ---------------------------------------------------------
+    # ---------------------------------------------------------
+    # Versioning (inchangé)
+    # ---------------------------------------------------------
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: "8.0.x"
-    
+
     - name: Read input
       shell: pwsh
       run: |
@@ -299,7 +206,7 @@ jobs:
             echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
             echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
         }
-    
+
     - name: Release notes
       id: notes
       shell: pwsh
@@ -308,12 +215,12 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
         Add-Content -Path $env:GITHUB_ENV -Value $notes
         Add-Content -Path $env:GITHUB_ENV -Value "EOF"
-    
+
     - name: Export NOTES
       id: setnotes
       shell: pwsh
       run: echo "::set-output name=NOTES::$env:NOTES"
-    
+
     - name: Get latest valid tag
       shell: pwsh
       run: |
@@ -321,7 +228,7 @@ jobs:
         $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
         if ($validTags.Count -gt 0) { $tag = $validTags[0] } else { $tag = "0.0.0.0" }
         echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
-    
+
     - name: Auto-increment BUILD
       if: ${{ github.event.inputs.version == '' }}
       shell: pwsh
@@ -330,14 +237,14 @@ jobs:
         $new = "$($parts[0]).$($parts[1]).$($parts[2]).$([int]$parts[3] + 1)"
         echo "VERSION=$new" >> $env:GITHUB_ENV
         echo "TAG=$new" >> $env:GITHUB_ENV
-    
+
     - name: Export VERSION and TAG
       id: setversion
       shell: pwsh
       run: |
         echo "::set-output name=VERSION::$env:VERSION"
         echo "::set-output name=TAG::$env:TAG"
-    
+
     # ---------------------------------------------------------
     # Download GraphLib artifacts
     # ---------------------------------------------------------
@@ -346,16 +253,16 @@ jobs:
       with:
         name: graphlib
         path: graphlib
-      
-      # ---------------------------------------------------------
-      # Download RTL_433 artifacts
-      # ---------------------------------------------------------
+
+    # ---------------------------------------------------------
+    # Download RTL_433 artifacts
+    # ---------------------------------------------------------
     - name: Download RTL_433 artifacts
       uses: actions/download-artifact@v4
       with:
         name: rtl433
         path: rtl433
-    
+
     # ---------------------------------------------------------
     # Build plugin x86 / x64 (.NET Framework 4.8)
     # ---------------------------------------------------------
@@ -364,34 +271,34 @@ jobs:
       run: |
         msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.sln `
           /p:Configuration=Release /p:Platform=x86
-    
+
     - name: Build plugin x64
       shell: pwsh
       run: |
         msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.sln `
           /p:Configuration=Release /p:Platform=x64
-    
-      # ---------------------------------------------------------
-      # Assemble ZIPs
-      # ---------------------------------------------------------
+
+    # ---------------------------------------------------------
+    # Assemble ZIPs
+    # ---------------------------------------------------------
     - name: Build plugin ZIPs
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
         New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
-    
+
         Copy-Item "rtl433/x86/rtl_433.dll" "out_x86/"
         Copy-Item "rtl433/x64/rtl_433.dll" "out_x64/"
-    
+
         Copy-Item "graphlib/x86/GraphLib.dll" "out_x86/"
         Copy-Item "graphlib/x64/GraphLib.dll" "out_x64/"
-    
+
         Copy-Item "Rtl_433_Plugin/bin/x86/Release/SDRSharp.Rtl_433.dll" "out_x86/"
         Copy-Item "Rtl_433_Plugin/bin/x64/Release/SDRSharp.Rtl_433.dll" "out_x64/"
-    
+
         Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
         Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
-    
+
     - name: Upload plugin ZIPs artifact
       uses: actions/upload-artifact@v4
       with:
@@ -409,39 +316,39 @@ jobs:
     permissions:
       id-token: write
       contents: write
-
+  
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
       NOTES: ${{ needs.build.outputs.NOTES }}
-
+  
     steps:
       - name: Download plugin ZIPs
         uses: actions/download-artifact@v4
         with:
           name: plugin-zips
-
+  
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.5.0
-
+  
       - name: Cosign sign ZIPs
         run: |
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x86-${{ env.VERSION }}.zip.sig \
             --output-certificate plugin_rtl433_x86-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x86-${{ env.VERSION }}.zip
-
+  
           cosign sign-blob --yes \
             --output-signature plugin_rtl433_x64-${{ env.VERSION }}.zip.sig \
             --output-certificate plugin_rtl433_x64-${{ env.VERSION }}.zip.pem \
             plugin_rtl433_x64-${{ env.VERSION }}.zip
-
+  
       - name: Generate SHA256SUMS
         run: |
           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip > SHA256SUMS
           sha256sum plugin_rtl433_x64-${{ env.VERSION }}.zip >> SHA256SUMS
           sha256sum plugin_rtl433_x86-${{ env.VERSION }}.zip.sig >> SHA256SUMS
-
+  
       - name: Generate VERIFY.txt
         run: |
           echo "To verify signatures:" > VERIFY.txt
@@ -457,7 +364,7 @@ jobs:
           echo "  plugin_rtl433_x64-${{ env.VERSION }}.zip" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "SHA256SUMS file included for integrity checking." >> VERIFY.txt
-
+  
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
