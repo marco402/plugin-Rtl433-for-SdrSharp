@@ -184,7 +184,7 @@ jobs:
     #    TAG: ${{ steps.setversion.outputs.TAG }}
     #    NOTES: ${{ steps.setnotes.outputs.NOTES }}
   
-      steps:
+    #  steps:
   
       - name: Checkout
         uses: actions/checkout@v4
