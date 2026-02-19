@@ -282,11 +282,18 @@ jobs:
       # ---------------------------------------------------------
       # Download GraphLib artifacts
       # ---------------------------------------------------------
-      - name: Download GraphLib DLLs
+      - name: Download GraphLib x86
         uses: actions/download-artifact@v4
         with:
-          name: graphlib
-          path: graphlib
+          name: CI_x86
+          path: graphlib/x86
+
+      - name: Download GraphLib x64
+        uses: actions/download-artifact@v4
+        with:
+          name: CI_x64
+          path: graphlib/x64
+
   
       # ---------------------------------------------------------
       # Download RTL_433 artifacts
