@@ -152,11 +152,10 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
-      - name: Debug WAIT RTL_433
-        shell: pwsh
-        run: |
-          Write-Host "WAIT returned run_id = ${{ steps.wait_rtl433.outputs.run_id }}"
-          
+          - name: Debug WAIT GraphLib
+              shell: pwsh
+              run: |
+                Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
       # ---------------------------------------------------------
       # 3) Trigger RTL_433
       # ---------------------------------------------------------
@@ -265,11 +264,12 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
-      - name: Debug WAIT GraphLib
+
+      - name: Debug WAIT RTL_433
         shell: pwsh
         run: |
-          Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
-
+          Write-Host "WAIT returned run_id = ${{ steps.wait_rtl433.outputs.run_id }}"
+  
       # ---------------------------------------------------------
       # Versioning (inchangé)
       # ---------------------------------------------------------
