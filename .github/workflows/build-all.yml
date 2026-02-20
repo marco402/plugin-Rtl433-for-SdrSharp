@@ -187,6 +187,8 @@ jobs:
       # 4) Wait for RTL_433 artifacts
       # ---------------------------------------------------------
       - name: Wait for RTL_433 artifacts
+        id: wait_rtl433
+
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.PAT }}
