@@ -84,7 +84,7 @@ jobs:
           }
 
           $repo = "marco402/GraphLibSpecific"
-          $workflow = "Build GraphLib DLL"
+          $workflow = "build.yml"
           $branch = "main"
           $start = [DateTime]::Parse($env:START_TIME)
 
