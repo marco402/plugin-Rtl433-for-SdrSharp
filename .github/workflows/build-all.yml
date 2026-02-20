@@ -260,6 +260,12 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
+          
+      - name: Debug run source
+        shell: pwsh
+        run: |
+          Write-Host "RUN_ID_RTL433 = $env:RUN_ID_RTL433"
+          gh run view $env:RUN_ID_RTL433 --repo marco402/Rtl_433_dll-for-plugin-SdrSharp
 
       # ---------------------------------------------------------
       # Versioning (inchangé)
@@ -310,6 +316,40 @@ jobs:
           echo "::set-output name=VERSION::$env:VERSION"
           echo "::set-output name=TAG::$env:TAG"
           
+      # ---------------------------------------------------------
+      # Ensure GraphLib artifacts are downloadable
+      # ---------------------------------------------------------
+      - name: Ensure GraphLib artifacts are downloadable
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          $headers = @{
+              "Accept" = "application/vnd.github+json"
+              "Authorization" = "Bearer $env:GH_TOKEN"
+          }
+
+          $repo = "marco402/GraphLibSpecific"
+          $runId = "${{ steps.wait_graphlib.outputs.run_id }}"
+
+          Write-Host "Waiting for GraphLib artifacts to become downloadable..."
+
+          while ($true) {
+              $arts = Invoke-RestMethod -Headers $headers `
+                  -Uri "https://api.github.com/repos/$repo/actions/runs/$runId/artifacts" `
+                  -Method GET
+
+              $names = $arts.artifacts.name
+
+              if ($names -contains "CI_x86" -and $names -contains "CI_x64") {
+                  Write-Host "Artifacts CI_x86 and CI_x64 are now downloadable."
+                  break
+              }
+
+              Write-Host "Artifacts not downloadable yet. Retrying in 5 seconds..."
+              Start-Sleep -Seconds 5
+          }
+    
       # ---------------------------------------------------------
       # Ensure RTL_433 artifacts are downloadable
       # ---------------------------------------------------------
@@ -364,39 +404,6 @@ jobs:
           Write-Host "Contenu du dossier plugin-Rtl433-for-SdrSharp :"
           Get-ChildItem -Recurse -Path plugin-Rtl433-for-SdrSharp
     
-      # ---------------------------------------------------------
-      # Ensure GraphLib artifacts are downloadable
-      # ---------------------------------------------------------
-      - name: Ensure GraphLib artifacts are downloadable
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
-        run: |
-          $headers = @{
-              "Accept" = "application/vnd.github+json"
-              "Authorization" = "Bearer $env:GH_TOKEN"
-          }
-
-          $repo = "marco402/GraphLibSpecific"
-          $runId = "${{ steps.wait_graphlib.outputs.run_id }}"
-
-          Write-Host "Waiting for GraphLib artifacts to become downloadable..."
-
-          while ($true) {
-              $arts = Invoke-RestMethod -Headers $headers `
-                  -Uri "https://api.github.com/repos/$repo/actions/runs/$runId/artifacts" `
-                  -Method GET
-
-              $names = $arts.artifacts.name
-
-              if ($names -contains "CI_x86" -and $names -contains "CI_x64") {
-                  Write-Host "Artifacts CI_x86 and CI_x64 are now downloadable."
-                  break
-              }
-
-              Write-Host "Artifacts not downloadable yet. Retrying in 5 seconds..."
-              Start-Sleep -Seconds 5
-          }
 
       # ---------------------------------------------------------
       # Download GraphLib artifacts
@@ -450,15 +457,15 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
           New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
-  
-          Copy-Item "rtl433/RTL_433_x86/rtl_433.dll" "out_x86/" -Force
-          Copy-Item "rtl433/RTL_433_x64/rtl_433.dll" "out_x64/" -Force
-  
+    
           Copy-Item "plugin-Rtl433-for-SdrSharp/graphlib/CI_x86/GraphLib.dll" "out_x86/" -Force
           Copy-Item "plugin-Rtl433-for-SdrSharp/graphlib/CI_x64/GraphLib.dll" "out_x64/" -Force
 
           Copy-Item "plugin-Rtl433-for-SdrSharp/Rtl_433_Plugin/bin/x86/CI_x86/SDRSharp.Rtl_433.dll" "out_x86/"
           Copy-Item "plugin-Rtl433-for-SdrSharp/Rtl_433_Plugin/bin/x64/CI_x64/SDRSharp.Rtl_433.dll" "out_x64/"
+
+          Copy-Item "rtl433/RTL_433_x86/rtl_433.dll" "out_x86/" -Force
+          Copy-Item "rtl433/RTL_433_x64/rtl_433.dll" "out_x64/" -Force
   
           Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
           Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
