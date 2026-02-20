@@ -152,7 +152,13 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
-
+          - name: Debug run source
+            shell: pwsh
+            env:
+              GH_TOKEN: ${{ secrets.PAT }}
+            run: |
+              Write-Host "RUN_ID_GRAPHLIB = $env:RUN_ID_GRAPHLIB"
+              gh run view $env:RUN_ID_GRAPHLIB --repo "marco402/GraphLibSpecific"
 
       # ---------------------------------------------------------
       # 3) Trigger RTL_433
