@@ -84,7 +84,7 @@ jobs:
           }
 
           $repo = "marco402/GraphLibSpecific"
-          $workflow = "build.yml"
+          $workflow = Build GraphLib DLL
           $branch = "main"
           $start = [DateTime]::Parse($env:START_TIME)
 
@@ -194,7 +194,7 @@ jobs:
           }
 
           $repo = "marco402/Rtl_433_dll-for-plugin-SdrSharp"
-          $workflow = "build.yml"
+          $workflow = Build RTL_433 DLL
           $branch = "rtl_433forSDRSharp"
           $start = [DateTime]::Parse($env:START_TIME)
 
@@ -263,9 +263,12 @@ jobs:
           
       - name: Debug run source
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
         run: |
           Write-Host "RUN_ID_RTL433 = $env:RUN_ID_RTL433"
           gh run view $env:RUN_ID_RTL433 --repo marco402/Rtl_433_dll-for-plugin-SdrSharp
+
 
       # ---------------------------------------------------------
       # Versioning (inchangé)
