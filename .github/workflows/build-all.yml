@@ -371,6 +371,9 @@ jobs:
             --dir graphlib
       
           Write-Host "Artefacts GraphLib téléchargés."
+          
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
