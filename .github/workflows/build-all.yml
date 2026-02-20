@@ -152,14 +152,11 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
-      - name: Debug run source
+      - name: Debug WAIT RTL_433
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          Write-Host "RUN_ID_GRAPHLIB = $env:RUN_ID_GRAPHLIB"
-          gh run view $env:RUN_ID_GRAPHLIB --repo "marco402/GraphLibSpecific"
-
+          Write-Host "WAIT returned run_id = ${{ steps.wait_rtl433.outputs.run_id }}"
+          
       # ---------------------------------------------------------
       # 3) Trigger RTL_433
       # ---------------------------------------------------------
@@ -200,7 +197,7 @@ jobs:
           }
 
           $repo = "marco402/Rtl_433_dll-for-plugin-SdrSharp"
-          $workflow = "Build RTL_433 DLL"
+          $workflow = "build.yml"
           $branch = "rtl_433forSDRSharp"
           $start = [DateTime]::Parse($env:START_TIME)
 
@@ -266,15 +263,10 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
-          
-      - name: Debug run source
+      - name: Debug WAIT GraphLib
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          Write-Host "RUN_ID_RTL433 = $env:RUN_ID_RTL433"
-          gh run view $env:RUN_ID_RTL433 --repo marco402/Rtl_433_dll-for-plugin-SdrSharp
-
+          Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
 
       # ---------------------------------------------------------
       # Versioning (inchangé)
