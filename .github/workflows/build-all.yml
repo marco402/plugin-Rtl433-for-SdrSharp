@@ -324,6 +324,12 @@ jobs:
   
           Write-Host "Artefacts RTL_433 téléchargés."
           
+      - name: Debug RTL_433 folder
+        shell: pwsh
+        run: |
+          Write-Host "Contenu du dossier rtl433 :"
+          Get-ChildItem -Recurse -Path rtl433
+    
       # ---------------------------------------------------------
       # Ensure GraphLib artifacts are downloadable
       # ---------------------------------------------------------
@@ -375,6 +381,12 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Debug GraphLib folder
+        shell: pwsh
+        run: |
+          Write-Host "Contenu du dossier GraphLib :"
+          Get-ChildItem -Recurse -Path GraphLib
+          
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
       # ---------------------------------------------------------
@@ -389,6 +401,12 @@ jobs:
         run: |
           msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
             /p:Configuration=CI_x64 /p:Platform=x64
+
+      - name: Debug Rtl_433_Plugin folder
+        shell: pwsh
+        run: |
+          Write-Host "Contenu du dossier Rtl_433_Plugin :"
+          Get-ChildItem -Recurse -Path Rtl_433_Plugin
   
       # ---------------------------------------------------------
       # Assemble ZIPs
