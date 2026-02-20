@@ -405,8 +405,8 @@ jobs:
           Copy-Item "graphlib/x86/GraphLib.dll" "out_x86/"
           Copy-Item "graphlib/x64/GraphLib.dll" "out_x64/"
   
-          Copy-Item "Rtl_433_Plugin/bin/x86/Release/SDRSharp.Rtl_433.dll" "out_x86/"
-          Copy-Item "Rtl_433_Plugin/bin/x64/Release/SDRSharp.Rtl_433.dll" "out_x64/"
+          Copy-Item "Rtl_433_Plugin/bin/x86/CI_x86/SDRSharp.Rtl_433.dll" "out_x86/"
+          Copy-Item "Rtl_433_Plugin/bin/x64/CI_x64/SDRSharp.Rtl_433.dll" "out_x64/"
   
           Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
           Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
