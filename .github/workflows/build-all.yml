@@ -37,4 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Rtl_433_Plugin_${{ matrix.platform }}
-          path: Rtl_433_Plugin/bin/${{ matrix.platform }}/Release/
+          path: Rtl_433_Plugin/bin/${{ matrix.platform }}/${{ matrix.config }}/
