@@ -31,11 +31,10 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Build plugin (${{ matrix.config }})
-        run: SDRSharpMini.sln /p:Configuration=${{ matrix.config }} /p:Platform="${{ matrix.platform }}"
+        run: msbuild SDRSharpMini.sln /p:Configuration=${{ matrix.config }} /p:Platform="${{ matrix.platform }}"
 
       - name: Upload Rtl_433_Plugin DLL
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.config }}
-          path: Rtl_433_Plugin/bin/${{ matrix.platform }}/${{ matrix.config }}/*.dll  
-       
+          name: RTL_433_Plugin${{ matrix.platform }}
+          path: Rtl_433_Plugin/bin/${{ matrix.platform }}/Release/
