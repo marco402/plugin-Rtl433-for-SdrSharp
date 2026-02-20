@@ -84,7 +84,7 @@ jobs:
           }
 
           $repo = "marco402/GraphLibSpecific"
-          $workflow = Build GraphLib DLL
+          $workflow = "Build GraphLib DLL"
           $branch = "main"
           $start = [DateTime]::Parse($env:START_TIME)
 
@@ -194,7 +194,7 @@ jobs:
           }
 
           $repo = "marco402/Rtl_433_dll-for-plugin-SdrSharp"
-          $workflow = Build RTL_433 DLL
+          $workflow = "Build RTL_433 DLL"
           $branch = "rtl_433forSDRSharp"
           $start = [DateTime]::Parse($env:START_TIME)
 
