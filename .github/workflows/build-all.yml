@@ -450,7 +450,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "VERSION = $env:VERSION"
-
+          Write-Host "TAG = $env:TAG"
       - name: Cosign sign ZIPs
         run: |
           cosign sign-blob --yes \
