@@ -364,8 +364,6 @@ jobs:
         id: setversion
         shell: pwsh
         run: |
-          echo "VERSION=$env:VERSION"
-          echo "TAG=$env:TAG" 
           echo "::set-output name=VERSION::$env:VERSION"
           echo "::set-output name=TAG::$env:TAG"
           echo "VERSION=$env:VERSION"
@@ -444,6 +442,11 @@ jobs:
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.5.0
+        
+      - name: Debug VERSION
+        shell: pwsh
+        run: |
+          Write-Host "VERSION = $env:VERSION"
 
       - name: Cosign sign ZIPs
         run: |
