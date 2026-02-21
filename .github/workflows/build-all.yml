@@ -393,8 +393,8 @@ jobs:
         run: |
           $tag = "${{ env.TAG }}"
           echo "TAG=$tag" >> $env:GITHUB_OUTPUT
-          
-      - name: Set LAST_TAG
+
+       - name: Set LAST_TAG
         id: set_last_tag
         shell: pwsh
         run: |
@@ -417,7 +417,7 @@ jobs:
           }
           else {
               # Releases suivantes : diff entre les deux tags
-              $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+              $pluginLog = git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"* %s"
           }
 
           $full = @"
