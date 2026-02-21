@@ -411,11 +411,11 @@ jobs:
 
           
           #D:\a\plugin-Rtl433-for-SdrSharp\plugin-Rtl433-for-SdrSharp\graphlib\CI_x64
-          #Copy-Item "plugin-Rtl433-for-SdrSharp/graphlib/CI_x86/GraphLib.dll" "out_x86/" -Force
-          #Copy-Item "plugin-Rtl433-for-SdrSharp/graphlib/CI_x64/GraphLib.dll" "out_x64/" -Force
+          Copy-Item "graphlib/CI_x86/GraphLib.dll" "out_x86/" -Force
+          Copy-Item "graphlib/CI_x64/GraphLib.dll" "out_x64/" -Force
           
-          Copy-Item "artifacts\graphlib/CI_x86/GraphLib.dll" "out_x86\GraphLib.dll" -Force
-          Copy-Item "artifacts\graphlib/CI_x64/GraphLib.dll" "out_x64\GraphLib.dll" -Force
+          #Copy-Item "graphlib/CI_x86/GraphLib.dll" "out_x86\GraphLib.dll" -Force
+          #Copy-Item "graphlib/CI_x64/GraphLib.dll" "out_x64\GraphLib.dll" -Force
           
 
   
