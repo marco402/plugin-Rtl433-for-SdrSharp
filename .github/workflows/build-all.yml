@@ -19,9 +19,8 @@ jobs:
     outputs:
       VERSION: ${{ steps.set_version.outputs.VERSION }}
       TAG: ${{ steps.set_tag.outputs.TAG }}
-      NOTES: ${{ steps.set_notes.outputs.NOTES }}
-      LAST_TAG: ${{ steps.last_tag.outputs.LAST_TAG }}
-
+      LAST_TAG: ${{ steps.set_last_tag.outputs.LAST_TAG }}
+      NOTES: ${{ steps.changelog.outputs.NOTES }}
 
     runs-on: windows-latest
     steps:
@@ -399,16 +398,14 @@ jobs:
         id: set_last_tag
         shell: pwsh
         run: |
-          # Récupère le tag précédent (le plus récent avant le tag actuel)
           $last = git describe --tags --abbrev=0 HEAD^ 2>$null
       
           if (-not $last) {
-            # Si aucun tag précédent n'existe (première release)
             $last = "INITIAL"
           }
       
-          Write-Host "LAST_TAG = $last"
           echo "LAST_TAG=$last" >> $env:GITHUB_OUTPUT
+
 
       - name: Generate CHANGELOG
         id: changelog
