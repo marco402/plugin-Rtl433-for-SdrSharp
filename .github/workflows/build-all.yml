@@ -152,6 +152,12 @@ jobs:
               Write-Host "Artifacts not ready yet. Retrying in 5 seconds..."
               Start-Sleep -Seconds 5
           }
+                 
+      - name: Debug WAIT GraphLib
+        shell: pwsh
+        run: |
+          Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
+          
       # ---------------------------------------------------------
       # Download GraphLib artifacts
       # ---------------------------------------------------------
@@ -288,11 +294,30 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "WAIT returned run_id = ${{ steps.wait_rtl433.outputs.run_id }}"
+   
+      # ---------------------------------------------------------
+      # Download RTL_433 artifacts
+      # ---------------------------------------------------------
+      - name: Download RTL_433 artifacts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          gh run download $env:RUN_ID `
+            --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
+            --dir artifacts
+  
+          Write-Host "Artefacts RTL_433 téléchargés."
           
-      - name: Debug WAIT GraphLib
+      - name: Debug plugin-Rtl433-for-SdrSharp folder
         shell: pwsh
         run: |
-          Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
+          Write-Host "Contenu du dossier plugin-Rtl433-for-SdrSharp :"
+          Get-ChildItem -Recurse -Path artifacts
+    
+
+
+          
       # ---------------------------------------------------------
       # Versioning (inchangé)
       # ---------------------------------------------------------
@@ -342,27 +367,7 @@ jobs:
           echo "::set-output name=VERSION::$env:VERSION"
           echo "::set-output name=TAG::$env:TAG"
           
-      # ---------------------------------------------------------
-      # Download RTL_433 artifacts
-      # ---------------------------------------------------------
-      - name: Download RTL_433 artifacts
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
-        run: |
-          gh run download $env:RUN_ID `
-            --repo marco402/Rtl_433_dll-for-plugin-SdrSharp `
-            --dir artifacts
-  
-          Write-Host "Artefacts RTL_433 téléchargés."
-          
-      - name: Debug plugin-Rtl433-for-SdrSharp folder
-        shell: pwsh
-        run: |
-          Write-Host "Contenu du dossier plugin-Rtl433-for-SdrSharp :"
-          Get-ChildItem -Recurse -Path plugin-Rtl433-for-SdrSharp
-    
-
+      
 
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
