@@ -379,7 +379,8 @@ jobs:
           
           ### 🔧 Plugin
           
-          $pluginLog = git log -n 20 --pretty=format:"* %s"
+          $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+
     
           
           ### 📦 GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
