@@ -393,7 +393,7 @@ jobs:
           $tag = "${{ env.TAG }}"
           echo "TAG=$tag" >> $env:GITHUB_OUTPUT
 
-       - name: Set LAST_TAG
+      - name: Set LAST_TAG
         id: set_last_tag
         shell: pwsh
         run: |
