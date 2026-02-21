@@ -20,6 +20,7 @@ jobs:
       VERSION: ${{ steps.set_version.outputs.VERSION }}
       TAG: ${{ steps.set_tag.outputs.TAG }}
       NOTES: ${{ steps.set_notes.outputs.NOTES }}
+      LAST_TAG: ${{ steps.last_tag.outputs.LAST_TAG }}
 
 
     runs-on: windows-latest
@@ -30,7 +31,21 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          
+      - name: Get LAST_TAG
+        id: last_tag
+        shell: pwsh
+        run: |
+          # Récupère le tag précédent (le plus récent avant le tag actuel)
+          $last = git describe --tags --abbrev=0 HEAD^ 2>$null
+      
+          if (-not $last) {
+            # Si aucun tag précédent n'existe, on met une valeur par défaut
+            $last = "INITIAL"
+          }
+      
+          Write-Host "LAST_TAG = $last"
+          echo "LAST_TAG=$last" >> $env:GITHUB_OUTPUT
+   
       # ---------------------------------------------------------
       # 5) Save START_TIME
       # ---------------------------------------------------------
@@ -343,7 +358,33 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
           Add-Content -Path $env:GITHUB_ENV -Value $notes
           Add-Content -Path $env:GITHUB_ENV -Value "EOF"
-  
+
+
+      - name: Generate CHANGELOG
+        id: changelog
+        shell: pwsh
+        run: |
+          $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+      
+          $full = @"
+          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+          
+          ### 🔧 Plugin
+          
+          $pluginLog = git log -n 20 --pretty=format:"* %s"
+    
+          
+          ### 📦 GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+          Commit: ${{ env.GRAPHLIB_VERSION }}
+          
+          ### 📡 RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+          Commit: ${{ env.RTL433_VERSION }}
+          "@
+      
+          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
+          $full >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+
       - name: Export NOTES
         id: setnotes
         shell: pwsh
@@ -444,6 +485,9 @@ jobs:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
       NOTES: ${{ needs.build.outputs.NOTES }}
+      GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
+      RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
+      LAST_TAG: ${{ steps.last_tag.outputs.LAST_TAG }}
 
     steps:
       - name: Download plugin ZIPs
