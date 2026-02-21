@@ -485,6 +485,8 @@ jobs:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
       NOTES: ${{ needs.build.outputs.NOTES }}
+      GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
+      RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
 
 
     steps:
