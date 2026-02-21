@@ -18,6 +18,9 @@ jobs:
   build:
     outputs:
       VERSION: ${{ steps.set_version.outputs.VERSION }}
+      TAG: ${{ steps.set_tag.outputs.TAG }}
+      NOTES: ${{ steps.set_notes.outputs.NOTES }}
+
 
     runs-on: windows-latest
     steps:
@@ -490,8 +493,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.VERSION }}
-          name: "Release RTL_433 ${{ env.VERSION }}"
+          tag_name: ${{ env.TAG }}
+          name: "Release RTL_433 ${{ env.TAG }}"
           body: ${{ env.NOTES }}
           files: |
             plugin_rtl433_x86-${{ env.VERSION }}.zip
