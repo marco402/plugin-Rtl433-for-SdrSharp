@@ -365,6 +365,7 @@ jobs:
         shell: pwsh
         run: |
           $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+
       
           $full = @"
           ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
