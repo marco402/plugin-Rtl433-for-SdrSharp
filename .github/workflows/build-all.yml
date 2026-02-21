@@ -359,7 +359,31 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value $notes
           Add-Content -Path $env:GITHUB_ENV -Value "EOF"
 
+      - name: Generate CHANGELOG
+        id: changelog
+        shell: pwsh
+        run: |
+          $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
 
+      
+          $full = @"
+          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+          
+          ### 🔧 Plugin
+          
+          $pluginLog = git log -n 20 --pretty=format:"* %s"
+    
+          
+          ### 📦 GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+          Commit: ${{ env.GRAPHLIB_VERSION }}
+          
+          ### 📡 RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+          Commit: ${{ env.RTL433_VERSION }}
+          "@
+      
+          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
+          $full >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
 
       - name: Export NOTES
         id: setnotes
@@ -461,9 +485,7 @@ jobs:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
       NOTES: ${{ needs.build.outputs.NOTES }}
-      GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
-      RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
-      LAST_TAG: ${{ steps.last_tag.outputs.LAST_TAG }}
+
 
     steps:
       - name: Download plugin ZIPs
