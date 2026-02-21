@@ -370,10 +370,15 @@ jobs:
         id: set_version
         shell: pwsh
         run: |
-          echo "::set-output name=VERSION::$env:VERSION"
-          echo "::set-output name=TAG::$env:TAG"
-          echo "VERSION=$env:VERSION"
-          echo "TAG=$env:TAG" 
+          $version = "${{ env.TAG }}"
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Set TAG
+        id: set_tag
+        shell: pwsh
+        run: |
+          $tag = "${{ env.TAG }}"
+          echo "TAG=$tag" >> $env:GITHUB_OUTPUT
 
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
