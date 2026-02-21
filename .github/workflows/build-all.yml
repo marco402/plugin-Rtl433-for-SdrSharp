@@ -358,7 +358,15 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
           Add-Content -Path $env:GITHUB_ENV -Value $notes
           Add-Content -Path $env:GITHUB_ENV -Value "EOF"
-
+          
+      - name: Get latest valid tag
+        shell: pwsh
+        run: |
+          $allTags = git tag --sort=-v:refname
+          $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
+          if ($validTags.Count -gt 0) { $tag = $validTags[0] } else { $tag = "0.0.0.0" }
+          echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
+          
       - name: Generate CHANGELOG
         id: changelog
         shell: pwsh
@@ -390,14 +398,6 @@ jobs:
         id: setnotes
         shell: pwsh
         run: echo "::set-output name=NOTES::$env:NOTES"
-  
-      - name: Get latest valid tag
-        shell: pwsh
-        run: |
-          $allTags = git tag --sort=-v:refname
-          $validTags = $allTags | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }
-          if ($validTags.Count -gt 0) { $tag = $validTags[0] } else { $tag = "0.0.0.0" }
-          echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
   
       - name: Auto-increment BUILD
         if: ${{ github.event.inputs.version == '' }}
