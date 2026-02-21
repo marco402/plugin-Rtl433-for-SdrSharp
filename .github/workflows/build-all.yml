@@ -363,7 +363,15 @@ jobs:
         id: changelog
         shell: pwsh
         run: |
-          $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+          if ("${{ env.LAST_TAG }}" -eq "INITIAL") {
+              # Première release : on prend tout l’historique
+              $pluginLog = git log --pretty=format:"* %s"
+          }
+          else {
+              # Releases suivantes : diff entre les deux tags
+              $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+          }
+
 
       
           $full = @"
