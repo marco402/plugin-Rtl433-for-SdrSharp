@@ -16,6 +16,9 @@ permissions:
 
 jobs:
   build:
+    outputs:
+      VERSION: ${{ steps.set_version.outputs.VERSION }}
+
     runs-on: windows-latest
     steps:
 
@@ -360,8 +363,8 @@ jobs:
           echo "VERSION=$new" >> $env:GITHUB_ENV
           echo "TAG=$new" >> $env:GITHUB_ENV
   
-      - name: Export VERSION and TAG
-        id: setversion
+      - name: Set VERSION
+        id: set_version
         shell: pwsh
         run: |
           echo "::set-output name=VERSION::$env:VERSION"
