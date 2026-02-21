@@ -350,7 +350,7 @@ jobs:
               echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
           }
   
-      - name: Release notes
+      - name:  notes
         id: notes
         shell: pwsh
         run: |
@@ -367,33 +367,6 @@ jobs:
           if ($validTags.Count -gt 0) { $tag = $validTags[0] } else { $tag = "0.0.0.0" }
           echo "LAST_TAG=$tag" >> $env:GITHUB_ENV
           
-      - name: Generate CHANGELOG
-        id: changelog
-        shell: pwsh
-        run: |
-          if ("${{ env.LAST_TAG }}" -eq "INITIAL") {
-              # Première release : on prend tout l’historique
-              $pluginLog = git log --pretty=format:"* %s"
-          }
-          else {
-              # Releases suivantes : diff entre les deux tags
-              $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
-          }
-
-          $full = @"
-          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
-               
-          ### 📦 GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
-          Commit: ${{ env.GRAPHLIB_VERSION }}
-          
-          ### 📡 RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
-          Commit: ${{ env.RTL433_VERSION }}
-          "@
-      
-          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
-          $full >> $env:GITHUB_OUTPUT
-          echo "EOF" >> $env:GITHUB_OUTPUT
-
       - name: Export NOTES
         id: setnotes
         shell: pwsh
@@ -421,6 +394,48 @@ jobs:
         run: |
           $tag = "${{ env.TAG }}"
           echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+          
+      - name: Set LAST_TAG
+        id: set_last_tag
+        shell: pwsh
+        run: |
+          # Récupère le tag précédent (le plus récent avant le tag actuel)
+          $last = git describe --tags --abbrev=0 HEAD^ 2>$null
+      
+          if (-not $last) {
+            # Si aucun tag précédent n'existe (première release)
+            $last = "INITIAL"
+          }
+      
+          Write-Host "LAST_TAG = $last"
+          echo "LAST_TAG=$last" >> $env:GITHUB_OUTPUT
+
+      - name: Generate CHANGELOG
+        id: changelog
+        shell: pwsh
+        run: |
+          if ("${{ env.LAST_TAG }}" -eq "INITIAL") {
+              # Première release : on prend tout l’historique
+              $pluginLog = git log --pretty=format:"* %s"
+          }
+          else {
+              # Releases suivantes : diff entre les deux tags
+              $pluginLog = git log ${{ env.LAST_TAG }}..${{ env.TAG }} --pretty=format:"* %s"
+          }
+
+          $full = @"
+          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+               
+          ### 📦 GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+          Commit: ${{ env.GRAPHLIB_VERSION }}
+          
+          ### 📡 RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+          Commit: ${{ env.RTL433_VERSION }}
+          "@
+      
+          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
+          $full >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
 
       # ---------------------------------------------------------
       # Build plugin x86 / x64 (.NET Framework 4.8)
@@ -488,7 +503,7 @@ jobs:
       NOTES: ${{ needs.build.outputs.NOTES }}
       GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
       RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
-      LAST_TAG: ${{ needs.last_tag.outputs.LAST_TAG }}
+      LAST_TAG: ${{ needs.build_plugin.outputs.LAST_TAG }}
 
 
     steps:
