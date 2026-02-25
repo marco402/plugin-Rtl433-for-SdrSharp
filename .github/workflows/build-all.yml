@@ -692,8 +692,8 @@ jobs:
           echo "    cosign verify-blob \\" >> VERIFY.txt
           echo "      --certificate ${FILE}.cert  \\" >> VERIFY.txt
           echo "      --signature ${FILE}.sig  \\" >> VERIFY.txt
-          echo "      --certificate-identity-regexp \\"github.com/marco402/plugin-Rtl433-for-SdrSharp\"  \\" >> VERIFY.txt
-          echo "      --certificate-oidc-issuer \\"https://token.actions.githubusercontent.com\"  \\" >> VERIFY.txt
+          echo "      --certificate-identity-regexp \\"github.com/marco402/plugin-Rtl433-for-SdrSharp\" \\" >> VERIFY.txt
+          echo "      --certificate-oidc-issuer \\"https://token.actions.githubusercontent.com\" \\" >> VERIFY.txt
           echo "      ${FILE}" >> VERIFY.txt
           echo "" >> VERIFY.txt
       
