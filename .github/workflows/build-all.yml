@@ -94,10 +94,10 @@ jobs:
       # ---------------------------------------------------------
       # Export NOTES
       # ---------------------------------------------------------            
-      - name: Export NOTES
-        id: setnotes
-        shell: pwsh
-        run: echo "::set-output name=NOTES::$env:NOTES"
+      #- name: Export NOTES
+      #  id: setnotes
+      #  shell: pwsh
+      #  run: echo "::set-output name=NOTES::$env:NOTES"
 
       # ---------------------------------------------------------
       # Auto-increment BUILD
