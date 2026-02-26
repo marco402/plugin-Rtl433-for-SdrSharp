@@ -1,4 +1,6 @@
-﻿#define noTESTLANGUAGE
+﻿//26/02/2026 Changes to the languages on the TopMost button
+
+#define noTESTLANGUAGE
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -52,7 +54,6 @@ namespace SDRSharp.Rtl_433
             this.ForeColor = ClassUtils.ForeColor;
 #endif
             this.Cursor = ClassUtils.Cursor;
-            ApplyDefaultLanguage();
             BuildTitleBar();
             BuildButtons();
             PositionButtons();
@@ -228,8 +229,8 @@ namespace SDRSharp.Rtl_433
             btnTopMost.FlatStyle = FlatStyle.Flat;
             btnTopMost.FlatAppearance.BorderSize = 0;
             btnTopMost.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            var rm = new ResourceManager("SDRSharp.Rtl_433.Properties.Resources", typeof(BaseFormWithTopMost).Assembly);
-            string txt = rm.GetString("Tooltip_AlwaysOnTop");
+            string txt = LanguageManager.GetString("Tooltip_AlwaysOnTop");
+            
             toolTip = new ToolTip()
             {
                 ShowAlways = true,
@@ -394,17 +395,7 @@ namespace SDRSharp.Rtl_433
             "ja-JP",
             "zh-CN"
         };
-        private void ApplyDefaultLanguage()
-        {
-            string systemCulture = Thread.CurrentThread.CurrentUICulture.Name;
 
-            if (!SupportedCultures.Contains(systemCulture))
-            {
-                // fallback to english
-                Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            }
-        }
         // -------------------------------
         //  WIN32
         // -------------------------------

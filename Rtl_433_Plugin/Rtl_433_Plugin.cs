@@ -35,10 +35,15 @@
 //TFA-TwinPlus sign when temperature <0.
 //alectro température /10 ?
 
+//26/02/2026 Changes to the languages on the TopMost button
+
+
 using SDRSharp.Common;
 using SDRSharp.Radio;
 using System;
 using System.Diagnostics;
+using System.Reflection;
+using System.Resources;
 using System.Windows.Forms;
 namespace SDRSharp.Rtl_433
 {
@@ -51,10 +56,12 @@ namespace SDRSharp.Rtl_433
         }
         #region ISharpPlugin
         //[method: CLSCompliant(false)]
-        public void Initialize(ISharpControl control)   // ISharpPlugin  call by SDRSharp.MainForm
+        public void Initialize(ISharpControl control)   // ISharpPlugin  call by SDRSharp.MainForm 
         {
             try
             {
+                LanguageManager.Initialize(new ResourceManager("SDRSharp.Rtl_433.Properties.Resources",typeof(SDRSharp.Rtl_433.Properties.Resources).Assembly));
+
                 controlPanel = new Rtl_433_Panel(control);
                 //****WARNING****if add control, add to checkBoxEnabledPlugin_CheckedChanged to panel
                 controlPanel.SetDataConv(Utils.GetIntSetting("RTL_433_plugin.DataConv", 1));
