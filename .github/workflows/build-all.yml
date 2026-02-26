@@ -703,30 +703,7 @@ jobs:
           echo "    Verified OK" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "===========================================================" >> VERIFY.txt
-
-      # ---------------------------------------------------------
-      # Create GitHub Release
-      # ---------------------------------------------------------  
-      - name: Build release notes
-        shell: pwsh
-        run: |
-          $notes = @'
-          ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
-          
-          #### External dependencies
-          - RTL_433_dll-for-plugin-SdrSharp
-            Commit: ${{ env.RTL_433_SHA }}
-            
-          - GraphLibSpecific
-            Commit: ${{ env.GRAPHLIB_SHA }}
-          ### Changelog
-          ${{ env.CHANGELOG }}
-          '@
-
-          "NOTES<<EOF" >> $env:GITHUB_ENV
-          $notes >> $env:GITHUB_ENV
-          "EOF" >> $env:GITHUB_ENV
-
+ 
       # ---------------------------------------------------------
       #  Create GitHub Release
       # ---------------------------------------------------------  
