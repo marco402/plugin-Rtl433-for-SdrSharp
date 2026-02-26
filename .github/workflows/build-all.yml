@@ -22,7 +22,7 @@ jobs:
       VERSION: ${{ steps.set_version.outputs.VERSION }}
       TAG: ${{ steps.set_tag.outputs.TAG }}
       #LAST_TAG: ${{ steps.set_last_tag.outputs.LAST_TAG }}
-      NOTES: ${{ steps.changelog.outputs.NOTES }}
+      #NOTES: ${{ steps.changelog.outputs.NOTES }}
       GRAPHLIB_SHA: ${{ steps.get_graphlib_commit.outputs.GRAPHLIB_SHA }}
       RTL_433_SHA: ${{ steps.get_rtl_433_commit.outputs.RTL_433_SHA }}
     runs-on: windows-latest
@@ -49,14 +49,14 @@ jobs:
       # ---------------------------------------------------------
       #  notes
       # ---------------------------------------------------------   
-      - name:  notes
-        id: notes
-        shell: pwsh
-        run: |
-          $notes = "${{ github.event.inputs.notes }}"
-          Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
-          Add-Content -Path $env:GITHUB_ENV -Value $notes
-          Add-Content -Path $env:GITHUB_ENV -Value "EOF"
+      #- name:  notes
+      #  id: notes
+      #  shell: pwsh
+      #  run: |
+      #    $notes = "${{ github.event.inputs.notes }}"
+      #    Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+      #    Add-Content -Path $env:GITHUB_ENV -Value $notes
+      #    Add-Content -Path $env:GITHUB_ENV -Value "EOF"
       # ---------------------------------------------------------
       # Get latest valid tag
       # ---------------------------------------------------------          
@@ -94,10 +94,10 @@ jobs:
       # ---------------------------------------------------------
       # Export NOTES
       # ---------------------------------------------------------            
-      - name: Export NOTES
-        id: setnotes
-        shell: pwsh
-        run: echo "::set-output name=NOTES::$env:NOTES"
+      #- name: Export NOTES
+      #  id: setnotes
+      #  shell: pwsh
+      #  run: echo "::set-output name=NOTES::$env:NOTES"
 
       # ---------------------------------------------------------
       # Auto-increment BUILD
@@ -494,28 +494,29 @@ jobs:
         shell: pwsh
         run: |
           if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
-              # Première release : on prend tout l’historique
               $pluginLog = git log --pretty=format:"* %s"
           }
           else {
-              # Releases suivantes : diff entre les deux tags
               $pluginLog = git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"* %s"
           }
-
+      
           $full = @"
           ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
-               
-          ###  GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+            
+          ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
           Commit: ${{ env.GRAPHLIB_VERSION }}
-          
-          ###  RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+            
+          ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
           Commit: ${{ env.RTL433_VERSION }}
+            
+          ### Plugin changes
+          $pluginLog
           "@
-      
-          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
-          $full >> $env:GITHUB_OUTPUT
-          echo "EOF" >> $env:GITHUB_OUTPUT
-  
+                  
+              echo "body<<EOF" >> $env:GITHUB_OUTPUT
+              echo $full >> $env:GITHUB_OUTPUT
+              echo "EOF" >> $env:GITHUB_OUTPUT
+
       # ---------------------------------------------------------
       # Build plugin ZIPs
       # --------------------------------------------------------
@@ -561,7 +562,7 @@ jobs:
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
-      NOTES: ${{ needs.build.outputs.NOTES }}
+      #NOTES: ${{ needs.build.outputs.NOTES }}
       GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
       RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
       #LAST_TAG: ${{ needs.build_plugin.outputs.LAST_TAG }}
@@ -734,7 +735,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
-          body: ${{ env.NOTES }}
+          body: ${{ steps.changelog.outputs.body }}
           files: |
             plugin_rtl433_x86-${{ env.VERSION }}.zip
             plugin_rtl433_x64-${{ env.VERSION }}.zip
