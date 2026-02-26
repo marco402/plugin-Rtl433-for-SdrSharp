@@ -49,14 +49,14 @@ jobs:
       # ---------------------------------------------------------
       #  notes
       # ---------------------------------------------------------   
-      #- name:  notes
-      #  id: notes
-      #  shell: pwsh
-      #   run: |
-      #     $notes = "${{ github.event.inputs.notes }}"
-      #    Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
-      #    Add-Content -Path $env:GITHUB_ENV -Value $notes
-      #    Add-Content -Path $env:GITHUB_ENV -Value "EOF"
+      - name:  notes
+        id: notes
+        shell: pwsh
+        run: |
+          $notes = "${{ github.event.inputs.notes }}"
+          Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
+          Add-Content -Path $env:GITHUB_ENV -Value $notes
+          Add-Content -Path $env:GITHUB_ENV -Value "EOF"
       # ---------------------------------------------------------
       # Get latest valid tag
       # ---------------------------------------------------------          
@@ -94,10 +94,10 @@ jobs:
       # ---------------------------------------------------------
       # Export NOTES
       # ---------------------------------------------------------            
-      #- name: Export NOTES
-      #  id: setnotes
-      #  shell: pwsh
-      #  run: echo "::set-output name=NOTES::$env:NOTES"
+      - name: Export NOTES
+        id: setnotes
+        shell: pwsh
+        run: echo "::set-output name=NOTES::$env:NOTES"
 
       # ---------------------------------------------------------
       # Auto-increment BUILD
