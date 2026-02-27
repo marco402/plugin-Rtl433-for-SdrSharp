@@ -20,6 +20,7 @@ jobs:
       TAG: ${{ steps.set_tag.outputs.TAG }}
       GRAPHLIB_SHA: ${{ steps.get_graphlib_commit.outputs.GRAPHLIB_SHA }}
       RTL_433_SHA: ${{ steps.get_rtl_433_commit.outputs.RTL_433_SHA }}
+      changelog_body: ${{ steps.changelog.outputs.body }}
     runs-on: windows-latest
     steps:
       # ---------------------------------------------------------
@@ -430,30 +431,59 @@ jobs:
         id: changelog
         shell: pwsh
         run: |
+          # --- Plugin commit (repo courant) ---
           if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
-              $pluginLog = git log --pretty=format:"* %s"
+              $pluginCommitText = git log -1 --pretty=format:"%B"
+          } else {
+              $pluginCommitText = git log ${{ env.LAST_TAG }}..HEAD -1 --pretty=format:"%B"
           }
-          else {
-              $pluginLog = git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"* %s"
-          }
-      
+          $pluginSHA = git rev-parse HEAD
+        
+          # --- GraphLibSpecific ---
+          git clone --depth 1 https://github.com/marco402/GraphLibSpecific.git graph
+          cd graph
+          $graphCommitText = git log -1 --pretty=format:"%B"
+          $graphSHA = git rev-parse HEAD
+          
+          # --- RTL_433_dll-for-plugin-SdrSharp ---
+          git clone --depth 1 https://github.com/marco402/Rtl_433_dll-for-plugin-SdrSharp.git rtl
+          cd rtl
+          $rtlCommitText = git log -1 --pretty=format:"%B"
+          $rtlSHA = git rev-parse HEAD
+        
+          # --- Construction du changelog final ---
           $full = @"
           ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
-            
+        
           ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
-          Commit: ${{ env.GRAPHLIB_VERSION }}
-            
+          Commit: $graphSHA
+          $graphCommitText
+        
           ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
-          Commit: ${{ env.RTL433_VERSION }}
-            
+          Commit: $rtlSHA
+          $rtlCommitText
+
           ### Plugin changes
-          $pluginLog
+          Commit: $pluginSHA
+          $pluginCommitText
           "@
-                  
-          echo "body<<EOF" >> $env:GITHUB_OUTPUT
-          echo $full >> $env:GITHUB_OUTPUT
-          echo "EOF" >> $env:GITHUB_OUTPUT
-          Write-Host "DEBUG: pluginLog = $pluginLog"
+
+          "body<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          $full | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+          #echo "body<<EOF" >> $env:GITHUB_OUTPUT
+          #echo "$full" >> $env:GITHUB_OUTPUT
+          #echo "EOF" >> $env:GITHUB_OUTPUT
+
+          #Write-Host "=== OUTPUT FILE CONTENT ==="
+          #Get-Content $env:GITHUB_OUTPUT | Write-Host
+
+
+          #Write-Host "=== FULL START ==="
+          #Write-Host "$full"
+          #Write-Host "=== FULL END ==="
+     
       # ---------------------------------------------------------
       # Build plugin ZIPs
       # --------------------------------------------------------
@@ -499,7 +529,7 @@ jobs:
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
-      #NOTES: ${{ needs.build.outputs.NOTES }}
+      NOTES: ${{ needs.build.outputs.NOTES }}
       GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
       RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
       #LAST_TAG: ${{ needs.build_plugin.outputs.LAST_TAG }}
@@ -625,7 +655,17 @@ jobs:
           echo "    Verified OK" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "===========================================================" >> VERIFY.txt
- 
+   
+      # ---------------------------------------------------------
+      #  Delete existing draft release
+      # ---------------------------------------------------------        
+      - name: Delete existing draft release
+        uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+          tag_name: ${{ env.TAG }}
+          delete_release: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      
       # ---------------------------------------------------------
       #  Create GitHub Release
       # ---------------------------------------------------------  
@@ -634,7 +674,9 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
-          body: ${{ steps.changelog.outputs.body }}
+          body: ${{ needs.build.outputs.changelog_body }}
+          draft: false
+          prerelease: false
           files: |
             plugin_rtl433_x86-${{ env.VERSION }}.zip
             plugin_rtl433_x64-${{ env.VERSION }}.zip
@@ -648,3 +690,4 @@ jobs:
             VERIFY.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          

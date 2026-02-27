@@ -1,11 +1,12 @@
 #projet plugin rtl_433 for SDRSharp C#
 .*
 .vs/**
-#/rtl_433_dll/
+rtl_433_dll/**
 GraphDisplay/**
 rtl_433_dll/**
 libusb/**
 Release_x32/**
+Release_x64/**
 CI_x64/**
 test_rtl_433_dll/**
 debug/**
