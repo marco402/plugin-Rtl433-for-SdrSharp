@@ -37,11 +37,11 @@
 
 //26/02/2026 Changes to the languages on the TopMost button
 
-
 using SDRSharp.Common;
 using SDRSharp.Radio;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using System.Windows.Forms;
@@ -60,7 +60,10 @@ namespace SDRSharp.Rtl_433
         {
             try
             {
+
                 LanguageManager.Initialize(new ResourceManager("SDRSharp.Rtl_433.Properties.Resources",typeof(SDRSharp.Rtl_433.Properties.Resources).Assembly));
+                //MessageBox.Show("UICulture = " + CultureInfo.CurrentUICulture);
+                //MessageBox.Show("InstalledUICulture = " + CultureInfo.InstalledUICulture);
 
                 controlPanel = new Rtl_433_Panel(control);
                 //****WARNING****if add control, add to checkBoxEnabledPlugin_CheckedChanged to panel

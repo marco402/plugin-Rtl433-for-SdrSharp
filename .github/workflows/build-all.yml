@@ -6,9 +6,6 @@ on:
       version:
         description: "Version manuelle (a.b.c.d) (laisser vide pour auto-incrément(que d))"
         required: false
-      #notes:
-      #  description: "Notes de release"
-      #  required: false
 permissions:
   contents: write
   actions: write
@@ -21,8 +18,6 @@ jobs:
     outputs:
       VERSION: ${{ steps.set_version.outputs.VERSION }}
       TAG: ${{ steps.set_tag.outputs.TAG }}
-      #LAST_TAG: ${{ steps.set_last_tag.outputs.LAST_TAG }}
-      NOTES: ${{ steps.changelog.outputs.NOTES }}
       GRAPHLIB_SHA: ${{ steps.get_graphlib_commit.outputs.GRAPHLIB_SHA }}
       RTL_433_SHA: ${{ steps.get_rtl_433_commit.outputs.RTL_433_SHA }}
     runs-on: windows-latest
@@ -35,7 +30,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-           # ---------------------------------------------------------
+      # ---------------------------------------------------------
       # Read input
       # ---------------------------------------------------------
       - name: Read input
@@ -46,17 +41,6 @@ jobs:
               echo "TAG=${{ github.event.inputs.version }}" >> $env:GITHUB_ENV
           }
  
-      # ---------------------------------------------------------
-      #  notes
-      # ---------------------------------------------------------   
-      #- name:  notes
-      #  id: notes
-      #  shell: pwsh
-      #   run: |
-      #     $notes = "${{ github.event.inputs.notes }}"
-      #    Add-Content -Path $env:GITHUB_ENV -Value "NOTES<<EOF"
-      #    Add-Content -Path $env:GITHUB_ENV -Value $notes
-      #    Add-Content -Path $env:GITHUB_ENV -Value "EOF"
       # ---------------------------------------------------------
       # Get latest valid tag
       # ---------------------------------------------------------          
@@ -80,24 +64,6 @@ jobs:
           # Écriture fiable dans GITHUB_ENV
           "LAST_TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           #Write-Host "DEBUG: LAST_TAG from env = >>>$env:LAST_TAG<<<"
-
-          #$test=$env:LAST_TAG
-          #Write-Host "DEBUG: LAST_TAG from $test = $test"
-          
-      - name:  TEST LAST_TAG
-        id: test_last_tag
-        shell: pwsh
-        run: |
-          Write-Host "DEBUG: LAST_TAG from env = >>>$env:LAST_TAG<<<"
-          $test=$env:LAST_TAG
-          Write-Host "DEBUG: LAST_TAG from $test = $test"
-      # ---------------------------------------------------------
-      # Export NOTES
-      # ---------------------------------------------------------            
-      #- name: Export NOTES
-      #  id: setnotes
-      #  shell: pwsh
-      #  run: echo "::set-output name=NOTES::$env:NOTES"
 
       # ---------------------------------------------------------
       # Auto-increment BUILD
@@ -206,7 +172,19 @@ jobs:
     
           Write-Error "Échec du déclenchement du workflow RTL_433 (HTTP $response)"
           exit 1
-  
+      # ---------------------------------------------------------
+      # Update AssemblyInfo version
+      # ---------------------------------------------------------
+      - name: Update AssemblyInfo version
+        shell: pwsh
+        run: |
+          $file = "Rtl_433_Plugin/Properties/AssemblyInfo.cs"
+
+          (Get-Content $file) `
+            -replace 'AssemblyVersion\(".*"\)', "AssemblyVersion(`"${{ env.TAG }}`")" `
+            -replace 'AssemblyFileVersion\(".*"\)', "AssemblyFileVersion(`"${{ env.TAG }}`")" `
+            | Set-Content $file
+
       # ---------------------------------------------------------
       # Build plugin x86 (.NET Framework 4.8)
       # ---------------------------------------------------------
@@ -224,15 +202,6 @@ jobs:
         run: |
           msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
             /p:Configuration=CI_x64 /p:Platform=x64
-
-      # ---------------------------------------------------------
-      # Debug plugin-Rtl433-for-SdrSharp folder
-      # ---------------------------------------------------------  
-      #- name: Debug plugin-Rtl433-for-SdrSharp folder
-      #  shell: pwsh
-      #  run: |
-      #    Write-Host "Contenu du dossier plugin-Rtl433-for-SdrSharp :"
-      #    Get-ChildItem -Recurse -Path artifacts
 
       # ---------------------------------------------------------
       # Wait for GraphLib artifacts
@@ -319,14 +288,6 @@ jobs:
           }
 
       # ---------------------------------------------------------
-      # Debug WAIT GraphLib
-      # ---------------------------------------------------------                   
-      #- name: Debug WAIT GraphLib
-      #  shell: pwsh
-      #  run: |
-      #    Write-Host "WAIT returned run_id = ${{ steps.wait_graphlib.outputs.run_id }}"
-      #    
-      # ---------------------------------------------------------
       # Download GraphLib artifacts
       # ---------------------------------------------------------
       - name: Download GraphLib artifacts
@@ -351,15 +312,7 @@ jobs:
           $sha = (gh api repos/marco402/GraphLibSpecific/commits/main --jq ".sha")
           echo "GRAPHLIB_SHA=$sha" >> $env:GITHUB_OUTPUT
           #Write-Host "DEBUG: GRAPHLIB_SHA = $sha"
-      # ---------------------------------------------------------
-      # Debug GraphLib folder
-      # ---------------------------------------------------------  
-      #- name: Debug GraphLib folder
-      #  shell: pwsh
-      #  run: |
-      #    Write-Host "Contenu du dossier GraphLib :"
-      #    Get-ChildItem -Recurse -Path GraphLib
-      #    
+
       # ---------------------------------------------------------
       # Wait for RTL_433 artifacts
       # ---------------------------------------------------------
@@ -444,14 +397,6 @@ jobs:
           }
    
       # ---------------------------------------------------------
-      # Debug WAIT RTL_433
-      # ---------------------------------------------------------  
-      #- name: Debug WAIT RTL_433
-      #  shell: pwsh
-      #  run: |
-      #    Write-Host "WAIT returned run_id = ${{ steps.wait_rtl433.outputs.run_id }}"
-   
-      # ---------------------------------------------------------
       # Download RTL_433 artifacts
       # ---------------------------------------------------------
       - name: Download RTL_433 artifacts
@@ -477,14 +422,6 @@ jobs:
           $sha = (gh api repos/marco402/Rtl_433_dll-for-plugin-SdrSharp/commits/rtl_433forSDRSharp --jq ".sha")
           echo "RTL_433_SHA=$sha" >> $env:GITHUB_OUTPUT 
           #Write-Host "DEBUG: RTL_433_SHA = $sha"
-      # ---------------------------------------------------------
-      # Debug Rtl_433_Plugin folder
-      # ---------------------------------------------------------  
-      #- name: Debug Rtl_433_Plugin folder
-      #  shell: pwsh
-      #  run: |
-      #    Write-Host "Contenu du dossier Rtl_433_Plugin :"
-      #    Get-ChildItem -Recurse -Path Rtl_433_Plugin
 
       # ---------------------------------------------------------
       # Generate CHANGELOG
@@ -494,28 +431,29 @@ jobs:
         shell: pwsh
         run: |
           if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
-              # Première release : on prend tout l’historique
               $pluginLog = git log --pretty=format:"* %s"
           }
           else {
-              # Releases suivantes : diff entre les deux tags
               $pluginLog = git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"* %s"
           }
-
+      
           $full = @"
           ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
-               
-          ###  GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+            
+          ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
           Commit: ${{ env.GRAPHLIB_VERSION }}
-          
-          ###  RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+            
+          ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
           Commit: ${{ env.RTL433_VERSION }}
+            
+          ### Plugin changes
+          $pluginLog
           "@
-      
-          echo "NOTES<<EOF" >> $env:GITHUB_OUTPUT
-          $full >> $env:GITHUB_OUTPUT
+                  
+          echo "body<<EOF" >> $env:GITHUB_OUTPUT
+          echo $full >> $env:GITHUB_OUTPUT
           echo "EOF" >> $env:GITHUB_OUTPUT
-  
+          Write-Host "DEBUG: pluginLog = $pluginLog"
       # ---------------------------------------------------------
       # Build plugin ZIPs
       # --------------------------------------------------------
@@ -561,7 +499,7 @@ jobs:
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
-      NOTES: ${{ needs.build.outputs.NOTES }}
+      #NOTES: ${{ needs.build.outputs.NOTES }}
       GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
       RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
       #LAST_TAG: ${{ needs.build_plugin.outputs.LAST_TAG }}
@@ -586,21 +524,6 @@ jobs:
             -o /usr/bin/cosign
           sudo chmod +x /usr/bin/cosign
 
-      # ---------------------------------------------------------
-      # Check Cosign version
-      # ---------------------------------------------------------            
-      #- name: Check Cosign version
-      #  run: cosign version
-
-      # ---------------------------------------------------------
-      # Debug VERSION
-      # ---------------------------------------------------------          
-      #- name: Debug VERSION
-      #  shell: pwsh
-      #  run: |
-      #    Write-Host "TAG = $env:TAG"
-      #    Write-Host "VERSION = $env:VERSION"
-          
       # ---------------------------------------------------------
       # Request OIDC token
       # ---------------------------------------------------------            
@@ -702,30 +625,7 @@ jobs:
           echo "    Verified OK" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "===========================================================" >> VERIFY.txt
-
-      # ---------------------------------------------------------
-      # Create GitHub Release
-      # ---------------------------------------------------------  
-      - name: Build release notes
-        shell: pwsh
-        run: |
-          $notes = @'
-          ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
-          
-          #### External dependencies
-          - RTL_433_dll-for-plugin-SdrSharp
-            Commit: ${{ env.RTL_433_SHA }}
-            
-          - GraphLibSpecific
-            Commit: ${{ env.GRAPHLIB_SHA }}
-          ### Changelog
-          ${{ env.CHANGELOG }}
-          '@
-
-          "NOTES<<EOF" >> $env:GITHUB_ENV
-          $notes >> $env:GITHUB_ENV
-          "EOF" >> $env:GITHUB_ENV
-
+ 
       # ---------------------------------------------------------
       #  Create GitHub Release
       # ---------------------------------------------------------  
@@ -734,7 +634,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
-          body: ${{ env.NOTES }}
+          body: ${{ steps.changelog.outputs.body }}
           files: |
             plugin_rtl433_x86-${{ env.VERSION }}.zip
             plugin_rtl433_x64-${{ env.VERSION }}.zip
