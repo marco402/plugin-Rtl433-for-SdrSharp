@@ -453,20 +453,20 @@ jobs:
         
           # --- Construction du changelog final ---
           $full = @"
-## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
         
-### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
-Commit: $graphSHA
-        $graphCommitText
+          ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+          Commit: $graphSHA
+          $graphCommitText
         
-### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
-Commit: $rtlSHA
-        $rtlCommitText
+          ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+          Commit: $rtlSHA
+          $rtlCommitText
 
-### Plugin changes
-Commit: $pluginSHA
-        $pluginCommitText
-        "@
+          ### Plugin changes
+          Commit: $pluginSHA
+          $pluginCommitText
+          "@
 
           "body<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           $full | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
