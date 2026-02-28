@@ -474,12 +474,7 @@ jobs:
           Write-Host "=== FULL START ==="
           Write-Host "$full"
           Write-Host "=== FULL END ==="
-
-
-          Write-Host "DEBUG: pluginCommitText = $pluginCommitText"
-          Write-Host "DEBUG: graphCommitText = $graphCommitText"
-          Write-Host "DEBUG: rtlCommitText = $rtlCommitText"
-          Write-Host "DEBUG: full = $full"
+     
       # ---------------------------------------------------------
       # Build plugin ZIPs
       # --------------------------------------------------------
