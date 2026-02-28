@@ -430,51 +430,56 @@ jobs:
         id: changelog
         shell: pwsh
         run: |
-         # --- Plugin commit (repo courant) ---
-         if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
-             $pluginCommitText = git log -1 --pretty=format:"%B"
-         } else {
-             $pluginCommitText = git log ${{ env.LAST_TAG }}..HEAD -1 --pretty=format:"%B"
-         }
-         $pluginSHA = git rev-parse HEAD
+          # --- Plugin commit (repo courant) ---
+          if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
+              $pluginCommitText = git log -1 --pretty=format:"%B"
+          } else {
+              $pluginCommitText = git log ${{ env.LAST_TAG }}..HEAD -1 --pretty=format:"%B"
+          }
+          $pluginSHA = git rev-parse HEAD
         
-         # --- GraphLibSpecific ---
-         git clone --depth 1 https://github.com/marco402/GraphLibSpecific.git graph
-         cd graph
-         $graphCommitText = git log -1 --pretty=format:"%B"
-         $graphSHA = git rev-parse HEAD
+          # --- GraphLibSpecific ---
+          git clone --depth 1 https://github.com/marco402/GraphLibSpecific.git graph
+          cd graph
+          $graphCommitText = git log -1 --pretty=format:"%B"
+          $graphSHA = git rev-parse HEAD
           
-         # --- RTL_433_dll-for-plugin-SdrSharp ---
-         git clone --depth 1 https://github.com/marco402/Rtl_433_dll-for-plugin-SdrSharp.git rtl
-         cd rtl
-         $rtlCommitText = git log -1 --pretty=format:"%B"
-         $rtlSHA = git rev-parse HEAD
+          # --- RTL_433_dll-for-plugin-SdrSharp ---
+          git clone --depth 1 https://github.com/marco402/Rtl_433_dll-for-plugin-SdrSharp.git rtl
+          cd rtl
+          $rtlCommitText = git log -1 --pretty=format:"%B"
+          $rtlSHA = git rev-parse HEAD
         
-         # --- Construction du changelog final ---
-         $full = @"
-         ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+          # --- Construction du changelog final ---
+          $full = @"
+          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
         
-         ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
-         Commit: $graphSHA
-         $graphCommitText
+          ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+          Commit: $graphSHA
+          $graphCommitText
         
-         ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
-         Commit: $rtlSHA
-         $rtlCommitText
+          ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+          Commit: $rtlSHA
+          $rtlCommitText
         
-         ### Plugin changes
-         Commit: $pluginSHA
-         $pluginCommitText
-         "@
+          ### Plugin changes
+          Commit: $pluginSHA
+          $pluginCommitText
+          "@
         
-         echo "body<<EOF" >> $env:GITHUB_OUTPUT
-         echo "$full" >> $env:GITHUB_OUTPUT
-         echo "EOF" >> $env:GITHUB_OUTPUT
+          echo "body<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$full" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
 
-         Write-Host "DEBUG: pluginCommitText = $pluginCommitText"
-         Write-Host "DEBUG: graphCommitText = $graphCommitText"
-         Write-Host "DEBUG: rtlCommitText = $rtlCommitText"
-         Write-Host "DEBUG: full = $full"
+          Write-Host "=== FULL START ==="
+          Write-Host "$full"
+          Write-Host "=== FULL END ==="
+
+
+          Write-Host "DEBUG: pluginCommitText = $pluginCommitText"
+          Write-Host "DEBUG: graphCommitText = $graphCommitText"
+          Write-Host "DEBUG: rtlCommitText = $rtlCommitText"
+          Write-Host "DEBUG: full = $full"
       # ---------------------------------------------------------
       # Build plugin ZIPs
       # --------------------------------------------------------
