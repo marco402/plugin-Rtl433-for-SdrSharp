@@ -662,10 +662,9 @@ jobs:
       - name: Delete existing draft release
         uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
-          tag: ${{ env.TAG }}
+          tag_name: ${{ env.TAG }}
           delete_release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       
       # ---------------------------------------------------------
       #  Create GitHub Release
