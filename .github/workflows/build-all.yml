@@ -476,13 +476,13 @@ jobs:
           #echo "$full" >> $env:GITHUB_OUTPUT
           #echo "EOF" >> $env:GITHUB_OUTPUT
 
-          Write-Host "=== OUTPUT FILE CONTENT ==="
-          Get-Content $env:GITHUB_OUTPUT | Write-Host
+          #Write-Host "=== OUTPUT FILE CONTENT ==="
+          #Get-Content $env:GITHUB_OUTPUT | Write-Host
 
 
-          Write-Host "=== FULL START ==="
-          Write-Host "$full"
-          Write-Host "=== FULL END ==="
+          #Write-Host "=== FULL START ==="
+          #Write-Host "$full"
+          #Write-Host "=== FULL END ==="
      
       # ---------------------------------------------------------
       # Build plugin ZIPs
@@ -655,29 +655,18 @@ jobs:
           echo "    Verified OK" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "===========================================================" >> VERIFY.txt
-    
+   
       # ---------------------------------------------------------
-      # Create GitHub Release
-      # ---------------------------------------------------------  
-      #- name: Build release notes
-      # shell: pwsh
-      #  run: |
-      #    $notes = @'
-      #    ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
-          
-      #    #### External dependencies
-      #    - RTL_433_dll-for-plugin-SdrSharp
-      #      Commit: ${{ env.RTL_433_SHA }}
-            
-      #    - GraphLibSpecific
-      #      Commit: ${{ env.GRAPHLIB_SHA }}
-      #    ### Changelog
-      #    ${{ env.CHANGELOG }}
-      #    '@
-
-      #    "NOTES<<EOF" >> $env:GITHUB_ENV
-      #    $notes >> $env:GITHUB_ENV
-      #    "EOF" >> $env:GITHUB_ENV
+      #  Delete existing draft release
+      # ---------------------------------------------------------        
+      - name: Delete existing draft release
+        uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+          tag: ${{ env.TAG }}
+          delete_release: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
       # ---------------------------------------------------------
       #  Create GitHub Release
       # ---------------------------------------------------------  
