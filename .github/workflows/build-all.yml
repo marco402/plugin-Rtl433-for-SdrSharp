@@ -439,13 +439,12 @@ jobs:
       
           $full = @"
           ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
-            
           ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
           Commit: ${{ env.GRAPHLIB_VERSION }}
-            
+          
           ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
           Commit: ${{ env.RTL433_VERSION }}
-            
+          
           ### Plugin changes
           $pluginLog
           "@
@@ -499,7 +498,7 @@ jobs:
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
       TAG: ${{ needs.build.outputs.TAG }}
-      #NOTES: ${{ needs.build.outputs.NOTES }}
+      NOTES: ${{ needs.build.outputs.NOTES }}
       GRAPHLIB_VERSION: ${{ needs.graphlib.outputs.VERSION }}
       RTL433_VERSION: ${{ needs.rtl433.outputs.VERSION }}
       #LAST_TAG: ${{ needs.build_plugin.outputs.LAST_TAG }}
@@ -625,7 +624,29 @@ jobs:
           echo "    Verified OK" >> VERIFY.txt
           echo "" >> VERIFY.txt
           echo "===========================================================" >> VERIFY.txt
- 
+    
+      # ---------------------------------------------------------
+      # Create GitHub Release
+      # ---------------------------------------------------------  
+      - name: Build release notes
+        shell: pwsh
+        run: |
+          $notes = @'
+          ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
+          
+          #### External dependencies
+          - RTL_433_dll-for-plugin-SdrSharp
+            Commit: ${{ env.RTL_433_SHA }}
+            
+          - GraphLibSpecific
+            Commit: ${{ env.GRAPHLIB_SHA }}
+          ### Changelog
+          ${{ env.CHANGELOG }}
+          '@
+
+          "NOTES<<EOF" >> $env:GITHUB_ENV
+          $notes >> $env:GITHUB_ENV
+          "EOF" >> $env:GITHUB_ENV
       # ---------------------------------------------------------
       #  Create GitHub Release
       # ---------------------------------------------------------  
@@ -635,6 +656,8 @@ jobs:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
           body: ${{ steps.changelog.outputs.body }}
+          draft: true
+          prerelease: true
           files: |
             plugin_rtl433_x86-${{ env.VERSION }}.zip
             plugin_rtl433_x64-${{ env.VERSION }}.zip
