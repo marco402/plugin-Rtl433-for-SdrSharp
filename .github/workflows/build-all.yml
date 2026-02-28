@@ -20,6 +20,7 @@ jobs:
       TAG: ${{ steps.set_tag.outputs.TAG }}
       GRAPHLIB_SHA: ${{ steps.get_graphlib_commit.outputs.GRAPHLIB_SHA }}
       RTL_433_SHA: ${{ steps.get_rtl_433_commit.outputs.RTL_433_SHA }}
+      changelog_body: ${{ steps.changelog.outputs.body }}
     runs-on: windows-latest
     steps:
       # ---------------------------------------------------------
@@ -685,7 +686,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
-          body: ${{ steps.changelog.outputs.body }}
+          body: ${{ needs.build.outputs.changelog_body }}
           draft: true
           prerelease: true
           files: |
