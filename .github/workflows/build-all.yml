@@ -430,29 +430,47 @@ jobs:
         id: changelog
         shell: pwsh
         run: |
-          if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
-              $pluginLog = git log --pretty=format:"* %s"
-          }
-          else {
-              $pluginLog = git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"* %s"
-          }
-      
-          $full = @"
-          ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
-          ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
-          Commit: ${{ env.GRAPHLIB_VERSION }}
+         # --- Plugin commit (repo courant) ---
+         if ("${{ env.LAST_TAG }}" -eq "0.0.0.0") {
+             $pluginCommitText = git log -1 --pretty=format:"%B"
+         } else {
+             $pluginCommitText = git log ${{ env.LAST_TAG }}..HEAD -1 --pretty=format:"%B"
+         }
+         $pluginSHA = git rev-parse HEAD
+        
+         # --- GraphLibSpecific ---
+         git clone --depth 1 https://github.com/marco402/GraphLibSpecific.git graph
+         cd graph
+         $graphCommitText = git log -1 --pretty=format:"%B"
+         $graphSHA = git rev-parse HEAD
           
-          ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
-          Commit: ${{ env.RTL433_VERSION }}
-          
-          ### Plugin changes
-          $pluginLog
-          "@
-                  
-          echo "body<<EOF" >> $env:GITHUB_OUTPUT
-          echo $full >> $env:GITHUB_OUTPUT
-          echo "EOF" >> $env:GITHUB_OUTPUT
-          Write-Host "DEBUG: pluginLog = $pluginLog"
+         # --- RTL_433_dll-for-plugin-SdrSharp ---
+         git clone --depth 1 https://github.com/marco402/Rtl_433_dll-for-plugin-SdrSharp.git rtl
+         cd rtl
+         $rtlCommitText = git log -1 --pretty=format:"%B"
+         $rtlSHA = git rev-parse HEAD
+        
+         # --- Construction du changelog final ---
+         $full = @"
+         ## Plugin-Rtl433-for-SdrSharp ${{ env.TAG }}
+        
+         ### GraphLibSpecific (${{ env.GRAPHLIB_VERSION }})
+         Commit: $graphSHA
+         $graphCommitText
+        
+         ### RTL_433_dll-for-plugin-SdrSharp (${{ env.RTL433_VERSION }})
+         Commit: $rtlSHA
+         $rtlCommitText
+        
+         ### Plugin changes
+         Commit: $pluginSHA
+         $pluginCommitText
+         "@
+        
+         echo "body<<EOF" >> $env:GITHUB_OUTPUT
+         echo $full >> $env:GITHUB_OUTPUT
+         echo "EOF" >> $env:GITHUB_OUTPUT
+
       # ---------------------------------------------------------
       # Build plugin ZIPs
       # --------------------------------------------------------
@@ -628,25 +646,25 @@ jobs:
       # ---------------------------------------------------------
       # Create GitHub Release
       # ---------------------------------------------------------  
-      - name: Build release notes
-        shell: pwsh
-        run: |
-          $notes = @'
-          ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
+      #- name: Build release notes
+      # shell: pwsh
+      #  run: |
+      #    $notes = @'
+      #    ### Plugin-Rtl433-for-SdrSharp ${{ env.VERSION }}
           
-          #### External dependencies
-          - RTL_433_dll-for-plugin-SdrSharp
-            Commit: ${{ env.RTL_433_SHA }}
+      #    #### External dependencies
+      #    - RTL_433_dll-for-plugin-SdrSharp
+      #      Commit: ${{ env.RTL_433_SHA }}
             
-          - GraphLibSpecific
-            Commit: ${{ env.GRAPHLIB_SHA }}
-          ### Changelog
-          ${{ env.CHANGELOG }}
-          '@
+      #    - GraphLibSpecific
+      #      Commit: ${{ env.GRAPHLIB_SHA }}
+      #    ### Changelog
+      #    ${{ env.CHANGELOG }}
+      #    '@
 
-          "NOTES<<EOF" >> $env:GITHUB_ENV
-          $notes >> $env:GITHUB_ENV
-          "EOF" >> $env:GITHUB_ENV
+      #    "NOTES<<EOF" >> $env:GITHUB_ENV
+      #    $notes >> $env:GITHUB_ENV
+      #    "EOF" >> $env:GITHUB_ENV
       # ---------------------------------------------------------
       #  Create GitHub Release
       # ---------------------------------------------------------  
