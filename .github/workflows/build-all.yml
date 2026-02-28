@@ -676,8 +676,8 @@ jobs:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
           body: ${{ needs.build.outputs.changelog_body }}
-          draft: true
-          prerelease: true
+          draft: false
+          prerelease: false
           files: |
             plugin_rtl433_x86-${{ env.VERSION }}.zip
             plugin_rtl433_x64-${{ env.VERSION }}.zip
