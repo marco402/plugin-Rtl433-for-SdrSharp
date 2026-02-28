@@ -468,7 +468,7 @@ jobs:
          "@
         
          echo "body<<EOF" >> $env:GITHUB_OUTPUT
-         echo $full >> $env:GITHUB_OUTPUT
+         echo "$full" >> $env:GITHUB_OUTPUT
          echo "EOF" >> $env:GITHUB_OUTPUT
 
       # ---------------------------------------------------------
