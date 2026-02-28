@@ -655,7 +655,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           name: "Release plugin-Rtl433-for-SdrSharp ${{ env.TAG }}"
-          body: ${{ steps.changelog.outputs.body }}
+          body: ${{ env.NOTES }}
           draft: true
           prerelease: true
           files: |
