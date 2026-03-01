@@ -1,13 +1,13 @@
 French version after English version.  
 
-                            1 Installation  
-                            2 Launch  
-                            3 Display  
-                            4 SDRSharp Configuration  
-                            5 Plugin Configuration for RTL_433  
-                            6 File Conversion  
-                            7 Frequencies  
-                            8 Programming  
+##                            1 Installation  
+##                            2 Launch  
+##                            3 Display  
+##                            4 SDRSharp Configuration  
+##                            5 Plugin Configuration for RTL_433  
+##                            6 File Conversion  
+##                            7 Frequencies  
+##                            8 Programming  
 
 ## 1 Installation  
 The location of the plugins is indicated in the SDRSharp.config or SDRSharp.exe.config file, under the core.pluginsDirectory key. This allows you to have a single plugin folder for multiple SDRSharp versions.  

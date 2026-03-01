@@ -87,8 +87,7 @@ namespace SDRSharp.Rtl_433
             PathAndNameFile = ClassUtils.GetPathAndNameFileDateAndTxt(NameForm);
             base.TitleText = name + " (Messages received : 0)";
             toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
-            " to directory Recordings if it exist else in SdrSharp.exe directory \n" +
-            " if you create directory Recordings close this window before export" +
+            " to directory Recordings \n" +
             " You can reload file with Calc\n" +
             " name file = title window+date.txt";
 

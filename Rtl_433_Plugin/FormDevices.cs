@@ -128,7 +128,7 @@ namespace SDRSharp.Rtl_433
             //  toolStripSplitLabelRecordOneShoot
             // -------------------------------
             toolStripSplitLabelRecordOneShoot.ToolTipText = "Record data buffer Wav (checkbox on panel) \n" +
-                " to directory Recordings if exist else in SdrSharp.exe directory \n" +
+                " to directory Recordings \n" +
                 " You can replay Stereo file with SdrSharp Source=Baseband File player\n";
 
             // -------------------------------
