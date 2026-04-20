@@ -187,24 +187,6 @@ jobs:
             | Set-Content $file
 
       # ---------------------------------------------------------
-      # Build plugin x86 (.NET Framework 4.8)
-      # ---------------------------------------------------------
-      - name: Build plugin x86
-        shell: pwsh
-        run: |
-          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
-            /p:Configuration=CI_x86 /p:Platform=x86
-            
-      # ---------------------------------------------------------
-      # Build plugin x64 (.NET Framework 4.8)
-      # ---------------------------------------------------------  
-      - name: Build plugin x64
-        shell: pwsh
-        run: |
-          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
-            /p:Configuration=CI_x64 /p:Platform=x64
-
-      # ---------------------------------------------------------
       # Wait for GraphLib artifacts
       # ---------------------------------------------------------
       - name: Wait for GraphLib artifacts
@@ -301,6 +283,32 @@ jobs:
             --dir graphlib
       
           Write-Host "Artefacts GraphLib téléchargés."
+          
+      # ---------------------------------------------------------------------------
+      # Copy GraphLib into plugin references after download and before Build plugin
+      # ---------------------------------------------------------------------------         
+      - name: Copy GraphLib into plugin references
+        shell: pwsh
+        run: |
+          Copy-Item "graphlib/CI_x86/GraphLib.dll" "Rtl_433_Plugin/references/" -Force
+
+      # ---------------------------------------------------------
+      # Build plugin x86 (.NET Framework 4.8)
+      # ---------------------------------------------------------
+      - name: Build plugin x86
+        shell: pwsh
+        run: |
+          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
+            /p:Configuration=CI_x86 /p:Platform=x86
+            
+      # ---------------------------------------------------------
+      # Build plugin x64 (.NET Framework 4.8)
+      # ---------------------------------------------------------  
+      - name: Build plugin x64
+        shell: pwsh
+        run: |
+          msbuild Rtl_433_Plugin/SDRSharp.Rtl_433_Plugin.csproj `
+            /p:Configuration=CI_x64 /p:Platform=x64  
                  
       # ---------------------------------------------------------
       # Get GraphLib commit
@@ -505,10 +513,12 @@ jobs:
           Copy-Item "graphlib/CI_x86/GraphLib.dll" "out_x86/" -Force
           Copy-Item "graphlib/CI_x64/GraphLib.dll" "out_x64/" -Force
 
+
+
           # Languages to include
           $languages = @(
-            "fr-FR","de-DE","es-ES","it-IT","pt-PT","pt-BR","nl-NL","sv-SE","no-NO",
-            "da-DK","fi-FI","pl-PL","cs-CZ","sk-SK","sl-SI","hr-HR","hu-HU","ro-RO","bg-BG"
+            "fr-FR","de-DE","es-ES","it-IT","pt-PT","pt-BR","nl-NL","sv-SE","nb-NO","zh-CN"
+            "da-DK","fi-FI","pl-PL","cs-CZ","sk-SK","ja-JP","hu-HU","ro-RO","tr-TR"
           )
 
           foreach ($lang in $languages) {
