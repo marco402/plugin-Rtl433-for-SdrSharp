@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ClassFormDevicesList_import_devices_list" xml:space="preserve">
+    <value>Cihaz listesini içe aktarmak istiyor musunuz?</value>
+  </data>
+  <data name="ClassFormDevicesList_Import_devices_list_1" xml:space="preserve">
+    <value>Cihaz listesini içe aktar</value>
+  </data>
+  <data name="ClassFormDevicesList_The_file_" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_folder_SDRSharp" xml:space="preserve">
+    <value>SDRSharp içinde Recordings klasörü oluşturulurken hata</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_SDRSharp_folder" xml:space="preserve">
+    <value>SDRSharp klasöründe</value>
+  </data>
+  <data name="ClassFunctionsVirtuaserializeText__File_" xml:space="preserve">
+    <value>Öğe dışa aktarılırken hata fct(serializeText).Dosya:</value>
+  </data>
+  <data name="ClassInterfaceWithRt3_unknown_modulation" xml:space="preserve">
+    <value>bilinmeyen modülasyon</value>
+  </data>
+  <data name="ClassInterfaceWithRtror_ptrInfosToPlugin" xml:space="preserve">
+    <value>ptrInfosToPlugin hatası</value>
+  </data>
+  <data name="ClassTitleBarre_AlwaysOnTop" xml:space="preserve">
+    <value>ipucu Her zaman üstte</value>
+  </data>
+  <data name="ClassTitleBarre_Langue" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="ClassUtils_Error_create_folder_" xml:space="preserve">
+    <value>Klasör oluşturma hatası</value>
+  </data>
+  <data name="ClassUtils_Error_Initialize" xml:space="preserve">
+    <value>Başlatma hatası</value>
+  </data>
+  <data name="ClassUtils_genere_fi_test_wav_127_to_128" xml:space="preserve">
+    <value>-127 ile 128 arasında wav test dosyası oluşturur</value>
+  </data>
+  <data name="ClassUtils_test" xml:space="preserve">
+    <value>test</value>
+  </data>
+  <data name="ClassVirtualListViews_received__{1}_{2}_" xml:space="preserve">
+    <value>{0} (Alınan mesajlar: {1}/{2})</value>
+  </data>
+  <data name="FormDevices_Cancel_record" xml:space="preserve">
+    <value>Kaydı iptal et</value>
+  </data>
+  <data name="FormDevices_Data_{0}" xml:space="preserve">
+    <value>Veri {0}</value>
+  </data>
+  <data name="FormDevices_Error_fcRetrieveVirtualItem_" xml:space="preserve">
+    <value>Hata fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevices_Freeze_graphs" xml:space="preserve">
+    <value>Grafikleri dondur</value>
+  </data>
+  <data name="FormDevices_Info" xml:space="preserve">
+    <value>Bilgi</value>
+  </data>
+  <data name="FormDevices_NB_messages__{0}" xml:space="preserve">
+    <value>Mesaj sayısı: {0}</value>
+  </data>
+  <data name="FormDevices_NB_messages__0" xml:space="preserve">
+    <value>Mesaj sayısı: 0</value>
+  </data>
+  <data name="FormDevices_No_data_for_the_graph" xml:space="preserve">
+    <value>Grafik için veri yok</value>
+  </data>
+  <data name="FormDevices_Period__0" xml:space="preserve">
+    <value>Periyot: 0</value>
+  </data>
+  <data name="FormDevices_Period_{0}s_" xml:space="preserve">
+    <value>Periyot: {0}s.</value>
+  </data>
+  <data name="FormDevices_Period_max__0" xml:space="preserve">
+    <value>Maksimum periyot: 0</value>
+  </data>
+  <data name="FormDevices_Period_max_{0}s_" xml:space="preserve">
+    <value>Maksimum periyot: {0}s.</value>
+  </data>
+  <data name="FormDevices_Record_dv_checkbox_on_panel_" xml:space="preserve">
+    <value>Wav veri arabelleğini kaydet (panelde onay kutusu)</value>
+  </data>
+  <data name="FormDevices_Refresh_data" xml:space="preserve">
+    <value>Verileri yenile</value>
+  </data>
+  <data name="FormDevices_Save_only_once" xml:space="preserve">
+    <value>Yalnızca bir kez kaydet</value>
+  </data>
+  <data name="FormDevices_to_directory_Recordings" xml:space="preserve">
+    <value>Recordings klasörüne</value>
+  </data>
+  <data name="FormDevices_Use_mouse_wheel_for_zoom" xml:space="preserve">
+    <value>Fareti tekerleğini yakınlaştırmak için kullan</value>
+  </data>
+  <data name="FormDevices_Wait_to_receive_new_data" xml:space="preserve">
+    <value>Yeni verilerin gelmesi bekleniyor</value>
+  </data>
+  <data name="FormDevices_You_can_Baseband_File_player" xml:space="preserve">
+    <value>SdrSharp Source=Baseband File player ile stereo dosyayı yeniden oynatabilirsiniz</value>
+  </data>
+  <data name="FormDevicesListMessa_Messages_received__" xml:space="preserve">
+    <value>(Alınan mesajlar:</value>
+  </data>
+  <data name="FormDevicesListMessadirectory_Recordings" xml:space="preserve">
+    <value>Recordings klasörüne</value>
+  </data>
+  <data name="FormDevicesListMessaeload_file_with_Calc" xml:space="preserve">
+    <value>Dosyayı Calc ile yeniden yükleyebilirsiniz</value>
+  </data>
+  <data name="FormDevicesListMessaes_Export_data__txt_" xml:space="preserve">
+    <value>Verileri dışa aktar (.txt)</value>
+  </data>
+  <data name="FormDevicesListMessaessages_received__0_" xml:space="preserve">
+    <value> (Alınan mesajlar: 0)</value>
+  </data>
+  <data name="FormDevicesListMessages_Export___" xml:space="preserve">
+    <value>Dışa aktar--&gt;</value>
+  </data>
+  <data name="FormDevicesListMessages_N__Mes_" xml:space="preserve">
+    <value>Mesaj No</value>
+  </data>
+  <data name="FormDevicesListMessages_Record_data" xml:space="preserve">
+    <value>Veri kaydet</value>
+  </data>
+  <data name="FormDevicesListMessaitle_window_date_txt" xml:space="preserve">
+    <value>dosya adı = pencere başlığı+tarih.txt</value>
+  </data>
+  <data name="FormDevicesListMessaRetrieveVirtualItem_" xml:space="preserve">
+    <value>Hata fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevicesListMessas_Export_messages_OK" xml:space="preserve">
+    <value>Mesaj dışa aktarma OK</value>
+  </data>
+  <data name="FormListDevices_Close_form_list_devices_" xml:space="preserve">
+    <value>Cihaz listesi penceresini kapat</value>
+  </data>
+  <data name="FormListDevices_Column_" xml:space="preserve">
+    <value>Sütun:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__" xml:space="preserve">
+    <value>Alınan cihazlar:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__0" xml:space="preserve">
+    <value>Alınan cihazlar: 0</value>
+  </data>
+  <data name="FormListDevices_Do_yexport_devices_list_" xml:space="preserve">
+    <value>Cihaz listesini dışa aktarmak istiyor musunuz?(</value>
+  </data>
+  <data name="FormListDevices_empty" xml:space="preserve">
+    <value>boş</value>
+  </data>
+  <data name="FormListDevices_ErroRetrieveVirtualItem_" xml:space="preserve">
+    <value>Hata fct(listDevices_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormListDevices_ErroSerializeText__File_" xml:space="preserve">
+    <value>Cihazlar içe aktarılırken hata fct(deSerializeText).Dosya:</value>
+  </data>
+  <data name="FormListDevices_Export_devices_list" xml:space="preserve">
+    <value>Cihaz listesini dışa aktar</value>
+  </data>
+  <data name="FormListDevices_File_" xml:space="preserve">
+    <value>Dosya:</value>
+  </data>
+  <data name="FormListDevices_Import_devices_File" xml:space="preserve">
+    <value>Cihaz dosyasını içe aktar</value>
+  </data>
+  <data name="FormListDevices_Stopm_type_before_close_" xml:space="preserve">
+    <value>Eklentiyi durdurun veya pencere türünü değiştirdikten sonra kapatın.</value>
+  </data>
+  <data name="Rtl_433_Panel___AGC_an_be_manually__off_" xml:space="preserve">
+    <value>-AGC: açık (rtl433 otomatik kazancına karşılık gelir), elle kapatılabilir.</value>
+  </data>
+  <data name="Rtl_433_Panel___Check_frequency" xml:space="preserve">
+    <value>-Frekansı kontrol et</value>
+  </data>
+  <data name="Rtl_433_Panel___Clear" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
+  <data name="Rtl_433_Panel___RTL_off_if_good_signals_" xml:space="preserve">
+    <value>-RTL AGC: açık (AGC paneli değil), sinyal iyiyse kapatılabilir.</value>
+  </data>
+  <data name="Rtl_433_Panel___Samp_quadrature_sampling" xml:space="preserve">
+    <value>-Örnekleme modu-&gt;kuadratür örnekleme</value>
+  </data>
+  <data name="Rtl_433_Panel___Samps_FSK_or_f__433Mhz__" xml:space="preserve">
+    <value>-Örnekleme hızı-&gt;0,25 MSPS veya daha fazla (bazı FSK cihazları veya f &gt; 433 MHz için)...</value>
+  </data>
+  <data name="Rtl_433_Panel__All_to" xml:space="preserve">
+    <value>Hepsi →</value>
+  </data>
+  <data name="Rtl_433_Panel_Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Rtl_433_Panel_clipboard" xml:space="preserve">
+    <value>Pano</value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433___Ligne__" xml:space="preserve">
+    <value>Konsol RTL_433--- Satır = </value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433__nbLigne_" xml:space="preserve">
+    <value>RTL_433 Konsolu---nbLigne=</value>
+  </data>
+  <data name="Rtl_433_Panel_cu8_to_wav" xml:space="preserve">
+    <value>.cu8'dan .wav'a</value>
+  </data>
+  <data name="Rtl_433_Panel_Disabled_plugin" xml:space="preserve">
+    <value>Eklenti devre dışı</value>
+  </data>
+  <data name="Rtl_433_Panel_Display" xml:space="preserve">
+    <value>Görüntüle</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin" xml:space="preserve">
+    <value>Eklenti etkin</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin_" xml:space="preserve">
+    <value>Eklenti etkin (</value>
+  </data>
+  <data name="Rtl_433_Panel_Error_RetrieveVirtualItem_" xml:space="preserve">
+    <value>Hata fct(listViewConsole_RetrieveVirtualItem)</value>
+  </data>
+  <data name="Rtl_433_Panel_Free" xml:space="preserve">
+    <value>Boş</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency" xml:space="preserve">
+    <value>Frekans</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency_Hz_" xml:space="preserve">
+    <value>Frekans (Hz)</value>
+  </data>
+  <data name="Rtl_433_Panel_Graphiques" xml:space="preserve">
+    <value>Grafikler</value>
+  </data>
+  <data name="Rtl_433_Panel_Hide_select" xml:space="preserve">
+    <value>Seçimi gizle</value>
+  </data>
+  <data name="Rtl_433_Panel_if_necgin_maxLinesConsole_" xml:space="preserve">
+    <value>gerekirse bunu SDRSharp.config içinde artırabilirsiniz (RTL_433_plugin.maxLinesConsole anahtarı)</value>
+  </data>
+  <data name="Rtl_433_Panel_If_Ora300Mhz_or_F_1000Mhz_" xml:space="preserve">
+    <value>Orange ise: F&lt;300 MHz veya F&gt;1000 MHz.</value>
+  </data>
+  <data name="Rtl_433_Panel_List_devices" xml:space="preserve">
+    <value>Cihaz listesi</value>
+  </data>
+  <data name="Rtl_433_Panel_List_messages" xml:space="preserve">
+    <value>Mesaj listesi</value>
+  </data>
+  <data name="Rtl_433_Panel_Messages" xml:space="preserve">
+    <value>sayısı</value>
+  </data>
+  <data name="Rtl_433_Panel_No_samname__sample_rate_k_" xml:space="preserve">
+    <value>Dosya adında örnekleme hızı bulunamadı: _sample rate+k</value>
+  </data>
+  <data name="Rtl_433_Panel_ok_files" xml:space="preserve">
+    <value>dosyalar ok</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameers_configure_source" xml:space="preserve">
+    <value>Kaynak yapılandırma parametreleri</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameter" xml:space="preserve">
+    <value>パラメータ</value>
+  </data>
+  <data name="Rtl_433_Panel_Red_if_not_if_source_file_" xml:space="preserve">
+    <value>Kırmızı: döngü &gt; 1000 ms ise mesaj kaybı riski (kaynak=file değilse)</value>
+  </data>
+  <data name="Rtl_433_Panel_Sample_Rate_s" xml:space="preserve">
+    <value>Örnekleme hızı</value>
+  </data>
+  <data name="Rtl_433_Panel_Select_to" xml:space="preserve">
+    <value>Seçime kadar</value>
+  </data>
+  <data name="Rtl_433_Panel_Show_select" xml:space="preserve">
+    <value>Seçimi göster</value>
+  </data>
+  <data name="Rtl_433_Panel_Start" xml:space="preserve">
+    <value>Başlat</value>
+  </data>
+  <data name="Rtl_433_Panel_Start_ill_the_devices_list" xml:space="preserve">
+    <value>Bir kez başlatın, cihaz listesini doldurmak için</value>
+  </data>
+  <data name="Rtl_433_Panel_Stop" xml:space="preserve">
+    <value>Durdur</value>
+  </data>
+  <data name="Rtl_433_Panel_Time_display_" xml:space="preserve">
+    <value>Zaman gösterimi:</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_cu8_to_wav" xml:space="preserve">
+    <value>cu8’i wav’e dönüştür</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_is_completed" xml:space="preserve">
+    <value>Çeviri tamamlandı</value>
+  </data>
+  <data name="Rtl_433_Panel_Translte_is_NOT_completed_" xml:space="preserve">
+    <value>Çeviri TAMAMLANMADI</value>
+  </data>
+  <data name="Rtl_433_Panel_Version_de_test" xml:space="preserve">
+    <value>Test sürümü</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait" xml:space="preserve">
+    <value>Bekle</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait_Radio" xml:space="preserve">
+    <value>Radyo bekleniyor</value>
+  </data>
+  <data name="Rtl_433_Panel_You_haided_in_the_console_" xml:space="preserve">
+    <value>Konsoldaki maksimum satır sayısına ulaştınız(</value>
+  </data>
+  <data name="Rtl_433_Plugin__Initalize_RTL_433_plugin" xml:space="preserve">
+    <value>RTL_433_plugin başlat</value>
+  </data>
+  <data name="Rtl_433_Plugin_Error_Initialize" xml:space="preserve">
+    <value>Başlatma hatası</value>
+  </data>
+  <data name="WavRecorder_Error" xml:space="preserve">
+    <value>Hata</value>
+  </data>
+  <data name="WavRecorder_information" xml:space="preserve">
+    <value>bilgi</value>
+  </data>
+  <data name="WavRecorder_No_record__all_values__0" xml:space="preserve">
+    <value>Kayıt yok, tüm değerler = 0</value>
+  </data>
+  <data name="WavRecorder_No_record_for_" xml:space="preserve">
+    <value>Kayıt yok:</value>
+  </data>
+</root>

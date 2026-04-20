@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ClassFormDevicesList_import_devices_list" xml:space="preserve">
+    <value>Vill du importera enhetslistan?</value>
+  </data>
+  <data name="ClassFormDevicesList_Import_devices_list_1" xml:space="preserve">
+    <value>Importera enhetslista</value>
+  </data>
+  <data name="ClassFormDevicesList_The_file_" xml:space="preserve">
+    <value>Filen</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_folder_SDRSharp" xml:space="preserve">
+    <value>Fel vid skapande av mappen Recordings i SDRSharp</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_SDRSharp_folder" xml:space="preserve">
+    <value>finns i SDRSharp-mappen</value>
+  </data>
+  <data name="ClassFunctionsVirtuaserializeText__File_" xml:space="preserve">
+    <value>Fel vid export av objekt fct(serializeText).Fil:</value>
+  </data>
+  <data name="ClassInterfaceWithRt3_unknown_modulation" xml:space="preserve">
+    <value>okänd modulation</value>
+  </data>
+  <data name="ClassInterfaceWithRtror_ptrInfosToPlugin" xml:space="preserve">
+    <value>Fel ptrInfosToPlugin</value>
+  </data>
+  <data name="ClassTitleBarre_AlwaysOnTop" xml:space="preserve">
+    <value>Alltid överst</value>
+  </data>
+  <data name="ClassTitleBarre_Langue" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="ClassUtils_Error_create_folder_" xml:space="preserve">
+    <value>Fel vid skapande av mapp</value>
+  </data>
+  <data name="ClassUtils_Error_Initialize" xml:space="preserve">
+    <value>Fel vid initiering</value>
+  </data>
+  <data name="ClassUtils_genere_fi_test_wav_127_to_128" xml:space="preserve">
+    <value>genererar test-wav-fil -127 till 128</value>
+  </data>
+  <data name="ClassUtils_test" xml:space="preserve">
+    <value>test</value>
+  </data>
+  <data name="ClassVirtualListViews_received__{1}_{2}_" xml:space="preserve">
+    <value>{0} (Mottagna meddelanden: {1}/{2})</value>
+  </data>
+  <data name="FormDevices_Cancel_record" xml:space="preserve">
+    <value>Avbryt inspelning</value>
+  </data>
+  <data name="FormDevices_Data_{0}" xml:space="preserve">
+    <value>Data {0}</value>
+  </data>
+  <data name="FormDevices_Error_fcRetrieveVirtualItem_" xml:space="preserve">
+    <value>Fel fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevices_Freeze_graphs" xml:space="preserve">
+    <value>Frysa diagram</value>
+  </data>
+  <data name="FormDevices_Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="FormDevices_NB_messages__{0}" xml:space="preserve">
+    <value>Antal meddelanden: {0}</value>
+  </data>
+  <data name="FormDevices_NB_messages__0" xml:space="preserve">
+    <value>Antal meddelanden: 0</value>
+  </data>
+  <data name="FormDevices_No_data_for_the_graph" xml:space="preserve">
+    <value>Inga data för grafen</value>
+  </data>
+  <data name="FormDevices_Period__0" xml:space="preserve">
+    <value>Period: 0</value>
+  </data>
+  <data name="FormDevices_Period_{0}s_" xml:space="preserve">
+    <value>Period: {0}s.</value>
+  </data>
+  <data name="FormDevices_Period_max__0" xml:space="preserve">
+    <value>Maxperiod: 0</value>
+  </data>
+  <data name="FormDevices_Period_max_{0}s_" xml:space="preserve">
+    <value>Maxperiod: {0}s.</value>
+  </data>
+  <data name="FormDevices_Record_dv_checkbox_on_panel_" xml:space="preserve">
+    <value>Spela in Wav-databuffert (kryssruta i panel)</value>
+  </data>
+  <data name="FormDevices_Refresh_data" xml:space="preserve">
+    <value>Uppdatera data</value>
+  </data>
+  <data name="FormDevices_Save_only_once" xml:space="preserve">
+    <value>Spara bara en gång</value>
+  </data>
+  <data name="FormDevices_to_directory_Recordings" xml:space="preserve">
+    <value>till mappen Recordings</value>
+  </data>
+  <data name="FormDevices_Use_mouse_wheel_for_zoom" xml:space="preserve">
+    <value>Använd mushjulet för att zooma</value>
+  </data>
+  <data name="FormDevices_Wait_to_receive_new_data" xml:space="preserve">
+    <value>Väntar på nya data</value>
+  </data>
+  <data name="FormDevices_You_can_Baseband_File_player" xml:space="preserve">
+    <value>Du kan spela upp en stereofil med SdrSharp Source=Baseband File player</value>
+  </data>
+  <data name="FormDevicesListMessa_Messages_received__" xml:space="preserve">
+    <value>(Mottagna meddelanden:</value>
+  </data>
+  <data name="FormDevicesListMessadirectory_Recordings" xml:space="preserve">
+    <value>till mappen Recordings</value>
+  </data>
+  <data name="FormDevicesListMessaeload_file_with_Calc" xml:space="preserve">
+    <value>Du kan läsa in filen igen med Calc</value>
+  </data>
+  <data name="FormDevicesListMessaes_Export_data__txt_" xml:space="preserve">
+    <value>Exportera data (.txt)</value>
+  </data>
+  <data name="FormDevicesListMessaessages_received__0_" xml:space="preserve">
+    <value> (Mottagna meddelanden: 0)</value>
+  </data>
+  <data name="FormDevicesListMessages_Export___" xml:space="preserve">
+    <value>Exportera--&gt;</value>
+  </data>
+  <data name="FormDevicesListMessages_N__Mes_" xml:space="preserve">
+    <value>Nr. Med.</value>
+  </data>
+  <data name="FormDevicesListMessages_Record_data" xml:space="preserve">
+    <value>Spela in data</value>
+  </data>
+  <data name="FormDevicesListMessaitle_window_date_txt" xml:space="preserve">
+    <value>filnamn = fönstertitel+datum.txt</value>
+  </data>
+  <data name="FormDevicesListMessaRetrieveVirtualItem_" xml:space="preserve">
+    <value>Fel fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevicesListMessas_Export_messages_OK" xml:space="preserve">
+    <value>Meddelandexport OK</value>
+  </data>
+  <data name="FormListDevices_Close_form_list_devices_" xml:space="preserve">
+    <value>Stäng enhetslistfönster</value>
+  </data>
+  <data name="FormListDevices_Column_" xml:space="preserve">
+    <value>Kolumn:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__" xml:space="preserve">
+    <value>Mottagna enheter:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__0" xml:space="preserve">
+    <value>Mottagna enheter: 0</value>
+  </data>
+  <data name="FormListDevices_Do_yexport_devices_list_" xml:space="preserve">
+    <value>Vill du exportera enhetslistan?(</value>
+  </data>
+  <data name="FormListDevices_empty" xml:space="preserve">
+    <value>tom</value>
+  </data>
+  <data name="FormListDevices_ErroRetrieveVirtualItem_" xml:space="preserve">
+    <value>Fel fct(listDevices_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormListDevices_ErroSerializeText__File_" xml:space="preserve">
+    <value>Fel vid import av enheter fct(deSerializeText).Fil:</value>
+  </data>
+  <data name="FormListDevices_Export_devices_list" xml:space="preserve">
+    <value>Exportera enhetslista</value>
+  </data>
+  <data name="FormListDevices_File_" xml:space="preserve">
+    <value>Fil:</value>
+  </data>
+  <data name="FormListDevices_Import_devices_File" xml:space="preserve">
+    <value>Importera enhetsfil</value>
+  </data>
+  <data name="FormListDevices_Stopm_type_before_close_" xml:space="preserve">
+    <value>Stoppa pluginet eller ändra fönstertyp innan du stänger.</value>
+  </data>
+  <data name="Rtl_433_Panel___AGC_an_be_manually__off_" xml:space="preserve">
+    <value>-AGC: på (motsvarar automatisk förstärkning med rtl433), kan stängas av manuellt.</value>
+  </data>
+  <data name="Rtl_433_Panel___Check_frequency" xml:space="preserve">
+    <value>-Kontrollera frekvens</value>
+  </data>
+  <data name="Rtl_433_Panel___Clear" xml:space="preserve">
+    <value>Rensa</value>
+  </data>
+  <data name="Rtl_433_Panel___RTL_off_if_good_signals_" xml:space="preserve">
+    <value>-RTL AGC: på (inte AGC‑panelen), kan stängas av vid bra signal.</value>
+  </data>
+  <data name="Rtl_433_Panel___Samp_quadrature_sampling" xml:space="preserve">
+    <value>-Samplingsläge-&gt;kvadraturprovtagning</value>
+  </data>
+  <data name="Rtl_433_Panel___Samps_FSK_or_f__433Mhz__" xml:space="preserve">
+    <value>-Samplingsfrekvens-&gt;0,25 MSPS eller mer för vissa FSK‑enheter eller f &gt; 433 MHz...</value>
+  </data>
+  <data name="Rtl_433_Panel__All_to" xml:space="preserve">
+    <value>Allt till</value>
+  </data>
+  <data name="Rtl_433_Panel_Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="Rtl_433_Panel_clipboard" xml:space="preserve">
+    <value>Urklipp</value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433___Ligne__" xml:space="preserve">
+    <value>Konsol RTL_433--- Rad = </value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433__nbLigne_" xml:space="preserve">
+    <value>Konsol RTL_433---nbLigne=</value>
+  </data>
+  <data name="Rtl_433_Panel_cu8_to_wav" xml:space="preserve">
+    <value>.cu8 till .wav</value>
+  </data>
+  <data name="Rtl_433_Panel_Disabled_plugin" xml:space="preserve">
+    <value>Plugin inaktiverad</value>
+  </data>
+  <data name="Rtl_433_Panel_Display" xml:space="preserve">
+    <value>Visa</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin" xml:space="preserve">
+    <value>Plugin aktiverad</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin_" xml:space="preserve">
+    <value>Plugin aktiverad (</value>
+  </data>
+  <data name="Rtl_433_Panel_Error_RetrieveVirtualItem_" xml:space="preserve">
+    <value>Fel fct(listViewConsole_RetrieveVirtualItem)</value>
+  </data>
+  <data name="Rtl_433_Panel_Free" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency" xml:space="preserve">
+    <value>Frekvens</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency_Hz_" xml:space="preserve">
+    <value>Frekvens (Hz)</value>
+  </data>
+  <data name="Rtl_433_Panel_Graphiques" xml:space="preserve">
+    <value>Diagram</value>
+  </data>
+  <data name="Rtl_433_Panel_Hide_select" xml:space="preserve">
+    <value>Dölj markering</value>
+  </data>
+  <data name="Rtl_433_Panel_if_necgin_maxLinesConsole_" xml:space="preserve">
+    <value>vid behov kan du öka detta i SDRSharp.config (nyckel RTL_433_plugin.maxLinesConsole)</value>
+  </data>
+  <data name="Rtl_433_Panel_If_Ora300Mhz_or_F_1000Mhz_" xml:space="preserve">
+    <value>Om Orange: F&lt;300 MHz eller F&gt;1000 MHz.</value>
+  </data>
+  <data name="Rtl_433_Panel_List_devices" xml:space="preserve">
+    <value>Enhetslista</value>
+  </data>
+  <data name="Rtl_433_Panel_List_messages" xml:space="preserve">
+    <value>Meddelandelista</value>
+  </data>
+  <data name="Rtl_433_Panel_Messages" xml:space="preserve">
+    <value>meddelanden</value>
+  </data>
+  <data name="Rtl_433_Panel_No_samname__sample_rate_k_" xml:space="preserve">
+    <value>Ingen samplingsfrekvens hittades i filnamnet: _sample rate+k</value>
+  </data>
+  <data name="Rtl_433_Panel_ok_files" xml:space="preserve">
+    <value>filer ok</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameers_configure_source" xml:space="preserve">
+    <value>Parametrar konfigurera källa</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameter" xml:space="preserve">
+    <value>Parametrar</value>
+  </data>
+  <data name="Rtl_433_Panel_Red_if_not_if_source_file_" xml:space="preserve">
+    <value>Rött om cykel &gt; 1000 ms, risk för meddelandeförlust (ej om källa=file)</value>
+  </data>
+  <data name="Rtl_433_Panel_Sample_Rate_s" xml:space="preserve">
+    <value>Samplingsfrekvens</value>
+  </data>
+  <data name="Rtl_433_Panel_Select_to" xml:space="preserve">
+    <value>Markera till</value>
+  </data>
+  <data name="Rtl_433_Panel_Show_select" xml:space="preserve">
+    <value>Visa markering</value>
+  </data>
+  <data name="Rtl_433_Panel_Start" xml:space="preserve">
+    <value>Starta</value>
+  </data>
+  <data name="Rtl_433_Panel_Start_ill_the_devices_list" xml:space="preserve">
+    <value>Starta en gång för att fylla enhetslistan</value>
+  </data>
+  <data name="Rtl_433_Panel_Stop" xml:space="preserve">
+    <value>Stoppa</value>
+  </data>
+  <data name="Rtl_433_Panel_Time_display_" xml:space="preserve">
+    <value>Tidsvisning:</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_cu8_to_wav" xml:space="preserve">
+    <value>Konvertera cu8 till wav</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_is_completed" xml:space="preserve">
+    <value>Översättning slutförd</value>
+  </data>
+  <data name="Rtl_433_Panel_Translte_is_NOT_completed_" xml:space="preserve">
+    <value>Översättning INTE slutförd</value>
+  </data>
+  <data name="Rtl_433_Panel_Version_de_test" xml:space="preserve">
+    <value>Testversion</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait" xml:space="preserve">
+    <value>Vänta</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait_Radio" xml:space="preserve">
+    <value>Vänta på Radio</value>
+  </data>
+  <data name="Rtl_433_Panel_You_haided_in_the_console_" xml:space="preserve">
+    <value>Du har nått det maximala antalet rader i konsolen(</value>
+  </data>
+  <data name="Rtl_433_Plugin__Initalize_RTL_433_plugin" xml:space="preserve">
+    <value>Initiera RTL_433_plugin</value>
+  </data>
+  <data name="Rtl_433_Plugin_Error_Initialize" xml:space="preserve">
+    <value>Fel vid initiering</value>
+  </data>
+  <data name="WavRecorder_Error" xml:space="preserve">
+    <value>Fel</value>
+  </data>
+  <data name="WavRecorder_information" xml:space="preserve">
+    <value>information</value>
+  </data>
+  <data name="WavRecorder_No_record__all_values__0" xml:space="preserve">
+    <value>Ingen inspelning, alla värden = 0</value>
+  </data>
+  <data name="WavRecorder_No_record_for_" xml:space="preserve">
+    <value>Ingen inspelning för:</value>
+  </data>
+</root>

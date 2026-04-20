@@ -1,4 +1,4 @@
-﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 FormListDevices.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -49,7 +49,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message, "Error fct(listDevices_RetrieveVirtualItem)");
+                Debug.WriteLine(ex.Message, LanguageManager.GetString("FormListDevices_ErroRetrieveVirtualItem_"));
             }
         }
  
@@ -67,7 +67,7 @@ namespace SDRSharp.Rtl_433
             this.maxDevices = 1000;  // ClassUtils.MaxDevicesWindows*10;
             this.maxColumns = ClassConst.NBMAXCOLUMN;
             this.MinimumSize = new System.Drawing.Size(0, 100); //if only title crash on listViewDevices.VirtualListSize = nbMessage;
-            base.TitleText = "Devices received : 0";
+            base.TitleText = LanguageManager.GetString("FormListDevices_Devices_received__0");
 #if !ABSTRACTVIRTUALLISTVIEW
             // -------------------------------
             //  LIST VIEW DEVICES
@@ -116,7 +116,7 @@ namespace SDRSharp.Rtl_433
                     String line = str.ReadLine();
                     if (line == null)
                     {
-                        MessageBox.Show("File " + ClassConst.FILELISTEDEVICES + " empty", "Import devices File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(LanguageManager.GetString("FormListDevices_File_") + ClassConst.FILELISTEDEVICES + LanguageManager.GetString("FormListDevices_empty"), LanguageManager.GetString("FormListDevices_Import_devices_File"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                         listViewDevices.EndUpdate();
                         this.ResumeLayout(true);
                         firstDeviceToTop = !firstDeviceToTop;
@@ -148,7 +148,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error import devices fct(deSerializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, LanguageManager.GetString("FormListDevices_ErroSerializeText__File_") + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             listViewDevices.EndUpdate();
             this.ResumeLayout(true);
@@ -211,7 +211,7 @@ namespace SDRSharp.Rtl_433
                 ClassFunctionsVirtualListView.CompleteList(cacheListDevices, cacheListColumns.Count);
             }
             //**************************************************************************************
-            base.TitleText = "Devices received : " + nbDevice.ToString() + "/" + maxDevices.ToString() + " Column:" + cacheListColumns.Count.ToString() + "/" + maxColumns.ToString();
+            base.TitleText = LanguageManager.GetString("FormListDevices_Devices_received__") + nbDevice.ToString() + ClassConst.Slash + maxDevices.ToString() + LanguageManager.GetString("FormListDevices_Column_") + cacheListColumns.Count.ToString() + ClassConst.Slash + maxColumns.ToString();
             listViewDevices.VirtualListSize = nbDevice;
             ClassFunctionsVirtualListView.ResizeAllColumns(listViewDevices);
             //**************************************************************************************
@@ -223,12 +223,12 @@ namespace SDRSharp.Rtl_433
         {
             if (myClassFormDevicesList.PluginIsRun && myClassFormDevicesList.ChooseFormListDevice)
             {
-                MessageBox.Show("Stop plugin or change form type before close.", "Close form list devices ", MessageBoxButtons.OK);
+                MessageBox.Show(LanguageManager.GetString("FormListDevices_Stopm_type_before_close_"), LanguageManager.GetString("FormListDevices_Close_form_list_devices_"), MessageBoxButtons.OK);
                 e.Cancel = true;
             }
             else
             {
-                if (MessageBox.Show("Do you want export devices list( " + ClassConst.FILELISTEDEVICES + " )", "Export devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (MessageBox.Show(LanguageManager.GetString("FormListDevices_Do_yexport_devices_list_") + ClassConst.FILELISTEDEVICES + " )", LanguageManager.GetString("FormListDevices_Export_devices_list"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     ClassFunctionsVirtualListView.SerializeText(myClassFormDevicesList.GetDirectoryForSaveDevicesList(), cacheListColumns, cacheListDevices, false, nbDevice, true);
                 myClassFormDevicesList.SetFormDevicesListCloseByUser=true;
             }

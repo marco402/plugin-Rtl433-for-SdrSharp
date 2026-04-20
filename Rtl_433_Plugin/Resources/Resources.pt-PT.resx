@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ClassFormDevicesList_import_devices_list" xml:space="preserve">
+    <value>Pretende importar a lista de dispositivos?</value>
+  </data>
+  <data name="ClassFormDevicesList_Import_devices_list_1" xml:space="preserve">
+    <value>Importar lista de dispositivos</value>
+  </data>
+  <data name="ClassFormDevicesList_The_file_" xml:space="preserve">
+    <value>O ficheiro</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_folder_SDRSharp" xml:space="preserve">
+    <value>Erro ao criar a pasta Recordings em SDRSharp</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_SDRSharp_folder" xml:space="preserve">
+    <value>está na pasta SDRSharp</value>
+  </data>
+  <data name="ClassFunctionsVirtuaserializeText__File_" xml:space="preserve">
+    <value>Erro ao exportar item fct(serializeText).Ficheiro:</value>
+  </data>
+  <data name="ClassInterfaceWithRt3_unknown_modulation" xml:space="preserve">
+    <value>modulação desconhecida</value>
+  </data>
+  <data name="ClassInterfaceWithRtror_ptrInfosToPlugin" xml:space="preserve">
+    <value>Erro ptrInfosToPlugin</value>
+  </data>
+  <data name="ClassTitleBarre_AlwaysOnTop" xml:space="preserve">
+    <value>Sempre no topo</value>
+  </data>
+  <data name="ClassTitleBarre_Langue" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="ClassUtils_Error_create_folder_" xml:space="preserve">
+    <value>Erro ao criar pasta</value>
+  </data>
+  <data name="ClassUtils_Error_Initialize" xml:space="preserve">
+    <value>Erro na inicialização</value>
+  </data>
+  <data name="ClassUtils_genere_fi_test_wav_127_to_128" xml:space="preserve">
+    <value>gera ficheiro de teste wav -127 a 128</value>
+  </data>
+  <data name="ClassUtils_test" xml:space="preserve">
+    <value>teste</value>
+  </data>
+  <data name="ClassVirtualListViews_received__{1}_{2}_" xml:space="preserve">
+    <value>{0} (Mensagens recebidas: {1}/{2})</value>
+  </data>
+  <data name="FormDevices_Cancel_record" xml:space="preserve">
+    <value>Cancelar gravação</value>
+  </data>
+  <data name="FormDevices_Data_{0}" xml:space="preserve">
+    <value>Dado {0}</value>
+  </data>
+  <data name="FormDevices_Error_fcRetrieveVirtualItem_" xml:space="preserve">
+    <value>Erro fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevices_Freeze_graphs" xml:space="preserve">
+    <value>Congelar gráficos</value>
+  </data>
+  <data name="FormDevices_Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="FormDevices_NB_messages__{0}" xml:space="preserve">
+    <value>N.º mensagens: {0}</value>
+  </data>
+  <data name="FormDevices_NB_messages__0" xml:space="preserve">
+    <value>N.º mensagens: 0</value>
+  </data>
+  <data name="FormDevices_No_data_for_the_graph" xml:space="preserve">
+    <value>Sem dados para o gráfico</value>
+  </data>
+  <data name="FormDevices_Period__0" xml:space="preserve">
+    <value>Período: 0</value>
+  </data>
+  <data name="FormDevices_Period_{0}s_" xml:space="preserve">
+    <value>Período: {0}s.</value>
+  </data>
+  <data name="FormDevices_Period_max__0" xml:space="preserve">
+    <value>Período máx.: 0</value>
+  </data>
+  <data name="FormDevices_Period_max_{0}s_" xml:space="preserve">
+    <value>Período máx.: {0}s.</value>
+  </data>
+  <data name="FormDevices_Record_dv_checkbox_on_panel_" xml:space="preserve">
+    <value>Gravar buffer de dados Wav (caixa no painel)</value>
+  </data>
+  <data name="FormDevices_Refresh_data" xml:space="preserve">
+    <value>Atualizar dados</value>
+  </data>
+  <data name="FormDevices_Save_only_once" xml:space="preserve">
+    <value>Guardar apenas uma vez</value>
+  </data>
+  <data name="FormDevices_to_directory_Recordings" xml:space="preserve">
+    <value>para a pasta Recordings</value>
+  </data>
+  <data name="FormDevices_Use_mouse_wheel_for_zoom" xml:space="preserve">
+    <value>Usar a roda do rato para ampliar</value>
+  </data>
+  <data name="FormDevices_Wait_to_receive_new_data" xml:space="preserve">
+    <value>A aguardar novos dados</value>
+  </data>
+  <data name="FormDevices_You_can_Baseband_File_player" xml:space="preserve">
+    <value>Pode reproduzir ficheiros estéreo com SdrSharp Source=Baseband File player</value>
+  </data>
+  <data name="FormDevicesListMessa_Messages_received__" xml:space="preserve">
+    <value>(Mensagens recebidas:</value>
+  </data>
+  <data name="FormDevicesListMessadirectory_Recordings" xml:space="preserve">
+    <value>para a pasta Recordings</value>
+  </data>
+  <data name="FormDevicesListMessaeload_file_with_Calc" xml:space="preserve">
+    <value>Pode recarregar o ficheiro com o Calc</value>
+  </data>
+  <data name="FormDevicesListMessaes_Export_data__txt_" xml:space="preserve">
+    <value>Exportar dados (.txt)</value>
+  </data>
+  <data name="FormDevicesListMessaessages_received__0_" xml:space="preserve">
+    <value> (Mensagens recebidas: 0)</value>
+  </data>
+  <data name="FormDevicesListMessages_Export___" xml:space="preserve">
+    <value>Exportar--&gt;</value>
+  </data>
+  <data name="FormDevicesListMessages_N__Mes_" xml:space="preserve">
+    <value>N.º Msg.</value>
+  </data>
+  <data name="FormDevicesListMessages_Record_data" xml:space="preserve">
+    <value>Gravar dados</value>
+  </data>
+  <data name="FormDevicesListMessaitle_window_date_txt" xml:space="preserve">
+    <value>nome do ficheiro = título da janela+data.txt</value>
+  </data>
+  <data name="FormDevicesListMessaRetrieveVirtualItem_" xml:space="preserve">
+    <value>Erro fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevicesListMessas_Export_messages_OK" xml:space="preserve">
+    <value>Exportação de mensagens OK</value>
+  </data>
+  <data name="FormListDevices_Close_form_list_devices_" xml:space="preserve">
+    <value>Fechar janela lista de dispositivos</value>
+  </data>
+  <data name="FormListDevices_Column_" xml:space="preserve">
+    <value>Coluna:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__" xml:space="preserve">
+    <value>Dispositivos recebidos:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__0" xml:space="preserve">
+    <value>Dispositivos recebidos: 0</value>
+  </data>
+  <data name="FormListDevices_Do_yexport_devices_list_" xml:space="preserve">
+    <value>Pretende exportar a lista de dispositivos?(</value>
+  </data>
+  <data name="FormListDevices_empty" xml:space="preserve">
+    <value>vazio</value>
+  </data>
+  <data name="FormListDevices_ErroRetrieveVirtualItem_" xml:space="preserve">
+    <value>Erro fct(listDevices_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormListDevices_ErroSerializeText__File_" xml:space="preserve">
+    <value>Erro ao importar dispositivos fct(deSerializeText).Ficheiro:</value>
+  </data>
+  <data name="FormListDevices_Export_devices_list" xml:space="preserve">
+    <value>Exportar lista de dispositivos</value>
+  </data>
+  <data name="FormListDevices_File_" xml:space="preserve">
+    <value>Ficheiro:</value>
+  </data>
+  <data name="FormListDevices_Import_devices_File" xml:space="preserve">
+    <value>Importar ficheiro de dispositivos</value>
+  </data>
+  <data name="FormListDevices_Stopm_type_before_close_" xml:space="preserve">
+    <value>Pare o plugin ou altere o tipo de janela antes de fechar.</value>
+  </data>
+  <data name="Rtl_433_Panel___AGC_an_be_manually__off_" xml:space="preserve">
+    <value>-AGC: ligado (corresponde ao ganho automático com rtl433), pode ser desligado manualmente.</value>
+  </data>
+  <data name="Rtl_433_Panel___Check_frequency" xml:space="preserve">
+    <value>-Verificar frequência</value>
+  </data>
+  <data name="Rtl_433_Panel___Clear" xml:space="preserve">
+    <value>Limpar</value>
+  </data>
+  <data name="Rtl_433_Panel___RTL_off_if_good_signals_" xml:space="preserve">
+    <value>-RTL AGC: ligado (não o painel AGC), pode ser desligado se o sinal for bom.</value>
+  </data>
+  <data name="Rtl_433_Panel___Samp_quadrature_sampling" xml:space="preserve">
+    <value>-Modo de amostragem-&gt;amostragem em quadratura</value>
+  </data>
+  <data name="Rtl_433_Panel___Samps_FSK_or_f__433Mhz__" xml:space="preserve">
+    <value>-Taxa de amostragem-&gt;0,25 MSPS ou mais para certos dispositivos FSK ou f &gt; 433 MHz...</value>
+  </data>
+  <data name="Rtl_433_Panel__All_to" xml:space="preserve">
+    <value>Tudo para</value>
+  </data>
+  <data name="Rtl_433_Panel_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Rtl_433_Panel_clipboard" xml:space="preserve">
+    <value>Área de transferência</value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433___Ligne__" xml:space="preserve">
+    <value>Consola RTL_433--- Linha = </value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433__nbLigne_" xml:space="preserve">
+    <value>Consola RTL_433---nbLigne=</value>
+  </data>
+  <data name="Rtl_433_Panel_cu8_to_wav" xml:space="preserve">
+    <value>.cu8 para .wav</value>
+  </data>
+  <data name="Rtl_433_Panel_Disabled_plugin" xml:space="preserve">
+    <value>Plugin desativado</value>
+  </data>
+  <data name="Rtl_433_Panel_Display" xml:space="preserve">
+    <value>Exibir</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin" xml:space="preserve">
+    <value>Plugin ativado</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin_" xml:space="preserve">
+    <value>Plugin ativado (</value>
+  </data>
+  <data name="Rtl_433_Panel_Error_RetrieveVirtualItem_" xml:space="preserve">
+    <value>Erro fct(listViewConsole_RetrieveVirtualItem)</value>
+  </data>
+  <data name="Rtl_433_Panel_Free" xml:space="preserve">
+    <value>Livre</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency" xml:space="preserve">
+    <value>Frequência</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency_Hz_" xml:space="preserve">
+    <value>Frequência (Hz)</value>
+  </data>
+  <data name="Rtl_433_Panel_Graphiques" xml:space="preserve">
+    <value>Gráficos</value>
+  </data>
+  <data name="Rtl_433_Panel_Hide_select" xml:space="preserve">
+    <value>Ocultar seleção</value>
+  </data>
+  <data name="Rtl_433_Panel_if_necgin_maxLinesConsole_" xml:space="preserve">
+    <value>se necessário pode aumentá-lo em SDRSharp.config (chave RTL_433_plugin.maxLinesConsole)</value>
+  </data>
+  <data name="Rtl_433_Panel_If_Ora300Mhz_or_F_1000Mhz_" xml:space="preserve">
+    <value>Se Orange: F&lt;300 MHz ou F&gt;1000 MHz.</value>
+  </data>
+  <data name="Rtl_433_Panel_List_devices" xml:space="preserve">
+    <value>Lista de dispositivos</value>
+  </data>
+  <data name="Rtl_433_Panel_List_messages" xml:space="preserve">
+    <value>Lista de mensagens</value>
+  </data>
+  <data name="Rtl_433_Panel_Messages" xml:space="preserve">
+    <value>mensagens</value>
+  </data>
+  <data name="Rtl_433_Panel_No_samname__sample_rate_k_" xml:space="preserve">
+    <value>Nenhuma taxa de amostragem detetada no nome do ficheiro: _sample rate+k</value>
+  </data>
+  <data name="Rtl_433_Panel_ok_files" xml:space="preserve">
+    <value>ficheiros ok</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameers_configure_source" xml:space="preserve">
+    <value>Parâmetros configurar fonte</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameter" xml:space="preserve">
+    <value>Parâmetros</value>
+  </data>
+  <data name="Rtl_433_Panel_Red_if_not_if_source_file_" xml:space="preserve">
+    <value>Vermelho se ciclo &gt; 1000 ms, risco de perder mensagens (não se source=file)</value>
+  </data>
+  <data name="Rtl_433_Panel_Sample_Rate_s" xml:space="preserve">
+    <value>Taxa de amostragem</value>
+  </data>
+  <data name="Rtl_433_Panel_Select_to" xml:space="preserve">
+    <value>Selecionar até</value>
+  </data>
+  <data name="Rtl_433_Panel_Show_select" xml:space="preserve">
+    <value>Mostrar seleção</value>
+  </data>
+  <data name="Rtl_433_Panel_Start" xml:space="preserve">
+    <value>Lançar</value>
+  </data>
+  <data name="Rtl_433_Panel_Start_ill_the_devices_list" xml:space="preserve">
+    <value>Iniciar uma vez para preencher a lista de dispositivos</value>
+  </data>
+  <data name="Rtl_433_Panel_Stop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="Rtl_433_Panel_Time_display_" xml:space="preserve">
+    <value>Mostrar tempo:</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_cu8_to_wav" xml:space="preserve">
+    <value>Converter cu8 para wav</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_is_completed" xml:space="preserve">
+    <value>Tradução concluída</value>
+  </data>
+  <data name="Rtl_433_Panel_Translte_is_NOT_completed_" xml:space="preserve">
+    <value>Tradução NÃO concluída</value>
+  </data>
+  <data name="Rtl_433_Panel_Version_de_test" xml:space="preserve">
+    <value>Versão de teste</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait" xml:space="preserve">
+    <value>Aguardar</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait_Radio" xml:space="preserve">
+    <value>Aguardar Rádio</value>
+  </data>
+  <data name="Rtl_433_Panel_You_haided_in_the_console_" xml:space="preserve">
+    <value>Atingiu o número máximo de linhas na consola(</value>
+  </data>
+  <data name="Rtl_433_Plugin__Initalize_RTL_433_plugin" xml:space="preserve">
+    <value>Inicializar RTL_433_plugin</value>
+  </data>
+  <data name="Rtl_433_Plugin_Error_Initialize" xml:space="preserve">
+    <value>Erro na inicialização</value>
+  </data>
+  <data name="WavRecorder_Error" xml:space="preserve">
+    <value>Erro</value>
+  </data>
+  <data name="WavRecorder_information" xml:space="preserve">
+    <value>informação</value>
+  </data>
+  <data name="WavRecorder_No_record__all_values__0" xml:space="preserve">
+    <value>Sem gravação, todos os valores = 0</value>
+  </data>
+  <data name="WavRecorder_No_record_for_" xml:space="preserve">
+    <value>Sem gravação para:</value>
+  </data>
+</root>

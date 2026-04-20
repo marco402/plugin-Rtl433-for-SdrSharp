@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ClassFormDevicesList_import_devices_list" xml:space="preserve">
+    <value>デバイス一覧をインポートしますか？</value>
+  </data>
+  <data name="ClassFormDevicesList_Import_devices_list_1" xml:space="preserve">
+    <value>デバイス一覧をインポート</value>
+  </data>
+  <data name="ClassFormDevicesList_The_file_" xml:space="preserve">
+    <value>ファイル</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_folder_SDRSharp" xml:space="preserve">
+    <value>SDRSharp で Recordings フォルダーの作成に失敗</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_SDRSharp_folder" xml:space="preserve">
+    <value>SDRSharp フォルダーにあります</value>
+  </data>
+  <data name="ClassFunctionsVirtuaserializeText__File_" xml:space="preserve">
+    <value>項目のエクスポート中にエラー fct(serializeText)。ファイル:</value>
+  </data>
+  <data name="ClassInterfaceWithRt3_unknown_modulation" xml:space="preserve">
+    <value>不明な変調</value>
+  </data>
+  <data name="ClassInterfaceWithRtror_ptrInfosToPlugin" xml:space="preserve">
+    <value>ptrInfosToPlugin エラー</value>
+  </data>
+  <data name="ClassTitleBarre_AlwaysOnTop" xml:space="preserve">
+    <value>常にトップに</value>
+  </data>
+  <data name="ClassTitleBarre_Langue" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="ClassUtils_Error_create_folder_" xml:space="preserve">
+    <value>フォルダー作成エラー</value>
+  </data>
+  <data name="ClassUtils_Error_Initialize" xml:space="preserve">
+    <value>初期化エラー</value>
+  </data>
+  <data name="ClassUtils_genere_fi_test_wav_127_to_128" xml:space="preserve">
+    <value>テスト WAV ファイルを生成 -127 ～ 128</value>
+  </data>
+  <data name="ClassUtils_test" xml:space="preserve">
+    <value>テスト</value>
+  </data>
+  <data name="ClassVirtualListViews_received__{1}_{2}_" xml:space="preserve">
+    <value>{0}（受信メッセージ: {1}/{2}）</value>
+  </data>
+  <data name="FormDevices_Cancel_record" xml:space="preserve">
+    <value>録音をキャンセル</value>
+  </data>
+  <data name="FormDevices_Data_{0}" xml:space="preserve">
+    <value>データ {0}</value>
+  </data>
+  <data name="FormDevices_Error_fcRetrieveVirtualItem_" xml:space="preserve">
+    <value>エラー fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevices_Freeze_graphs" xml:space="preserve">
+    <value>グラフを固定</value>
+  </data>
+  <data name="FormDevices_Info" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="FormDevices_NB_messages__{0}" xml:space="preserve">
+    <value>メッセージ数: {0}</value>
+  </data>
+  <data name="FormDevices_NB_messages__0" xml:space="preserve">
+    <value>メッセージ数: 0</value>
+  </data>
+  <data name="FormDevices_No_data_for_the_graph" xml:space="preserve">
+    <value>グラフのデータがありません</value>
+  </data>
+  <data name="FormDevices_Period__0" xml:space="preserve">
+    <value>期間: 0</value>
+  </data>
+  <data name="FormDevices_Period_{0}s_" xml:space="preserve">
+    <value>期間: {0}s</value>
+  </data>
+  <data name="FormDevices_Period_max__0" xml:space="preserve">
+    <value>最大期間: 0</value>
+  </data>
+  <data name="FormDevices_Period_max_{0}s_" xml:space="preserve">
+    <value>最大期間: {0}s</value>
+  </data>
+  <data name="FormDevices_Record_dv_checkbox_on_panel_" xml:space="preserve">
+    <value>Wav データバッファを記録（パネルのチェックボックス）</value>
+  </data>
+  <data name="FormDevices_Refresh_data" xml:space="preserve">
+    <value>データを更新</value>
+  </data>
+  <data name="FormDevices_Save_only_once" xml:space="preserve">
+    <value>1 回だけ保存</value>
+  </data>
+  <data name="FormDevices_to_directory_Recordings" xml:space="preserve">
+    <value>Recordings フォルダーへ</value>
+  </data>
+  <data name="FormDevices_Use_mouse_wheel_for_zoom" xml:space="preserve">
+    <value>マウスホイールでズーム</value>
+  </data>
+  <data name="FormDevices_Wait_to_receive_new_data" xml:space="preserve">
+    <value>新しいデータを待っています</value>
+  </data>
+  <data name="FormDevices_You_can_Baseband_File_player" xml:space="preserve">
+    <value>SdrSharp Source=Baseband File player でステレオファイルを再生できます</value>
+  </data>
+  <data name="FormDevicesListMessa_Messages_received__" xml:space="preserve">
+    <value>(受信メッセージ:</value>
+  </data>
+  <data name="FormDevicesListMessadirectory_Recordings" xml:space="preserve">
+    <value>Recordings フォルダーへ</value>
+  </data>
+  <data name="FormDevicesListMessaeload_file_with_Calc" xml:space="preserve">
+    <value>Calc でファイルを再読み込みできます</value>
+  </data>
+  <data name="FormDevicesListMessaes_Export_data__txt_" xml:space="preserve">
+    <value>データをエクスポート (.txt)</value>
+  </data>
+  <data name="FormDevicesListMessaessages_received__0_" xml:space="preserve">
+    <value> (受信メッセージ: 0)</value>
+  </data>
+  <data name="FormDevicesListMessages_Export___" xml:space="preserve">
+    <value>エクスポート--&gt;</value>
+  </data>
+  <data name="FormDevicesListMessages_N__Mes_" xml:space="preserve">
+    <value>メッセージ番号</value>
+  </data>
+  <data name="FormDevicesListMessages_Record_data" xml:space="preserve">
+    <value>データを記録</value>
+  </data>
+  <data name="FormDevicesListMessaitle_window_date_txt" xml:space="preserve">
+    <value>ファイル名 = ウィンドウタイトル+日付.txt</value>
+  </data>
+  <data name="FormDevicesListMessaRetrieveVirtualItem_" xml:space="preserve">
+    <value>エラー fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevicesListMessas_Export_messages_OK" xml:space="preserve">
+    <value>メッセージのエクスポート OK</value>
+  </data>
+  <data name="FormListDevices_Close_form_list_devices_" xml:space="preserve">
+    <value>デバイス一覧ウィンドウを閉じる</value>
+  </data>
+  <data name="FormListDevices_Column_" xml:space="preserve">
+    <value>列:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__" xml:space="preserve">
+    <value>受信デバイス:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__0" xml:space="preserve">
+    <value>受信デバイス: 0</value>
+  </data>
+  <data name="FormListDevices_Do_yexport_devices_list_" xml:space="preserve">
+    <value>デバイス一覧をエクスポートしますか？(</value>
+  </data>
+  <data name="FormListDevices_empty" xml:space="preserve">
+    <value>空</value>
+  </data>
+  <data name="FormListDevices_ErroRetrieveVirtualItem_" xml:space="preserve">
+    <value>エラー fct(listDevices_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormListDevices_ErroSerializeText__File_" xml:space="preserve">
+    <value>デバイスのインポート中にエラー fct(deSerializeText)。ファイル:</value>
+  </data>
+  <data name="FormListDevices_Export_devices_list" xml:space="preserve">
+    <value>デバイス一覧をエクスポート</value>
+  </data>
+  <data name="FormListDevices_File_" xml:space="preserve">
+    <value>ファイル:</value>
+  </data>
+  <data name="FormListDevices_Import_devices_File" xml:space="preserve">
+    <value>デバイスファイルをインポート</value>
+  </data>
+  <data name="FormListDevices_Stopm_type_before_close_" xml:space="preserve">
+    <value>プラグインを停止するか、閉じる前にウィンドウタイプを変更してください。</value>
+  </data>
+  <data name="Rtl_433_Panel___AGC_an_be_manually__off_" xml:space="preserve">
+    <value>-AGC：オン（rtl433 の自動ゲインに相当）、手動でオフ可能</value>
+  </data>
+  <data name="Rtl_433_Panel___Check_frequency" xml:space="preserve">
+    <value>-周波数を確認</value>
+  </data>
+  <data name="Rtl_433_Panel___Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="Rtl_433_Panel___RTL_off_if_good_signals_" xml:space="preserve">
+    <value>-RTL AGC：オン（AGC パネルではない）、良好な信号ならオフ可能</value>
+  </data>
+  <data name="Rtl_433_Panel___Samp_quadrature_sampling" xml:space="preserve">
+    <value>-サンプリングモード→直交サンプリング</value>
+  </data>
+  <data name="Rtl_433_Panel___Samps_FSK_or_f__433Mhz__" xml:space="preserve">
+    <value>-サンプルレート→0.25MSPS 以上（特定の FSK デバイスまたは f &gt; 433MHz 用）</value>
+  </data>
+  <data name="Rtl_433_Panel__All_to" xml:space="preserve">
+    <value>すべて→</value>
+  </data>
+  <data name="Rtl_433_Panel_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Rtl_433_Panel_clipboard" xml:space="preserve">
+    <value>クリップボード</value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433___Ligne__" xml:space="preserve">
+    <value>RTL_433 コンソール--- 行 = </value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433__nbLigne_" xml:space="preserve">
+    <value>RTL_433 コンソール---nbLigne=</value>
+  </data>
+  <data name="Rtl_433_Panel_cu8_to_wav" xml:space="preserve">
+    <value>.cu8 を .wav に</value>
+  </data>
+  <data name="Rtl_433_Panel_Disabled_plugin" xml:space="preserve">
+    <value>プラグイン無効</value>
+  </data>
+  <data name="Rtl_433_Panel_Display" xml:space="preserve">
+    <value>表示</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin" xml:space="preserve">
+    <value>プラグイン有効</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin_" xml:space="preserve">
+    <value>プラグイン有効(</value>
+  </data>
+  <data name="Rtl_433_Panel_Error_RetrieveVirtualItem_" xml:space="preserve">
+    <value>エラー fct(listViewConsole_RetrieveVirtualItem)</value>
+  </data>
+  <data name="Rtl_433_Panel_Free" xml:space="preserve">
+    <value>空き</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency" xml:space="preserve">
+    <value>周波数</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency_Hz_" xml:space="preserve">
+    <value>周波数 (Hz)</value>
+  </data>
+  <data name="Rtl_433_Panel_Graphiques" xml:space="preserve">
+    <value>グラフ</value>
+  </data>
+  <data name="Rtl_433_Panel_Hide_select" xml:space="preserve">
+    <value>選択を非表示</value>
+  </data>
+  <data name="Rtl_433_Panel_if_necgin_maxLinesConsole_" xml:space="preserve">
+    <value>必要に応じて SDRSharp.config（キー RTL_433_plugin.maxLinesConsole）で増やすことができます</value>
+  </data>
+  <data name="Rtl_433_Panel_If_Ora300Mhz_or_F_1000Mhz_" xml:space="preserve">
+    <value>Orange の場合: F&lt;300MHz または F&gt;1000MHz</value>
+  </data>
+  <data name="Rtl_433_Panel_List_devices" xml:space="preserve">
+    <value>デバイス一覧</value>
+  </data>
+  <data name="Rtl_433_Panel_List_messages" xml:space="preserve">
+    <value>メッセージ一覧</value>
+  </data>
+  <data name="Rtl_433_Panel_Messages" xml:space="preserve">
+    <value>メッセージ</value>
+  </data>
+  <data name="Rtl_433_Panel_No_samname__sample_rate_k_" xml:space="preserve">
+    <value>ファイル名にサンプルレートが見つかりません: _sample rate+k</value>
+  </data>
+  <data name="Rtl_433_Panel_ok_files" xml:space="preserve">
+    <value>ファイル OK</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameers_configure_source" xml:space="preserve">
+    <value>ソース設定パラメータ</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameter" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="Rtl_433_Panel_Red_if_not_if_source_file_" xml:space="preserve">
+    <value>サイクル &gt; 1000ms の場合は赤、メッセージ喪失の可能性（source=file の場合を除く）</value>
+  </data>
+  <data name="Rtl_433_Panel_Sample_Rate_s" xml:space="preserve">
+    <value>サンプリングレート</value>
+  </data>
+  <data name="Rtl_433_Panel_Select_to" xml:space="preserve">
+    <value>選択範囲の終点</value>
+  </data>
+  <data name="Rtl_433_Panel_Show_select" xml:space="preserve">
+    <value>選択を表示</value>
+  </data>
+  <data name="Rtl_433_Panel_Start" xml:space="preserve">
+    <value>起動</value>
+  </data>
+  <data name="Rtl_433_Panel_Start_ill_the_devices_list" xml:space="preserve">
+    <value>一度開始してデバイス一覧を取得</value>
+  </data>
+  <data name="Rtl_433_Panel_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Rtl_433_Panel_Time_display_" xml:space="preserve">
+    <value>時間表示:</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_cu8_to_wav" xml:space="preserve">
+    <value>cu8 を wav に変換</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_is_completed" xml:space="preserve">
+    <value>翻訳完了</value>
+  </data>
+  <data name="Rtl_433_Panel_Translte_is_NOT_completed_" xml:space="preserve">
+    <value>翻訳は完了していません</value>
+  </data>
+  <data name="Rtl_433_Panel_Version_de_test" xml:space="preserve">
+    <value>テストバージョン</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait" xml:space="preserve">
+    <value>待機</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait_Radio" xml:space="preserve">
+    <value>ラジオ待機</value>
+  </data>
+  <data name="Rtl_433_Panel_You_haided_in_the_console_" xml:space="preserve">
+    <value>コンソールの最大行数に達しました(</value>
+  </data>
+  <data name="Rtl_433_Plugin__Initalize_RTL_433_plugin" xml:space="preserve">
+    <value>RTL_433_plugin を初期化</value>
+  </data>
+  <data name="Rtl_433_Plugin_Error_Initialize" xml:space="preserve">
+    <value>初期化エラー</value>
+  </data>
+  <data name="WavRecorder_Error" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="WavRecorder_information" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="WavRecorder_No_record__all_values__0" xml:space="preserve">
+    <value>記録なし、すべての値 = 0</value>
+  </data>
+  <data name="WavRecorder_No_record_for_" xml:space="preserve">
+    <value>記録なし:</value>
+  </data>
+</root>

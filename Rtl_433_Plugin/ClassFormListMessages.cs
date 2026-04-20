@@ -27,9 +27,9 @@ namespace SDRSharp.Rtl_433
         {
   
             if (!listFormDeviceListMessages.ContainsKey(deviceName))
-            {
-                if (listFormDeviceListMessages.Count >= ClassConst.NBMAXWindows) //plantage a 384 fenêtres graph pb createHandle limit système
-                    return;
+            {
+                if (listFormDeviceListMessages.Count >= ClassConst.NBMAXWindows) //plantage a 384 fenêtres graph pb createHandle limit système
+                    return;
                 listFormDeviceListMessages.Add(deviceName, new FormDevicesListMessages(this, deviceName)); //+2 for debug
                 listFormDeviceListMessages[deviceName].Text = deviceName;
                 listFormDeviceListMessages[deviceName].Visible = true;

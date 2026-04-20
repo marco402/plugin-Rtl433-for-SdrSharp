@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="ClassFormDevicesList_import_devices_list" xml:space="preserve">
+    <value>Chcete importovať zoznam zariadení?</value>
+  </data>
+  <data name="ClassFormDevicesList_Import_devices_list_1" xml:space="preserve">
+    <value>Importovať zoznam zariadení</value>
+  </data>
+  <data name="ClassFormDevicesList_The_file_" xml:space="preserve">
+    <value>Súbor</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_folder_SDRSharp" xml:space="preserve">
+    <value>Chyba pri vytváraní priečinka Recordings v SDRSharp</value>
+  </data>
+  <data name="ClassFormDevicesLists_to_SDRSharp_folder" xml:space="preserve">
+    <value>je v priečinku SDRSharp</value>
+  </data>
+  <data name="ClassFunctionsVirtuaserializeText__File_" xml:space="preserve">
+    <value>Chyba exportu položky fct(serializeText).Súbor:</value>
+  </data>
+  <data name="ClassInterfaceWithRt3_unknown_modulation" xml:space="preserve">
+    <value>neznáma modulácia</value>
+  </data>
+  <data name="ClassInterfaceWithRtror_ptrInfosToPlugin" xml:space="preserve">
+    <value>Chyba ptrInfosToPlugin</value>
+  </data>
+  <data name="ClassTitleBarre_AlwaysOnTop" xml:space="preserve">
+    <value>Vždy navrchu</value>
+  </data>
+  <data name="ClassTitleBarre_Langue" xml:space="preserve">
+    <value>Jazyk</value>
+  </data>
+  <data name="ClassUtils_Error_create_folder_" xml:space="preserve">
+    <value>Chyba pri vytváraní priečinka</value>
+  </data>
+  <data name="ClassUtils_Error_Initialize" xml:space="preserve">
+    <value>Chyba inicializácie</value>
+  </data>
+  <data name="ClassUtils_genere_fi_test_wav_127_to_128" xml:space="preserve">
+    <value>generuje testovací wav súbor -127 až 128</value>
+  </data>
+  <data name="ClassUtils_test" xml:space="preserve">
+    <value>test</value>
+  </data>
+  <data name="ClassVirtualListViews_received__{1}_{2}_" xml:space="preserve">
+    <value>{0} (Prijaté správy: {1}/{2})</value>
+  </data>
+  <data name="FormDevices_Cancel_record" xml:space="preserve">
+    <value>Zrušiť záznam</value>
+  </data>
+  <data name="FormDevices_Data_{0}" xml:space="preserve">
+    <value>Dáta {0}</value>
+  </data>
+  <data name="FormDevices_Error_fcRetrieveVirtualItem_" xml:space="preserve">
+    <value>Chyba fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevices_Freeze_graphs" xml:space="preserve">
+    <value>Zmraziť grafy</value>
+  </data>
+  <data name="FormDevices_Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="FormDevices_NB_messages__{0}" xml:space="preserve">
+    <value>Počet správ: {0}</value>
+  </data>
+  <data name="FormDevices_NB_messages__0" xml:space="preserve">
+    <value>Počet správ: 0</value>
+  </data>
+  <data name="FormDevices_No_data_for_the_graph" xml:space="preserve">
+    <value>Žiadne údaje pre graf</value>
+  </data>
+  <data name="FormDevices_Period__0" xml:space="preserve">
+    <value>Perióda: 0</value>
+  </data>
+  <data name="FormDevices_Period_{0}s_" xml:space="preserve">
+    <value>Perióda: {0}s.</value>
+  </data>
+  <data name="FormDevices_Period_max__0" xml:space="preserve">
+    <value>Max. perióda: 0</value>
+  </data>
+  <data name="FormDevices_Period_max_{0}s_" xml:space="preserve">
+    <value>Max. perióda: {0}s.</value>
+  </data>
+  <data name="FormDevices_Record_dv_checkbox_on_panel_" xml:space="preserve">
+    <value>Zaznamenať Wav dátový buffer (zaškrtávacie políčko v paneli)</value>
+  </data>
+  <data name="FormDevices_Refresh_data" xml:space="preserve">
+    <value>Aktualizovať údaje</value>
+  </data>
+  <data name="FormDevices_Save_only_once" xml:space="preserve">
+    <value>Uložiť iba raz</value>
+  </data>
+  <data name="FormDevices_to_directory_Recordings" xml:space="preserve">
+    <value>do priečinka Recordings</value>
+  </data>
+  <data name="FormDevices_Use_mouse_wheel_for_zoom" xml:space="preserve">
+    <value>Použiť koliesko myši na priblíženie</value>
+  </data>
+  <data name="FormDevices_Wait_to_receive_new_data" xml:space="preserve">
+    <value>Čakanie na nové údaje</value>
+  </data>
+  <data name="FormDevices_You_can_Baseband_File_player" xml:space="preserve">
+    <value>Môžete prehrať stereo súbor pomocou SdrSharp Source=Baseband File player</value>
+  </data>
+  <data name="FormDevicesListMessa_Messages_received__" xml:space="preserve">
+    <value>(Prijaté správy:</value>
+  </data>
+  <data name="FormDevicesListMessadirectory_Recordings" xml:space="preserve">
+    <value>do priečinka Recordings</value>
+  </data>
+  <data name="FormDevicesListMessaeload_file_with_Calc" xml:space="preserve">
+    <value>Môžete znovu načítať súbor pomocou Calc</value>
+  </data>
+  <data name="FormDevicesListMessaes_Export_data__txt_" xml:space="preserve">
+    <value>Exportovať údaje (.txt)</value>
+  </data>
+  <data name="FormDevicesListMessaessages_received__0_" xml:space="preserve">
+    <value> (Prijaté správy: 0)</value>
+  </data>
+  <data name="FormDevicesListMessages_Export___" xml:space="preserve">
+    <value>Exportovať--&gt;</value>
+  </data>
+  <data name="FormDevicesListMessages_N__Mes_" xml:space="preserve">
+    <value>Č. správy</value>
+  </data>
+  <data name="FormDevicesListMessages_Record_data" xml:space="preserve">
+    <value>Zaznamenať údaje</value>
+  </data>
+  <data name="FormDevicesListMessaitle_window_date_txt" xml:space="preserve">
+    <value>názov súboru = názov okna+dátum.txt</value>
+  </data>
+  <data name="FormDevicesListMessaRetrieveVirtualItem_" xml:space="preserve">
+    <value>Chyba fct(listViewListMessages_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormDevicesListMessas_Export_messages_OK" xml:space="preserve">
+    <value>Export správ OK</value>
+  </data>
+  <data name="FormListDevices_Close_form_list_devices_" xml:space="preserve">
+    <value>Zavrieť okno zoznamu zariadení</value>
+  </data>
+  <data name="FormListDevices_Column_" xml:space="preserve">
+    <value>Stĺpec:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__" xml:space="preserve">
+    <value>Prijaté zariadenia:</value>
+  </data>
+  <data name="FormListDevices_Devices_received__0" xml:space="preserve">
+    <value>Prijaté zariadenia: 0</value>
+  </data>
+  <data name="FormListDevices_Do_yexport_devices_list_" xml:space="preserve">
+    <value>Chcete exportovať zoznam zariadení?(</value>
+  </data>
+  <data name="FormListDevices_empty" xml:space="preserve">
+    <value>prázdny</value>
+  </data>
+  <data name="FormListDevices_ErroRetrieveVirtualItem_" xml:space="preserve">
+    <value>Chyba fct(listDevices_RetrieveVirtualItem)</value>
+  </data>
+  <data name="FormListDevices_ErroSerializeText__File_" xml:space="preserve">
+    <value>Chyba importu zariadení fct(deSerializeText).Súbor:</value>
+  </data>
+  <data name="FormListDevices_Export_devices_list" xml:space="preserve">
+    <value>Exportovať zoznam zariadení</value>
+  </data>
+  <data name="FormListDevices_File_" xml:space="preserve">
+    <value>Súbor:</value>
+  </data>
+  <data name="FormListDevices_Import_devices_File" xml:space="preserve">
+    <value>Importovať súbor zariadení</value>
+  </data>
+  <data name="FormListDevices_Stopm_type_before_close_" xml:space="preserve">
+    <value>Zastavte plugin alebo zmeňte typ okna pred zatvorením.</value>
+  </data>
+  <data name="Rtl_433_Panel___AGC_an_be_manually__off_" xml:space="preserve">
+    <value>-AGC: zapnuté (zodpovedá automatickému zosilneniu s rtl433), možno vypnúť ručne.</value>
+  </data>
+  <data name="Rtl_433_Panel___Check_frequency" xml:space="preserve">
+    <value>-Skontrolovať frekvenciu</value>
+  </data>
+  <data name="Rtl_433_Panel___Clear" xml:space="preserve">
+    <value>Vymazať</value>
+  </data>
+  <data name="Rtl_433_Panel___RTL_off_if_good_signals_" xml:space="preserve">
+    <value>-RTL AGC: zapnuté (nie panel AGC), možno vypnúť pri dobrom signáli.</value>
+  </data>
+  <data name="Rtl_433_Panel___Samp_quadrature_sampling" xml:space="preserve">
+    <value>-Režim vzorkovania-&gt;kvadratúrne</value>
+  </data>
+  <data name="Rtl_433_Panel___Samps_FSK_or_f__433Mhz__" xml:space="preserve">
+    <value>-Vzorkovacia frekvencia-&gt;0,25 MSPS alebo viac pre niektoré FSK zariadenia alebo f &gt; 433 MHz...</value>
+  </data>
+  <data name="Rtl_433_Panel__All_to" xml:space="preserve">
+    <value>Všetko do</value>
+  </data>
+  <data name="Rtl_433_Panel_Cancel" xml:space="preserve">
+    <value>Zrušiť</value>
+  </data>
+  <data name="Rtl_433_Panel_clipboard" xml:space="preserve">
+    <value>Schránka</value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433___Ligne__" xml:space="preserve">
+    <value>Konzola RTL_433--- Riadok = </value>
+  </data>
+  <data name="Rtl_433_Panel_Console_RTL_433__nbLigne_" xml:space="preserve">
+    <value>Konzola RTL_433---nbLigne=</value>
+  </data>
+  <data name="Rtl_433_Panel_cu8_to_wav" xml:space="preserve">
+    <value>.cu8 do .wav</value>
+  </data>
+  <data name="Rtl_433_Panel_Disabled_plugin" xml:space="preserve">
+    <value>Plugin zakázaný</value>
+  </data>
+  <data name="Rtl_433_Panel_Display" xml:space="preserve">
+    <value>Zobraziť</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin" xml:space="preserve">
+    <value>Plugin povolený</value>
+  </data>
+  <data name="Rtl_433_Panel_Enabled_plugin_" xml:space="preserve">
+    <value>Plugin povolený (</value>
+  </data>
+  <data name="Rtl_433_Panel_Error_RetrieveVirtualItem_" xml:space="preserve">
+    <value>Chyba fct(listViewConsole_RetrieveVirtualItem)</value>
+  </data>
+  <data name="Rtl_433_Panel_Free" xml:space="preserve">
+    <value>Voľné</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency" xml:space="preserve">
+    <value>Frekvencia</value>
+  </data>
+  <data name="Rtl_433_Panel_Frequency_Hz_" xml:space="preserve">
+    <value>Frekvencia (Hz)</value>
+  </data>
+  <data name="Rtl_433_Panel_Graphiques" xml:space="preserve">
+    <value>Grafy</value>
+  </data>
+  <data name="Rtl_433_Panel_Hide_select" xml:space="preserve">
+    <value>Skryť výber</value>
+  </data>
+  <data name="Rtl_433_Panel_if_necgin_maxLinesConsole_" xml:space="preserve">
+    <value>v prípade potreby to môžete zvýšiť v SDRSharp.config (kľúč RTL_433_plugin.maxLinesConsole)</value>
+  </data>
+  <data name="Rtl_433_Panel_If_Ora300Mhz_or_F_1000Mhz_" xml:space="preserve">
+    <value>Ak Orange: F&lt;300 MHz alebo F&gt;1000 MHz.</value>
+  </data>
+  <data name="Rtl_433_Panel_List_devices" xml:space="preserve">
+    <value>Zoznam zariadení</value>
+  </data>
+  <data name="Rtl_433_Panel_List_messages" xml:space="preserve">
+    <value>Zoznam správ</value>
+  </data>
+  <data name="Rtl_433_Panel_Messages" xml:space="preserve">
+    <value>správ</value>
+  </data>
+  <data name="Rtl_433_Panel_No_samname__sample_rate_k_" xml:space="preserve">
+    <value>Nebola zistená vzorkovacia frekvencia v názve súboru: _sample rate+k</value>
+  </data>
+  <data name="Rtl_433_Panel_ok_files" xml:space="preserve">
+    <value>súbory ok</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameers_configure_source" xml:space="preserve">
+    <value>Parametre konfigurácie zdroja</value>
+  </data>
+  <data name="Rtl_433_Panel_Parameter" xml:space="preserve">
+    <value>paramétereket</value>
+  </data>
+  <data name="Rtl_433_Panel_Red_if_not_if_source_file_" xml:space="preserve">
+    <value>Červené ak cyklus &gt; 1000 ms, riziko straty správ (nie ak zdroj=súbor)</value>
+  </data>
+  <data name="Rtl_433_Panel_Sample_Rate_s" xml:space="preserve">
+    <value>Vzorkovacia frekvencia</value>
+  </data>
+  <data name="Rtl_433_Panel_Select_to" xml:space="preserve">
+    <value>Vybrať do</value>
+  </data>
+  <data name="Rtl_433_Panel_Show_select" xml:space="preserve">
+    <value>Zobraziť výber</value>
+  </data>
+  <data name="Rtl_433_Panel_Start" xml:space="preserve">
+    <value>Spustiť</value>
+  </data>
+  <data name="Rtl_433_Panel_Start_ill_the_devices_list" xml:space="preserve">
+    <value>Spustite raz na naplnenie zoznamu zariadení</value>
+  </data>
+  <data name="Rtl_433_Panel_Stop" xml:space="preserve">
+    <value>Zastaviť</value>
+  </data>
+  <data name="Rtl_433_Panel_Time_display_" xml:space="preserve">
+    <value>Zobrazenie času:</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_cu8_to_wav" xml:space="preserve">
+    <value>Previesť cu8 na wav</value>
+  </data>
+  <data name="Rtl_433_Panel_Translate_is_completed" xml:space="preserve">
+    <value>Preklad dokončený</value>
+  </data>
+  <data name="Rtl_433_Panel_Translte_is_NOT_completed_" xml:space="preserve">
+    <value>Preklad NIE je dokončený</value>
+  </data>
+  <data name="Rtl_433_Panel_Version_de_test" xml:space="preserve">
+    <value>Testovacia verzia</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait" xml:space="preserve">
+    <value>Čakať</value>
+  </data>
+  <data name="Rtl_433_Panel_Wait_Radio" xml:space="preserve">
+    <value>Čakať na rádio</value>
+  </data>
+  <data name="Rtl_433_Panel_You_haided_in_the_console_" xml:space="preserve">
+    <value>Dosiahli ste maximálny počet riadkov v konzole(</value>
+  </data>
+  <data name="Rtl_433_Plugin__Initalize_RTL_433_plugin" xml:space="preserve">
+    <value>Inicializovať RTL_433_plugin</value>
+  </data>
+  <data name="Rtl_433_Plugin_Error_Initialize" xml:space="preserve">
+    <value>Chyba inicializácie</value>
+  </data>
+  <data name="WavRecorder_Error" xml:space="preserve">
+    <value>Chyba</value>
+  </data>
+  <data name="WavRecorder_information" xml:space="preserve">
+    <value>informácia</value>
+  </data>
+  <data name="WavRecorder_No_record__all_values__0" xml:space="preserve">
+    <value>Žiadny záznam, všetky hodnoty = 0</value>
+  </data>
+  <data name="WavRecorder_No_record_for_" xml:space="preserve">
+    <value>Žiadny záznam pre:</value>
+  </data>
+</root>

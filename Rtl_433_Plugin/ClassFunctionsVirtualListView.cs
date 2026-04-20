@@ -1,4 +1,4 @@
-﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+/* Written by Marc Prieur (marco40_github@sfr.fr)
                          ClassFunctionsVirtualListView.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -211,7 +211,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error export item fct(serializeText).File:" + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, LanguageManager.GetString("ClassFunctionsVirtuaserializeText__File_") + fileName.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -292,7 +292,7 @@ namespace SDRSharp.Rtl_433
                 " in h",
                 " mm h",
                 " in/h",
-                " mm /h",
+                " mm/h",
 
                 " inHg",
                 " hpa",

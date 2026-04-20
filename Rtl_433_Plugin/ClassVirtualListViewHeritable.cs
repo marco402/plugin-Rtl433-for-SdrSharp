@@ -1,4 +1,4 @@
-﻿#if ABSTRACTVIRTUALLISTVIEW
+#if ABSTRACTVIRTUALLISTVIEW
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -86,7 +86,7 @@ namespace SDRSharp.Rtl_433
 
         protected void UpdateTitle()
         {
-            this.Text = $"{NameForm} (Messages received : {nbMessages}/{maxMessages})";
+            this.Text = LanguageManager.GetString("ClassVirtualListViews_received__{1}_{2}_",NameForm,nbMessages,maxMessages);
         }
 
         public void AddMessage(Dictionary<string, string> data)

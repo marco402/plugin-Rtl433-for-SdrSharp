@@ -136,12 +136,12 @@ namespace SDRSharp.Rtl_433
         /// </summary>
         internal void SetSourceName()
         {
-            string file = "\n";
+            string file =  ClassConst.CrLf ;
             sourceIsFile = false;
             if(control.Source==null)  //old version
             {
                 sourceIsFile = control.SourceIsWaveFile;
-                file = control.SourceName + "\n";
+                file = control.SourceName + ClassConst.CrLf;
             }
             else if (control.Source.ToString().Contains("WAVEFileIO") && control.Source is IFrontendController)
             {
@@ -532,5 +532,4 @@ namespace SDRSharp.Rtl_433
 #endregion
     }
 }
-
 

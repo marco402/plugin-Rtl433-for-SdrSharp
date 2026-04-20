@@ -1,7 +1,11 @@
 #projet plugin rtl_433 for SDRSharp C#
 .*
 .vs/**
+Rtl_433_Plugin/bin/**
+Rtl_433_Plugin/obj/**
 rtl_433_dll/**
+debug_V1632/**
+Debug_x64/**
 GraphDisplay/**
 rtl_433_dll/**
 libusb/**

@@ -1,4 +1,4 @@
-﻿
+
 /* Written by Marc Prieur (marco40_github@sfr.fr)
                                 FormDevices.cs 
                             project Rtl_433_Plugin 
@@ -113,10 +113,11 @@ namespace SDRSharp.Rtl_433
             // -------------------------------
             //  toolStripStatusLabelPeriodeCurrent
             // -------------------------------
-            toolStripStatusLabelPeriodeCurrent.Text = "Period: 0";
-            toolStripStatusLabelPeriodeMax.Text = "Period max: 0";
-            toolStripStatusLabelNbMessages.Text = "NB messages: 0";
-
+            toolStripStatusLabelPeriodeCurrent.Text = LanguageManager.GetString("FormDevices_Period__0");
+            toolStripStatusLabelPeriodeMax.Text = LanguageManager.GetString("FormDevices_Period_max__0");
+            toolStripStatusLabelNbMessages.Text = LanguageManager.GetString("FormDevices_NB_messages__0");
+            toolStripSplitLabelRecordOneShoot.Text = LanguageManager.GetString("FormDevices_Save_only_once");
+            toolStripStatusLabelFreezeData.Text = LanguageManager.GetString("FormDevices_Freeze_graphs");
             // -------------------------------
             //  toolStripStatusLabelPeriodeCurrent
             // -------------------------------
@@ -127,9 +128,9 @@ namespace SDRSharp.Rtl_433
             // -------------------------------
             //  toolStripSplitLabelRecordOneShoot
             // -------------------------------
-            toolStripSplitLabelRecordOneShoot.ToolTipText = "Record data buffer Wav (checkbox on panel) \n" +
-                " to directory Recordings \n" +
-                " You can replay Stereo file with SdrSharp Source=Baseband File player\n";
+            toolStripSplitLabelRecordOneShoot.ToolTipText = LanguageManager.GetString("FormDevices_Record_dv_checkbox_on_panel_") + ClassConst.CrLf +
+                LanguageManager.GetString("FormDevices_to_directory_Recordings") + ClassConst.CrLf +
+                LanguageManager.GetString("FormDevices_You_can_Baseband_File_player") + ClassConst.CrLf;
 
             // -------------------------------
             //  memo contexte
@@ -146,6 +147,9 @@ namespace SDRSharp.Rtl_433
             //  plotterDisplayExDevices
             // -------------------------------
             plotterDisplayExDevices.SetAmbiantProperty(this.BackColor, this.ForeColor, this.Font);
+            List<string> listOfString = new List<string> {LanguageManager.GetString("FormDevices_Use_mouse_wheel_for_zoom")};
+            plotterDisplayExDevices.SetTextFctLangage(listOfString);
+
             // -------------------------------
             //  LIST VIEW MESSAGES
             // -------------------------------
@@ -165,7 +169,7 @@ namespace SDRSharp.Rtl_433
             //row 2 messages
             //sow 3 statusStripDevices
             InitLayout(
-            (plotterDisplayExDevices, SizeType.Percent, 65f, $"No data for the graph"),
+            (plotterDisplayExDevices, SizeType.Percent, 65f, LanguageManager.GetString("FormDevices_No_data_for_the_graph")),
             (listViewListMessages, SizeType.Percent, 35f, null),
             (statusStripDevices, SizeType.Absolute, 20f, null)
             );
@@ -184,7 +188,7 @@ namespace SDRSharp.Rtl_433
             labelWaitMessage.BackColor = this.BackColor;
             labelWaitMessage.TextAlign = ContentAlignment.MiddleCenter;
             labelWaitMessage.ForeColor = this.ForeColor;
-            labelWaitMessage.Text = $"Wait to receive new data \n ";
+            labelWaitMessage.Text = LanguageManager.GetString("FormDevices_Wait_to_receive_new_data") + ClassConst.CrLf;
         }
         private Boolean closeByProgram = false;
         internal void CloseByProgram()
@@ -354,7 +358,7 @@ namespace SDRSharp.Rtl_433
                 activColumn = 1;
             nbMessages++;
             base.TitleText = this.Text;
-            toolStripStatusLabelNbMessages.Text = $"NB messages: {nbMessages.ToString()}";
+            toolStripStatusLabelNbMessages.Text = LanguageManager.GetString("FormDevices_NB_messages__{0}",nbMessages.ToString());
 
         }
         private void SetInfoDevicePrivate(Dictionary<String, String> listData)
@@ -365,10 +369,10 @@ namespace SDRSharp.Rtl_433
 
             //**********************add column***********************************
             //change listViewDevices.HeaderStyle = ColumnHeaderStyle.None; for display column name
-            ClassFunctionsVirtualListView.AddOneColumnDevices("Info", cacheListColumns, listViewListMessages, maxColumns);
+            ClassFunctionsVirtualListView.AddOneColumnDevices(LanguageManager.GetString("FormDevices_Info"), cacheListColumns, listViewListMessages, maxColumns);
             //***********************add other column if necessary*************************************
             for (Int32 i = 1; i < maxColumns; i++)
-                ClassFunctionsVirtualListView.AddOneColumnDevices($"Data {i}", cacheListColumns, listViewListMessages, maxColumns);
+                ClassFunctionsVirtualListView.AddOneColumnDevices(LanguageManager.GetString("FormDevices_Data_{0}",i), cacheListColumns, listViewListMessages, maxColumns);
 
             Int32 colWidth = 0;
             foreach (KeyValuePair<string, string> _data in listData)
@@ -383,8 +387,8 @@ namespace SDRSharp.Rtl_433
                             Int64 dtTime = (currentTime - memoTime);
                             if (dtTime > memoTimeMax)
                                 memoTimeMax = dtTime;
-                            toolStripStatusLabelPeriodeCurrent.Text = $"Period:{dtTime.ToString()}s.";
-                            toolStripStatusLabelPeriodeMax.Text = $"Period max:{memoTimeMax.ToString()}s.";
+                            toolStripStatusLabelPeriodeCurrent.Text = LanguageManager.GetString("FormDevices_Period_{0}s_",dtTime.ToString());
+                            toolStripStatusLabelPeriodeMax.Text = LanguageManager.GetString("FormDevices_Period_max_{0}s_",memoTimeMax.ToString());
                         }
                         memoTime = currentTime;
                     }
@@ -443,7 +447,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)");
+                Debug.WriteLine(ex.Message, LanguageManager.GetString("FormDevices_Error_fcRetrieveVirtualItem_"));
             }
         }
         //private Boolean _displayGraph = false;
@@ -495,7 +499,7 @@ namespace SDRSharp.Rtl_433
                 {
                     toolStripSplitLabelRecordOneShoot.BackColor = Color.Green;
                     toolStripSplitLabelRecordOneShoot.ForeColor = Color.White;
-                    toolStripSplitLabelRecordOneShoot.Text = "Cancel record";
+                    toolStripSplitLabelRecordOneShoot.Text = LanguageManager.GetString("FormDevices_Cancel_record");
                 }
             }
             this.ResumeLayout(true);
@@ -507,7 +511,7 @@ namespace SDRSharp.Rtl_433
             {
                 toolStripStatusLabelFreezeData.BackColor = Color.Green;
                 toolStripStatusLabelFreezeData.ForeColor = Color.White;
-                toolStripStatusLabelFreezeData.Text = "Refresh data";
+                toolStripStatusLabelFreezeData.Text = LanguageManager.GetString("FormDevices_Refresh_data");
                 _dataFrozen = true;
             }
             else

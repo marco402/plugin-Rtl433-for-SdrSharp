@@ -1,0 +1,10 @@
+bin
+obj
+Properties
+Resources
+.git
+.vs
+packages
+Backup
+Tools
+references

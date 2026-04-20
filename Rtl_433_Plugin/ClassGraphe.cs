@@ -282,7 +282,7 @@ namespace SDRSharp.Rtl_433
                         {
 #if DEBUG
                             if (ptrMemoDataForRs433 != struct_demod_samp_grab.sg_index)
-                                panelRtl_433.SetMessage("ptrMemoDataForRs433 != struct_demod_samp_grab.sg_index \n");
+                                panelRtl_433.SetMessage("ptrMemoDataForRs433 != struct_demod_samp_grab.sg_index" + ClassConst.separator);
 #endif
                             if (struct_demod_samp_grab.sg_size > 0)
                             {

@@ -1,4 +1,4 @@
-﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 FormDevicesListMessages.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -64,10 +64,10 @@ namespace SDRSharp.Rtl_433
             cacheListMessages = new ListViewItem[this.maxMessages];
             cacheListColumns = new Dictionary<String, Int32>
             {
-                { "N° Mes.", 1 }
+                { LanguageManager.GetString("FormDevicesListMessages_N__Mes_"), 1 }
             };
             listViewListMessages.Columns.Add("");
-            listViewListMessages.Columns[0].Text = "N° Mes.";
+            listViewListMessages.Columns[0].Text = LanguageManager.GetString("FormDevicesListMessages_N__Mes_");
             listViewListMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListViewListMessages_RetrieveVirtualItem);
             typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, listViewListMessages, new object[] { true });
             // -------------------------------
@@ -85,12 +85,12 @@ namespace SDRSharp.Rtl_433
 
             NameForm = name;
             PathAndNameFile = ClassUtils.GetPathAndNameFileDateAndTxt(NameForm);
-            base.TitleText = name + " (Messages received : 0)";
-            toolStripStatusLabelExport.ToolTipText = "Record data  \n" +
-            " to directory Recordings \n" +
-            " You can reload file with Calc\n" +
-            " name file = title window+date.txt";
-
+            base.TitleText = name + LanguageManager.GetString("FormDevicesListMessaessages_received__0_");
+            toolStripStatusLabelExport.ToolTipText = LanguageManager.GetString("FormDevicesListMessages_Record_data") + ClassConst.CrLf +
+            LanguageManager.GetString("FormDevicesListMessadirectory_Recordings") + ClassConst.CrLf +
+            LanguageManager.GetString("FormDevicesListMessaeload_file_with_Calc") + ClassConst.CrLf +
+            LanguageManager.GetString("FormDevicesListMessaitle_window_date_txt");
+            toolStripStatusLabelExport.Text = LanguageManager.GetString("FormDevicesListMessaes_Export_data__txt_");
             toolStripStatusLabelExport.ForeColor = this.ForeColor;
             toolStripStatusLabelExport.BackColor = this.BackColor;
             toolStripStatusLabelExport.Visible = true;
@@ -110,7 +110,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message, "Error fct(listViewListMessages_RetrieveVirtualItem)");
+                Debug.WriteLine(ex.Message, LanguageManager.GetString("FormDevicesListMessaRetrieveVirtualItem_"));
             }
         }
 #endregion
@@ -142,7 +142,7 @@ namespace SDRSharp.Rtl_433
             ClassFunctionsVirtualListView.CompleteList(cacheListMessages, cacheListColumns.Count);
             //************************************************
             nbMessage ++;
-            base.TitleText = NameForm + " (Messages received : " + nbMessage.ToString() + "/" + maxMessages.ToString() + ")";
+            base.TitleText = NameForm + LanguageManager.GetString("FormDevicesListMessa_Messages_received__") + nbMessage.ToString() + ClassConst.Slash + maxMessages.ToString() + ")";
             try   //without try:Object reference not set to an instance of an object.
             {
                 listViewListMessages.VirtualListSize = nbMessage;
@@ -162,7 +162,7 @@ namespace SDRSharp.Rtl_433
             if (nbMessage>0)
             { 
                 if (ClassFunctionsVirtualListView.SerializeText(PathAndNameFile , cacheListColumns, cacheListMessages, true, nbMessage, false))
-                     MessageBox.Show("Export--> "+ NameForm , "Export messages OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                     MessageBox.Show(LanguageManager.GetString("FormDevicesListMessages_Export___")+ NameForm , LanguageManager.GetString("FormDevicesListMessas_Export_messages_OK"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
         }

@@ -1,4 +1,4 @@
-﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 ClassFormDevicesList.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -28,7 +28,7 @@ namespace SDRSharp.Rtl_433
             String fileWithPath = GetDirectoryRecordingForOpenDevicesList();
             formListDevice = new FormListDevices(this);
             if (File.Exists(fileWithPath))
-                if (MessageBox.Show("Do you want import devices list", "Import devices list", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show(LanguageManager.GetString("ClassFormDevicesList_import_devices_list"), LanguageManager.GetString("ClassFormDevicesList_Import_devices_list_1"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     formListDevice.DeSerializeText(fileWithPath);
             formListDevice.Show();
         }
@@ -75,7 +75,7 @@ namespace SDRSharp.Rtl_433
                 {
                     if (!alreadyTested)
                     {
-                        MessageBox.Show(e.Message + "\\n The file " + ClassConst.FILELISTEDEVICES + " is to SDRSharp folder", "Error create folder Recordings to folder SDRSharp", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(e.Message + ClassConst.CrLf + LanguageManager.GetString("ClassFormDevicesList_The_file_") + ClassConst.FILELISTEDEVICES + LanguageManager.GetString("ClassFormDevicesLists_to_SDRSharp_folder"), LanguageManager.GetString("ClassFormDevicesLists_to_folder_SDRSharp"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         directory = "";  //to folder SDRSHARP.exe
                         alreadyTested = true;
                     }

@@ -1,4 +1,4 @@
-﻿using SDRSharp.Radio;
+using SDRSharp.Radio;
 using System;
 using System.IO;
 using System.Linq;
@@ -34,7 +34,7 @@ namespace SDRSharp.Rtl_433
                 WriteFileWav(filePath, header, format, data);
             }
             else
-                MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(LanguageManager.GetString("WavRecorder_No_record__all_values__0"), LanguageManager.GetString("WavRecorder_information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         internal static void WriteBufferToWav(String filePath, float[] buffer,  double sampleRate)
         {
@@ -55,7 +55,7 @@ namespace SDRSharp.Rtl_433
                 WriteFileWav(filePath, header, format, data);
             }
             else
-                MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(LanguageManager.GetString("WavRecorder_No_record__all_values__0"), LanguageManager.GetString("WavRecorder_information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         internal static void WriteBufferToWav(String filePath, byte[] buffer, double sampleRate)
         {
@@ -66,7 +66,7 @@ namespace SDRSharp.Rtl_433
             format = new WaveFormatChunk<float>((short)nbChannel, (UInt32)sampleRate);
             data = new WaveDataChunk<float>((UInt32)(buffer.Length));
             if(buffer.Count()==0)
-                    MessageBox.Show("No record for:" + filePath, "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(LanguageManager.GetString("WavRecorder_No_record_for_") + filePath, LanguageManager.GetString("WavRecorder_information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
                 float[] tabFloat=new float[buffer.Length];
@@ -84,7 +84,7 @@ namespace SDRSharp.Rtl_433
                 //    writeFileWav(filePath, header, format, data);
                 //}
                 else
-                    MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(LanguageManager.GetString("WavRecorder_No_record__all_values__0"), LanguageManager.GetString("WavRecorder_information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
 
@@ -119,7 +119,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, LanguageManager.GetString("WavRecorder_Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
   
@@ -136,7 +136,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, LanguageManager.GetString("WavRecorder_Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
  
@@ -166,7 +166,7 @@ namespace SDRSharp.Rtl_433
                     WriteBufferToWav(newName, _dstWavPtr, sampleRate); //dataCu8.Length / 2,
                 }
                 else
-                    MessageBox.Show("No record, all values = 0", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(LanguageManager.GetString("WavRecorder_No_record__all_values__0"), LanguageManager.GetString("WavRecorder_information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             return sampleRate;
         }
@@ -221,4 +221,3 @@ namespace SDRSharp.Rtl_433
         }
     }
 }
-

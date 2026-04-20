@@ -104,7 +104,7 @@ namespace SDRSharp.Rtl_433
             this.sourceIsFile = sourceIsFile;
             sourceName = sourceName.Replace("%20", " ");
             //this.sourceName = sourceName.Replace("%20", " ");
-            panelRtl_433.SetMessage(sourceName + "\n");
+            panelRtl_433.SetMessage(sourceName + ClassConst.CrLf);
             panelRtl_433.SetSourceType(sourceIsFile);
         }
         internal void SetFrequency(Int64 value)
@@ -420,7 +420,7 @@ namespace SDRSharp.Rtl_433
                     Modulation = "FSK_MANCHESTER";
                     break;
                 default:
-                    Modulation = "unknown modulation";
+                    Modulation = LanguageManager.GetString("ClassInterfaceWithRt3_unknown_modulation");
                     break;
             }
             return Modulation;
@@ -453,7 +453,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.Message + "  ClassInterfaceWithRtl433->_callBackDevices", "Error ptrInfosToPlugin");
+                Debug.WriteLine(e.Message + "  ClassInterfaceWithRtl433->_callBackDevices", LanguageManager.GetString("ClassInterfaceWithRtror_ptrInfosToPlugin"));
                 return;
             }
             Dictionary<String, String> listData = FillsListDataClone(info);
@@ -499,13 +499,13 @@ namespace SDRSharp.Rtl_433
             //init devices list to listeDevice
             if (!initListDevice)
             {
-                if (message.Contains("start devices list"))//start
+                if (message.Contains("start_devices_list"))//start
                 {
                     listeDevice.Clear();
                     startListDevice = true;
                 }
 
-                else if (message.Contains("end devices list") && startListDevice)  //stop
+                else if (message.Contains("end_devices_list") && startListDevice)  //stop
                 {
                     initListDevice = true;
                     panelRtl_433.SetListDevices(listeDevice);

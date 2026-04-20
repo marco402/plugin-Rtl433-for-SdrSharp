@@ -1,4 +1,4 @@
-﻿//26/02/2026 Changes to the languages on the TopMost button
+//26/02/2026 Changes to the languages on the TopMost button
 
 #define noTESTLANGUAGE
 using System;
@@ -62,7 +62,7 @@ namespace SDRSharp.Rtl_433
 
 #if TESTLANGUAGE
         menu = new MenuStrip();
-        langMenu = new ToolStripMenuItem("Langue");
+        langMenu = new ToolStripMenuItem(LanguageManager.GetString("ClassTitleBarre_Langue"));
             AddLang("Français", "fr-FR");
             AddLang("English", "en-US");
             AddLang("Deutsch", "de-DE");
@@ -229,7 +229,7 @@ namespace SDRSharp.Rtl_433
             btnTopMost.FlatStyle = FlatStyle.Flat;
             btnTopMost.FlatAppearance.BorderSize = 0;
             btnTopMost.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            string txt = LanguageManager.GetString("Tooltip_AlwaysOnTop");
+            string txt = LanguageManager.GetString("ClassTitleBarre_AlwaysOnTop");
             
             toolTip = new ToolTip()
             {
@@ -449,7 +449,7 @@ namespace SDRSharp.Rtl_433
         {
             toolTip.SetToolTip(btnTopMost, null);
             var rm = new ResourceManager("SDRSharp.Rtl_433.Properties.Resources", typeof(BaseFormWithTopMost).Assembly);
-            string txt = rm.GetString("Tooltip_AlwaysOnTop");
+            string txt = LanguageManager.GetString("ClassTitleBarre_AlwaysOnTop");
             toolTip.SetToolTip(btnTopMost, txt);
         }
 #endif

@@ -15,5 +15,8 @@ namespace SDRSharp.Rtl_433
         internal const String FOLDERRECORD = "./Recordings/";
         internal const float FLOATTOBYTE = 255f/2f;
         internal const Int32 DEFAULTFREQUENCY = 433920000;
+        internal static string CrLf = Environment.NewLine;
+        internal const String Slash = "/";
+        internal const String separator = "\n";
     }
 }

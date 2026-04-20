@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace SDRSharp.Rtl_433
 {
@@ -54,9 +57,32 @@ namespace SDRSharp.Rtl_433
             //with 1920 version move scrollbarre at the first click when the plugin is anchored ???
             //same if disabled with the designer
            radioButtonSnone.Enabled = true;
+            //groupBoxFrequency.Text = LanguageManager.GetString("Rtl_433_Panel_Frequency");
+            //LanguageManager.Initialize(new ResourceManager("SDRSharp.Rtl_433.Resources.Resources", typeof(SDRSharp.Rtl_433.Resources.Resources).Assembly));
+            labelHideDevices.Text = LanguageManager.GetString("Rtl_433_Panel_Start_ill_the_devices_list");
+            radioButtonFreqFree.Text = LanguageManager.GetString("Rtl_433_Panel_Free");
+            radioButtonShowSelect.Text = LanguageManager.GetString("Rtl_433_Panel_Show_select");
+            radioButtonHideSelect.Text = LanguageManager.GetString("Rtl_433_Panel_Hide_select");
+            radioButtonListMessages.Text = LanguageManager.GetString("Rtl_433_Panel_List_messages");
+            radioButtonListDevices.Text = LanguageManager.GetString("Rtl_433_Panel_List_devices");
+			checkBoxEnabledPlugin.Text = LanguageManager.GetString("Rtl_433_Panel_Enabled_plugin");
+            buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Wait_Radio");
+            buttonSelectToClipboard.Text = LanguageManager.GetString("Rtl_433_Panel_Select_to") + ClassConst.CrLf + LanguageManager.GetString("Rtl_433_Panel_clipboard");
+            buttonAllToClipboard.Text = LanguageManager.GetString("Rtl_433_Panel__All_to") + ClassConst.CrLf + LanguageManager.GetString("Rtl_433_Panel_clipboard");
+            buttonDisplayParam.Text = LanguageManager.GetString("Rtl_433_Panel_Display") + ClassConst.CrLf + LanguageManager.GetString("Rtl_433_Panel_Parameter");
+            buttonClearMessages.Text = LanguageManager.GetString("Rtl_433_Panel___Clear") + ClassConst.CrLf + LanguageManager.GetString("Rtl_433_Panel_Messages");
+            labelTimeDisplayWindows.Text = LanguageManager.GetString("Rtl_433_Panel_Time_display_");
+            labelFrequencyTxt.Text = LanguageManager.GetString("Rtl_433_Panel_Frequency_Hz_");
+            radioButtonGraph.Text = LanguageManager.GetString("Rtl_433_Panel_Graphiques");
+            labelSampleRateTxt.Text = LanguageManager.GetString("Rtl_433_Panel_Sample_Rate_s");
+            groupBoxFrequency.Text = LanguageManager.GetString("Rtl_433_Panel_Frequency");
+            buttonCu8ToWav.Text = LanguageManager.GetString("Rtl_433_Panel_cu8_to_wav");
+            this.radioButtonFreq43392.Tag = ClassConst.DEFAULTFREQUENCY;
+            this.radioButtonFreq43392.Text = (ClassConst.DEFAULTFREQUENCY / 1000000.0).ToString() + " Mhz";
+
 
 #if TESTWINDOWS
-            MessageBox.Show("Version de test");
+            MessageBox.Show(LanguageManager.GetString("Rtl_433_Panel_Version_de_test"));
 #endif
         }
         #region  listViewConsole 
@@ -87,7 +113,7 @@ namespace SDRSharp.Rtl_433
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message, "Error fct(listViewConsole_RetrieveVirtualItem)");
+                    Debug.WriteLine(ex.Message, LanguageManager.GetString("Rtl_433_Panel_Error_RetrieveVirtualItem_"));
                 }
             }
         }
@@ -131,15 +157,15 @@ namespace SDRSharp.Rtl_433
             if (listViewConsole.VirtualListSize > ClassUtils.MaxLinesConsole - 1)
             {
                 listViewConsole.ForeColor = Color.Red;
-                ListViewItem ligne = new ListViewItem("You have reached the maximum number of rows provided in the console(" + ClassUtils.MaxLinesConsole.ToString() + ")");
+                ListViewItem ligne = new ListViewItem(LanguageManager.GetString("Rtl_433_Panel_You_haided_in_the_console_") + ClassUtils.MaxLinesConsole.ToString() + ")");
                 cacheLignes.Add(ligne);
-                ligne = new ListViewItem("if necessary you can increase it in SDRSharp.config(key RTL_433_plugin.maxLinesConsole");
+                ligne = new ListViewItem(LanguageManager.GetString("Rtl_433_Panel_if_necgin_maxLinesConsole_"));
                 cacheLignes.Add(ligne);
                 listViewConsole.VirtualListSize += 2;
-                listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + ClassUtils.MaxLinesConsole.ToString() + "/" + ClassUtils.MaxLinesConsole.ToString();
+                //listViewConsole.Columns[0].Text = LanguageManager.GetString("Rtl_433_Panel_Console_RTL_433__nbLigne_") + ClassUtils.MaxLinesConsole.ToString() + ClassConst.Slash + ClassUtils.MaxLinesConsole.ToString();
                 retour = true;
             }
-            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString() + "/" + ClassUtils.MaxLinesConsole.ToString();
+            listViewConsole.Columns[0].Text = LanguageManager.GetString("Rtl_433_Panel_Console_RTL_433___Ligne__") + listViewConsole.VirtualListSize.ToString() + ClassConst.Slash + ClassUtils.MaxLinesConsole.ToString();
             if (listViewConsole.VirtualListSize > 0)
             {
                 var last = listViewConsole.Items[listViewConsole.VirtualListSize - 1];
@@ -157,7 +183,7 @@ namespace SDRSharp.Rtl_433
             if (listViewConsole.Items.Count > 1)
             {
                 for (Int32 item = 0; item < listViewConsole.Items.Count; item++)
-                    text += listViewConsole.Items[item].Text + "\n";
+                    text += listViewConsole.Items[item].Text + ClassConst.CrLf;
                 Clipboard.SetText(text);
             }
         }
@@ -187,7 +213,7 @@ namespace SDRSharp.Rtl_433
         private void ClearListViewConsole()
         {
             listViewConsole.VirtualListSize = 0;
-            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=0" + "/" + ClassUtils.MaxLinesConsole.ToString();
+            listViewConsole.Columns[0].Text = LanguageManager.GetString("Rtl_433_Panel_Console_RTL_433___Ligne__") + listViewConsole.VirtualListSize.ToString() + ClassConst.Slash + ClassUtils.MaxLinesConsole.ToString();
             cacheLignes = null;
             listViewConsoleFull = false;
         }
@@ -204,7 +230,7 @@ namespace SDRSharp.Rtl_433
             labelTime433.Visible = true;
             labelTimeRtl433.Visible = true;
             labelTimeDisplayWindows.Visible = true;
-            ttlabelTimeCycle.SetToolTip(labelTimeCycle, "Red if Time cycle > 1000ms., you risk losing messages(not if source=file)");
+            ttlabelTimeCycle.SetToolTip(labelTimeCycle, LanguageManager.GetString("Rtl_433_Panel_Red_if_not_if_source_file_"));
 #else
             labelCycleTime.Visible = false;
             labelTime433.Visible = false;
@@ -219,20 +245,20 @@ namespace SDRSharp.Rtl_433
 #if DEBUG && TESTSTARTWITHOUTRADIO
             //#endif
             //#if DEBUG && !TESTSTARTWITHOUTRADIO
-            buttonStartStop.Text = "Start";
+            buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Start");
             buttonStartStop.Enabled = true;
             EnabledDisabledAllControls(true);
 #else
-            buttonStartStop.Text = "Wait";  //normal case
+            buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Wait");  //normal case
             buttonStartStop.Enabled = false;
 #endif
-            ttlabelFrequency.SetToolTip(labelFrequency, "If Orange:F<300Mhz or F>1000Mhz.");
+            ttlabelFrequency.SetToolTip(labelFrequency, LanguageManager.GetString("Rtl_433_Panel_If_Ora300Mhz_or_F_1000Mhz_"));
             ttlabelFrequency.AutoPopDelay = 10000;
             radioButtonFreq43392.Checked = true;
             listBoxHideShowDevices.Visible = true;
             labelSampleRate.Text = control.RFBandwidth.ToString();
-            listViewConsole.Columns[0].Text = "Console RTL_433---nbLigne=" + listViewConsole.VirtualListSize.ToString(); //  + "/" + maxLinesConsole.ToString(); maxLinesConsole not init here
-            checkBoxEnabledPlugin.Text = "Enabled plugin (" + VERSION + ")";
+            //listViewConsole.Columns[0].Text = LanguageManager.GetString("Rtl_433_Panel_Console_RTL_433___Ligne__") + listViewConsole.VirtualListSize.ToString(); //  + "/" + maxLinesConsole.ToString(); maxLinesConsole not init here
+            checkBoxEnabledPlugin.Text = LanguageManager.GetString("Rtl_433_Panel_Enabled_plugin_") + VERSION + ")";
         }
         private void EnabledDisabledAllControls(Boolean state)
         {
@@ -287,8 +313,8 @@ namespace SDRSharp.Rtl_433
             enabledPlugin = checkBoxEnabledPlugin.Checked;
             if (!enabledPlugin)
             {
-                checkBoxEnabledPlugin.Text = "Enabled plugin (" + VERSION + ")";
-                Debug.WriteLine("panel->FreeRessources");
+                checkBoxEnabledPlugin.Text = LanguageManager.GetString("Rtl_433_Panel_Enabled_plugin_") + VERSION + ")";
+                //Debug.WriteLine("panel->FreeRessources");
                 FreeRessources();
             }
             else
@@ -307,10 +333,10 @@ namespace SDRSharp.Rtl_433
                 EnabledDisabledAllControls(enabledPlugin);
                 if (radioIsStarted && enabledPlugin)
                 {
-                    buttonStartStop.Text = "Start";
+                    buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Start");
                     buttonStartStop.Enabled = true;
                 }
-                checkBoxEnabledPlugin.Text = "Disabled plugin";
+                checkBoxEnabledPlugin.Text = LanguageManager.GetString("Rtl_433_Panel_Disabled_plugin");
                 ClassUtils.BackColor = this.BackColor;
                 ClassUtils.ForeColor = this.ForeColor;
                 ClassUtils.Cursor = this.Cursor;
@@ -357,12 +383,12 @@ namespace SDRSharp.Rtl_433
                 if (enabledPlugin)
                 {
                     buttonStartStop.Enabled = true;
-                    buttonStartStop.Text = "Start";
+                    buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Start");
                 }
                 else
                 {
                     buttonStartStop.Enabled = false;
-                    buttonStartStop.Text = "Wait";
+                    buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Wait");
                     EnabledDisabledControlsOnStart(true);
                 }
                 SetSampleRate(control.RFBandwidth);
@@ -373,7 +399,7 @@ namespace SDRSharp.Rtl_433
             {
                 if (stopwDisplay == null)
                     stopwDisplay = new Stopwatch();
-                buttonStartStop.Text = "Stop";
+                buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Stop");
                 ClearListViewConsole();
                 listViewConsole.ForeColor = this.ForeColor;
                 ProcessParameterOnStart();  //call Rtl_433Processor.SampleRate--->decimation 
@@ -432,7 +458,7 @@ namespace SDRSharp.Rtl_433
         }
         internal void ButtonStartStop(Boolean disabledPlugin = false)
         {
-            if (buttonStartStop.Text == "Start" || disabledPlugin)
+            if (buttonStartStop.Text == LanguageManager.GetString("Rtl_433_Panel_Start") || disabledPlugin)
             {
                 InitPanel();
                 ClassInterfaceWithRtl433.StartSendData();  //only by button
@@ -476,7 +502,7 @@ namespace SDRSharp.Rtl_433
             if (senderRadio)                   //normal case
             {
                 radioIsStarted = false;
-                buttonStartStop.Text = "Wait";
+                buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Wait");
                 buttonStartStop.Enabled = false;
                 EnabledDisabledControlsOnStart(true);    //stop by radio
             }
@@ -484,7 +510,7 @@ namespace SDRSharp.Rtl_433
             {
                 if (radioIsStarted)
                 {
-                    buttonStartStop.Text = "Start";
+                    buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Start");
                     buttonStartStop.Enabled = enabledPlugin;
 //#if !TESTBOUCLEREPLAYMARC
 //                    enabledDisabledControlsOnStart(false);                    //voir false for TESTBOUCLEREPLAYMARC
@@ -494,7 +520,7 @@ namespace SDRSharp.Rtl_433
                 }                             //normal case
                 else
                 {
-                    buttonStartStop.Text = "Wait";
+                    buttonStartStop.Text = LanguageManager.GetString("Rtl_433_Panel_Wait");
                     buttonStartStop.Enabled = false;
                     EnabledDisabledControlsOnStart(true);
                 }
@@ -507,7 +533,7 @@ namespace SDRSharp.Rtl_433
         public Boolean PluginIsRun
         {
             get {
-                if(buttonStartStop.Text == "Stop")
+                if(buttonStartStop.Text == LanguageManager.GetString("Rtl_433_Panel_Stop"))
                     return true;
                 else
                     return false;
@@ -581,12 +607,12 @@ namespace SDRSharp.Rtl_433
         String listInfos;
         private void InitDisplayParam()
         {
-            listInfos = "Parameters configure source\n" +
-            "   -Sampling mode->quadrature sampling\n" +
-            "   -Sample Rate->0.25 MSPS or more for certain devices FSK or f > 433Mhz...\n" +
-            "   -AGC:on(corresponds to auto gain with rtl433) can be manually->off.\n" +
-            "   -RTL AGC:on.(not the AGC panel) can be set off if good signals.\n" +
-            "   -Check frequency\n\n" ;
+            listInfos = LanguageManager.GetString("Rtl_433_Panel_Parameers_configure_source") + ClassConst.CrLf +
+            LanguageManager.GetString("Rtl_433_Panel___Samp_quadrature_sampling") + ClassConst.CrLf  +
+            LanguageManager.GetString("Rtl_433_Panel___Samps_FSK_or_f__433Mhz__") + ClassConst.CrLf +
+            LanguageManager.GetString("Rtl_433_Panel___AGC_an_be_manually__off_") + ClassConst.CrLf +
+            LanguageManager.GetString("Rtl_433_Panel___RTL_off_if_good_signals_") + ClassConst.CrLf +
+            LanguageManager.GetString("Rtl_433_Panel___Check_frequency") + ClassConst.CrLf + ClassConst.CrLf;
 
         }
         private void DisplayParam()
@@ -617,14 +643,14 @@ namespace SDRSharp.Rtl_433
                         Int32 sampleRate = ClassUtils.ConvertCu8ToWav(file);
                         if (sampleRate == -1)
                         {
-                            MessageBox.Show("No sample rate detected in the file name: _sample rate+k " + file, "Cancel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(LanguageManager.GetString("Rtl_433_Panel_No_samname__sample_rate_k_") + file, LanguageManager.GetString("Rtl_433_Panel_Cancel"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                             cptPb ++;
                         }
                     }
                     if (cptPb == 0)
-                        MessageBox.Show("Translate is completed", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(LanguageManager.GetString("Rtl_433_Panel_Translate_is_completed"), LanguageManager.GetString("Rtl_433_Panel_Translate_cu8_to_wav"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     else
-                        MessageBox.Show("Translate is NOT completed  " + (openCu8.FileNames.Length - cptPb).ToString() + "/" + openCu8.FileNames.Length.ToString() + " ok files", "Translate cu8 to wav", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show(LanguageManager.GetString("Rtl_433_Panel_Translte_is_NOT_completed_") + (openCu8.FileNames.Length - cptPb).ToString() + ClassConst.Slash + openCu8.FileNames.Length.ToString() + LanguageManager.GetString("Rtl_433_Panel_ok_files"), LanguageManager.GetString("Rtl_433_Panel_Translate_cu8_to_wav"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 openCu8.Dispose();
             }

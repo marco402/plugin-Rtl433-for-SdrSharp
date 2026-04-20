@@ -108,7 +108,7 @@ namespace SDRSharp.Rtl_433
             this.mainTableLayoutPanel.AutoSize = true;
             this.mainTableLayoutPanel.CausesValidation = false;
             this.mainTableLayoutPanel.ColumnCount = 2;
-            this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 160F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.mainTableLayoutPanel.Controls.Add(this.listViewConsole, 0, 12);
             this.mainTableLayoutPanel.Controls.Add(this.groupBoxDataConv, 0, 6);
@@ -139,7 +139,7 @@ namespace SDRSharp.Rtl_433
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainTableLayoutPanel.Size = new System.Drawing.Size(316, 1337);
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(332, 1377);
             this.mainTableLayoutPanel.TabIndex = 1;
             this.mainTableLayoutPanel.SizeChanged += new System.EventHandler(this.MainTableLayoutPanel_SizeChanged);
             // 
@@ -152,9 +152,9 @@ namespace SDRSharp.Rtl_433
             this.listViewConsole.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewConsole.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listViewConsole.HideSelection = false;
-            this.listViewConsole.Location = new System.Drawing.Point(3, 604);
+            this.listViewConsole.Location = new System.Drawing.Point(3, 644);
             this.listViewConsole.Name = "listViewConsole";
-            this.listViewConsole.Size = new System.Drawing.Size(310, 730);
+            this.listViewConsole.Size = new System.Drawing.Size(326, 730);
             this.listViewConsole.TabIndex = 33;
             this.listViewConsole.UseCompatibleStateImageBehavior = false;
             // 
@@ -169,9 +169,9 @@ namespace SDRSharp.Rtl_433
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvCustomary);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvSI);
             this.groupBoxDataConv.Controls.Add(this.radioButtonDataConvNative);
-            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 217);
+            this.groupBoxDataConv.Location = new System.Drawing.Point(3, 226);
             this.groupBoxDataConv.Name = "groupBoxDataConv";
-            this.groupBoxDataConv.Size = new System.Drawing.Size(124, 113);
+            this.groupBoxDataConv.Size = new System.Drawing.Size(154, 113);
             this.groupBoxDataConv.TabIndex = 20;
             this.groupBoxDataConv.TabStop = false;
             this.groupBoxDataConv.Text = "Data Conv(-C)";
@@ -218,7 +218,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq345);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreq315);
             this.groupBoxFrequency.Controls.Add(this.radioButtonFreqFree);
-            this.groupBoxFrequency.Location = new System.Drawing.Point(153, 88);
+            this.groupBoxFrequency.Location = new System.Drawing.Point(163, 88);
             this.groupBoxFrequency.Name = "groupBoxFrequency";
             this.groupBoxFrequency.Size = new System.Drawing.Size(160, 89);
             this.groupBoxFrequency.TabIndex = 13;
@@ -248,13 +248,13 @@ namespace SDRSharp.Rtl_433
             // radioButtonFreq43392
             // 
             this.radioButtonFreq43392.Checked = true;
-            this.radioButtonFreq43392.Location = new System.Drawing.Point(56, 19);
+            this.radioButtonFreq43392.Location = new System.Drawing.Point(71, 18);
             this.radioButtonFreq43392.Name = "radioButtonFreq43392";
             this.radioButtonFreq43392.Size = new System.Drawing.Size(81, 17);
             this.radioButtonFreq43392.TabIndex = 3;
             this.radioButtonFreq43392.TabStop = true;
-            this.radioButtonFreq43392.Tag = ClassConst.DEFAULTFREQUENCY;
-            this.radioButtonFreq43392.Text = (ClassConst.DEFAULTFREQUENCY/1000000).ToString() + " Mhz";
+            this.radioButtonFreq43392.Tag = "433920000";
+            this.radioButtonFreq43392.Text = " 4.3392Mhz";
             this.radioButtonFreq43392.UseVisualStyleBackColor = true;
             // 
             // radioButtonFreq345
@@ -282,7 +282,7 @@ namespace SDRSharp.Rtl_433
             this.radioButtonFreqFree.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.radioButtonFreqFree.Location = new System.Drawing.Point(6, 19);
             this.radioButtonFreqFree.Name = "radioButtonFreqFree";
-            this.radioButtonFreqFree.Size = new System.Drawing.Size(46, 17);
+            this.radioButtonFreqFree.Size = new System.Drawing.Size(60, 17);
             this.radioButtonFreqFree.TabIndex = 0;
             this.radioButtonFreqFree.Tag = "0";
             this.radioButtonFreqFree.Text = "Free";
@@ -296,7 +296,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxSave.Controls.Add(this.radioButtonSunknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSknown);
             this.groupBoxSave.Controls.Add(this.radioButtonSall);
-            this.groupBoxSave.Location = new System.Drawing.Point(153, 217);
+            this.groupBoxSave.Location = new System.Drawing.Point(163, 226);
             this.groupBoxSave.Name = "groupBoxSave";
             this.groupBoxSave.Size = new System.Drawing.Size(160, 113);
             this.groupBoxSave.TabIndex = 9;
@@ -353,9 +353,9 @@ namespace SDRSharp.Rtl_433
             this.groupBoxR.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxR, 2);
             this.groupBoxR.Controls.Add(this.listBoxHideShowDevices);
-            this.groupBoxR.Location = new System.Drawing.Point(3, 392);
+            this.groupBoxR.Location = new System.Drawing.Point(3, 401);
             this.groupBoxR.Name = "groupBoxR";
-            this.groupBoxR.Size = new System.Drawing.Size(310, 141);
+            this.groupBoxR.Size = new System.Drawing.Size(326, 141);
             this.groupBoxR.TabIndex = 9;
             this.groupBoxR.TabStop = false;
             this.groupBoxR.Text = "hide show devices(-R)";
@@ -371,7 +371,7 @@ namespace SDRSharp.Rtl_433
             this.listBoxHideShowDevices.Location = new System.Drawing.Point(3, 16);
             this.listBoxHideShowDevices.Name = "listBoxHideShowDevices";
             this.listBoxHideShowDevices.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxHideShowDevices.Size = new System.Drawing.Size(304, 122);
+            this.listBoxHideShowDevices.Size = new System.Drawing.Size(320, 122);
             this.listBoxHideShowDevices.TabIndex = 3;
             // 
             // labelHideDevices
@@ -379,7 +379,7 @@ namespace SDRSharp.Rtl_433
             this.labelHideDevices.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelHideDevices.AutoSize = true;
             this.mainTableLayoutPanel.SetColumnSpan(this.labelHideDevices, 2);
-            this.labelHideDevices.Location = new System.Drawing.Point(3, 333);
+            this.labelHideDevices.Location = new System.Drawing.Point(3, 342);
             this.labelHideDevices.Name = "labelHideDevices";
             this.labelHideDevices.Size = new System.Drawing.Size(154, 13);
             this.labelHideDevices.TabIndex = 15;
@@ -393,7 +393,7 @@ namespace SDRSharp.Rtl_433
             this.mainTableLayoutPanel.SetColumnSpan(this.groupBoxHideShow, 2);
             this.groupBoxHideShow.Controls.Add(this.radioButtonShowSelect);
             this.groupBoxHideShow.Controls.Add(this.radioButtonHideSelect);
-            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 349);
+            this.groupBoxHideShow.Location = new System.Drawing.Point(3, 358);
             this.groupBoxHideShow.Name = "groupBoxHideShow";
             this.groupBoxHideShow.Size = new System.Drawing.Size(290, 37);
             this.groupBoxHideShow.TabIndex = 21;
@@ -401,19 +401,21 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonShowSelect
             // 
-            this.radioButtonShowSelect.Location = new System.Drawing.Point(115, 14);
+            this.radioButtonShowSelect.AutoSize = true;
+            this.radioButtonShowSelect.Location = new System.Drawing.Point(148, 14);
             this.radioButtonShowSelect.Name = "radioButtonShowSelect";
-            this.radioButtonShowSelect.Size = new System.Drawing.Size(111, 17);
+            this.radioButtonShowSelect.Size = new System.Drawing.Size(83, 17);
             this.radioButtonShowSelect.TabIndex = 0;
             this.radioButtonShowSelect.Text = "Show select";
             this.radioButtonShowSelect.UseVisualStyleBackColor = true;
             // 
             // radioButtonHideSelect
             // 
+            this.radioButtonHideSelect.AutoSize = true;
             this.radioButtonHideSelect.Checked = true;
             this.radioButtonHideSelect.Location = new System.Drawing.Point(6, 14);
             this.radioButtonHideSelect.Name = "radioButtonHideSelect";
-            this.radioButtonHideSelect.Size = new System.Drawing.Size(103, 17);
+            this.radioButtonHideSelect.Size = new System.Drawing.Size(78, 17);
             this.radioButtonHideSelect.TabIndex = 0;
             this.radioButtonHideSelect.TabStop = true;
             this.radioButtonHideSelect.Text = "Hide select";
@@ -429,16 +431,17 @@ namespace SDRSharp.Rtl_433
             this.groupBoxSelectTypeForm.Controls.Add(this.radioButtonGraph);
             this.groupBoxSelectTypeForm.Location = new System.Drawing.Point(3, 48);
             this.groupBoxSelectTypeForm.Name = "groupBoxSelectTypeForm";
-            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(290, 34);
+            this.groupBoxSelectTypeForm.Size = new System.Drawing.Size(326, 34);
             this.groupBoxSelectTypeForm.TabIndex = 22;
             this.groupBoxSelectTypeForm.TabStop = false;
             // 
             // radioButtonListMessages
             // 
+            this.radioButtonListMessages.AutoSize = true;
             this.radioButtonListMessages.Checked = true;
             this.radioButtonListMessages.Location = new System.Drawing.Point(4, 11);
             this.radioButtonListMessages.Name = "radioButtonListMessages";
-            this.radioButtonListMessages.Size = new System.Drawing.Size(105, 17);
+            this.radioButtonListMessages.Size = new System.Drawing.Size(91, 17);
             this.radioButtonListMessages.TabIndex = 1;
             this.radioButtonListMessages.TabStop = true;
             this.radioButtonListMessages.Text = "List messages";
@@ -447,9 +450,10 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonListDevices
             // 
-            this.radioButtonListDevices.Location = new System.Drawing.Point(183, 11);
+            this.radioButtonListDevices.AutoSize = true;
+            this.radioButtonListDevices.Location = new System.Drawing.Point(209, 11);
             this.radioButtonListDevices.Name = "radioButtonListDevices";
-            this.radioButtonListDevices.Size = new System.Drawing.Size(99, 17);
+            this.radioButtonListDevices.Size = new System.Drawing.Size(81, 17);
             this.radioButtonListDevices.TabIndex = 0;
             this.radioButtonListDevices.Text = "List devices";
             this.radioButtonListDevices.UseVisualStyleBackColor = true;
@@ -457,9 +461,10 @@ namespace SDRSharp.Rtl_433
             // 
             // radioButtonGraph
             // 
-            this.radioButtonGraph.Location = new System.Drawing.Point(115, 11);
+            this.radioButtonGraph.AutoSize = true;
+            this.radioButtonGraph.Location = new System.Drawing.Point(128, 11);
             this.radioButtonGraph.Name = "radioButtonGraph";
-            this.radioButtonGraph.Size = new System.Drawing.Size(66, 17);
+            this.radioButtonGraph.Size = new System.Drawing.Size(54, 17);
             this.radioButtonGraph.TabIndex = 0;
             this.radioButtonGraph.Text = "Graph";
             this.radioButtonGraph.UseVisualStyleBackColor = true;
@@ -474,7 +479,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxEnabledPlugin.Controls.Add(this.buttonStartStop);
             this.groupBoxEnabledPlugin.Location = new System.Drawing.Point(3, 3);
             this.groupBoxEnabledPlugin.Name = "groupBoxEnabledPlugin";
-            this.groupBoxEnabledPlugin.Size = new System.Drawing.Size(290, 39);
+            this.groupBoxEnabledPlugin.Size = new System.Drawing.Size(320, 39);
             this.groupBoxEnabledPlugin.TabIndex = 34;
             this.groupBoxEnabledPlugin.TabStop = false;
             // 
@@ -482,7 +487,7 @@ namespace SDRSharp.Rtl_433
             // 
             this.checkBoxEnabledPlugin.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.checkBoxEnabledPlugin.AutoSize = true;
-            this.checkBoxEnabledPlugin.Location = new System.Drawing.Point(3, 16);
+            this.checkBoxEnabledPlugin.Location = new System.Drawing.Point(24, 15);
             this.checkBoxEnabledPlugin.Name = "checkBoxEnabledPlugin";
             this.checkBoxEnabledPlugin.Size = new System.Drawing.Size(96, 17);
             this.checkBoxEnabledPlugin.TabIndex = 28;
@@ -511,9 +516,9 @@ namespace SDRSharp.Rtl_433
             this.groupBoxConsole.Controls.Add(this.buttonAllToClipboard);
             this.groupBoxConsole.Controls.Add(this.buttonDisplayParam);
             this.groupBoxConsole.Controls.Add(this.buttonClearMessages);
-            this.groupBoxConsole.Location = new System.Drawing.Point(3, 539);
+            this.groupBoxConsole.Location = new System.Drawing.Point(3, 548);
             this.groupBoxConsole.Name = "groupBoxConsole";
-            this.groupBoxConsole.Size = new System.Drawing.Size(290, 59);
+            this.groupBoxConsole.Size = new System.Drawing.Size(320, 90);
             this.groupBoxConsole.TabIndex = 35;
             this.groupBoxConsole.TabStop = false;
             // 
@@ -521,12 +526,11 @@ namespace SDRSharp.Rtl_433
             // 
             this.buttonSelectToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonSelectToClipboard.AutoSize = true;
-            this.buttonSelectToClipboard.Location = new System.Drawing.Point(215, 13);
+            this.buttonSelectToClipboard.Location = new System.Drawing.Point(237, 10);
             this.buttonSelectToClipboard.Name = "buttonSelectToClipboard";
-            this.buttonSelectToClipboard.Size = new System.Drawing.Size(61, 40);
+            this.buttonSelectToClipboard.Size = new System.Drawing.Size(77, 77);
             this.buttonSelectToClipboard.TabIndex = 9;
-            this.buttonSelectToClipboard.Text = "Select to\r\nclipboard";
+            this.buttonSelectToClipboard.Text = "Select toclipboard";
             this.buttonSelectToClipboard.UseVisualStyleBackColor = false;
             this.buttonSelectToClipboard.Click += new System.EventHandler(this.ButtonSelectToClipboard_Click);
             // 
@@ -534,12 +538,11 @@ namespace SDRSharp.Rtl_433
             // 
             this.buttonAllToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonAllToClipboard.AutoSize = true;
-            this.buttonAllToClipboard.Location = new System.Drawing.Point(147, 13);
+            this.buttonAllToClipboard.Location = new System.Drawing.Point(164, 10);
             this.buttonAllToClipboard.Name = "buttonAllToClipboard";
-            this.buttonAllToClipboard.Size = new System.Drawing.Size(61, 40);
+            this.buttonAllToClipboard.Size = new System.Drawing.Size(77, 77);
             this.buttonAllToClipboard.TabIndex = 8;
-            this.buttonAllToClipboard.Text = "   All to \r\nclipboard";
+            this.buttonAllToClipboard.Text = "   All toclipboard";
             this.buttonAllToClipboard.UseVisualStyleBackColor = false;
             this.buttonAllToClipboard.Click += new System.EventHandler(this.ButtonAllToClipboard_Click);
             // 
@@ -547,12 +550,11 @@ namespace SDRSharp.Rtl_433
             // 
             this.buttonDisplayParam.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonDisplayParam.AutoSize = true;
-            this.buttonDisplayParam.Location = new System.Drawing.Point(4, 13);
+            this.buttonDisplayParam.Location = new System.Drawing.Point(4, 10);
             this.buttonDisplayParam.Name = "buttonDisplayParam";
-            this.buttonDisplayParam.Size = new System.Drawing.Size(61, 40);
+            this.buttonDisplayParam.Size = new System.Drawing.Size(80, 77);
             this.buttonDisplayParam.TabIndex = 7;
-            this.buttonDisplayParam.Text = "Display\r\n Param";
+            this.buttonDisplayParam.Text = "Display Param";
             this.buttonDisplayParam.UseVisualStyleBackColor = false;
             this.buttonDisplayParam.Click += new System.EventHandler(this.ButtonDisplayParam_Click);
             // 
@@ -560,21 +562,20 @@ namespace SDRSharp.Rtl_433
             // 
             this.buttonClearMessages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonClearMessages.AutoSize = true;
-            this.buttonClearMessages.Location = new System.Drawing.Point(72, 13);
+            this.buttonClearMessages.Location = new System.Drawing.Point(79, 10);
             this.buttonClearMessages.Name = "buttonClearMessages";
-            this.buttonClearMessages.Size = new System.Drawing.Size(68, 40);
+            this.buttonClearMessages.Size = new System.Drawing.Size(86, 77);
             this.buttonClearMessages.TabIndex = 7;
-            this.buttonClearMessages.Text = "    Clear\r\n Messages";
+            this.buttonClearMessages.Text = "    Clear Messages";
             this.buttonClearMessages.UseVisualStyleBackColor = false;
             this.buttonClearMessages.Click += new System.EventHandler(this.ButtonClearMessages_Click);
             // 
             // buttonCu8ToWav
             // 
             this.buttonCu8ToWav.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonCu8ToWav.Location = new System.Drawing.Point(23, 183);
+            this.buttonCu8ToWav.Location = new System.Drawing.Point(28, 183);
             this.buttonCu8ToWav.Name = "buttonCu8ToWav";
-            this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 28);
+            this.buttonCu8ToWav.Size = new System.Drawing.Size(104, 37);
             this.buttonCu8ToWav.TabIndex = 14;
             this.buttonCu8ToWav.Text = ".cu8 to .wav";
             this.buttonCu8ToWav.UseVisualStyleBackColor = false;
@@ -594,7 +595,7 @@ namespace SDRSharp.Rtl_433
             this.groupBoxInfos.Controls.Add(this.labelTimeRtl433);
             this.groupBoxInfos.Location = new System.Drawing.Point(3, 88);
             this.groupBoxInfos.Name = "groupBoxInfos";
-            this.groupBoxInfos.Size = new System.Drawing.Size(144, 89);
+            this.groupBoxInfos.Size = new System.Drawing.Size(154, 89);
             this.groupBoxInfos.TabIndex = 31;
             this.groupBoxInfos.TabStop = false;
             // 
@@ -603,7 +604,7 @@ namespace SDRSharp.Rtl_433
             this.labelTimeDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelTimeDisplay.AutoSize = true;
             this.labelTimeDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTimeDisplay.Location = new System.Drawing.Point(85, 61);
+            this.labelTimeDisplay.Location = new System.Drawing.Point(95, 76);
             this.labelTimeDisplay.Name = "labelTimeDisplay";
             this.labelTimeDisplay.Size = new System.Drawing.Size(13, 13);
             this.labelTimeDisplay.TabIndex = 32;
@@ -614,7 +615,7 @@ namespace SDRSharp.Rtl_433
             this.labelTimeDisplayWindows.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelTimeDisplayWindows.AutoSize = true;
             this.labelTimeDisplayWindows.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTimeDisplayWindows.Location = new System.Drawing.Point(6, 61);
+            this.labelTimeDisplayWindows.Location = new System.Drawing.Point(3, 78);
             this.labelTimeDisplayWindows.Name = "labelTimeDisplayWindows";
             this.labelTimeDisplayWindows.Size = new System.Drawing.Size(69, 13);
             this.labelTimeDisplayWindows.TabIndex = 31;
@@ -636,7 +637,7 @@ namespace SDRSharp.Rtl_433
             this.labelTimeCycle.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelTimeCycle.AutoSize = true;
             this.labelTimeCycle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTimeCycle.Location = new System.Drawing.Point(85, 34);
+            this.labelTimeCycle.Location = new System.Drawing.Point(95, 52);
             this.labelTimeCycle.Name = "labelTimeCycle";
             this.labelTimeCycle.Size = new System.Drawing.Size(13, 13);
             this.labelTimeCycle.TabIndex = 15;
@@ -659,7 +660,7 @@ namespace SDRSharp.Rtl_433
             this.labelSampleRate.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelSampleRate.AutoSize = true;
             this.labelSampleRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSampleRate.Location = new System.Drawing.Point(85, 21);
+            this.labelSampleRate.Location = new System.Drawing.Point(95, 38);
             this.labelSampleRate.Name = "labelSampleRate";
             this.labelSampleRate.Size = new System.Drawing.Size(13, 13);
             this.labelSampleRate.TabIndex = 6;
@@ -670,7 +671,7 @@ namespace SDRSharp.Rtl_433
             this.labelFrequency.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelFrequency.AutoSize = true;
             this.labelFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelFrequency.Location = new System.Drawing.Point(85, 9);
+            this.labelFrequency.Location = new System.Drawing.Point(95, 9);
             this.labelFrequency.Name = "labelFrequency";
             this.labelFrequency.Size = new System.Drawing.Size(13, 13);
             this.labelFrequency.TabIndex = 6;
@@ -681,7 +682,7 @@ namespace SDRSharp.Rtl_433
             this.labelCycleTime.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelCycleTime.AutoSize = true;
             this.labelCycleTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCycleTime.Location = new System.Drawing.Point(6, 35);
+            this.labelCycleTime.Location = new System.Drawing.Point(3, 52);
             this.labelCycleTime.Name = "labelCycleTime";
             this.labelCycleTime.Size = new System.Drawing.Size(65, 13);
             this.labelCycleTime.TabIndex = 29;
@@ -693,7 +694,7 @@ namespace SDRSharp.Rtl_433
             this.labelTime433.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelTime433.AutoSize = true;
             this.labelTime433.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTime433.Location = new System.Drawing.Point(6, 48);
+            this.labelTime433.Location = new System.Drawing.Point(3, 65);
             this.labelTime433.Name = "labelTime433";
             this.labelTime433.Size = new System.Drawing.Size(78, 13);
             this.labelTime433.TabIndex = 30;
@@ -705,7 +706,7 @@ namespace SDRSharp.Rtl_433
             this.labelTimeRtl433.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelTimeRtl433.AutoSize = true;
             this.labelTimeRtl433.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTimeRtl433.Location = new System.Drawing.Point(85, 47);
+            this.labelTimeRtl433.Location = new System.Drawing.Point(95, 65);
             this.labelTimeRtl433.Name = "labelTimeRtl433";
             this.labelTimeRtl433.Size = new System.Drawing.Size(13, 13);
             this.labelTimeRtl433.TabIndex = 16;
@@ -719,7 +720,7 @@ namespace SDRSharp.Rtl_433
             this.AutoSize = true;
             this.Controls.Add(this.mainTableLayoutPanel);
             this.Name = "Rtl_433_Panel";
-            this.Size = new System.Drawing.Size(316, 1337);
+            this.Size = new System.Drawing.Size(332, 1377);
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
             this.groupBoxDataConv.ResumeLayout(false);
@@ -727,11 +728,12 @@ namespace SDRSharp.Rtl_433
             this.groupBoxSave.ResumeLayout(false);
             this.groupBoxR.ResumeLayout(false);
             this.groupBoxHideShow.ResumeLayout(false);
+            this.groupBoxHideShow.PerformLayout();
             this.groupBoxSelectTypeForm.ResumeLayout(false);
+            this.groupBoxSelectTypeForm.PerformLayout();
             this.groupBoxEnabledPlugin.ResumeLayout(false);
             this.groupBoxEnabledPlugin.PerformLayout();
             this.groupBoxConsole.ResumeLayout(false);
-            this.groupBoxConsole.PerformLayout();
             this.groupBoxInfos.ResumeLayout(false);
             this.groupBoxInfos.PerformLayout();
             this.ResumeLayout(false);

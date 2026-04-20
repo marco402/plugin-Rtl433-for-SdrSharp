@@ -1,4 +1,4 @@
-﻿/* Written by Marc Prieur (marco40_github@sfr.fr)
+/* Written by Marc Prieur (marco40_github@sfr.fr)
                                 ClassUtils.cs 
                             project Rtl_433_Plugin
 						         Plugin for SdrSharp
@@ -172,7 +172,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "   testComplexToFloatArray", "Error Initialize", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message + "   testComplexToFloatArray", LanguageManager.GetString("ClassUtils_Error_Initialize"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 #endif
@@ -211,7 +211,7 @@ namespace SDRSharp.Rtl_433
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message, "Error create folder " + ClassConst.FOLDERRECORD, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(e.Message, LanguageManager.GetString("ClassUtils_Error_create_folder_") + ClassConst.FOLDERRECORD, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
             }
@@ -360,7 +360,7 @@ namespace SDRSharp.Rtl_433
 #if !GENERETESTFILEWAV
                 WavRecorder.WriteBufferToWav(_nameFile, dataIQForRecord, sampleRate);
 #else
-            MessageBox.Show("genere file test wav -127 to 128", "test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(LanguageManager.GetString("ClassUtils_genere_fi_test_wav_127_to_128"), LanguageManager.GetString("ClassUtils_test"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
            float[] dataIQ = new float[256];
                 //for (Int32 i = -127; i < 129; i++)
                 //    dataIQ[i+127] = System.Convert.ToSingle(i);

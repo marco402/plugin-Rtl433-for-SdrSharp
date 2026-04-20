@@ -39,14 +39,14 @@ namespace SDRSharp.Rtl_433
 
             args[0] = "Rtl_433.exe"; // + @"\";
             Int32 counter = 1;
-            panelRtl_433.SetMessage("-----------RTL433 OPTIONS --------------\n");
+            panelRtl_433.SetMessage("-----------RTL433 OPTIONS --------------" + ClassConst.CrLf );
             foreach (KeyValuePair<String, String> _option in listOptionsRtl433)
             {
-                panelRtl_433.SetMessage(_option.Value + "\n");
+                panelRtl_433.SetMessage(_option.Value + ClassConst.CrLf);
                 args[counter] = _option.Value;
                 counter++;
             }
-            panelRtl_433.SetMessage("------------------------------------------\n");
+            panelRtl_433.SetMessage("------------------------------------------" + ClassConst.CrLf);
             return args;
 
         }

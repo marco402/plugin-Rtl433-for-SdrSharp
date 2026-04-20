@@ -60,10 +60,11 @@ namespace SDRSharp.Rtl_433
         {
             try
             {
+#if DEBUG
+            System.Diagnostics.Debugger.Launch();
+#endif
 
-                LanguageManager.Initialize(new ResourceManager("SDRSharp.Rtl_433.Properties.Resources",typeof(SDRSharp.Rtl_433.Properties.Resources).Assembly));
-                //MessageBox.Show("UICulture = " + CultureInfo.CurrentUICulture);
-                //MessageBox.Show("InstalledUICulture = " + CultureInfo.InstalledUICulture);
+                LanguageManager.Initialize(new ResourceManager("SDRSharp.Rtl_433.Resources.Resources", typeof(SDRSharp.Rtl_433.Resources.Resources).Assembly));
 
                 controlPanel = new Rtl_433_Panel(control);
                 //****WARNING****if add control, add to checkBoxEnabledPlugin_CheckedChanged to panel
@@ -77,7 +78,7 @@ namespace SDRSharp.Rtl_433
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "   Initialize RTL_433_plugin", "Error Initialize", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message + LanguageManager.GetString("Rtl_433_Plugin__Initalize_RTL_433_plugin"), LanguageManager.GetString("Rtl_433_Plugin_Error_Initialize"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
