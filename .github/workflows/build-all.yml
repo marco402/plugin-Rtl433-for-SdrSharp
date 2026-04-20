@@ -493,17 +493,38 @@ jobs:
           New-Item -ItemType Directory -Force -Path out_x86 | Out-Null
           New-Item -ItemType Directory -Force -Path out_x64 | Out-Null
 
+          # Copy main plugin DLLs
           Copy-Item "Rtl_433_Plugin/bin/x86/CI_x86/SDRSharp.Rtl_433.dll" "out_x86/"
           Copy-Item "Rtl_433_Plugin/bin/x64/CI_x64/SDRSharp.Rtl_433.dll" "out_x64/"
- 
-          Copy-Item "artifacts\RTL_433_x86\rtl_433.dll" "out_x86\rtl_433.dll" -Force
-          Copy-Item "artifacts\RTL_433_x64\rtl_433.dll" "out_x64\rtl_433.dll" -Force
 
+          # Copy rtl_433 native DLLs
+          Copy-Item "artifacts/RTL_433_x86/rtl_433.dll" "out_x86/rtl_433.dll" -Force
+          Copy-Item "artifacts/RTL_433_x64/rtl_433.dll" "out_x64/rtl_433.dll" -Force
+
+          # Copy GraphLib
           Copy-Item "graphlib/CI_x86/GraphLib.dll" "out_x86/" -Force
           Copy-Item "graphlib/CI_x64/GraphLib.dll" "out_x64/" -Force
 
+          # Languages to include
+          $languages = @(
+            "fr-FR","de-DE","es-ES","it-IT","pt-PT","pt-BR","nl-NL","sv-SE","no-NO",
+            "da-DK","fi-FI","pl-PL","cs-CZ","sk-SK","sl-SI","hr-HR","hu-HU","ro-RO","bg-BG"
+          )
+
+          foreach ($lang in $languages) {
+            # Create language folders
+            New-Item -ItemType Directory -Force -Path "out_x86/$lang" | Out-Null
+            New-Item -ItemType Directory -Force -Path "out_x64/$lang" | Out-Null
+
+            # Copy satellite assemblies
+            Copy-Item "Rtl_433_Plugin/bin/x86/CI_x86/$lang/SDRSharp.Rtl_433.resources.dll" "out_x86/$lang/" -Force
+            Copy-Item "Rtl_433_Plugin/bin/x64/CI_x64/$lang/SDRSharp.Rtl_433.resources.dll" "out_x64/$lang/" -Force
+          }
+
+          # Build ZIPs
           Compress-Archive -Path out_x86/* -DestinationPath "plugin_rtl433_x86-$env:VERSION.zip" -Force
           Compress-Archive -Path out_x64/* -DestinationPath "plugin_rtl433_x64-$env:VERSION.zip" -Force
+
 
       # ---------------------------------------------------------
       # Upload plugin ZIPs artifact

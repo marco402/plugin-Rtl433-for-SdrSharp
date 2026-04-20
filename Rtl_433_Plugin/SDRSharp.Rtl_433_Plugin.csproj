@@ -397,11 +397,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.ro-RO.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Resources.se-FI.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.se-FI.resx</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Resources.sk-SK.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -538,10 +533,6 @@
     <EmbeddedResource Include="Resources\Resources.ro-RO.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.ro-RO.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.se-FI.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.se-FI.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.sk-SK.resx">
       <Generator>ResXFileCodeGenerator</Generator>
